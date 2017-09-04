@@ -1,0 +1,17 @@
+<app>
+    <name>会员银行卡绑定管理</name>
+    <description>提供会员银行卡绑定管理功能</description>
+
+    <author>
+        <name>Caffrey Xin</name>
+        <email>xinyflove@sina.com</email>
+        <url>http://xinyufeng.net</url>
+    </author>
+
+    <version>0.1</version>
+    <license>不需要证书</license>
+
+    <depends>
+        <app>desktop</app>
+    </depends>
+</app>

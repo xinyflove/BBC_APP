@@ -1,0 +1,14 @@
+<desktop>
+
+    <permissions>
+        <permission id="bank_member" display='true' parent='0'>会员绑定卡号管理</permission>
+    </permissions>
+
+    <workground name="会员" id="sysuser.wrokground.user" controller="admin_user" action="index" order='40'>
+        <menugroup name="会员绑定卡号管理">
+            <menu controller='member' action='index' permission='bank_member' display='true' order='50'>卡号管理</menu>
+            <menu controller='bank' action='index' permission='bank_member' display='true' order='50'>银行管理</menu>
+        </menugroup>
+    </workground>
+
+</desktop>

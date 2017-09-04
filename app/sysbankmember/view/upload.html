@@ -1,0 +1,71 @@
+<form id="memberUploadForm" class="tableform" action="?app=sysbankmember&ctl=member&act=doUpload" method="POST" enctype="multipart/form-data">
+
+    <div class="division">
+        <table width="100%" border="0" cellpadding="0" cellspacing="0">
+            <tr>
+                <th><em class="red">*</em><{t}>导入文件：<{/t}></th>
+                <td>
+                    <input type="file" name="file" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="table-action">
+        <{button label="上传"|t:'syscategory' type="submit" class="btn-primary"}>
+    </div>
+
+</form>
+<form id="memberImportForm" class="tableform" action="?app=sysbankmember&ctl=member&act=doImport" method="POST" enctype="multipart/form-data" style="display: none;">
+
+    <div class="division">
+        <table width="100%" border="0" cellpadding="0" cellspacing="0">
+            <tr>
+                <th><em class="red">*</em><{t}>导入文件：<{/t}></th>
+                <td>
+                    <input type="hidden" value="" name="file_name" id="importName">
+                    <p id="uploadName"></p>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="table-action">
+        <{button label="导入"|t:'syscategory' type="submit" class="btn-primary"}>
+    </div>
+
+</form>
+<script>
+    _fromUpload = $('memberUploadForm');
+    _formImport = $('memberImportForm');
+    _fromUpload.store('target',{
+        onComplete:function(rs){
+            if(!rs) return;
+            rs = JSON.decode(rs);
+            if(rs.success){
+                $('importName').set('value', rs.data);
+                $('uploadName').appendText(rs.data);
+                //console.log($('importName'));
+                _fromUpload.hide();
+                _formImport.show();
+            }
+        }
+    });
+    _formImport.store('target',{
+        onComplete:function(rs){
+            if(!rs) return;
+            rs = JSON.decode(rs);
+            if(rs.success){
+                //console.log(rs);
+                if(window.finderGroup) window.finderGroup['<{$env.get.finder_id}>'].refresh();
+                if(_formImport.getParent('.dialog')){
+                    var Dlg = _formImport.getParent('.dialog').retrieve('instance');
+                    if(Dlg.update){
+                        Dlg.update.retrieve('instance').initContent();
+                    }
+                    Dlg.close();
+                }
+            }
+        }
+    });
+</script>

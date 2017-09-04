@@ -1,0 +1,15 @@
+<app>
+    <name>Test App</name><!--填写应用名称-->
+    <description>Test App应用描述</description><!--填写描述-->
+    <type>core</type><!--app类型-->
+    <author><!--填写作者信息-->
+        <name>Caffrey Xin</name><!--填写作者名称-->
+        <email>xinyflove@sina.com</email><!--填写作者邮箱-->
+        <url>xinyufeng.net</url><!--填写作者链接地址-->
+    </author>
+    <version>0.1</version><!--版本号-->
+    <license>不需要证书</license><!--证书信息-->
+    <depends><!--填写依赖包信息-->
+        <app>desktop</app><!--填写具体依赖的app目录名称-->
+    </depends>
+</app>

@@ -8,7 +8,7 @@
 class sysbankmember_ctl_member extends desktop_controller{
 
     /**
-     * 卡号管理列表
+     * 基础卡号管理列表
      * @return mixed
      */
     public function index(){
@@ -198,6 +198,7 @@ class sysbankmember_ctl_member extends desktop_controller{
                 'shop_id' => $r['A'],
                 'bank_id' => $r['B'],
                 'card_number' => $r['C'],
+                'card_grade' => $r['D'],
             );
             $flag = kernel::single('sysbankmember_data_member')->add($add_data,$msg);
             $this->adminlog("添加卡号[卡号ID:{$flag}]", $flag ? 1 : 0);
@@ -229,10 +230,9 @@ class sysbankmember_ctl_member extends desktop_controller{
 
     public function saveBind(){
         $this->begin();
-        $postdata = input::get('member');
+        $postdata = input::get('account');
 
-        $flag = kernel::single('sysbankmember_data_member')
-            ->bindCardNumber($postdata['member_id'], $postdata['user_id'], $msg);
+        $flag = kernel::single('sysbankmember_data_member')->bindCardNumber($postdata['member_id'], $postdata['mobile'], $postdata['card_number'], $postdata['rel_name'], $msg);
         $this->adminlog("绑定卡号[卡号ID:{$postdata['member_id']}]", $flag ? 1 : 0);
 
         $this->end($flag,$msg);

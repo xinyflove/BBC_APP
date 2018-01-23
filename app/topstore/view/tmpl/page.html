@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <{include file="topstore/common/head.html"}>
+</head>
+<body class="fixed skin-blue sidebar-mini" data-spy="scroll" data-target="#scrollspy">
+<div class="wrapper">
+  <{include file="topstore/common/header.html"}>
+  <{include file="topstore/common/sidebar.html"}>
+
+  <div class="content-wrapper">
+    <{if $topstore.contentTitle}>
+    <section class="content-header">
+      <h1>
+        <{$topstore.contentTitle}>
+        <small></small>
+      </h1>
+      <!--面包屑开始-->
+      <ol class="breadcrumb breadcrumb-primary">
+        <{foreach from=$topstore.path item=item name=name}>
+        <{if !$env.foreach.name.last}>
+        <li>
+          <a href="<{$item.url}>">
+            <{$item.title}>
+          </a>
+        </li>
+        <{else}>
+        <li class="active">
+          <{$item.title}>
+        </li>
+        <{/if}>
+        <{/foreach}>
+      </ol>
+      <!--面包屑结束-->
+    </section>
+    <{/if}>
+    <!--主体内容开始-->
+    <section class="content">
+      <{include file=$topstore.view}>
+    </section>
+    <!--主体内容结束-->
+  </div>
+</div>
+<{include file="topstore/common/footer.html"}>
+</body>
+</html>

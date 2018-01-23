@@ -109,7 +109,7 @@ class sysbankmember_ctl_bank extends desktop_controller{
      */
     protected function _checkData($data)
     {
-        if(empty($data['shop_name'])){
+        if(empty($data['bank_name'])){
             return array('s' => false, 'm' => '请填写银行名称');
         }
 

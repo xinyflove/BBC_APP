@@ -1,6 +1,6 @@
 <form id="bindForm" class="tableform" action="?app=sysbankmember&ctl=member&act=savebind" method="POST">
 
-    <input type="hidden" name="member[member_id]" value="<{$memberInfo.member_id}>">
+    <input type="hidden" name="account[member_id]" value="<{$memberInfo.member_id}>">
     <div class="division">
         <table width="100%" border="0" cellpadding="0" cellspacing="0">
             <tr>
@@ -18,16 +18,28 @@
             </tr>
 
             <tr>
-                <th><{t}>卡号：<{/t}></th>
+                <th><{t}>基础卡号：<{/t}></th>
                 <td>
                     <{t}><{$memberInfo.card_number}><{/t}>
                 </td>
             </tr>
 
             <tr>
-                <th><em class="red">*</em><{t}>绑定会员ID：<{/t}></th>
+                <th><em class="red">*</em><{t}>绑定会员手机号：<{/t}></th>
                 <td>
-                    <{input type="text" name="member[user_id]" vtype="required" value=$memberInfo.user_id  maxlength='20' class="x-input"}></td>
+                    <{input type="text" name="account[mobile]" vtype="required" value='' maxlength='11' class="x-input"}></td>
+            </tr>
+
+            <tr>
+                <th><em class="red">*</em><{t}>银行卡号：<{/t}></th>
+                <td>
+                    <{input type="text" name="account[card_number]" vtype="required" value=''  maxlength='16' class="x-input"}></td>
+            </tr>
+
+            <tr>
+                <th><em class="red">*</em><{t}>持卡人姓名：<{/t}></th>
+                <td>
+                    <{input type="text" name="account[rel_name]" vtype="required" value=''  maxlength='16' class="x-input"}></td>
             </tr>
         </table>
     </div>

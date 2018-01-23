@@ -24,4 +24,18 @@ class sysbankmember_member {
         if(empty($row)) return false;
         return true;
     }
+
+    /**
+     * 判断银行卡号是否符合基础卡号
+     * @param $card_number
+     * @return bool
+     */
+    public function isBaseCardNumber($card_number)
+    {
+        $base_card = substr($card_number, 0, 6) . substr($card_number, -4);
+        $memberModel = app::get('sysbankmember')->model('member');
+        $info = $memberModel->getRow('member_id', array('card_number'=>$base_card));
+        if(!empty($info)) return true;
+        return false;
+    }
 }

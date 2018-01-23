@@ -1,0 +1,62 @@
+<div class="alert alert-error message in" role="alert" id="messagebox" style="display:none;"></div>
+<header class="main-header">
+    <!--左上角Logo开始-->
+    <a href="<{url action=topstore_ctl_index@index}>" class="logo">
+        <!-- mini logo for sidebar mini 50x50 pixels -->
+        <span class="logo-mini">
+            <b>
+                <{if $system_site_name_mini}>
+                    <{$system_site_name_mini}>
+                <{else}>
+                    <{$system_site_name|cut:4:''}>
+                <{/if}>
+            </b>
+        </span>
+
+        <!-- logo for regular state and mobile devices -->
+        <span class="logo-lg"><{$system_site_name}></span>
+        <!-- <img src="<{$logo|storager}>" alt=""> -->
+    </a>
+    <!--左上角Logo结束-->
+    <!--顶部菜单导航开始-->
+    <nav class="navbar navbar-static-top">
+        <!-- Sidebar toggle button-->
+        <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
+            <span class="sr-only"></span>
+        </a>
+
+        <div class="navbar-custom-menu">
+            <ul class="nav navbar-nav">
+                <{if $topstore.account}>
+                <li class="dropdown user user-menu">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        <i class="glyphicon glyphicon-user"></i>
+                        <span><{$topstore.account.login_account}>
+                          <i class="caret"></i>
+                        </span>
+                    </a>
+
+                    <ul class="dropdown-menu text-right" role="menu">
+                        <!-- Menu Footer-->
+                        <li class="user-footer">
+                            <div class="pull-left">
+                                <a href="<{url action=topstore_ctl_passport@update}>" class="btn btn-default btn-flat" data-toggle="modal" data-target="#pwdupdateIndexDialog"><{t}>修改密码<{/t}></a>
+                            </div>
+                            <div class="pull-right">
+                                <a href="<{url action=topstore_ctl_passport@logout}>" class="btn btn-default btn-flat"><{t}>退出<{/t}></a>
+                            </div>
+                        </li>
+                    </ul>
+                </li>
+                <{/if}>
+            </ul>
+        </div>
+    </nav>
+    <!--顶部菜单导航结束-->
+</header>
+<div class="modal fade" id="pwdupdateIndexDialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        </div>
+    </div>
+</div>

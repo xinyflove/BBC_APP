@@ -1,0 +1,79 @@
+<div class="tableform">
+    <form id="sysstore_form" name="sysstore_form" action="?app=sysstore&ctl=store&act=saveStore"  method="post">
+        <div class="division">
+            <table width="100%" cellspacing="0" cellpadding="0" border="0">
+                <tbody>
+                <tr>
+                    <th><em class="red">商城信息</em></th>
+                    <{input type="hidden" name="store[store_id]" value=$storeInfo.store_id}>
+                </tr>
+                <tr>
+                    <th><{t}>商城名称：<{/t}></th>
+                    <td><{input type="text" vtype="required"  name="store[store_name]" value=$storeInfo.store_name}> </td>
+                </tr>
+                <tr>
+                    <th><{t}>选择店铺(多选)：<{/t}></th>
+                    <td>
+                        <ul>
+                            <{foreach from=$shopList item=shop}>
+                            <li>
+                                <input type="checkbox" name="store[shop_id][]" value="<{$shop.shop_id}>" <{if in_array($shop.shop_id, $storeInfo.shop_id)}>checked<{/if}>>
+                                <{$shop.shop_name}>
+                            </li>
+                            <{/foreach}>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <th><{t}>商城描述：<{/t}></th>
+                    <td>
+                        <{input type="textarea" name="store[store_desc]" value=$storeInfo.store_desc maxlength="200"}>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <table cellspacing="0" cellpadding="0" class="table-action">
+            <tbody>
+            <tr valign="middle">
+                <td>
+                    <{assign var="___c"  value='确定退出?'|t:'sysstore'}>
+
+                    <{button label="保存并关闭窗口"|t:'sysstore' class="btn-primary" type="button"  onclick="submitForm(event,2)"}>
+
+                    <{button label="关  闭"|t:'content' class="btn-secondary" type="button" isclosedialogbtn="1"}>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </form>
+</div>
+
+<script>
+    var submitForm = function (event,sign){
+        var _form=$('sysstore_form');
+        switch (sign){
+            case 1:
+                var target={
+                    onComplete:function(){
+                        location.reload();
+                    }};
+                break;
+            case 2:
+                var target={
+                    onComplete:function(rs){
+                        if(rs&&!!JSON.decode(rs).success){
+                            window.finderGroup['<{$env.get.finder_id}>'].refresh();
+                            _form.getParent('.dialog').retrieve('instance').close();
+                        }
+                    }};
+                break;
+        }
+        _form.store('target',target);
+        if(confirm('是否保存?')) {
+            _form.fireEvent('submit',new Event(event));
+        }
+    };
+
+</script>

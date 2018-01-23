@@ -1,0 +1,33 @@
+<form class='tableform' action='?app=sysbankmember&ctl=account&act=unbind' method='post' id="account_unbind_form">
+    <input type="hidden" name="account_id"  id="account_id" value="<{$account_id}>">
+    <p>您确定要解绑？</p>
+    <div class="table-action">
+        <button type="button" id="cancel" class="btn-secondary ">取消</button>
+        <{button class='close-btn'  id="btn_save" label="确定"|t:'sysbankmember'}>
+    </div>
+
+</form>
+
+<script type="text/javascript">
+    $('cancel').addEvent('click',function(){
+        $('account_unbind_form').getParent('.dialog').retrieve('instance').close();
+    });
+    $('btn_save').addEvent('click', function(){
+        var url = $('account_unbind_form').get('action');
+        var req = new Request.JSON({url: $('account_unbind_form').get('action'),
+            method:'get' ,
+            data:{'account_id': $('account_id').get('value')},
+            onComplete: function(rs, text) {
+                if(rs.error) {
+                    alert(rs.error);
+                }
+                if(rs.success) {
+                    //var itemId = $('account_id').get('value');
+                    //$$('.row[item-id="'+itemId+'"]').dispose();
+                    if(window.finderGroup) window.finderGroup['<{$env.get.finder_id}>'].refresh();
+                }
+                $('account_unbind_form').getParent('.dialog').retrieve('instance').close();
+            }
+        }).send();
+    });
+</script>

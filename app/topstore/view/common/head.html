@@ -1,0 +1,89 @@
+<meta charset="UTF-8">
+<title><{if $topstore.seo.title}><{$topstore.seo.title}>|<{/if}><{$topstore.contentTitle}></title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="author" content="青岛广电 PHP Team">
+<meta name="keywords" content="<{$topstore.seo.keywords}>">
+<meta name="description" content="<{$topstore.seo.description}>">
+
+<link rel="icon" href="<{$icon}>" type="image/x-icon" />
+<link rel="shortcut icon" href="<{$icon}>" type="image/x-icon" />
+<script>
+var imageuploadUrl = "<{url action=topstore_ctl_store_image@loadImageModal}>";
+
+(function() {
+  var explorer = window.navigator.userAgent ;
+  if(explorer.indexOf("Opera") >= 0){
+    window.location.href= "<{url action=topstore_ctl_index@browserTip}>"
+  }
+})()
+
+if(document.documentElement.clientWidth >= 1699){
+  var slide = false;
+}
+var AdminLTEOptions = {
+  controlSidebarOptions: {
+    //Enable slide over content
+    slide: slide
+  },
+};
+</script>
+
+<{if config::get('app.debug', false)}>
+<!-- common styles -->
+<{css app="topstore" src="theme.css"}>
+<{css app="topstore" src="bootstrap.min.css"}>
+<{css app="topstore" src="AdminLTE.css"}>
+<{css app="topstore" src="_all-skins.min.css"}>
+<{css app="topstore" src="font-awesome.min.css"}>
+<{css app="topstore" src="ionicons.css"}>
+<!-- plugins -->
+<{css app="topstore" src="bootstrap-validator.css"}>
+<{css app="topstore" src="bootstrap-daterangepicker.css"}>
+<{css app="topstore" src="bootstrap-datepicker.css"}>
+<{css app="topstore" src="bootstrap-datetimepicker.css"}>
+<{css app="topstore" src="bootstrap-switch.min.css"}>
+<{css app="topstore" src="editor/summernote.css"}>
+
+<!-- common scripts -->
+<{script app="topstore" src="lib/jquery.js"}>
+<{script app="topstore" src="lib/bootstrap.js"}>
+<!-- plugins -->
+<{script app="topstore" src="lib/bootstrap-modal.js"}>
+<{script app="topstore" src="lib/bootstrap-validator.js"}>
+<{script app="topstore" src="lib/moment.js"}>
+<{script app="topstore" src="lib/daterangepicker.js"}>
+<{script app="topstore" src="lib/datepicker.js"}>
+<{script app="topstore" src="lib/bootstrap-datetimepicker.js"}>
+<{script app="topstore" src="lib/bootstrap-switch.min.js"}>
+<{script app="topstore" src="lib/jquery.flot.js"}>
+<{script app="topstore" src="lib/jquery.flot.time.js"}>
+<{script app="topstore" src="lib/jquery.slimscroll.min.js"}>
+<{script app="topstore" src="lib/jquery.nestable.js"}>
+<{script app="topstore" src="lib/template.min.js"}>
+<!-- editor -->
+<{script app="topstore" src="lib/editor/summernote.js"}>
+<{script app="topstore" src="lib/editor/summernote-zh-CN.js"}>
+<!-- main scripts -->
+<{script app="topstore" src="tools.js"}>
+<{script app="topstore" src="imageupload.js"}>
+<{script app="topstore" src="goodschoose.js"}>
+<{script app="topstore" src="app.js"}>
+<{script app="topstore" src="dragging.js"}>
+
+<{else}>
+
+<{css app="topstore" src="theme.min.css"}>
+<{css app="topstore" src="font-awesome.min.css"}>
+<{css app="topstore" src="bootstrap.min.css"}>
+<{css app="topstore" src="AdminLTE.min.css"}>
+<{css app="topstore" src="_all-skins.min.css"}>
+<{css app="topstore" src="plugins.min.css"}>
+<{css app="topstore" src="bootstrap-switch.min.css"}>
+
+<{script app="topstore" src="lib/jquery.min.js"}>
+<{script app="topstore" src="lib/plugins.min.js"}>
+<{script app="topstore" src="lib/bootstrap-switch.min.js"}>
+<{script app="topstore" src="lib/jquery.slimscroll.min.js"}>
+<{script app="topstore" src="main.min.js"}>
+<{/if}>
+

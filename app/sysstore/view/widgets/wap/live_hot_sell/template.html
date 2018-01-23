@@ -1,0 +1,20 @@
+<div class="TVindex-liveShow widget" id="<{$widget.id}>">
+    <div class="TVindex-liveShow-back"><a :href="<{$widget.id}>.ad_url">
+        <img :src="<{$widget.id}>.ad_pic" alt="">
+    </a></div>
+    <div class="swiper-container swiper-container2">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide" v-for="item in <{$widget.id}>.items" :key="item"><a :href="item.url">
+                <div class="swiper-slide-img1">
+                    <img :src="item.image_default_id" alt="">
+                </div>
+                <div class="swiper-slide-img2" v-if="item.sort<4">
+                    <p>NO.{{item.sort}}</p>
+                </div>
+                <div v-else></div>
+                <p class="p1">{{item.title}}</p>
+                <p class="p2">￥{{item.price}}</p>
+            </a></div>
+        </div>
+    </div>
+</div>

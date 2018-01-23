@@ -1,0 +1,67 @@
+<table wdith="100%" class="table table-primary table-hover table-goods">
+  <tr>
+    <th width="60%">商品信息</th>
+    <th width="20%">排序</th>
+    <th width="20%">操作</th>
+  </tr>
+  <{foreach from=$_input.itemsList item=item key=key}>
+  <tr data-itemid="<{$item.item_id}>" class='package_input'>
+    <td>
+      <input type="hidden" name="params[item_id][]" value="<{$item.item_id}>" />
+      <div class="goods">
+        <a href="<{url action=topc_ctl_item@index item_id=$item.item_id}>" target="_blank">
+          <img src="<{$item.image_default_id|default:$image_default_id.S.default_image|storager:'s'}>" alt="">
+          <{foreach from=$_input._textcol item=_key}>
+          <{if $_key=='price'}>
+            <span><{$item[$_key]|cur}></span>
+            <{else}>
+            <span <{if $_key=='sub_title'}>style="display:none;"<{/if}>><{$item[$_key]|cut:120}></span>
+            <{/if}>
+          <{/foreach}>
+        </a>
+      </div>
+    </td>
+    <td>
+		<input type="number" name="params[sort][<{$item.item_id}>]">
+    </td>
+    <{if $_input.view}>
+     <td>
+		<span style="display:block;float:left">价格:</span><{include file=$_input.view}>
+    </td>
+    <{/if}>
+    <{if $_input.extends}>
+    <input type="hidden" name="<{$_input.extends.0.item_name}>[<{$item.item_id}>][item_id]" value="<{$item.item_id}>" />
+    <{foreach from=$_input.extends item=extends_row}>
+    <td>
+       数量:<{include file='topstore/selector/item/input-row-extends.html'}>
+    </td>
+    <{/foreach}>
+    <{/if}>
+        <td><a class="item-del" href="#">删除</a></td>
+  </tr>
+  <{/foreach}>
+</table>
+<!-- Modal -->
+<div class="modal fade" id="show_sku_madal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-skuids="">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+    </div>
+  </div>
+</div>
+
+<script>
+  $('.item-del').click(function(e) {
+    e.preventDefault();
+    $(this).parents('tr').remove();
+  });
+  $('.show-sku').click(function(event) {
+    var url =  $(this).data('remote');
+    $('#show_sku_madal .modal-content').load(url);
+  });
+
+  $('#show_sku_madal').on('show.bs.modal',function(event){
+    _this = event.relatedTarget;
+    var thisSku = $($($(_this).parents('tr')).find('input[name="item_sku[]"]')).val();
+    $('#show_sku_madal').data('skuids',thisSku);
+  })
+</script>

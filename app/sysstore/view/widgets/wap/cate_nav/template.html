@@ -1,0 +1,10 @@
+<div class="swiper-container swiper-container6 widget" id="<{$widget.id}>">
+    <ul class="swiper-wrapper TVindex-nav">
+        <li class="swiper-slide" v-for="item in <{$widget.id}>" :key="item"><a :href="item.url">
+            <div>
+                <img :src="item.pic" alt="">
+            </div>
+            <p>{{item.title}}</p>
+        </a></li>
+    </ul>
+</div>

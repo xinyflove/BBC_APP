@@ -1,0 +1,18 @@
+<div class="TVindex-header">
+    <div  class="TVindex-head-back">
+        <img src="/app/topstore/statics/blueyeshop/img/Path.png" alt="" onClick="backApp();">
+    </div>
+
+    <div class="TVindex-search widget" id="<{$widget.id}>">
+        <div class="TVindex-search-img">
+            <img src="/app/topstore/statics/blueyeshop/img/search_light.png" alt="">
+        </div>
+        <input id="searchWidgetId" type="text" :placeholder="<{$widget.id}>.placeholder" data-url="<{url action=topwap_ctl_shop_list@store_list store_id=$store_id}>" class="TVindex-search-input">
+    </div>
+
+    <div class="TVindex-head-list" id="offCanvasBtn">
+        <a href="#offCanvasSide">
+            <img src="/app/topstore/statics/blueyeshop/img/list.png" alt="">
+        </a>
+    </div>
+</div>

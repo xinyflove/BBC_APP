@@ -4,10 +4,10 @@
  * member: Caffrey
  * Date: 2017/09/04
  * Time: 09:36
- * 会员添加、更新和删除
+ * 基础卡号添加、更新和删除
  */
 class sysbankmember_data_member {
-    // 会员model
+    // 基础卡号model
     public $memberModel = null;
 
     /**
@@ -19,7 +19,7 @@ class sysbankmember_data_member {
     }
 
     /**
-     * 会员添加
+     * 基础卡号添加
      * @param $data
      * @param $msg
      * @return bool
@@ -34,17 +34,17 @@ class sysbankmember_data_member {
         $memberId = $this->memberModel->insert($data);
         if( !$memberId )
         {
-            $msg = app::get('sysbankmember')->_('会员添加失败');
+            $msg = app::get('sysbankmember')->_('基础卡号添加失败');
             return false;
         }
 
-        $msg = app::get('sysbankmember')->_('会员添加成功');
+        $msg = app::get('sysbankmember')->_('基础卡号添加成功');
 
         return $memberId;
     }
 
     /**
-     * 会员更新
+     * 基础卡号更新
      * @param $data
      * @param $msg
      * @return bool
@@ -64,25 +64,33 @@ class sysbankmember_data_member {
         //更新属性
         if( !$this->memberModel->update($data, array('member_id'=>$data['member_id'])) )
         {
-            $msg = app::get('sysbankmember')->_('会员更新失败');
+            $msg = app::get('sysbankmember')->_('基础卡号更新失败');
             return false;
         }
-        $msg = app::get('sysbankmember')->_('会员更新成功');
+        $msg = app::get('sysbankmember')->_('基础卡号更新成功');
 
         return true;
     }
 
     /**
-     * 会员删除
+     * 基础卡号删除
      * @param $memberId
      * @return bool
      */
     public function delete($memberId)
     {
+        $relAccount = $this->__checkBindingMember($memberId);
+        if($relAccount)
+        {
+            $msg = app::get('sysbankmember')->_('基础卡号已经与会员关联，不可删除');
+            throw new \LogicException($msg);
+            return false;
+        }
+
         $delete = $this->memberModel->delete(array('member_id'=>$memberId));
         if(!$delete)
         {
-            $msg = app::get('sysbankmember')->_('会员删除失败');
+            $msg = app::get('sysbankmember')->_('基础卡号删除失败');
             throw new \LogicException($msg);
             return false;
         }
@@ -92,29 +100,48 @@ class sysbankmember_data_member {
     /**
      * 会员绑定银行卡
      * @param $member_id
-     * @param $user_id
+     * @param $mobile
      * @param $msg
      * @return bool
      */
-    public function bindCardNumber($member_id, $user_id, &$msg){
-        if( empty($member_id) ||  empty($user_id))
+    public function bindCardNumber($member_id, $mobile, $card_number, $rel_name, &$msg){
+        if( empty($member_id) || empty($mobile) || empty($card_number))
         {
             $msg = app::get('sysbankmember')->_('参数错误');
             return false;
         }
 
-        $data['user_id'] = $user_id;
-        //有会员id添加绑定时间
-        $data['bind_time'] = time();
-
-        //更新属性
-        if( !$this->memberModel->update($data, array('member_id'=>$member_id)) )
-        {
-            $msg = app::get('sysbankmember')->_('绑定失败');
+        if(strlen($mobile) != 11){
+            $msg = app::get('sysbankmember')->_('请输入11位手机号');
             return false;
         }
-        $msg = app::get('sysbankmember')->_('绑定成功');
 
+        if(strlen($card_number) != 16){
+            $msg = app::get('sysbankmember')->_('请输入16位银行卡号');
+            return false;
+        }
+
+        $objMember = kernel::single('sysbankmember_member');
+        if(!$objMember->isBaseCardNumber($card_number)){
+            $msg = app::get('sysbankmember')->_('银行卡号不匹配基础卡号');
+            return false;
+        }
+
+        $userInfo = app::get('sysuser')->model('account')->getRow('user_id', array('mobile'=>$mobile));
+        if(empty($userInfo)){
+            $msg = app::get('sysbankmember')->_('手机号未注册会员');
+            return false;
+        }
+
+        $data = array();
+        $data['member_id'] = $member_id;
+        $data['user_id'] = $userInfo['user_id'];
+        $data['card_number'] = $card_number;
+        $data['rel_name'] = $rel_name;
+        $data['bind_time'] = time();
+
+        $flag = kernel::single('sysbankmember_data_account')->bindCardNumber($data, $msg);
+        if(!$flag) return false;
         return true;
     }
 
@@ -145,5 +172,17 @@ class sysbankmember_data_member {
         }
 
         return true;
+    }
+
+    /**
+     * 检查会员是否绑定了银行信息
+     * @param $bankId
+     * @return mixed
+     */
+    private function __checkBindingMember($memberId)
+    {
+        $objMdlAccount = app::get('sysbankmember')->model('account');
+        $relprops = $objMdlAccount->getList('account_id',array('member_id'=>$memberId));
+        return $relprops;
     }
 }

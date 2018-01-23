@@ -1,0 +1,136 @@
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">挂件类型名称：</label>
+    <div class="col-sm-3">
+        <input type="text" value="4图展示区" class="form-control" readonly>
+    </div>
+</div>
+
+<!--左侧广告图片-->
+<div class="form-group">
+    <label class="col-sm-3 control-label">左侧广告图片：</label>
+    <div class="col-sm-3">
+        <div class="multiple-item" style="position:relative">
+            <div id="removeLeftAdImg" class="multiple-del glyphicon glyphicon-remove-circle" style="position: absolute;left: 60px;top: -5px;z-index: 999;"></div>
+            <a class="select-image" data-toggle="modal" href="<{url action=topstore_ctl_store_image@loadImageModal}>" data-target="#gallery_modal">
+                <input class="left_ad_image" type="hidden" name="params[left_posi_pic]" value="<{$params.left_posi_pic}>">
+                <div class="img-put">
+                    <img  class=""  src="<{$params.left_posi_pic}>">
+                    <i class="glyphicon glyphicon-picture"></i>
+                </div>
+            </a>
+        </div>
+        <span class="help-block">图片大小：287*441 px。</span>
+    </div>
+    <div class="col-sm-4">
+        <input type="text" name="params[left_posi_url]" value="<{$params.left_posi_url}>" class="form-control" placeholder="左侧广告链接">
+        <span class="help-block">链接格式: http://****** 或 /wap/****</span>
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-sm-3 control-label">左侧广告有效期：</label>
+    <div class="col-sm-4">
+        <div class="input-group input-group-sm">
+            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+            <input type="text" class="form-control pull-right reservation" style="max-width:100%;" readonly name="params[left_posi][valid_time]" value="<{$params.left_posi.valid_time}>">
+        </div>
+    </div>
+</div>
+
+<!--顶部广告图片-->
+<div class="form-group">
+    <label class="col-sm-3 control-label">顶部广告图片：</label>
+    <div class="col-sm-3">
+        <div class="multiple-item" style="position:relative">
+            <div id="removeTopAdImg" class="multiple-del glyphicon glyphicon-remove-circle" style="position: absolute;left: 60px;top: -5px;z-index: 999;"></div>
+            <a class="select-image" data-toggle="modal" href="<{url action=topstore_ctl_store_image@loadImageModal}>" data-target="#gallery_modal">
+                <input class="top_ad_image" type="hidden" name="params[top_posi_pic]" value="<{$params.top_posi_pic}>">
+                <div class="img-put">
+                    <img  class=""  src="<{$params.top_posi_pic}>">
+                    <i class="glyphicon glyphicon-picture"></i>
+                </div>
+            </a>
+        </div>
+        <span class="help-block">图片大小：409*219 px。</span>
+    </div>
+    <div class="col-sm-4">
+        <input type="text" name="params[top_posi_url]" value="<{$params.top_posi_url}>" class="form-control" placeholder="顶部广告链接">
+        <span class="help-block">链接格式: http://****** 或 /wap/****</span>
+    </div>
+</div>
+
+<!--底部左侧广告图片-->
+<div class="form-group">
+    <label class="col-sm-3 control-label">底部左侧广告图片：</label>
+    <div class="col-sm-3">
+        <div class="multiple-item" style="position:relative">
+            <div id="removeBottomLeftAdImg" class="multiple-del glyphicon glyphicon-remove-circle" style="position: absolute;left: 60px;top: -5px;z-index: 999;"></div>
+            <a class="select-image" data-toggle="modal" href="<{url action=topstore_ctl_store_image@loadImageModal}>" data-target="#gallery_modal">
+                <input class="bottom_left_ad_image" type="hidden" name="params[bottom_left_posi_pic]" value="<{$params.bottom_left_posi_pic}>">
+                <div class="img-put">
+                    <img  class=""  src="<{$params.bottom_left_posi_pic}>">
+                    <i class="glyphicon glyphicon-picture"></i>
+                </div>
+            </a>
+        </div>
+        <span class="help-block">图片大小：203*219 px。</span>
+    </div>
+    <div class="col-sm-4">
+        <input type="text" name="params[bottom_left_posi_url]" value="<{$params.bottom_left_posi_url}>" class="form-control" placeholder="底部左侧广告链接">
+        <span class="help-block">链接格式: http://****** 或 /wap/****</span>
+    </div>
+</div>
+
+<!--底部右侧广告图片-->
+<div class="form-group">
+    <label class="col-sm-3 control-label">底部右侧广告图片：</label>
+    <div class="col-sm-3">
+        <div class="multiple-item" style="position:relative">
+            <div id="removeBottomRightAdImg" class="multiple-del glyphicon glyphicon-remove-circle" style="position: absolute;left: 60px;top: -5px;z-index: 999;"></div>
+            <a class="select-image" data-toggle="modal" href="<{url action=topstore_ctl_store_image@loadImageModal}>" data-target="#gallery_modal">
+                <input class="bottom_right_ad_image" type="hidden" name="params[bottom_right_posi_pic]" value="<{$params.bottom_right_posi_pic}>">
+                <div class="img-put">
+                    <img  class=""  src="<{$params.bottom_right_posi_pic}>">
+                    <i class="glyphicon glyphicon-picture"></i>
+                </div>
+            </a>
+        </div>
+        <span class="help-block">图片大小：203*219 px。</span>
+    </div>
+    <div class="col-sm-4">
+        <input type="text" name="params[bottom_right_posi_url]" value="<{$params.bottom_right_posi_url}>" class="form-control" placeholder="底部右侧广告链接">
+        <span class="help-block">链接格式: http://****** 或 /wap/****</span>
+    </div>
+</div>
+<script>
+    $('#removeLeftAdImg').on('click',function(){
+        $('.left_ad_image').val("");
+        $('.left_ad_image').next('.img-put').find('img').attr('src','');
+        $('.left_ad_image').next('.img-put').append('<i class="glyphicon glyphicon-picture"></i>');
+    });
+    $('#removeTopAdImg').on('click',function(){
+        $('.top_ad_image').val("");
+        $('.top_ad_image').next('.img-put').find('img').attr('src','');
+        $('.top_ad_image').next('.img-put').append('<i class="glyphicon glyphicon-picture"></i>');
+    });
+    $('#removeBottomLeftAdImg').on('click',function(){
+        $('.bottom_left_ad_image').val("");
+        $('.bottom_left_ad_image').next('.img-put').find('img').attr('src','');
+        $('.bottom_left_ad_image').next('.img-put').append('<i class="glyphicon glyphicon-picture"></i>');
+    });
+    $('#removeBottomRightAdImg').on('click',function(){
+        $('.bottom_right_ad_image').val("");
+        $('.bottom_right_ad_image').next('.img-put').find('img').attr('src','');
+        $('.bottom_right_ad_image').next('.img-put').append('<i class="glyphicon glyphicon-picture"></i>');
+    });
+
+    $('.reservation').daterangepicker({
+        "timePicker": true,
+        "opens": "right",
+        "timePicker24Hour": true,
+        "timePickerIncrement": 1,
+        "locale": {
+            "format": "YYYY/MM/DD HH:mm"
+        }
+    });
+</script>

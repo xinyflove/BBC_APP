@@ -1,0 +1,72 @@
+
+<style>
+    .cateNavRow {
+        border-bottom: 1px dashed #D3D3D3;
+        margin-top: 10px;
+    }
+</style>
+<div class="form-group">
+    <label class="col-sm-3 control-label">挂件类型名称：</label>
+    <div class="col-sm-3">
+        <input type="text" value="分类导航" class="form-control" readonly>
+    </div>
+</div>
+
+<!--分类导航-->
+<div class="form-group">
+    <label class="col-sm-3 control-label">分类导航：</label>
+    <div class="col-sm-7 cateNavBox">
+        <{if $params}>
+        <{foreach from=$params item=item}>
+        <div class="row cateNavRow">
+            <div class="col-sm-4">
+                <div class="multiple-item" style="position:relative">
+                    <div class="multiple-del glyphicon glyphicon-remove-circle removeTopAdSlide" style="position: absolute;left: 60px;top: -5px;z-index: 999;"></div>
+                    <a class="select-image" data-toggle="modal" href="<{url action=topstore_ctl_store_image@loadImageModal}>" data-target="#gallery_modal">
+                        <input class="cate_nav_input" type="hidden" name="params[pic][]" value="<{$item.pic}>">
+                        <div class="img-put">
+                            <img  class=""  src="<{$item.pic}>">
+                            <i class="glyphicon glyphicon-picture"></i>
+                        </div>
+                    </a>
+                </div>
+                <span class="help-block">图片大小：53*49 px。</span>
+            </div>
+            <div class="col-sm-8">
+                <input type="text" name="params[title][]" value="<{$item.title}>" class="form-control" placeholder="分类导航标题"><br/>
+                <input type="text" name="params[url][]" value="<{$item.url}>" class="form-control" placeholder="分类导航链接">
+                <span class="help-block">链接格式: http://****** 或 /wap/****</span>
+                <a class="removeSlideRow" href="javascript:;">删除</a>
+            </div>
+        </div>
+        <{/foreach}>
+        <{else}>
+        <!--添加幻灯片模版开始-->
+        <div class="row cateNavRow"><div class="col-sm-4"><div class="multiple-item" style="position:relative"><div class="multiple-del glyphicon glyphicon-remove-circle removeTopAdSlide" style="position: absolute;left: 60px;top: -5px;z-index: 999;"></div><a class="select-image" data-toggle="modal" href="<{url action=topstore_ctl_store_image@loadImageModal}>" data-target="#gallery_modal"><input class="cate_nav_input" type="hidden" name="params[pic][]" value=""><div class="img-put"><img  class=""  src=""><i class="glyphicon glyphicon-picture"></i></div></a></div><span class="help-block">图片大小：53*49 px。</span></div><div class="col-sm-8"><input type="text" name="params[title][]" value="" class="form-control" placeholder="分类导航标题"><br/><input type="text" name="params[url][]" value="" class="form-control" placeholder="分类导航链接"><span class="help-block">链接格式: http://****** 或 /wap/****</span><a class="removeSlideRow" href="javascript:;">删除</a></div></div>
+        <!--添加幻灯片模版结束-->
+        <{/if}>
+    </div>
+    <div class="col-sm-1">
+        <a class="btn btn-default addSlideRow" href="javascript:;">添加</a>
+    </div>
+</div>
+<script>
+    /*添加分类导航模版开始*/
+    var _html = '<div class="row cateNavRow"><div class="col-sm-4"><div class="multiple-item" style="position:relative"><div class="multiple-del glyphicon glyphicon-remove-circle removeTopAdSlide" style="position: absolute;left: 60px;top: -5px;z-index: 999;"></div><a class="select-image" data-toggle="modal" href="<{url action=topstore_ctl_store_image@loadImageModal}>" data-target="#gallery_modal"><input class="cate_nav_input" type="hidden" name="params[pic][]" value=""><div class="img-put"><img  class=""  src=""><i class="glyphicon glyphicon-picture"></i></div></a></div><span class="help-block">图片大小：53*49 px。</span></div><div class="col-sm-8"><input type="text" name="params[title][]" value="" class="form-control" placeholder="分类导航标题"><br/><input type="text" name="params[url][]" value="" class="form-control" placeholder="分类导航链接"><span class="help-block">链接格式: http://****** 或 /wap/****</span><a class="removeSlideRow" href="javascript:;">删除</a></div></div>';
+    /*添加幻灯片模版结束*/
+    $('.addSlideRow').on('click', function () {
+        $(".cateNavBox").append(_html);
+    });
+    $('.cateNavBox').on('click', '.removeSlideRow', function () {
+        $(this).parent().parent().remove();
+        if($('.cateNavRow').length < 1){
+            $(".cateNavBox").append(_html);
+        }
+    })
+    $('.cateNavBox').on('click', '.removeTopAdSlide', function(){
+        var tas_obj = $(this).parent().find('.cate_nav_input');
+        tas_obj.val("");
+        tas_obj.next('.img-put').find('img').attr('src','');
+        tas_obj.next('.img-put').append('<i class="glyphicon glyphicon-picture"></i>');
+    });
+</script>

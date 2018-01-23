@@ -28,10 +28,17 @@
             </tr>
 
             <tr>
-                <th><em class="red">*</em><{t}>卡号：<{/t}></th>
+                <th><em class="red">*</em><{t}>银卡号：<{/t}></th>
                 <td>
                     <{input type="text" name="member[card_number]" vtype="required" value=$memberInfo.card_number  maxlength='10' class="x-input"}>
                     <span style="display: block;">填写银行卡号的前六位和后四位.</span>
+                </td>
+            </tr>
+
+            <tr>
+                <th><em class="red">*</em><{t}>银行卡等级：<{/t}></th>
+                <td>
+                    <{input type="text" name="member[card_grade]" vtype="required" value=$memberInfo.card_grade  maxlength='10' class="x-input"}>
                 </td>
             </tr>
         </table>

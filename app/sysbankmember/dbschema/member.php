@@ -42,16 +42,18 @@ return  array(
 			'in_list' => true,
 			'default_in_list' => true,
 			'searchtype' => 'has',
+			'is_title'=>true,
 		),
-		'user_id' => array(
-			'type' => 'table:account@sysuser',
-			'required' => false,
-			'comment' => app::get('sysbankmember')->_('会员id'),
-			'label' => app::get('sysbankmember')->_('会员用户名'),
-			'width' => 110,
+		'card_grade' => array (
+			'type' => 'string',
+			'default' => '',
+			'required' => true,
+			'comment' => app::get('sysbankmember')->_('银行卡等级'),
+			'label' => app::get('sysbankmember')->_('银行卡等级'),
+			'width' => 150,
 			'in_list' => true,
 			'default_in_list' => true,
-			//'searchtype' => 'has',
+			'searchtype' => 'has',
 		),
         'create_time' => array(
             'type' => 'time',
@@ -71,15 +73,6 @@ return  array(
             'in_list' => true,
             'default_in_list' => false,
         ),
-		'bind_time' => array(
-            'type' => 'time',
-            'required' => false,
-            'label' => app::get('sysbankmember')->_('绑定时间'),
-            'comment' => app::get('sysbankmember')->_('绑定时间'),
-            'width' => 110,
-            'in_list' => true,
-            'default_in_list' => true,
-        ),
         'deleted' => array(
             'type' => array(
                 0 => app::get('sysbankmember')->_('正常'),
@@ -93,8 +86,8 @@ return  array(
     'primary' => 'member_id',	//主键
     'index' => array (  //索引
         'id' => [
-            'columns' => ['shop_id','bank_id','user_id'],   // 需要建立索引的字段名
+            'columns' => ['shop_id','bank_id'],   // 需要建立索引的字段名
         ],
     ),
-    'comment' => app::get('sysbankmember')->_('绑定银行卡会员表'),
+    'comment' => app::get('sysbankmember')->_('基础卡号表'),
 );

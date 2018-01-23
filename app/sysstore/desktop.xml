@@ -1,0 +1,20 @@
+<desktop>
+
+    <permissions>
+        <permission id="sysStore" display='true' parent="0" workground='sysshop.workground.shoptype'>多店铺商城</permission>
+        <permission id="sysStore_store_lists" display='true' parent="sysStore" workground='sysshop.workground.shoptype'>商城列表</permission>
+        <permission id="sysStore_account_lists" display='true' parent="sysStore" workground='sysshop.workground.shoptype'>用户列表</permission>
+        <permission id="sysStore_widgets_lists" display='true' parent="sysStore" workground='sysshop.workground.shoptype'>挂件列表</permission>
+    </permissions>
+
+    <workground name="商家" id="sysshop.workground.shoptype" controller="admin_seller" action="index" order='90'>
+        <menugroup name="多店铺商城">
+            <menu controller='store' action='lists' permission='sysStore_store_lists' display='true' order='80'>商城列表</menu>
+            <menu controller='account' action='lists' permission='sysStore_account_lists' display='true' order='80'>用户列表</menu>
+            <menu controller='widgets' action='lists' permission='sysStore_widgets_lists' display='true' order='80'>挂件列表</menu>
+        </menugroup>
+
+    </workground>
+
+</desktop>
+

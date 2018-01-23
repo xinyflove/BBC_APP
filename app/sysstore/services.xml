@@ -1,0 +1,10 @@
+<services>
+
+    <service id="desktop_finder.sysstore_mdl_store">
+        <class>sysstore_finder_store</class>
+    </service>
+    <service id="desktop_finder.sysstore_mdl_account">
+        <class>sysstore_finder_account</class>
+    </service>
+    
+</services>

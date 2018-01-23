@@ -10,6 +10,8 @@ class sysbankmember_finder_member {
 
     public $column_edit = '编辑';
     public $column_edit_order = 1;
+    /*public $column_uname;
+    public $column_uname_order = 11;*/
 
     public function column_edit(&$colList, $list){
         foreach($list as $k=>$row)
@@ -27,7 +29,7 @@ class sysbankmember_finder_member {
             $html .= ' | ';
 
             $editUrl = '?app=sysbankmember&ctl=member&act=bindPage&finder_id='.$_GET['_finder']['finder_id'].'&p[0]='.$row['member_id'];
-            $editTar = 'target="dialog::{title:\''.app::get('sysbankmember')->_('绑定').'\', width:600, height:250}"';
+            $editTar = 'target="dialog::{title:\''.app::get('sysbankmember')->_('绑定').'\', width:600, height:300}"';
             $html .= '<a href="'.$editUrl.'" '.$editTar.'>'.app::get('sysbankmember')->_('绑定').'</a>';
             
             $colList[$k] = $html;

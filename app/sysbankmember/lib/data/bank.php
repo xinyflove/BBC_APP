@@ -79,11 +79,11 @@ class sysbankmember_data_bank {
      */
     public function delete($bankId)
     {
-        #获取当前银行关联的会员
+        //获取当前银行关联的会员
         $relMember = $this->__checkBindingBank($bankId);
         if($relMember)
         {
-            $msg = app::get('sysbankmember')->_('银行已经与会员关联，不可删除');
+            $msg = app::get('sysbankmember')->_('银行已经与基础卡号关联，不可删除');
             throw new \LogicException($msg);
             return false;
         }

@@ -1,0 +1,27 @@
+<div class="TVindex-list widget" id="<{$widget.id}>">
+    <div class="TVindex-bath-img"><a :href="<{$widget.id}>.ad_url">
+        <img :src="<{$widget.id}>.ad_pic" alt="">
+    </a></div>
+    <div class="swiper-container swiper-container3">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide" v-for="item in <{$widget.id}>.items">
+                <a :href="item.url">
+                    <div class="swiper-slide-img">
+                        <img :src="item.image_default_id" alt="">
+                    </div>
+                    <div class="swiper-slide-text1">
+                        <p>{{item.title}}</p>
+                    </div>
+                    <div class="swiper-slide-text2">
+                        <p v-if="item.shop_type=='tv'"><img src="/app/topstore/statics/blueyeshop/img/icon1.png" alt="">{{item.shop_name}}</p>
+                        <p v-else-if="item.shop_type=='broadcast'"><img src="/app/topstore/statics/blueyeshop/img/icon3.png" alt="">{{item.shop_name}}</p>
+                        <p v-else-if="item.shop_type=='other'"><img src="/app/topstore/statics/blueyeshop/img/icon2.png" alt="">{{item.shop_name}}</p>
+                    </div>
+                    <div class="swiper-slide-text3">
+                        <p>￥{{item.price}}</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

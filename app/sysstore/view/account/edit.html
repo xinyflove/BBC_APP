@@ -1,0 +1,86 @@
+<div class="tableform">
+    <form id="sysstore_form" name="sysstore_form" action="?app=sysstore&ctl=account&act=saveAccount"  method="post">
+        <div class="division">
+            <table width="100%" cellspacing="0" cellpadding="0" border="0">
+                <tbody>
+                <tr>
+                    <th><em class="red">用户信息</em></th>
+                    <{input type="hidden" name="account[account_id]" value=$accountInfo.account_id}>
+                </tr>
+                <tr>
+                    <th><{t}>用户登录名：<{/t}></th>
+                    <td><{input type="text" vtype="required"  name="account[login_account]" value=$accountInfo.login_account}></td>
+                </tr>
+                <tr>
+                    <th><{t}>用户登录密码：<{/t}></th>
+                    <{if empty($accountInfo.account_id)}>
+                    <td><{input type="password" vtype="required"  name="account[login_password]"}> </td>
+                    <{else}>
+                    <td><{input type="password" name="account[login_password]"}> </td>
+                    <{/if}>
+                </tr>
+                <tr>
+                    <th><{t}>确认密码：<{/t}></th>
+                    <{if empty($accountInfo.account_id)}>
+                    <td><{input type="password" vtype="required"  name="account[psw_confirm]"}>  </td>
+                    <{else}>
+                    <td><{input type="password" name="account[psw_confirm]"}>  </td>
+                    <{/if}>
+                </tr>
+                <tr>
+                    <th><{t}>选择商城：<{/t}></th>
+                    <td>
+                        <select name="account[store_id]" class="form-control">
+                            <{foreach from=$storeList item=storedata key=key}>
+                            <option value="<{$storedata.store_id}>" <{if $accountInfo.store_id == $storedata.store_id}>selected<{/if}>><{$storedata.store_name}></option>
+                            <{/foreach}>
+                        </select>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <table cellspacing="0" cellpadding="0" class="table-action">
+            <tbody>
+            <tr valign="middle">
+                <td>
+                    <{assign var="___c"  value='确定退出?'|t:'sysstore'}>
+
+                    <{button label="保存并关闭窗口"|t:'sysstore' class="btn-primary" type="button"  onclick="submitForm(event,2)"}>
+
+                    <{button label="关  闭"|t:'content' class="btn-secondary" type="button" isclosedialogbtn="1"}>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </form>
+</div>
+
+<script>
+    var submitForm = function (event,sign){
+        var _form=$('sysstore_form');
+        switch (sign){
+            case 1:
+                var target={
+                    onComplete:function(){
+                        location.reload();
+                    }};
+                break;
+            case 2:
+                var target={
+                    onComplete:function(rs){
+                        if(rs&&!!JSON.decode(rs).success){
+                            window.finderGroup['<{$env.get.finder_id}>'].refresh();
+                            _form.getParent('.dialog').retrieve('instance').close();
+                        }
+                    }};
+                break;
+        }
+        _form.store('target',target);
+        if(confirm('是否保存?')) {
+            _form.fireEvent('submit',new Event(event));
+        }
+    };
+
+</script>

@@ -1,0 +1,11 @@
+<div class="TVindex-swiper widget" id="<{$widget.id}>">
+    <div class="swiper-container swiper-container1">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide" v-for="item in <{$widget.id}>"><a :href="item.url">
+                <img :src="item.pic" alt="">
+            </a></div>
+
+        </div>
+        <div class="swiper-pagination swiper-pagination1"></div>
+    </div>
+</div>

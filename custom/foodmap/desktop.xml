@@ -1,0 +1,16 @@
+<desktop>
+
+    <permissions>
+        <permission id="foodMap" display='true' parent="0" workground='sysshop.workground.shoptype'>美食地图</permission>
+        <permission id="foodMap_apilog_list" display='true' parent="foodMap" workground='sysshop.workground.shoptype'>调用接口日志列表</permission>
+    </permissions>
+
+    <workground name="商家" id="sysshop.workground.shoptype" controller="admin_seller" action="index" order='90'>
+        <menugroup name="美食地图">
+            <menu controller='apilog' action='index' permission='foodMap_apilog_list' display='true' order='90'>调用接口日志列表</menu>
+        </menugroup>
+
+    </workground>
+
+</desktop>
+

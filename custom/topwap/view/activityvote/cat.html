@@ -1,0 +1,165 @@
+<{include file="topwap/activityvote/header.html" }>
+<!--<div class="mui-content m-915EatQD-reviewClassify">
+	<!-- m-915EatQD-reviewClassify-content -->
+	<!--<div class="reviewClassify-content">
+		<!-- reviewClassify-countdown -->
+		<!--<div class="reviewClassify-countdown">
+			<{if $type=='popular'}>
+			<{if $active.popular_vote_start_time>$now}>
+			<h3>距离大众评审开始时间还有</h3>
+			<span class="countdown-view" data-time="<{$active.popular_vote_start_time}>"></span>
+			<{else}>
+			<{if $active.popular_vote_end_time>$now}>
+			<h3>距离大众评审结束时间还有</h3>
+			<span class="countdown-view" data-time="<{$active.popular_vote_end_time}>"></span>
+			<{else}>
+			<h3>大众评审已结束</h3>
+			<{/if}>
+			<{/if}>
+			<{else}>
+			<{if $active.expert_vote_start_time>$now}>
+				<h3>距离专家评审结束时间还有</h3>
+				<span class="countdown-view" data-time="<{$active.expert_vote_start_time}>"></span>	
+			<{else}>
+				<{if $active.expert_vote_end_time>$now}>
+				<h3>距离专家评审结束时间还有</h3>
+				<span class="countdown-view" data-time="<{$active.expert_vote_end_time}>"></span>
+				<{else}>
+				<h3>专家评审已结束</h3>
+				<{/if}>
+			<{/if}>
+			<{/if}>
+		</div>
+		<!-- reviewClassify-countdown -->
+		<!--<div class="reviewClassify-type">
+			<ul>			
+				<{foreach from=$cat item=item}>
+				<li><a href="<{url action=topwap_ctl_activityvote_vote@voteList type=$type cat_id=$item.cat_id}>"><img src="<{$item.cat_image}>" alt=""></a></li>
+				<{/foreach}>
+			</ul>
+		</div>
+		<!-- reviewClassify-link -->
+		<!--<div class="reviewClassify-link">
+			<a href="<{url action=topwap_ctl_activityvote_expert@expertList}>?&active_id=<{$_GET['active_id']}>">查看专家评审</a>
+		</div>
+		<!-- reviewClassify-priceCenter -->
+		<!--<a href="#" class="reviewClassify-priceCenter mui-clearfix mui-block">
+			<div class="left mui-pull-left">
+				<img src="/app/topwap/statics/vote/img/icon_jiangpin.png" alt="">
+			</div>
+			<div class="right mui-pull-right">
+				<span id="jiangpin">奖品中心</span>
+			</div>
+		</a>
+	</div>
+</div>-->
+
+<div class="mui-content reviewClassify_v2">
+	<!-- 倒计时 活动规则 -->
+	<div class="reviewClassify-countdown_v2" style="margin-top:60px;">
+	<{if $type=='popular'}>
+			<{if $active.popular_vote_start_time>$now}>
+			<h3>距离大众评审开始时间还有</h3>
+			<span class="countdown-view" data-time="<{$active.popular_vote_start_time}>"></span>
+			<{else}>
+			<{if $active.popular_vote_end_time>$now}>
+			<h3>距离大众评审结束时间还有</h3>
+			<span class="countdown-view" data-time="<{$active.popular_vote_end_time}>"></span>
+			<{else}>
+			<h3>大众评审已结束</h3>
+			<{/if}>
+			<{/if}>
+			<{else}>
+			<{if $active.expert_vote_start_time>$now}>
+				<h3>距离专家评审结束时间还有</h3>
+				<span class="countdown-view" data-time="<{$active.expert_vote_start_time}>"></span>	
+			<{else}>
+				<{if $active.expert_vote_end_time>$now}>
+				<h3>距离专家评审结束时间还有</h3>
+				<span class="countdown-view" data-time="<{$active.expert_vote_end_time}>"></span>
+				<{else}>
+				<h3>专家评审已结束</h3>
+				<{/if}>
+			<{/if}>
+			<{/if}>
+		<{if $type=='popular'}>
+		<p>投票日期：<{$popular_time}></p>
+		<{else}>
+		<p>投票日期：<{$expert_time}></p>
+		<{/if}>
+
+		<!--<{if $active.popular_vote_end_time>$now || $active.expert_vote_start_time>$now}>
+		<h3 style="font-size:16px">活动报名中</h3>
+		<{else}>
+		<h3 style="font-size:16px">活动已结束</h3>
+		<{/if}>-->
+		<!--<h3 style="font-size:16px">咨询热线：<a href="tel:85702926" style="color: #333;font-size: 16px;text-decoration: none;">85702926</a></h3>-->
+		<a href="<{url action=topwap_ctl_activityvote_vote@voteRule active_id=$_GET['active_id']}>">查看活动规则>></a>
+		<a style="float: right;margin-right: 15px" href="<{url action=topwap_ctl_activityvote_vote@voteResults active_id=$_GET['active_id'] shop_id=$active['shop_id']}>">查看获奖列表>></a>
+	</div>
+	<!-- 参与选手 累计投票 访问量 -->
+	<div class="countViewContent" style="margin-top: 10px;margin-bottom: 5px;">
+		<div>
+			<h3><{$total.total}></h3>
+			<p>参与选手</p>
+		</div>
+		<div>
+			<h3><{$total.total_poll|default:0}></h3>
+			<p>累计投票</p>
+		</div>
+		<div>
+			<h3><{$active.active_view}></h3>
+			<p>访问量</p>
+		</div>
+	</div>
+	<!-- 饭店类型 -->
+	<div class="reviewClassify_v2-type" style="margin-top: 10px;">
+		<ul>
+			<{foreach from=$cat item=item}>
+			<li><a href="<{url action=topwap_ctl_activityvote_vote@voteList type=$type cat_id=$item.cat_id active_id=$active.active_id}>"><img src="<{$item.cat_image}>" alt=""></a></li>
+			<{/foreach}>
+			<!--<li>
+				<a href="#">
+					<img src="img/img_market_V2.png"/>
+				</a>
+			</li>
+			<li>
+				<a href="#">
+					<img src="img/img_food_V2.png"/>
+				</a>
+			</li>
+			<li>
+				<a href="#">
+					<img src="img/img_person_V2.png"/>
+				</a>
+			</li>-->
+		</ul>
+	</div>
+	<!-- 查看专家评审 -->
+	<div class="reviewClassify_v2-link">
+		<a href="<{url action=topwap_ctl_activityvote_expert@expertList}>?&active_id=<{$_GET['active_id']}>">查看专家评审</a>
+	</div>
+	<!-- reviewClassify-priceCenter -->
+	<a href="<{url action=topwap_ctl_member_votegift@index}>" class="reviewClassify-priceCenter mui-clearfix mui-block">
+		<div class="left mui-pull-left">
+			<img src="/app/topwap/statics/vote/img/icon_jiangpin.png" alt="">
+		</div>
+		<div class="right mui-pull-right">
+			<span>奖品中心</span>
+		</div>
+	</a>
+</div>
+<!--add_2017/10/24_by_wanghaichao_start  分享的-->
+<{include file="topwap/index.html"}>
+<!--add_2017/10/24_by_wanghaichao_end-->
+<script>
+	var now=<{$now}>;
+	countdown($(".countdown-view"),{
+		'start': $('.countdown-view').attr('data-time') - (now),
+		'secondOnly': false,
+		'callback': null
+	});
+	$("#jiangpin").click(function () {
+		window.location.href = '<{url action=topwap_ctl_member_votegift@index}>';
+    });
+</script>

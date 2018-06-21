@@ -1,0 +1,59 @@
+<form id="userAddForm" class="tableform" action="?app=testapp&ctl=user&act=save" method="POST">
+
+    <input type="hidden" name="user_id" value="<{$userInfo.user_id}>">
+    <div class="division">
+        <table width="100%" border="0" cellpadding="0" cellspacing="0">
+            <tr>
+                <th><em class="red">*</em><{t}>员工手机号：<{/t}></th>
+                <td>
+                    <{input type="text" name="phone" vtype="required" value=$userInfo.phone  maxlength='11' class="x-input "}></td>
+            </tr>
+            <tr>
+                <th><em class="red">*</em><{t}>等级：<{/t}></th>
+                <td>
+                    <select name="level_id" vtype="required" id="level_id" >
+                        <option value="0">请选择等级</option>
+                        <{foreach from=$levelInfo item=code key=key}>
+                        <option value="<{$code.level_id}>" <{if $userInfo.level_id == $code.level_id}> selected="selected" <{/if}> > <{$code.name}> </option>
+                        <{/foreach}>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <th><em class="red">*</em><{t}>有效期开始：<{/t}></th>
+                <td>
+                    <{input type="date" vtype="required&&date" name="valid_begin" value=$userInfo.valid_begin|default:time()}>
+                </td>
+            </tr>
+            <tr>
+                <th><em class="red">*</em><{t}>有效期结束：<{/t}></th>
+                <td>
+                    <{input type="date" vtype="required&&date" name="valid_over" value=$userInfo.valid_over|default:strtotime("2017-12-31")}>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="table-action">
+        <{button label="保存"|t:'syscategory' type="submit" class="btn-primary"}>
+    </div>
+
+</form>
+<script>
+    $('userAddForm').store('target',{
+        onComplete:function(rs){
+            if(!rs) return;
+            rs = JSON.decode(rs);
+            if(rs.success){
+                if(window.finderGroup) window.finderGroup['<{$env.get.finder_id}>'].refresh();
+                if($('userAddForm').getParent('.dialog')){
+                    var Dlg = $('userAddForm').getParent('.dialog').retrieve('instance');
+                    if(Dlg.update){
+                        Dlg.update.retrieve('instance').initContent();
+                    }
+                    Dlg.close();
+                }
+            }
+        }
+    });
+</script>

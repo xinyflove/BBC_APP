@@ -1,0 +1,32 @@
+<form class='tableform' action='?app=sysbankmember&ctl=bank&act=delete' method='post' id="bank_del_form">
+    <input type="hidden" name="bank_id"  id="bank_id" value="<{$bank_id}>">
+    <p>您确定要删除？</p>
+    <div class="table-action">
+        <button type="button" id="cancel" class="btn-secondary ">取消</button>
+        <{button class='close-btn'  id="btn_save" label="确定"|t:'sysbankmember'}>
+    </div>
+
+</form>
+
+<script type="text/javascript">
+    $('cancel').addEvent('click',function(){
+        $('bank_del_form').getParent('.dialog').retrieve('instance').close();
+    });
+    $('btn_save').addEvent('click', function(){
+        var url = $('bank_del_form').get('action');
+        var req = new Request.JSON({url: $('bank_del_form').get('action'),
+            method:'get' ,
+            data:{'bank_id': $('bank_id').get('value')},
+            onComplete: function(rs, text) {
+                if(rs.error) {
+                    alert(rs.error);
+                }
+                if(rs.success) {
+                    var itemId = $('bank_id').get('value');
+                    $$('.row[item-id="'+itemId+'"]').dispose();
+                }
+                $('bank_del_form').getParent('.dialog').retrieve('instance').close();
+            }
+        }).send();
+    });
+</script>

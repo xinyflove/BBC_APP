@@ -1,0 +1,99 @@
+<div class="box-body">
+    <!--出生年份-->
+    <div class="form-group">
+        <label class="col-sm-2 control-label">出生年份：</label>
+        <div class="col-sm-2">
+            <input type="text" name="game_detail[base_desc][birthday]" value="<{$game_detail.base_desc.birthday}>" class="form-control" placeholder="" required maxlength="50">
+        </div>
+    </div>
+    <!--工作年限-->
+    <div class="form-group">
+        <label class="col-sm-2 control-label">工作年限：</label>
+        <div class="col-sm-2">
+            <input type="text" name="game_detail[base_desc][work_years]" value="<{$game_detail.base_desc.work_years}>" class="form-control" placeholder="" required maxlength="50">
+        </div>
+    </div>
+    <!--职位-->
+    <div class="form-group">
+        <label class="col-sm-2 control-label">职位：</label>
+        <div class="col-sm-3">
+            <input type="text" name="game_detail[base_desc][position]" value="<{$game_detail.base_desc.position}>" class="form-control" placeholder="" required maxlength="50">
+        </div>
+    </div>
+    <!--主要成就-->
+    <div class="form-group">
+        <label class="col-sm-2 control-label">主要成就：</label>
+        <div class="col-sm-6">
+            <input type="text" name="game_detail[base_desc][main_achieve]" value="<{$game_detail.base_desc.main_achieve}>" class="form-control" placeholder="" required maxlength="50">
+        </div>
+    </div>
+    <!--人物从业经历-->
+    <div class="form-group">
+        <label class="col-sm-2 control-label">人物从业经历：</label>
+        <div class="col-sm-10">
+            <input type="text" name="game_detail[work_desc]" value="<{$game_detail.work_desc}>" class="form-control" placeholder="例如：某节目顾问;某节目主持人" required maxlength="">
+            <span class="help-block">多个经历用;连接。</span>
+        </div>
+    </div>
+    <!--资格证书-->
+    <div class="form-group">
+        <label class="col-sm-2 control-label">资格证书：</label>
+        <div class="col-sm-10">
+            <div class="col-sm-9">
+                <div class="multiple-upload pro-thumb" >
+                    <{if $game_detail.work_list_image}>
+                    <{foreach from=$game_detail.work_list_image item=image_id key=key }>
+                    <div class="multiple-item">
+                        <div class="multiple-del glyphicon glyphicon-remove-circle"></div>
+                        <a class="select-image" data-toggle="modal" href="<{url action=topshop_ctl_shop_image@loadImageModal isOnlyShow=item}>" data-target="#gallery_modal">
+                            <input type="hidden" name="work_list_image[]" value="<{$image_id}>">
+                            <div class="img-put"><img src="<{$image_id|storager:t}>"></div>
+                        </a>
+                    </div>
+                    <{/foreach}>
+                    <{/if}>
+                    <div class="multiple-add" data-toggle="modal" data-isMultiple="true" data-target="#gallery_modal" data-name="work_list_image[]" data-limit="10" href="<{url action=topshop_ctl_shop_image@loadImageModal isOnlyShow=item}>" ><i class="glyphicon glyphicon-plus"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--生活风采-->
+    <div class="form-group">
+        <label class="col-sm-2 control-label">生活风采：</label>
+        <div class="col-sm-10">
+            <div class="col-sm-9">
+                <div class="multiple-upload pro-thumb" >
+                    <{if $game_detail.base_list_image}>
+                    <{foreach from=$game_detail.base_list_image item=image_id key=key }>
+                    <div class="multiple-item">
+                        <div class="multiple-del glyphicon glyphicon-remove-circle"></div>
+                        <a class="select-image" data-toggle="modal" href="<{url action=topshop_ctl_shop_image@loadImageModal isOnlyShow=item}>" data-target="#gallery_modal">
+                            <input type="hidden" name="base_list_image[]" value="<{$image_id}>">
+                            <div class="img-put"><img src="<{$image_id|storager:t}>"></div>
+                        </a>
+                    </div>
+                    <{/foreach}>
+                    <{/if}>
+                    <div class="multiple-add" data-toggle="modal" data-isMultiple="true" data-target="#gallery_modal" data-name="base_list_image[]" data-limit="10" href="<{url action=topshop_ctl_shop_image@loadImageModal isOnlyShow=item}>" ><i class="glyphicon glyphicon-plus"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--推荐理由-->
+    <div class="form-group">
+        <div class="col-sm-12">
+            <div id="floor_7" class="panel panel-default">
+                <div class="panel-heading">
+                    推荐理由
+                </div>
+                <div class="bs-example bs-example-tabs">
+                    <div id="myTabContent" class="tab-content">
+                        <div role="tabpanel" class="tab-pane fade active in" id="home" aria-labelledby="home-tab">
+                            <textarea name="game_detail[recommend_reason_desc]" style="width:100%;" class="rich-editor"><{$game_detail.recommend_reason_desc}></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

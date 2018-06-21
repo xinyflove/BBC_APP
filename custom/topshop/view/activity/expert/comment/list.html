@@ -1,0 +1,166 @@
+<aside class="control-sidebar control-sidebar-light" style="height: 100%;">
+  <!-- Create the tabs -->
+  <ul class="nav nav-tabs nav-justified control-sidebar-tabs">
+    <li class=""><a href="#">筛选</a></li>
+    <li class=""><a href="#" data-toggle="control-sidebar"><i class="glyphicon glyphicon-remove"></i></a></li>
+  </ul>
+  <!-- Tab panes -->
+  <div class="tab-content">
+    <form action="<{url action=topshop_ctl_activity_expert_comment@commentList}>" method="get" id="search-form">
+      <input type="hidden" value="<{$active_id}>" name="active_id">
+      <{if $game_id}>
+      <input type="hidden" value="<{$game_id}>" name="game_id">
+      <{/if}>
+      <div class="box-body">
+        <!-- text input -->
+        <{if !$game_id}>
+        <div class="form-group">
+          <label>参赛对象名称(关键词)：</label>
+          <input type="text" name="game_name" class="form-control" <{if $game_name}> value="<{$game_name|escape:"html"}>" <{/if}> placeholder="请输入 ...">
+        </div>
+        <{/if}>
+
+        <!-- select -->
+        <div name="status" class="form-group">
+          <label>点评专家：</label>
+          <select name="expert_id" class="form-control select-reset">
+            <option value="">请选择</option>
+            <{foreach from=$expertList item=item}>
+            <option value="<{$item.expert_id}>" <{if $item.expert_id==$expert_id}>selected<{/if}>><{$item.expert_name}></option>
+            <{/foreach}>
+          </select>
+        </div>
+
+      </div>
+      <!-- /.box-body -->
+      <div class="box-footer">
+        <button id="reset-form" type="button" class="btn btn-default">重置</button>
+        <button type="submit" class="btn btn-info pull-right">搜索</button>
+      </div>
+      <!-- /.box-footer -->
+    </form>
+  </div>
+</aside>
+<!-- <div class="callout callout-info">
+    <h4>营销方式说明：</h4>
+
+    <p>店铺级的促销方式，同一订单内，【特定】商品售价总金额，满【特定】金额【特定】会员可享受【特定】金额优惠；商家可设置生成的优惠券总数量。会员在【特定时限】内，通过点击领取优惠券，在购物车内订单结算时使用优惠券。该促销方式与其他不互斥。</p>
+</div> -->
+<div class="box box-primary clearfix">
+    <div class="mailbox-controls with-border">
+        <{if $game_id}>
+            <a class="btn btn-default btn-sm act-addcat" href="<{url action=topshop_ctl_activity_expert_comment@commentEdit game_id=$game_id}>">
+                <i class="fa fa-plus-square-o"></i> 添加专家点评
+            </a>
+      <{/if}>
+
+      <div class="pull-right header">
+        <div class="btn-group">
+           <button data-toggle="control-sidebar" class="btn btn-default">
+             <div class="text-light-blue">
+             <i class="fa fa-search"></i>
+              搜索
+             </div>
+           </button>
+         </div>
+      </div>
+
+    </div>
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>活动名称</th>
+            <th>参赛名称</th>
+            <th>专家名称</th>
+            <th>点评语</th>
+            <th>点评时间</th>
+            <!-- <th>最后修改时间</th> -->
+            <th class="text-center">操作</th>
+        </tr>
+        </thead>
+        <{if $commentList}>
+        <tbody>
+            <{foreach from=$commentList item=item}>
+            <tr class="">
+                <td>
+                    <{$item.expert_comment_id}>
+                </td>
+                <td>
+                    <{$item.active_info.active_name}>
+                </td>                
+                <td>
+                    <{$item.game_info.game_name}>
+                </td>                
+                <td>
+                    <{$item.expert_info.expert_name}>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-none" data-toggle="tooltip" data-placement="bottom" title="<{$item.comment_content}>">
+                        <{$item.comment_content|cut:20:'...'}>
+                    </button>
+                </td>
+                <td>
+                    <{$item.create_time|cdate:'FDATE_STIME'}>
+                </td>
+                <td class="text-center">
+                    <!-- <a href="<{url action=topshop_ctl_activity_vote@expertEdit active_id=$active_id expert_comment_id=$item.expert_comment_id}>">编辑</a> -->
+                    <a href="javascript:void(0);" class="text-remove" data-id="<{$item.expert_comment_id}>">删除</a>
+                </td>
+            </tr>
+            <{/foreach}>
+        </tbody>
+        <{else}>
+        <tbody>
+            <tr>
+              <td algin="center" colspan="9">
+                <p class="help-block text-center">暂无数据</p>
+              </td>
+            </tr>
+        </tbody>
+        <{/if}>
+    </table>
+    <div class="text-right">
+        <{pagers data=$pagers}>
+        <{if $total > 0}>
+        <span class="page-number">共&nbsp;<em class="text-aqua"><{$total}></em>&nbsp;条记录</span>
+        <{/if}>
+    </div>
+</div>
+<span class="export-filter" data-value="" data-app="" data-model=""></span>
+
+<script>
+    $(function () {
+        // $('[data-toggle="tooltip"]').tooltip()
+
+        $('.text-remove').on('click', function(){
+          var _this = $(this);
+          Modal.confirm({msg: "确定删除该点评？"}).on(function(e) {
+            if(e==true) {
+              delItemById(_this.attr('data-id'));
+            }
+          });
+        });
+
+        //删除专家评论
+        function delItemById(expert_comment_id) {
+          $.post('<{url action=topshop_ctl_activity_expert_comment@commentDelete}>', 'expert_comment_id='+expert_comment_id, function(rs){
+            if(rs.error) {
+              $('#messagebox').message(rs.message);
+              return;
+            }
+            if(rs.success) {
+              $('#messagebox').message(rs.message, 'success');
+              setTimeout(function(){location.reload();}, 800);
+            }
+          });
+        }
+
+    });
+
+    // 重置表单
+    $('#reset-form').on('click',function(){
+      $('input:visible').val('');
+     $('.select-reset').val(-1);
+    });
+</script>

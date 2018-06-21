@@ -1,0 +1,18 @@
+<app>
+    <name>美食地图</name>
+    <type>service</type>
+    <description>在地图上展示美食商家信息</description>
+
+    <author>
+        <name>广电开发</name>
+        <email></email>
+        <url>http://qtv.tvplaza.cn</url>
+    </author>
+
+    <version>0.1</version>
+    <license>shopex license</license>
+    
+    <depends>
+        <app>desktop</app>
+    </depends>
+</app>

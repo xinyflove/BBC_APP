@@ -1,4 +1,5 @@
 <services>
+
     <service id="desktop_finder.sysbankmember_mdl_bank">
         <class>sysbankmember_finder_bank</class>
     </service>
@@ -8,4 +9,5 @@
     <service id="desktop_finder.sysbankmember_mdl_account">
         <class>sysbankmember_finder_account</class>
     </service>
+    
 </services>

@@ -1,0 +1,69 @@
+<form id="memberForm" class="tableform" action="?app=sysbankmember&ctl=member&act=savemember" method="POST">
+
+    <input type="hidden" name="member[member_id]" value="<{$memberInfo.member_id}>">
+    <div class="division">
+        <table width="100%" border="0" cellpadding="0" cellspacing="0">
+            <tr>
+                <th><em class="red">*</em><{t}>店铺名称：<{/t}></th>
+                <td>
+                    <select name="member[shop_id]" vtype="required" id="shop_id" >
+                        <option value="0">请选择店铺</option>
+                        <{foreach from=$shopList item=shop key=key}>
+                        <option value="<{$shop.shop_id}>" <{if $memberInfo.shop_id == $shop.shop_id}> selected="selected" <{/if}> > <{$shop.shop_name}> </option>
+                        <{/foreach}>
+                    </select>
+                </td>
+            </tr>
+
+            <tr>
+                <th><em class="red">*</em><{t}>银行名称：<{/t}></th>
+                <td>
+                    <select name="member[bank_id]" vtype="required" id="bank_id" >
+                        <option value="0">请选择银行</option>
+                        <{foreach from=$bankList item=bank key=key}>
+                        <option value="<{$bank.bank_id}>" <{if $memberInfo.bank_id == $bank.bank_id}> selected="selected" <{/if}> > <{$bank.bank_name}> </option>
+                        <{/foreach}>
+                    </select>
+                </td>
+            </tr>
+
+            <tr>
+                <th><em class="red">*</em><{t}>银卡号：<{/t}></th>
+                <td>
+                    <{input type="text" name="member[card_number]" vtype="required" value=$memberInfo.card_number  maxlength='10' class="x-input"}>
+                    <span style="display: block;">填写银行卡号的前六位和后四位.</span>
+                </td>
+            </tr>
+
+            <tr>
+                <th><em class="red">*</em><{t}>银行卡等级：<{/t}></th>
+                <td>
+                    <{input type="text" name="member[card_grade]" vtype="required" value=$memberInfo.card_grade  maxlength='10' class="x-input"}>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="table-action">
+        <{button label="保存"|t:'syscategory' type="submit" class="btn-primary"}>
+    </div>
+
+</form>
+<script>
+    $('memberForm').store('target',{
+        onComplete:function(rs){
+            if(!rs) return;
+            rs = JSON.decode(rs);
+            if(rs.success){
+                if(window.finderGroup) window.finderGroup['<{$env.get.finder_id}>'].refresh();
+                if($('memberForm').getParent('.dialog')){
+                    var Dlg = $('memberForm').getParent('.dialog').retrieve('instance');
+                    if(Dlg.update){
+                        Dlg.update.retrieve('instance').initContent();
+                    }
+                    Dlg.close();
+                }
+            }
+        }
+    });
+</script>

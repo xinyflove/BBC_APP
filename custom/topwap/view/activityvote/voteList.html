@@ -1,0 +1,14 @@
+<{foreach from=$game item=item}>
+<li>
+	<!--modify_20170222_by_fanglongji_start
+	<a class="shopex-linkto" href="<{url action=topwap_ctl_activityvote_votedetail@detail type=$type game_id=$item.game_id}>"><span><{$item.game_number}>号   <{$item.game_name}>（<i class="poll_<{$item.game_id}>"><{$item.total_poll}></i>票）</span>
+	 -->
+	<a class="shopex-linkto" href="<{url action=topwap_ctl_activityvote_votedetail@detail type=$type game_id=$item.game_id}>"><span><{$item.game_number}>号   <{$item.game_name}>（<i class="poll_<{$item.game_id}>"><{$item.show_total_poll}></i>票）</span>
+	<!--modify_20180222_by_fanglongji_end-->
+	<img src="/app/topwap/statics/vote/img/icon_link.png" class="icon_link"/>
+	</a>
+	<div class="shopex-radio">
+		<input name="game" value="<{$item.game_id}>" type="radio" style="vertical-align: text-top;">
+	</div>
+</li>
+<{/foreach}>

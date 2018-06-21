@@ -1,0 +1,209 @@
+<aside class="control-sidebar control-sidebar-light" style="height: 100%;">
+  <!-- Create the tabs -->
+  <ul class="nav nav-tabs nav-justified control-sidebar-tabs">
+    <li class=""><a href="#">筛选</a></li>
+    <li class=""><a href="#" data-toggle="control-sidebar"><i class="glyphicon glyphicon-remove"></i></a></li>
+  </ul>
+  <!-- Tab panes -->
+  <div class="tab-content">
+    <form action="<{url action=topshop_ctl_activity_gift@giftGainList}>" method="get" id="search-form">
+      <input type="hidden" value="<{$active_id}>" name="active_id">
+      <div class="box-body">
+
+        <div class="form-group">
+          <label>会员名称/手机号：</label>
+          <input type="text" name="user_name" class="form-control" <{if $user_name}> value="<{$user_name|escape:"html"}>" <{/if}> placeholder="请输入 ...">
+        </div>
+        <!-- select -->
+        <div name="status" class="form-group">
+          <label>奖品名称：</label>
+          <select name="gift_id" class="form-control select-reset">
+            <option value="">请选择</option>
+            <{foreach from=$giftList item=item}>
+            <option value="<{$item.gift_id}>" <{if $item.gift_id==$gift_id}>selected<{/if}>><{$item.gift_name}></option>
+            <{/foreach}>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>状态：</label>
+          <select name="status" class="form-control select-reset">
+            <option value="">请选择</option>
+            <option value="0" <{if $status=='0'}>selected<{/if}>>未核销</option>
+            <option value="1" <{if $status=='1'}>selected<{/if}>>已核销</option>
+          </select>
+        </div>
+        <!-- text input -->
+        <!-- <div class="form-group">
+          <label>价格区间：</label>
+          <div class="row">
+            <div class="col-xs-6">
+              <input type="text" class="form-control" value="<{$min_price|escape:"html"}>" name="min_price">
+            </div>
+            <div class="col-xs-6">
+              <input type="text" class="form-control" value="<{$max_price|escape:"html"}>" name="max_price">
+            </div>
+          </div>
+        </div> -->
+
+      </div>
+      <!-- /.box-body -->
+      <div class="box-footer">
+        <button id="reset-form" type="button" class="btn btn-default">重置</button>
+        <button type="submit" class="btn btn-info pull-right">搜索</button>
+      </div>
+      <!-- /.box-footer -->
+    </form>
+  </div>
+</aside>
+<!-- <div class="callout callout-info">
+    <h4>营销方式说明：</h4>
+
+    <p>店铺级的促销方式，同一订单内，【特定】商品售价总金额，满【特定】金额【特定】会员可享受【特定】金额优惠；商家可设置生成的优惠券总数量。会员在【特定时限】内，通过点击领取优惠券，在购物车内订单结算时使用优惠券。该促销方式与其他不互斥。</p>
+</div> -->
+<div class="box box-primary clearfix">
+    <div class="mailbox-controls with-border">
+      <!-- <a class="btn btn-default btn-sm act-addcat" href="<{url action=topshop_ctl_activity_vote@expertEdit active_id=1}>">
+        <i class="fa fa-plus-square-o"></i> 添加评审专家
+      </a> -->
+        <a  href="<{url action=topshop_ctl_export@export app=sysactivityvote model=gift_gain}>" data-app="sysactivityvote" data-model="gift_gain" class="btn btn-primary btn-sm export-filter-btn ">
+          <i class="glyphicon glyphicon-export"></i>
+          导出
+        </a>
+
+        <div class="pull-right header">
+          <div class="btn-group">
+             <button data-toggle="control-sidebar" class="btn btn-default">
+               <div class="text-light-blue">
+               <i class="fa fa-search"></i>
+                搜索
+               </div>
+             </button>
+           </div>
+        </div>
+
+    </div>
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th>序号</th>
+            <th>会员</th>
+            <th>赠品</th>
+            <th>供应商</th>
+            <th>状态</th>
+            <th>核销时间</th>
+            <th>获得时间</th>
+            <th class="text-center">操作</th>
+        </tr>
+        </thead>
+        <{if $giftGainList}>
+        <tbody>
+            <{foreach from=$giftGainList item=item}>
+            <tr class="">
+                <td>
+                    <{$item.gift_gain_id}>
+                </td>
+                <td>
+                    <{$item.user_name}>
+                </td>
+                <td>
+                    <{$item.gift_name}>
+                </td>
+                <td>
+                    <{$item.supplier_name}>
+                </td>
+                <td>
+                    <{if $item.status == 1}>
+                        核销
+                    <{else}>
+                        未核销
+                    <{/if}>
+                </td>
+                <td>
+                    <{if $item.used_time}> 
+                      <{$item.used_time|cdate:'FDATE_STIME'}> 
+                    <{else}> 
+                      <{$item.used_time}> 
+                    <{/if}>
+                </td>
+                <td>
+                    <{$item.create_time|cdate:'FDATE_STIME'}>
+                </td>
+                <td class="text-center">
+                    <!-- <a href="<{url action=topshop_ctl_activity_vote@expertEdit active_id=$active_id expert_id=$item.expert_id}>">编辑</a> -->
+                    <a href="javascript:void(0);" class="text-remove" data-id="<{$item.gift_gain_id}>">删除</a>
+                </td>
+            </tr>
+            <{/foreach}>
+        </tbody>
+        <{else}>
+        <tbody>
+            <tr>
+              <td algin="center" colspan="9">
+                <p class="help-block text-center">暂无数据</p>
+              </td>
+            </tr>
+        </tbody>
+        <{/if}>
+    </table>
+    <div class="text-right">
+        <{pagers data=$pagers}>
+        <{if $total > 0}>
+        <span class="page-number">共&nbsp;<em class="text-aqua"><{$total}></em>&nbsp;条记录</span>
+        <{/if}>
+    </div>
+</div>
+<span class="export-filter" data-value="" data-app="" data-model=""></span>
+
+<script>
+    $(function () {
+        // $('[data-toggle="tooltip"]').tooltip()
+
+        $('.text-remove').on('click', function(){
+          var _this = $(this);
+          Modal.confirm({msg: "确定删除该获取赠品记录？"}).on(function(e) {
+            if(e==true) {
+              delItemById(_this.attr('data-id'));
+            }
+          });
+        });
+
+        //删除专家
+        function delItemById(gift_gain_id) {
+          $.post('<{url action=topshop_ctl_activity_gift@giftGainDelete}>', 'gift_gain_id='+gift_gain_id, function(rs){
+            if(rs.error) {
+              $('#messagebox').message(rs.message);
+              return;
+            }
+            if(rs.success) {
+              $('#messagebox').message(rs.message, 'success');
+              setTimeout(function(){location.reload();}, 800);
+            }
+          });
+        }
+
+    });
+
+    $('.export-filter-btn').click(function (e) {
+        e.preventDefault();
+        var url = $(this).attr('href');
+        var app = $(this).data('app');
+        var model = $(this).data('model');
+
+        var val = $(this).attr('data-value');
+        // var filter = '{"active_id":"'+<{$active_id}>+'","itemtime":"'+1+'"}';
+        var filter = '<{$exportFilter}>';
+
+        $('.export-filter').attr('data-app',app);
+        $('.export-filter').attr('data-model',model);
+        $('.export-filter').attr('data-value',filter);
+
+        $('#exportDialog').modal({remote: url}).attr('data-app',app).attr('data-model',model);
+    });
+
+    // 重置表单
+    $('#reset-form').on('click',function(){
+      $('input:visible').val('');
+     $('.select-reset').val(-1);
+    });
+</script>

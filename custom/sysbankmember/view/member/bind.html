@@ -1,0 +1,69 @@
+<form id="bindForm" class="tableform" action="?app=sysbankmember&ctl=member&act=savebind" method="POST">
+
+    <input type="hidden" name="account[member_id]" value="<{$memberInfo.member_id}>">
+    <div class="division">
+        <table width="100%" border="0" cellpadding="0" cellspacing="0">
+            <tr>
+                <th><{t}>店铺名称：<{/t}></th>
+                <td>
+                    <{t}><{$memberInfo.shop_name}><{/t}>
+                </td>
+            </tr>
+
+            <tr>
+                <th><{t}>银行名称：<{/t}></th>
+                <td>
+                    <{t}><{$memberInfo.bank_name}><{/t}>
+                </td>
+            </tr>
+
+            <tr>
+                <th><{t}>基础卡号：<{/t}></th>
+                <td>
+                    <{t}><{$memberInfo.card_number}><{/t}>
+                </td>
+            </tr>
+
+            <tr>
+                <th><em class="red">*</em><{t}>绑定会员手机号：<{/t}></th>
+                <td>
+                    <{input type="text" name="account[mobile]" vtype="required" value='' maxlength='11' class="x-input"}></td>
+            </tr>
+
+            <tr>
+                <th><em class="red">*</em><{t}>银行卡号：<{/t}></th>
+                <td>
+                    <{input type="text" name="account[card_number]" vtype="required" value=''  maxlength='16' class="x-input"}></td>
+            </tr>
+
+            <tr>
+                <th><em class="red">*</em><{t}>持卡人姓名：<{/t}></th>
+                <td>
+                    <{input type="text" name="account[rel_name]" vtype="required" value=''  maxlength='16' class="x-input"}></td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="table-action">
+        <{button label="保存"|t:'syscategory' type="submit" class="btn-primary"}>
+    </div>
+
+</form>
+<script>
+    $('bindForm').store('target',{
+        onComplete:function(rs){
+            if(!rs) return;
+            rs = JSON.decode(rs);
+            if(rs.success){
+                if(window.finderGroup) window.finderGroup['<{$env.get.finder_id}>'].refresh();
+                if($('bindForm').getParent('.dialog')){
+                    var Dlg = $('bindForm').getParent('.dialog').retrieve('instance');
+                    if(Dlg.update){
+                        Dlg.update.retrieve('instance').initContent();
+                    }
+                    Dlg.close();
+                }
+            }
+        }
+    });
+</script>

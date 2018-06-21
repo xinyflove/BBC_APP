@@ -1,0 +1,589 @@
+<{include file="topwap/activityvote/header.html" }>
+<style>
+    .shopex-slider .shopex-slider-group .shopex-slider-item{height:55%}
+    .mui-slider {
+        position: fixed;
+        z-index: 1;
+        overflow: hidden;
+        width: 100%;
+        top: 0;
+    }
+    .shopex-scroll-wrapper {
+        top: 125px;
+    }
+    .shopex-fullscreen .shopex-segmented-control ~ .shopex-slider-group {
+        top: 96px;
+    }
+</style>
+<!--add_2017/10/24_by_wanghaichao_start  分享的-->
+<{include file="topwap/index.html"}>
+<!--add_2017/10/24_by_wanghaichao_end-->
+<!--<div class="mui-content">-->
+<!-- m-915EatQD-foodClass-swiper -->
+<!--</div>-->
+<script>
+    var gallery = mui('.mui-slider');
+    gallery.slider({
+        interval:2000//自动轮播周期，若为0则不自动播放，默认为0；
+    });
+</script>
+<section class="container foodClassBodyBg" style="padding-top:0;background-size:100% 100%;top:0;left: 0;">
+    <div class="m-915EatQD-foodClass-searchBank mui-clearfix" style="position:absolute;<{if $childcat}>top:185px;<{else}>top:140px;<{/if}>z-index:9999999">
+        <div class="search mui-pull-left">
+            <input class="key_words" type="search" placeholder="搜索编号或关键字">
+            <input class="vote-search" type="button">
+        </div>
+        <div class="bank mui-pull-right">
+			<span onclick="sort('number_sort',this)">
+				编号
+				<i class="icon_up sort_active" data-direction="up"></i>
+				<i class="icon_down" data-direction="down"></i>
+			</span>
+            <span class="vote_sort" onclick="sort('vote_sort',this)">
+				排名
+				<i class="icon_up" data-direction="up"></i>
+				<i class="icon_down" data-direction="down"></i>
+			</span>
+        </div>
+    </div>
+    <div id="slider" class="shopex-slider shopex-fullscreen">
+        <div id="sliders" class="mui-slider m-915EatQD-foodClass-swiper" >
+            <div class="mui-slider-group">
+                <{foreach from=$ad_image item=item}>
+                <!-- 第一张 -->
+                <div class="mui-slider-item">
+                    <a href="<{$item.url}>">
+                        <img style="height:100%; max-height: 140px;" src="<{$item.image}>">
+                    </a>
+                </div>
+                <{/foreach}>
+            </div>
+            <div class="mui-slider-indicator">
+                <{foreach from=$ad_image item=item key=key}>
+                <div class="mui-indicator <{if $key==0}>mui-active<{/if}>"></div>
+                <{/foreach}>
+            </div>
+        </div>
+
+        <div id="sliderSegmentedControl" class="shopex-scroll-wrapper shopex-slider-indicator shopex-segmented-control shopex-segmented-control-inverted" style="border-bottom:1px solid #e5e5e5;<{if !$childcat}>display:none;<{/if}>">
+            <div class="shopex-scroll">
+                <{if $childcat}>
+                <{foreach from=$childcat item=item key=key}>
+                <a class="shopex-control-item <{if $key==0}>shopex-active<{/if}>" data-status="<{$key}>" data-cat-id='<{$item.cat_id}>' href="#item<{$item.cat_id}>mobile" data-item-id="item<{$item.cat_id}>mobile"><{t}><{$item.cat_name}><{/t}></a>
+                <{/foreach}>
+                <{else}>
+                <a class="shopex-control-item shopex-active" data-status="0" data-cat-id='<{$_GET.cat_id}>' href="#item1mobile" data-item-id="item1mobile"><{t}><{$item.cat_name}><{/t}></a>
+                <{/if}>
+            </div>
+        </div>
+
+        <div class="shopex-slider-group" <{if !$childcat}>style="top:59px"<{/if}>>
+        <{if $childcat}>
+        <{foreach from=$childcat item=item key=key}>
+        <div id="item<{$item.cat_id}>mobile" class="shopex-slider-item shopex-control-content" style="height:100%;border-bottom:none">
+            <div class="shopex-scroll-wrapper">
+                <div class="shopex-scroll m-915EatQD-foodClass-numProduct" data-count="1">
+                    <ul class="shopex-table-view">
+                        <div class="shopex-loading">
+                            <div class="shopex-spinner"></div>
+                        </div>
+                    </ul>
+                    <{if $type=='popular'}>
+                    <{if $active.popular_vote_end_time>$now && $active.popular_vote_start_time<$now}>
+                    <div class="vote vote-popular">
+                        <input class="vote-submit" type="button" value="投票">
+                    </div>
+                    <{/if}>
+                    <{else}>
+                    <{if $active.expert_vote_end_time>$now && $active.expert_vote_start_time<$now}>
+                    <div class="vote remark">
+                        <input class="vote-submit" type="button" value="点评">
+                    </div>
+                    <{/if}>
+                    <{/if}>
+                </div>
+            </div>
+        </div>
+        <{/foreach}>
+        <{else}>
+        <div id="item1mobile" class="shopex-slider-item shopex-control-content" style="height:100%;border-bottom:none">
+            <div class="shopex-scroll-wrapper">
+                <div class="shopex-scroll m-915EatQD-foodClass-numProduct" data-count="1">
+                    <ul class="shopex-table-view">
+                        <div class="shopex-loading">
+                            <div class="shopex-spinner"></div>
+                        </div>
+                    </ul>
+                    <{if $type=='popular'}>
+                    <{if $active.popular_vote_end_time>$now && $active.popular_vote_start_time<$now}>
+                    <div class="vote vote-popular">
+                        <input class="vote-submit" type="button" value="投票">
+                    </div>
+                    <{/if}>
+                    <{else}>
+                    <{if $active.expert_vote_end_time>$now && $active.expert_vote_start_time<$now}>
+                    <div class="vote remark">
+                        <input class="vote-submit" type="button" value="点评">
+                    </div>
+                    <{/if}>
+                    <{/if}>
+                </div>
+            </div>
+        </div>
+        <{/if}>
+    </div>
+    </div>
+</section>
+<{if $type=='popular'}>
+<!-- 投票成功 v2.0 -->
+<!--<div id="gift_div" style="display:none">
+<div class="m-915EatQD-reviewDialog-bg" style="display: none;"></div>
+	<div class="m-915EatQD-dialog-successV2">
+		<div class="dialog-successV2-content">
+			<h2>恭喜您获得</h2>
+			<h3 id="gift_name">代金券一张</h3>
+			<{if !$login}>
+			<div id="inputBox">
+				<div><input id="mobile" type="text" placeholder="请输入手机号"></div>
+				<div><input id="code" type="text" placeholder="请输入验证码"><input type="button" class="sendCode" id="btnSendCode" value="发送验证码"></div>
+			</div>
+			<{/if}>
+		</div>
+		<div class="dialog-successV2-close">
+			<img src="/app/topwap/statics/vote/img/icon_cclose.png" alt="">
+		</div>
+	</div>
+	<input <{if $login}>style="top:340px"<{/if}> type="button" class="dialog-successV2-ok" value="领取">
+</div>-->
+
+<!-- 投票成功v3.0 -->
+
+<div id="gift_div" style="display:none">
+    <div class="successForm_bg"></div>
+    <div class="vote-successForm">
+        <form action="" method="post" id="VoteSFrom">
+            <h3>投票成功!</h3>
+            <div class="content" style="background-color:#284a94">
+                <img src="/app/topwap/statics/vote/img/icon_jiansheBank.png" class="icon_bank"/>
+                <img  src="/app/topwap/statics/vote/img/ykt.png" style="position: absolute;width: 6em;right: 5px;">
+                <div class="line" style="background-color:#1b1c31"></div>
+                <h2 id="gift_name">获得可口可乐一瓶</h2>
+                <{if !$login}>
+                <div class="input-box_v3">
+                    <div><input id="mobile" type="text" placeholder="请输入手机号"></div>
+                    <div>
+                        <input  id="code" type="text" placeholder="请输入验证码" name="code">
+                        <input type="button" class="sendCode_v3" id="btnSendCode" value="发送验证码" style="background-color:#1b1c31 !important">
+                    </div>
+                </div>
+                <{/if}>
+            </div>
+            <input <{if $login}>style="top:-60px"<{/if}> type="button" class="tapDraw dialog-successV2-ok" value="点击领取" />
+        </form>
+    </div>
+</div>
+<{else}>
+<div class="m-915EatQD-reviewDialog-bg"></div>
+<div class="m-915EatQD-reviewDialog-content">
+    <form action="">
+        <div class="top">
+            <i class="icon_comments"></i>
+            <span>点评</span>
+        </div>
+        <textarea id="comment-content" class="con" name="con" placeholder="请输入不少于10字的点评内容"></textarea>
+        <div class="btn mui-clearfix">
+            <a href="javascript:;" class="cancel mui-pull-left">取消</a>
+            <a href="javascript:;" id="send-message" class="ok mui-pull-right">发送</a>
+        </div>
+    </form>
+</div>
+<{/if}>
+<{script src="shopex.pullToRefresh.js" app=topwap}>
+<{script src="shopex.pullToRefresh.material.js" app=topwap}>
+<script>
+    // 解决底部出现滚动条问题
+//    document.querySelector('body').addEventListener('touchstart', function (ev) {
+//        event.preventDefault();
+//    });
+    shopex.init();
+    mui.init();
+    (function() {
+        var totalpage;
+        //阻尼系数
+        var deceleration = shopex.os.ios ? 0.003 : 0.0009;
+        shopex('.shopex-scroll-wrapper').scroll({
+            bounce: false,
+            indicators: true, //是否显示滚动条
+            deceleration: deceleration,
+            scrollY:true,
+        });
+        shopex.ready(function() {
+            shopex('.shopex-scroll-wrapper').scroll({
+                indicators: true, //是否显示滚动条
+                scrollY:true,
+            });
+            var active = document.getElementById('sliderSegmentedControl').querySelector('.shopex-active');
+            var activeId = document.getElementById('item' + active.dataset.status + 'mobile');
+            <{if $childcat}>
+            var item1 = document.getElementById('item<{$childcat.0.cat_id}>mobile');
+            <{else}>
+            var item1 = document.getElementById('item1mobile');
+            <{/if}>
+            if (active.dataset.status != 0) {
+                shopex('#slider').slider().gotoItem(active.dataset.status, 1);
+            } else {
+                setTimeout(function() {
+                    var el = item1.querySelector('.shopex-table-view');
+                    getList(0, 1, el, item1, false);
+                }, 100);
+            }
+            document.getElementById('sliderSegmentedControl').addEventListener('scroll', function(e) {
+
+            });
+            document.getElementById('slider').addEventListener('slide', function(e) {
+                var item_id=$('#sliderSegmentedControl .shopex-active').attr('data-item-id');
+                var item=document.getElementById(item_id);
+                // if (e.detail.slideNumber === 0) {
+                if (item.querySelector('.shopex-loading')) {
+                    setTimeout(function() {
+                        count = 1;
+                        var el = item.querySelector('.shopex-table-view');
+                        getList(e.detail.slideNumber, 1, el, item, false);
+                    }, 100);
+                }
+                // }
+                /* if (e.detail.slideNumber === 1) {
+                 if (item2.querySelector('.shopex-loading')) {
+                 setTimeout(function() {
+                 count = 1;
+                 var el = item2.querySelector('.shopex-table-view');
+                 getList(e.detail.slideNumber, 1, el, item2, false);
+                 }, 500);
+                 }
+                 } else if (e.detail.slideNumber === 2) {
+                 if (item3.querySelector('.shopex-loading')) {
+                 setTimeout(function() {
+                 count = 1;
+                 var el = item3.querySelector('.shopex-table-view');
+                 getList(e.detail.slideNumber, 1, el, item3, false);
+                 }, 500);
+                 }
+                 } else if (e.detail.slideNumber === 3) {
+                 if (item4.querySelector('.shopex-loading')) {
+                 setTimeout(function() {
+                 count = 1;
+                 var el = item4.querySelector('.shopex-table-view');
+                 getList(e.detail.slideNumber, 1, el, item4, false);
+                 }, 500);
+                 }
+                 } else if (e.detail.slideNumber === 4) {
+                 if (item5.querySelector('.shopex-loading')) {
+                 setTimeout(function() {
+                 count = 1;
+                 var el = item5.querySelector('.shopex-table-view');
+                 getList(e.detail.slideNumber, 1, el, item5, false);
+                 }, 500);
+                 }
+                 }*/
+            });
+
+            var count = 1;
+            //循环初始化所有下拉刷新，上拉加载。
+            // shopex.each(document.querySelectorAll('.shopex-slider-group .shopex-scroll'), function(index, pullRefreshEl) {
+            //  shopex(pullRefreshEl).pullToRefresh({
+            //    down: {
+            //  callback: function() {
+            //     count = 1;
+            //     var self = this;
+            //   setTimeout(function() {
+            //       var ul = self.element.querySelector('.shopex-table-view');
+            //     getList(index, count, ul, null, false);
+            //      self.endPullDownToRefresh();
+            //     self.refresh(self.element);
+            //    }, 100);
+            //  }
+            //    },
+            //     up: {
+            ///       callback: function() {
+            //         var self = this;
+            //        setTimeout(function() {
+            //           count = self.element.dataset.count;
+            //          shopex(self.element).pullToRefresh().endPullUpToRefresh(++count > totalpage);
+            //          var ul = self.element.querySelector('.shopex-table-view');
+            //          if(!(count > totalpage)){
+            //           getList(index, count, ul, null, true);
+            //        }
+            //       }, 100);
+            //     }
+            //   }
+            //  });
+            //});
+            var getList = function(status, num, el, emptyel, isPullup) {
+                var cat_id=$('#sliderSegmentedControl .shopex-active').attr('data-cat-id');
+                //alert(cat_id);
+                $.ajax({
+                    url: '<{url action=topwap_ctl_activityvote_vote@ajaxVoteList}>',
+                    type: 'get',
+                    dataType: 'json',
+                    data: {
+                        'cat_id': cat_id,
+                        'type':"<{$_GET['type']}>",
+                        'pages': num,
+                    },
+                    success: function(rs) {
+                        totalpage = rs.pages.total;
+                        $(el).parent().attr('data-count', count);
+                        if (isPullup == false) {
+                            if(rs.html.indexOf('nodata-wrapper') > 0){
+                                $(el).html(rs.html);
+                            } else {
+                                $(el).html(rs.html);
+                            }
+                        } else {
+                            $(el).append(rs.html);
+                        }
+                    }
+                });
+            };
+        });
+
+    })();
+    <{if $type=='popular'}>
+    $('.vote-popular').click(function(){
+        var game_id=$('.shopex-radio input:checked').val();
+        $.ajax({
+            url: '<{url action=topwap_ctl_activityvote_vote@ajaxGameVote}>',
+            type: 'post',
+            dataType: 'json',
+            data: {
+                'game_id': game_id,
+                'type':"<{$_GET['type']}>",
+            },
+            success: function(rs) {
+                if(rs.error){
+                    shopex.toast(rs.message);
+                }else if(rs.status=='success'){
+                    var poll_number=$('.poll_'+game_id).html();
+                    poll_number++;
+                    $('.poll_'+game_id).html(poll_number);
+                    if(rs.gift=='no_gift'){
+                        shopex.toast('投票成功!');
+                    }else{
+                        $('.m-915EatQD-reviewDialog-bg').show();
+                        $('#gift_div').show();
+                        $('#gift_name').html("获得"+rs.gift.gift_name);
+                    }
+                }
+            }
+        });
+    });
+
+
+
+    //发送验证码
+    var InterValObj; //timer变量，控制时间
+    var count = 60; //间隔函数，1秒执行
+    var curCount;//当前剩余秒数
+    var code = ""; //验证码
+    function sendMessage(mobile) {
+        curCount = count;
+        //设置button效果，开始计时
+        $.ajax({
+            url: '<{url action=topwap_ctl_trustlogin@sendVcode}>',
+            type: 'post',
+            dataType: 'json',
+            data: {
+                'uname': mobile,
+                'type':'signup'
+            },
+            success: function (msg){
+                if(msg.success){
+                    $("#btnSendCode").attr("disabled", "true");
+                    $("#btnSendCode").val( + curCount + "秒再获取");
+                    InterValObj = window.setInterval(SetRemainTime, 1000); //启动计时器，1秒执行一次
+                }
+                shopex.toast(msg.message);
+            }
+        });
+
+    }
+    //timer处理函数
+    function SetRemainTime() {
+        if (curCount == 0) {
+            window.clearInterval(InterValObj);//停止计时器
+            $("#btnSendCode").removeAttr("disabled");//启用按钮
+            $("#btnSendCode").val("重新发送验证码");
+            code = ""; //清除验证码。如果不清除，过时间后，输入收到的验证码依然有效
+        }
+        else {
+            curCount--;
+            $("#btnSendCode").val( + curCount + "秒再获取");
+        }
+    }
+
+    $("#btnSendCode").on('click',function () {
+        var mobile=$('#mobile').val();
+        if(mobile==''){
+            shopex.toast('请输入手机号码');
+            return false;
+        }
+        sendMessage(mobile);
+    });
+    $('.dialog-successV2-ok').on('click',function(){
+        var mobile=$('#mobile').val();
+        var vocode=$('#code').val();
+        $.ajax({
+            url: '<{url action=topwap_ctl_activityvote_vote@ajaxGetGift}>',
+            type: 'post',
+            dataType: 'json',
+            data: {
+                'mobile': mobile,
+                'vcode':vocode
+            },
+            success: function (msg){
+                if(msg.success){
+                    $('#gift_div').hide();
+                    shopex.toast(msg.message);
+                }else{
+                    shopex.toast(msg.message);
+                }
+            }
+        });
+    });
+    $(".dialog-successV2-close").click(function(){
+        $('#gift_div').hide();
+    });
+    <{else}>
+    !function (win, $) {
+        $(".remark").click(function(){
+            var game_id=$('.shopex-radio input:checked').val();
+            if(!game_id){
+                dialog.toast('请选择后再点评', 'none', 1000);
+                return false;
+            }
+            var $dialogBg=$(".m-915EatQD-reviewDialog-bg");
+            var $dialogCon=$(".m-915EatQD-reviewDialog-content");
+            $dialogBg.fadeIn();
+            $dialogCon.fadeIn();
+        });
+        $("#send-message").click(function () {
+            var url = "<{url action=topwap_ctl_activityvote_votedetail@postComment}>";
+            var game_id=$('.shopex-radio input:checked').val();
+            var content = $("#comment-content").val();
+            var post_data = {
+                "game_id":game_id,
+                "comment_content":content
+            };
+            $.post(url,post_data,function (data) {
+                var $dialogBg=$(".m-915EatQD-reviewDialog-bg");
+                var $dialogCon=$(".m-915EatQD-reviewDialog-content");
+                $dialogBg.fadeOut();
+                $dialogCon.fadeOut();
+                if(data.success === true){
+                    //$(".remark").html("已评论");
+                    dialog.toast(data.message.msg, 'none', 1000);
+                }else{
+                    dialog.toast(data.message.msg, 'none', 1000);
+                }
+            });
+        });
+
+
+        var dialog = win.YDUI.dialog;
+    }(window,jQuery);
+    $(function () {
+        var $dialogBg=$(".m-915EatQD-reviewDialog-bg");
+        var $dialogCon=$(".m-915EatQD-reviewDialog-content");
+        $(".cancel").click(function () {
+            $dialogBg.fadeOut();
+            $dialogCon.fadeOut();
+        });
+    });
+    <{/if}>
+    //排序 搜索框等
+    function sort(sort_type,that){
+        var direction=$('.sort_active').attr('data-direction');
+        var order_by='';
+        if(sort_type=='number_sort'){
+            if(direction=='up'){
+                order_by='game_number desc';
+            }else{
+                order_by='game_number asc';
+            }
+        }else{
+            if(direction=='up'){
+                order_by='vote desc';
+            }else{
+                order_by='vote asc';
+            }
+        }
+
+        var item_id=$('#sliderSegmentedControl .shopex-active').attr('data-item-id');
+        var item=document.getElementById(item_id);
+        var el = item.querySelector('.shopex-table-view');
+        var isPullup=false;
+        var cat_id=$('#sliderSegmentedControl .shopex-active').attr('data-cat-id');
+        //alert(cat_id);
+        $.ajax({
+            url: '<{url action=topwap_ctl_activityvote_vote@ajaxVoteList}>',
+            type: 'get',
+            dataType: 'json',
+            data: {
+                'cat_id': cat_id,
+                'type':"<{$_GET['type']}>",
+                'order_by':order_by
+            },
+            success: function(rs) {
+                totalpage = rs.pages.total;
+                $('.sort_active').removeClass('sort_active');
+                if(direction=='up'){
+                    $(that).children('.icon_down').addClass('sort_active');
+                }else{
+                    $(that).children('.icon_up').addClass('sort_active');
+                }
+                $(el).parent().attr('data-count', count);
+                if (isPullup == false) {
+                    if(rs.html.indexOf('nodata-wrapper') > 0){
+                        $(el).html(rs.html);
+                    } else {
+                        $(el).html(rs.html);
+                    }
+                } else {
+                    $(el).append(rs.html);
+                }
+            }
+        });
+    }
+    $('.vote-search').on('click',function(){
+        var item_id=$('#sliderSegmentedControl .shopex-active').attr('data-item-id');
+        var item=document.getElementById(item_id);
+        var el = item.querySelector('.shopex-table-view');
+        var isPullup=false;
+        var cat_id=$('#sliderSegmentedControl .shopex-active').attr('data-cat-id');
+        var key_words=$('.key_words').val();
+        //alert(cat_id);
+        $.ajax({
+            url: '<{url action=topwap_ctl_activityvote_vote@ajaxVoteList}>',
+            type: 'get',
+            dataType: 'json',
+            data: {
+                'cat_id': cat_id,
+                'type':"<{$_GET['type']}>",
+                'keywords':key_words
+            },
+            success: function(rs) {
+                totalpage = rs.pages.total;
+                $(el).parent().attr('data-count', count);
+                if (isPullup == false) {
+                    if(rs.html.indexOf('nodata-wrapper') > 0){
+                        $(el).html(rs.html);
+                    } else {
+                        $(el).html(rs.html);
+                    }
+                } else {
+                    $(el).append(rs.html);
+                }
+            }
+        });
+    });
+</script>

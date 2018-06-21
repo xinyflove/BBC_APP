@@ -1,4 +1,5 @@
 <app>
+    
     <name>会员银行卡绑定管理</name>
     <description>提供会员银行卡绑定管理功能</description>
 
@@ -14,4 +15,5 @@
     <depends>
         <app>desktop</app>
     </depends>
+
 </app>

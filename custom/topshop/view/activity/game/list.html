@@ -1,0 +1,224 @@
+<style>
+    .game-image{
+        height: 56px;
+        border: 1px solid #ccc;
+    }
+</style>
+<!--搜索框开始-->
+<aside class="control-sidebar control-sidebar-light" style="height: 100%;">
+    <!-- Create the tabs -->
+    <ul class="nav nav-tabs nav-justified control-sidebar-tabs">
+        <li class=""><a href="#">筛选</a></li>
+        <li class=""><a href="#" data-toggle="control-sidebar"><i class="glyphicon glyphicon-remove"></i></a></li>
+    </ul>
+    <!-- Tab panes -->
+    <div class="tab-content">
+        <form action="<{url action=topshop_ctl_activity_game@index}>" method="get" id="search-form">
+            <input type="hidden" name="active_id" value="<{$active_id}>">
+            <div class="box-body">
+
+                <!-- text input -->
+                <div class="form-group">
+                    <label>参赛名称：</label>
+                    <input type="text" name="game_name" class="form-control" <{if $search.game_name}> value="<{$search.game_name|escape:"html"}>" <{/if}> placeholder="请输入 ...">
+                </div>
+                <div class="form-group">
+                    <label>参赛编号：</label>
+                    <input type="text" name="game_number" class="form-control" value="<{$search.game_number|escape:"html"}>" placeholder="请输入 ...">
+                </div>
+
+                <!-- select -->
+                <div name="status" class="form-group">
+                    <label>参赛分类：</label>
+                    <select name="cat_id" class="form-control select-reset">
+                        <option value="0">请选择</option>
+                        <{foreach from=$GameCatList item=game_cat}>
+                        <{if $game_cat.children}>
+                        <optgroup label='<{$game_cat.cat_name}>'>
+                            <{else}>
+                            <option value='<{$game_cat.cat_id}>'
+                            <{if $game_cat.cat_id == $search.cat_id}>
+                            selected=selected
+                            <{/if}>
+                            ><{$game_cat.cat_name}></option>
+                            <{/if}>
+
+                            <{if $game_cat.children}>
+                            <{foreach from=$game_cat.children item=game_cat_children}>
+                            <option value='<{$game_cat_children.cat_id}>'
+                            <{if $game_cat_children.cat_id == $search.cat_id}>
+                            selected
+                            <{/if}>
+                            ><{$game_cat_children.cat_name}></option>
+                            <{/foreach}>
+                            <{/if}>
+
+                            <{if $game_cat.children}>
+                        </optgroup>
+                        <{/if}>
+                        <{/foreach}>
+                    </select>
+                </div>
+
+                <div name="status" class="form-group">
+                    <label>是否参赛：</label>
+                    <select name="is_game" class="form-control select-reset">
+                        <option value="-1" <{if $search.is_game == -1}>selected<{/if}>>请选择</option>
+                        <option value="1" <{if $search.is_game == 1}>selected<{/if}>>是</option>
+                        <option value="0" <{if $search.is_game == 0}>selected<{/if}>>否</option>
+                    </select>
+                </div>
+
+            </div>
+            <!-- /.box-body -->
+            <div class="box-footer">
+                <a href="<{url action=topshop_ctl_activity_game@index active_id=$active_id}>" class="btn btn-default">重置</a>
+                <button type="submit" class="btn btn-info pull-right">搜索</button>
+            </div>
+            <!-- /.box-footer -->
+        </form>
+    </div>
+</aside>
+<!--搜索框结束-->
+<div class="box box-primary">
+    <div class="mailbox-controls with-border">
+        <a class="btn btn-default btn-sm act-addcat" href="<{url action=topshop_ctl_activity_game@edit_game active_id=$active_id}>">
+            <i class="fa fa-plus-square-o"></i> 添加参赛信息
+        </a>
+
+        <a  href="<{url action=topshop_ctl_export@export app=sysactivityvote model=game}>" data-app="sysactivityvote" data-model="game" class="btn btn-primary btn-sm export-filter-btn ">
+          <i class="glyphicon glyphicon-export"></i>
+          导出
+        </a>
+
+        <a href="javascript:;" class="btn btn-default btn-sm pull-right" data-toggle="control-sidebar">
+            <div class="text-light-blue">
+                <i class="fa fa-search"></i>
+                搜索
+            </div>
+        </a>
+    </div>
+
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th>参赛名称</th>
+            <th>参赛编号</th>
+            <th>参赛主图</th>
+            <th>参赛类型</th>
+            <th>投票总数</th>
+            <th>
+                添加时间
+                <br/>
+                修改时间
+            </th>
+            <th>是否参赛</th>
+            <th>选项</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <{if $gameList}>
+        <tbody>
+        <{foreach from=$gameList item=item}>
+        <tr class="">
+            <td><{$item.game_name}></td>
+            <td><{$item.game_number}></td>
+            <td>
+                <img class="game-image" src="<{$item.image_default_id|default:$image_default_id.S.default_image|storager:t}>" alt="">
+            </td>
+            <td>
+                <{if $game_type[$item.type_id]}><{$game_type[$item.type_id]}><{/if}>
+            </td>
+            <td>
+                <{$item.total_poll}>
+            </td>
+            <td>
+                <{$item.create_time|cdate:'FDATE_STIME'}>
+                <br/>
+                <{$item.modified_time|cdate:'FDATE_STIME'}>
+            </td>
+            <td>
+                <{if $item.is_game}>是<{else}>否<{/if}>
+            </td>
+            <td>
+                <a href="<{url action=topshop_ctl_activity_expert_comment@commentList game_id=$item.game_id}>">专家点评管理</a><br>
+
+                <a href="<{url action=topshop_ctl_activity_vote@voteLogList game_id=$item.game_id}>">投票日志</a><br>
+            </td>
+            <td>
+                <a href="<{url action=topshop_ctl_activity_game@edit_game ac=edit active_id=$item.active_id game_id=$item.game_id}>">编辑</a><br>
+                <a class="action-delete-game" href="javascript:void(0);" data-delete-url="<{url action=topshop_ctl_activity_game@delete_game game_id=$item.game_id delete_type=0}>">删除</a><br>
+                <a href="<{url action=topshop_ctl_activity_game_detail@edit_game_detail ac=edit active_id=$item.active_id game_id=$item.game_id}>">参赛详情</a>
+            </td>
+        </tr>
+        <{/foreach}>
+        </tbody>
+        <{else}>
+        <tbody>
+        <tr>
+            <td algin="center" colspan="7">
+                <p class="help-block text-center">暂无数据</p>
+            </td>
+        </tr>
+        </tbody>
+        <{/if}>
+    </table>
+</div>
+<div class="text-right">
+    <{pagers data=$pagers}>
+    <{if $total > 0}>
+    <span class="page-number">共&nbsp;<em class="text-aqua"><{$total}></em>&nbsp;条记录</span>
+    <{/if}>
+</div>
+<div class="row">
+    <div class="col-md-4">
+
+    </div>
+    <div class="col-md-2">
+        <a href='<{url action="topshop_ctl_activity_vote@index"}>'><button type="submit" class="btn btn-primary btn-lg btn-block action-save" style="width: 200px;">返回礼品活动列表</button></a>
+    </div>
+    <div class="col-md-4">
+
+    </div>
+</div>
+<span class="export-filter" data-value="" data-app="" data-model=""></span>
+
+<script>
+    $(function () {
+
+        $('.action-delete-game').on('click',function(){
+            var url = $(this).attr('data-delete-url');
+            Modal.confirm({msg: '确定删除此条参赛信息吗？'}).on(function(e) {
+                if(e==true) {
+                    $.post(url,'',function(rs){
+                        if(rs.success) {
+                            $('#messagebox').message(rs.message, 'success');
+                            setTimeout(function(){location.reload();}, 500);
+                        }
+                        if(rs.error) {
+                            $('#messagebox').message(rs.message);
+                            return;
+                        }
+                    });
+                }
+            });
+        });
+
+    })
+
+    $('.export-filter-btn').click(function (e) {
+        e.preventDefault();
+        var url = $(this).attr('href');
+        var app = $(this).data('app');
+        var model = $(this).data('model');
+
+        var val = $(this).attr('data-value');
+        var filter = '{"active_id":"'+<{$active_id}>+'","itemtime":"'+1+'"}';
+
+        $('.export-filter').attr('data-app',app);
+        $('.export-filter').attr('data-model',model);
+        $('.export-filter').attr('data-value',filter);
+
+        $('#exportDialog').modal({remote: url}).attr('data-app',app).attr('data-model',model);
+    });
+</script>

@@ -1,0 +1,22 @@
+<desktop>
+    <!--控制面板里的组-->
+    <panelgroup id="testapp_panelgroup_id" icon="panel-other.png" order="100">Test Group</panelgroup>
+    <!--控制面板里的选项-->
+    <adminpanel group="testapp_test_panelgroup_id" permission="testapp_permission_id" controller='user' action='index' display='true'>用户管理</adminpanel>
+
+    <!--权限配置-->
+    <permissions>
+        <permission id="testapp_permission_id" display='true' workground=''>测试权限</permission>
+        <permission id="testapp_user_lists_id" display='true' workground=''>测试用户列表</permission>
+        <permission id="testapp_level_lists_id" display='true' workground=''>测试等级列表</permission>
+    </permissions>
+
+    <workground name="测试App" id="testapp.wrokground.menu" controller="user" action="lists" order="10">
+        <menugroup name="用户管理">
+            <menu controller='user' action='lists' permission='testapp_user_lists_id' display='true' order='10'>用户列表</menu>
+        </menugroup>
+        <menugroup name="等级管理">
+            <menu controller='level' action='lists' permission='testapp_level_lists_id' display='true' order='10'>等级列表</menu>
+        </menugroup>
+    </workground>
+</desktop>

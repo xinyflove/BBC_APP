@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <{include file="topwap/activityvote/header.html" }>
+    <script>
+        mui.init();
+    </script>
+    <style>
+        .cancel{
+            padding: 11px 14%;
+            border: 1px solid #f49805;
+            border-radius: 4px;
+            margin-right: 2%;
+            color: #f49805;
+        }
+        #send-message{
+            padding: 11px 14%;
+            padding: 11px 14%;
+            border: 1px solid #f49805;
+            border-radius: 4px;
+            margin-right: 2%;
+            background-color: #f49805;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div id="pullrefresh" class="shopex-content shopex-scroll-wrapper">
+        <div class="shopex-scroll">
+            <!-- m-915EatQD-resDetails-headBanner -->
+            <div class="m-915EatQD-resDetails-headBanner swiper-container" id="resBanner">
+                <ul class="swiper-wrapper">
+                    <{foreach from=$list_data.list_image item=lunbo_img}>
+                    <li class="swiper-slide">
+                        <img src="<{$lunbo_img|storager}>" alt="">
+                        <{if $type=="expert"}>
+                            <{if $active_expire['expert_active'] === true}>
+                                <{if $confirm===true}>
+                                    <button class="remark" style="bottom: 30px">已评论</button>
+                                <{else}>
+                                    <button class="remark" style="bottom:30px">评论</button>
+                            <{/if}>
+                        <{/if`}>
+                        <{else}>
+                            <{if $active_expire['popular_active'] === true}>
+                                <button class="doVote vote-popular" style="bottom:30px">投票</button>
+                            <{/if}>
+                        <{/if}>
+                        <em style="color: #6e7777;">参赛编号：<{$vote_number}></em>
+                        <font style="color: #6e7777;"><span id="vote-count"><{$vote_count}></span>票</font>
+                    </li>
+                    <{/foreach}>
+                </ul>
+                <div class="swiper-pagination"></div>
+            </div>
+            <!-- m-915EatQD-resDetails-Intro -->
+            <div class="m-915EatQD-resDetails-Intro">
+                <h3><{$game_name}><span>  &nbsp;&nbsp;&nbsp;人均：<{$base_desc.per_capita}></span></h3>
+                <div>
+                    <span>口味：<{$base_desc.taste}></span><span>环境：<{$base_desc.environment}></span><span>服务：<{$base_desc.service}></span>
+                </div>
+            </div>
+            <!-- m-915EatQD-resDetails-seller -->
+            <div class="m-915EatQD-resDetails-seller">
+                <div class="public-title">
+                    <h3>商家信息</h3>
+                </div>
+                <div class="seller-content">
+                    <p>商家地址：<span class="mui-pull-right"><{$work_desc.business_address}></span></p>
+                    <p>联系电话：<span class="mui-pull-right"><{$work_desc.contact_number}></span></p>
+                    <p>营业时间：<span class="mui-pull-right"><{$work_desc.business_hours}></span></p>
+                </div>
+            </div>
+            <!-- m-915EatQD-resDetails-menu -->
+            <div class="m-915EatQD-resDetails-menu">
+                <div class="public-title">
+                    <h3>推荐菜单</h3>
+                </div>
+                <div class="menu-content">
+                    <ul>
+                        <{foreach from=$base_list_image item=base_list_item}>
+                        <li>
+                            <a href="#">
+                                <img src="<{$base_list_item.image|storager}>" alt="">
+                                <p><{$base_list_item.title}></p>
+                            </a>
+                        </li>
+                        <{/foreach}>
+                    </ul>
+                </div>
+            </div>
+            <!-- m-915EatQD-resDetails-env -->
+            <div class="m-915EatQD-resDetails-env">
+                <div class="public-title">
+                    <h3>就餐环境</h3>
+                </div>
+                <div class="env-content">
+                    <ul>
+                        <{foreach from=$work_list_image item=work_list_img}>
+                        <li><a href="#"><img src="<{$work_list_img|storager}>" alt=""></a></li>
+                        <{/foreach}>
+                    </ul>
+                </div>
+            </div>
+            <!-- m-915EatQD-foodClassDetails-license -->
+            <div class="m-915EatQD-foodClassDetails-license" style="display: none;">
+                <div class="public-title">
+                    <h3>营业许可</h3>
+                </div>
+                <div class="license-content mui-clearfix">
+                    <{foreach from=$recommend_reason_desc item=recommend_list_img}>
+                    <img src="<{$recommend_list_img|storager}>" alt="" class="mui-pull-left">
+                    <{/foreach}>
+                </div>
+            </div>
+            <!-- m-915EatQD-foodClassDetails-Comments -->
+            <div class="m-915EatQD-foodClassDetails-Comments">
+                <div class="public-title">
+                    <h3>专家点评</h3>
+                </div>
+                <div id="refreshContainer" class="Comments-content shopex-table-view">
+                        <{foreach from=$comment_list.data item=comment_list_item}>
+                        <div class="shopex-table-view-cell">
+                            <dl class="mui-clearfix">
+                                <dt class="mui-pull-left">
+                                    <img src="<{$comment_list_item.expert_info.expert_avatar|storager}>" alt="">
+                                </dt>
+                                <dd class="mui-pull-left">
+                                    <h3><{$comment_list_item.expert_info.expert_name}></h3>
+                                    <span><{$comment_list_item.modified_time|date_format:'%Y-%m-%d'}></span>
+                                </dd>
+                            </dl>
+                            <p><{$comment_list_item.comment_content}></p>
+                        </div>
+                        <{/foreach}>
+                </div>
+        </div>
+        </div>
+    </div>
+    <div class="m-915EatQD-reviewDialog-content">
+        <form action="">
+            <div class="top">
+                <i class="icon_comments"></i>
+                <span>点评</span>
+            </div>
+            <textarea id="comment-content" class="con" name="con" placeholder="请输入不少于10字的点评内容"></textarea>
+            <div class="btn mui-clearfix">
+                <a href="javascript:;" class="cancel mui-pull-left">取消</a>
+                <a href="javascript:;" id="send-message" class="ok mui-pull-right">发送</a>
+            </div>
+        </form>
+    </div>
+
+    <!--微信分享-->
+    <{include file="topwap/index.html"}>
+
+    <!--投票代码-->
+    <div id="gift_div" style="display:none">
+        <div class="m-915EatQD-reviewDialog-bg" style="display: none;"></div>
+        <div class="m-915EatQD-dialog-successV2">
+            <div class="dialog-successV2-content">
+                <h2>恭喜您获得</h2>
+                <h3 id="gift_name">代金券一张</h3>
+                <{if !$login}>
+                <div id="inputBox">
+                    <div><input id="mobile" type="text" placeholder="请输入手机号"></div>
+                    <div><input id="code" type="text" placeholder="请输入验证码"><input type="button" class="sendCode" id="btnSendCode" value="发送验证码"></div>
+                </div>
+                <{/if}>
+            </div>
+            <div class="dialog-successV2-close">
+                <img src="/app/topwap/statics/vote/img/icon_cclose.png" alt="">
+            </div>
+        </div>
+        <input <{if $login}>style="top:340px"<{/if}> type="button" class="dialog-successV2-ok" value="领取">
+    </div>
+
+
+    <!--<script src="js/swiper-3.4.2.min.js"></script>-->
+
+    <script>
+        var swiper = new Swiper('#resBanner', {
+            pagination: '.swiper-pagination',
+            paginationClickable: true
+        });
+    </script>
+
+    <script>
+        $(function () {
+            var $dialogBg=$(".m-915EatQD-reviewDialog-bg");
+            var $dialogCon=$(".m-915EatQD-reviewDialog-content");
+            $(".cancel").click(function () {
+                $dialogBg.fadeOut();
+                $dialogCon.fadeOut();
+            });
+        });
+    </script>
+    <!--专家评论列表js-->
+    <script>
+        shopex.init({
+            pullRefresh: {
+                container: '#pullrefresh',
+                up: {
+                    contentrefresh: '正在加载...',
+                    callback: pullupRefresh
+                }
+            }
+        });
+        var comment_count = 1;
+        /**
+         * 上拉加载具体业务实现
+         */
+        function pullupRefresh() {
+            setTimeout(function() {
+                shopex('#pullrefresh').pullRefresh().endPullupToRefresh((++comment_count >= <{$comment_page_count}>));
+                var a = <{$comment_page_count}>;
+                if(a>1){
+                    getList(comment_count);
+                }
+            }, 300);
+        }
+        function getList($page){
+            $.ajax({
+                url: '<{url action=topwap_ctl_activityvote_votedetail@ajaxCommentList}>',
+                type: 'get',
+                dataType: 'json',
+                data: {
+                    'game_id':"<{$game_id}>",
+                    'page': $page
+                },
+                success: function(rs) {
+                    var table = document.body.querySelector('.shopex-table-view');
+                    var cells = document.body.querySelectorAll('.shopex-table-view-cell');
+                    for (var i = cells.length, len = i + rs.message.data.length; i < len; i++) {
+                        var k = i-cells.length;
+                        var div = document.createElement('div');
+                        div.className = 'shopex-table-view-cell';
+                        div.innerHTML = '<dl class="mui-clearfix">' +
+                            '<dt class="mui-pull-left"> ' +
+                            '<img src="' + rs.message.data[k]["expert_info"]["expert_avatar"] + '" alt=""> ' +
+                            '</dt> ' +
+                            '<dd class="mui-pull-left"> ' +
+                            '<h3>' + rs.message.data[k]["expert_info"]["expert_name"] + '</h3> ' +
+                            '<span>' + rs.message.data[k]["modified_time"] + '</span> ' +
+                            '</dd> ' +
+                            '</dl> ' +
+                            '<p>' + rs.message.data[k]["comment_content"] + '</p>';
+                        table.appendChild(div);
+                    }
+                }
+            });
+        }
+    </script>
+    <!--专家评论js-->
+    <script>
+        !function (win, $) {
+            $('.remark').click(function(){
+                var $dialogBg=$(".m-915EatQD-reviewDialog-bg");
+                var $dialogCon=$(".m-915EatQD-reviewDialog-content");
+                $dialogBg.fadeIn();
+                $dialogCon.fadeIn();
+            });
+
+            $("#send-message").click(function () {
+                var url = "<{url action=topwap_ctl_activityvote_votedetail@postComment}>";
+                var ps1 = $("#sn1").val();
+                var ps2= $("#sn2").val();
+                var ps3 = $("#sn3").val();
+                var ps4 = $("#sn4").val();
+                var password = ps1+ps2+ps3+ps4;
+                var content = $("#comment-content").val();
+                var post_data = {
+                    "game_id":<{$game_id}>,
+                    "comment_content":content
+                };
+                $.post(url,post_data,function (data) {
+                    var $dialogBg=$(".m-915EatQD-reviewDialog-bg");
+                    var $dialogCon=$(".m-915EatQD-reviewDialog-content");
+                    $dialogBg.fadeOut();
+                    $dialogCon.fadeOut();
+                    if(data.success === true){
+                        $(".remark").html("已评论");
+                        $("#refreshContainer").prepend('<div class="shopex-table-view-cell"> '+
+                            '<dl class="mui-clearfix">' +
+                            '<dt class="mui-pull-left"> ' +
+                            '<img src="' + data.message.comment["expert_avatar"] + '" alt=""> ' +
+                            '</dt> ' +
+                            '<dd class="mui-pull-left"> ' +
+                            '<h3>' + data.message.comment["expert_name"] + '</h3> ' +
+                            '<span>' + data.message.comment["modified_time"] + '</span> ' +
+                            '</dd> ' +
+                            '</dl> ' +
+                            '<p>' + data.message.comment["comment_content"] + '</p>'+
+                            '</div>');
+                        dialog.toast(data.message.msg, 'none', 1000);
+                    }else{
+                        dialog.toast(data.message.msg, 'none', 1000);
+                    }
+                });
+            });
+
+
+            var dialog = win.YDUI.dialog;
+        }(window,jQuery);
+    </script>
+    <!--投票js-->
+    <script>
+        $('.vote-popular').click(function(){
+            var game_id=$('.shopex-radio input:checked').val();
+            $.ajax({
+            url: '<{url action=topwap_ctl_activityvote_vote@ajaxGameVote}>',
+            type: 'post',
+            dataType: 'json',
+            data: {
+            'game_id':<{$game_id}>,
+            'type':"<{$_GET['type']}>",
+            },
+            success: function(rs) {
+            if(rs.error){
+            shopex.toast(rs.message);
+            }else if(rs.status=='success'){
+            if(rs.gift=='no_gift'){
+            shopex.toast('投票成功!');
+                var vote_count = $("#vote-count").html();
+                vote_count++;
+                $("#vote-count").html(vote_count);
+            }else{
+            $('.m-915EatQD-reviewDialog-bg').show();
+            $('#gift_div').show();
+            $('#gift_name').html(rs.gift.gift_name);
+            }
+            }
+            }
+            });
+        });
+        //发送验证码
+        var InterValObj; //timer变量，控制时间
+        var count = 60; //间隔函数，1秒执行
+        var curCount;//当前剩余秒数
+        var code = ""; //验证码
+        function sendMessage(mobile) {
+        curCount = count;
+        //设置button效果，开始计时
+        $.ajax({
+        url: '<{url action=topwap_ctl_trustlogin@sendVcode}>',
+        type: 'post',
+        dataType: 'json',
+        data: {
+        'uname': mobile,
+        'type':'signup'
+        },
+        success: function (msg){
+        if(msg.success){
+        $("#btnSendCode").attr("disabled", "true");
+        $("#btnSendCode").val( + curCount + "秒再获取");
+        InterValObj = window.setInterval(SetRemainTime, 1000); //启动计时器，1秒执行一次
+        }
+        shopex.toast(msg.message);
+        }
+        });
+
+        }
+        //timer处理函数
+        function SetRemainTime() {
+        if (curCount == 0) {
+        window.clearInterval(InterValObj);//停止计时器
+        $("#btnSendCode").removeAttr("disabled");//启用按钮
+        $("#btnSendCode").val("重新发送验证码");
+        code = ""; //清除验证码。如果不清除，过时间后，输入收到的验证码依然有效
+        }
+        else {
+        curCount--;
+        $("#btnSendCode").val( + curCount + "秒再获取");
+        }
+        }
+
+        $("#btnSendCode").on('click',function () {
+        var mobile=$('#mobile').val();
+        if(mobile==''){
+        shopex.toast('请输入手机号码');
+        return false;
+        }
+        sendMessage(mobile);
+        });
+        $('.dialog-successV2-ok').on('click',function(){
+        var mobile=$('#mobile').val();
+        var vocode=$('#code').val();
+        $('#gift_div').hide();
+        $.ajax({
+        url: '<{url action=topwap_ctl_activityvote_vote@ajaxGetGift}>',
+        type: 'post',
+        dataType: 'json',
+        data: {
+        'mobile': mobile,
+        'vcode':vocode
+        },
+        success: function (msg){
+        shopex.toast(msg.message);
+        }
+        });
+        });
+        $(".dialog-successV2-close").click(function(){
+        $('#gift_div').hide();
+        });
+    </script>
+</body>
+</html>

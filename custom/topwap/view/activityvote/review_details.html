@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <{include file="topwap/activityvote/header.html" }>
+    <script>
+        mui.init();
+    </script>
+    <style>
+        .expert-shop span{
+            color: #ff9d0c;
+            font-size: 15px;
+        }
+        .m-915EatQD-reviewDetails-chefIntro {
+            width: 100%;
+            overflow: hidden;
+            padding-top: 90px;
+        }
+    </style>
+</head>
+<body class="foodClassBodyBg bgOrange">
+    <div class="mui-content" style="background-color: transparent;width: 100%;height: 100%;overflow: auto">
+        <!-- m-915EatQD-reviewDetails-chefIntro -->
+        <div class="m-915EatQD-reviewDetails-chefIntro">
+            <div class="chefIntro-content">
+                <img src="<{$expert_avatar|storager}>" alt="">
+                <h3><{$expert_name}></h3>
+                <span>（<{$expert_profile}>）</span>
+                <em></em>
+                <p><{$expert_desc}></p>
+            </div>
+        </div>
+        <div class="m-915EatQD-foodClassDetails-Comments">
+            <div class="public-title">
+                <h3>专家点评</h3>
+            </div>
+            <div id="refreshContainer" class="Comments-content shopex-table-view">
+                <{foreach from=$comment item=item}>
+                <div class="shopex-table-view-cell">
+                    <dl class="mui-clearfix">
+                        <dt class="mui-pull-left expert-shop">
+                            <span><{$item.game_number}>号</span>
+                            <span><{$item.game_name}></span>
+                        </dt>
+                        <!--<dd class="mui-pull-left">-->
+                            <!--<h3>羽峥</h3>-->
+                            <!--<span>2018-03-19</span>-->
+                        <!--</dd>-->
+                    </dl>
+                    <p><{$item.comment_content}></p>
+                </div>
+                <{/foreach}>
+            </div>
+    </div>
+</body>
+</html>

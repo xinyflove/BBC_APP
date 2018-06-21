@@ -1,0 +1,14 @@
+<services>
+    <!--[5区]顶部菜单-->
+    <service id="desktop_menu">
+        <class>testapp_service_view_menu</class><!--testapp/lib/service/view/menu.php文件中的testapp_service_view_menu类中的function_menu方法-->
+    </service>
+
+    <!--列表操作-->
+    <service id="desktop_finder.testapp_mdl_level">
+        <class>testapp_finder_level</class>
+    </service>
+    <service id="desktop_finder.testapp_mdl_user">
+        <class>testapp_finder_user</class>
+    </service>
+</services>

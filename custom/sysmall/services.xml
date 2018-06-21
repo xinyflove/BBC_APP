@@ -1,0 +1,7 @@
+<services>
+
+    <service id="desktop_finder.sysmall_mdl_item">
+        <class>sysmall_finder_item</class>
+    </service>
+    
+</services>

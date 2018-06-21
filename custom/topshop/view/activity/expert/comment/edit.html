@@ -1,0 +1,52 @@
+<div class="box box-default">
+  <form  action="<{url action=topshop_ctl_activity_expert_comment@commentSave}>" method="post" class="form-horizontal" data-validate-onsuccess="ajaxSubmit" id="form_delivery" role="form">
+    <!-- <input type="hidden" name="active_id" value="<{$active_id}>"> -->
+    <input type="hidden" name="comment[game_id]" value="<{$game_id}>">
+    <div class="box-body">
+
+      <div class="form-group">
+        <label for="" class="col-sm-2 control-label"><span class="txt-required">*</span>点评专家：</label>
+        <div class="col-sm-3">
+          <select name="comment[expert_id]" required class="form-control">
+            <option value="" ><{t}>请选择点评专家<{/t}></option>
+            <{foreach from=$expertList item=item}>
+            <option value="<{$item.expert_id}>"><{$item.expert_name}></option>
+            <{/foreach}>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="" class="col-sm-2 control-label">点评语：</label>
+        <div class="col-sm-3">
+          <textarea name="comment[comment_content]" required class="form-control" rows="4"></textarea>
+        </div>
+        <!-- <span class="label label-info">标题广告语</span> -->
+      </div>
+
+    </div>
+
+    <div class="box-footer">
+      <button type="submit" class="btn btn-primary"><{t}>保存<{/t}></button>
+    </div>
+
+  </form>
+</div>
+<script>
+  function ajaxSubmit (e) {
+    var form = e.target;
+    e.preventDefault();
+    $.post(form.action, $(form).serialize(), function(rs) {
+      if(rs.error) {
+        $('#messagebox').message(rs.message);
+        return;
+      }
+      if(rs.success) {
+        $('#messagebox').message(rs.message, 'success');
+      }
+      if(rs.redirect) {
+        location.href = rs.redirect;
+      }
+    });
+  }
+</script>

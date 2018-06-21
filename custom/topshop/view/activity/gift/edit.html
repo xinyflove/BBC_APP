@@ -1,0 +1,151 @@
+
+<div class="box box-default">
+    <form  action="<{url action=topshop_ctl_activity_gift@save_gift}>" method="post" class="form-horizontal clearfix" data-validate-onsuccess="ajaxSubmit" role="form">
+        <input type='hidden' name='gift_id' value="<{$gift_id}>">
+        <input type='hidden' name='active_id' value="<{$active_id}>">
+        <div class="box-body">
+            <!--参赛名称-->
+            <div class="form-group">
+                <label class="col-sm-3 control-label">赠品名称：</label>
+                <div class="col-sm-3">
+                    <input type="text" name="gift[gift_name]" value="<{$gift.gift_name}>" class="form-control" placeholder="" required maxlength="100">
+                </div>
+            </div>
+            <!--供应商-->
+            <div class="form-group">
+                <label class="col-sm-3 control-label">供应商：</label>
+                <div class="col-sm-3">
+                    <select name="gift[supplier_id]" id="" class="form-control">
+                        <option value="0">请选择</option>
+                        <{foreach from=$supplier item=supplierItem}>
+                        <option value="<{$supplierItem.supplier_id}>" <{if $supplierItem.supplier_id == $gift.supplier_id}>selected<{/if}>><{$supplierItem.supplier_name}></option>
+                        <{/foreach}>
+                    </select>
+                </div>
+            </div>
+            <!--赠品图片-->
+            <div class="form-group">
+                <label class="col-sm-3 control-label">赠品图片：</label>
+                <div class="col-sm-9">
+                    <div class="multiple-upload pro-thumb" >
+                        <{if $gift.images}>
+                        <{foreach from=$gift.images item=image_id key=key }>
+                        <div class="multiple-item">
+                            <div class="multiple-del glyphicon glyphicon-remove-circle"></div>
+                            <a class="select-image" data-toggle="modal" href="<{url action=topshop_ctl_shop_image@loadImageModal isOnlyShow=item}>" data-target="#gallery_modal">
+                                <input type="hidden" name="listimages[]" value="<{$image_id}>">
+                                <div class="img-put"><img src="<{$image_id|storager:t}>"></div>
+                            </a>
+                        </div>
+                        <{/foreach}>
+                        <{/if}>
+                        <div class="multiple-add" data-toggle="modal" data-isMultiple="true" data-target="#gallery_modal" data-name="listimages[]" data-limit="10" href="<{url action=topshop_ctl_shop_image@loadImageModal isOnlyShow=item}>" ><i class="glyphicon glyphicon-plus"></i></div>
+                    </div>
+                </div>
+            </div>
+            <!--赠品简介-->
+            <div class="form-group">
+                <label class="col-sm-3 control-label">赠品简介：</label>
+                <div class="col-sm-6">
+                    <textarea name="gift[gift_profile]" rows="3" style="resize: none;" class="form-control" placeholder=""><{$gift.gift_profile}></textarea>
+                    <span class="help-block">最多300个字符。</span>
+                </div>
+            </div>
+            <!--赠品数量-->
+            <div class="form-group">
+                <label class="col-sm-3 control-label">赠品数量：</label>
+                <div class="col-sm-2">
+                    <input type="number" min="0" name="gift[gift_total]" value="<{$gift.gift_total}>" class="form-control">
+                </div>
+            </div>
+            <!--赠品有效期-->
+            <div class="form-group">
+                <label class="col-sm-3 control-label">赠品有效期：</label>
+                <div class="col-sm-4">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input type="text" class="form-control pull-right reservation" style="max-width:100%;" readonly name="gift_valid_time" value="<{$gift_valid_time}>">
+                    </div>
+                </div>
+            </div>
+            <!--已领数量-->
+            <div class="form-group">
+                <label class="col-sm-3 control-label">已领数量：</label>
+                <div class="col-sm-2">
+                    <input type="number" min="0" name="gift[gain_total]" value="<{$gift.gain_total}>" class="form-control" disabled>
+                </div>
+            </div>
+            <!--详情-->
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <div id="floor_7" class="panel panel-default">
+                        <div class="panel-heading">
+                            详情
+                        </div>
+                        <div class="bs-example bs-example-tabs">
+                            <ul id="myTab" class="nav nav-tabs" role="tablist">
+                                <li role="presentation" class="active"><a href="#home" id="home-tab" role="tab" data-toggle="tab" aria-controls="home" aria-expanded="true">电脑端</a></li>
+                                <li role="presentation" class=""><a href="#profile" role="tab" id="profile-tab" data-toggle="tab" aria-controls="profile" aria-expanded="false">移动端</a></li>
+                            </ul>
+                            <div id="myTabContent" class="tab-content">
+                                <div role="tabpanel" class="tab-pane fade active in" id="home" aria-labelledby="home-tab">
+                                    <textarea name="gift[gift_desc]" style="width:100%;" class="rich-editor"><{$gift.gift_desc}></textarea>
+                                </div>
+                                <div role="tabpanel" class="tab-pane fade" id="profile" aria-labelledby="profile-tab">
+                                    <textarea name="gift[gift_wap_desc]" class="rich-editor" style="width:100%;"><{$gift.gift_wap_desc}></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="box-footer">
+            <button type="submit" class="btn btn-primary"><{t}>保存<{/t}></button>
+            &nbsp;
+            <a href="<{url action=topshop_ctl_activity_gift@index active_id=$active_id}>" class="btn btn-default">取消</a>
+        </div>
+    </form>
+</div>
+<script>
+    $('.reservation').daterangepicker({
+        "timePicker": true,
+        "opens": "right",
+        "timePicker24Hour": true,
+        "timePickerIncrement": 1,
+        "locale": {
+            "format": "YYYY/MM/DD HH:mm"
+        }
+    });
+
+    $('.rich-editor').summernote({
+        height: 400,
+        tabsize: 2,
+        uploadURI: '<{url action=toputil_ctl_image@uploadImages from=shop}>',
+        uploadPerfix: 'upload_file'
+    });
+
+    $('#removeImg').on('click',function(){
+        $('.right_logo').val("");
+        $('.right_logo').next('.img-put').find('img').attr('src','');
+        $('.right_logo').next('.img-put').append('<i class="glyphicon glyphicon-picture"></i>');
+    });
+
+    function ajaxSubmit (e) {
+        var form = e.target;
+        e.preventDefault();
+        $.post(form.action, $(form).serialize(), function(rs) {
+            if(rs.error) {
+                $('#messagebox').message(rs.message);
+                return;
+            }
+            if(rs.success) {
+                $('#messagebox').message(rs.message, 'success');
+            }
+            if(rs.redirect) {
+                location.href = rs.redirect;
+            }
+        });
+    }
+</script>

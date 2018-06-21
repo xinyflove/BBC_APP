@@ -1,0 +1,218 @@
+<aside class="control-sidebar control-sidebar-light" style="height: 100%;">
+  <!-- Create the tabs -->
+  <ul class="nav nav-tabs nav-justified control-sidebar-tabs">
+    <li class=""><a href="#">筛选</a></li>
+    <li class=""><a href="#" data-toggle="control-sidebar"><i class="glyphicon glyphicon-remove"></i></a></li>
+  </ul>
+  <!-- Tab panes -->
+  <div class="tab-content">
+    <form action="<{url action=topshop_ctl_activity_vote@voteLogList}>" method="get" id="search-form">
+        <input type="hidden" value="<{$active_id}>" name="active_id">
+        <{if $game_id}>
+        <input type="hidden" value="<{$game_id}>" name="game_id">
+        <{/if}>      
+        <div class="box-body">
+
+        <div class="form-group">
+          <label>投票时间段:</label>
+
+          <div class="input-group">
+            <div class="input-group-addon">
+              <i class="fa fa-calendar"></i>
+            </div>
+            <input type="text" class="form-control pull-right reservation" value="">
+            <input type="hidden" name="start_time" id="beginTime" value="<{$start_time}>" />
+            <input type="hidden" name="end_time" id="endTime" value="<{$end_time}>" />
+          </div>
+          <!-- /.input group -->
+        </div>
+
+        <!-- text input -->
+        <{if !$game_id}>
+        <div class="form-group">
+          <label>参赛对象名称(关键词)：</label>
+          <input type="text" name="game_name" class="form-control" <{if $game_name}> value="<{$game_name|escape:"html"}>" <{/if}> placeholder="请输入 ...">
+        </div>
+        <{/if}>
+
+        <div class="form-group">
+          <label>IP：</label>
+          <input type="text" name="ip" class="form-control" <{if $ip}> value="<{$ip}>" <{/if}> placeholder="请输入 ...">
+        </div>
+
+      </div>
+      <!-- /.box-body -->
+      <div class="box-footer">
+        <button id="reset-form" type="button" class="btn btn-default">重置</button>
+        <button type="submit" class="btn btn-info pull-right">搜索</button>
+      </div>
+      <!-- /.box-footer -->
+    </form>
+  </div>
+</aside>
+<!-- <div class="callout callout-info">
+    <h4>营销方式说明：</h4>
+
+    <p>店铺级的促销方式，同一订单内，【特定】商品售价总金额，满【特定】金额【特定】会员可享受【特定】金额优惠；商家可设置生成的优惠券总数量。会员在【特定时限】内，通过点击领取优惠券，在购物车内订单结算时使用优惠券。该促销方式与其他不互斥。</p>
+</div> -->
+<div class="box box-primary clearfix">
+    <div class="mailbox-controls with-border">
+      <!-- <a class="btn btn-default btn-sm act-addcat" href="<{url action=topshop_ctl_activity_vote@expertEdit active_id=$active_id}>">
+        <i class="fa fa-plus-square-o"></i> 添加评审专家
+      </a> -->
+      <a  href="<{url action=topshop_ctl_export@export app=sysactivityvote model=vote}>" data-app="sysactivityvote" data-model="vote" class="btn btn-primary btn-sm export-filter-btn ">
+        <i class="glyphicon glyphicon-export"></i>
+        导出
+      </a>
+
+      <div class="pull-right header">
+        <div class="btn-group">
+           <button data-toggle="control-sidebar" class="btn btn-default">
+             <div class="text-light-blue">
+             <i class="fa fa-search"></i>
+              搜索
+             </div>
+           </button>
+         </div>
+      </div>
+
+    </div>
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th>序号</th>
+            <th>活动名称</th>
+            <th>参赛名称</th>
+            <th>openid</th>
+            <th>ip</th>
+            <th>投票数</th>
+            <th>投票时间</th>
+            <!-- <th>最后修改时间</th> -->
+            <!-- <th class="text-center">操作</th> -->
+        </tr>
+        </thead>
+        <{if $voteLogList}>
+        <tbody>
+            <{foreach from=$voteLogList item=item}>
+            <tr class="">
+                <td>
+                    <{$item.vote_id}>
+                </td>
+                <td>
+                    <{$item.active_info.active_name}>
+                </td>
+                <td>
+                    <{$item.game_info.game_name}>
+                </td>
+                <td>
+                    <{$item.open_id}>
+                </td>                
+                <td>
+                    <{$item.ip}>
+                </td>
+                <td>
+                    <{$item.vote_poll}>
+                </td>
+                <td>
+                    <{$item.create_time|cdate:'FDATE_STIME'}>
+                </td>
+                <!-- <td class="text-center">
+                    <a href="<{url action=topshop_ctl_activity_vote@expertEdit active_id=$active_id expert_id=$item.expert_id}>">编辑</a>
+                    <a href="javascript:void(0);" class="text-remove" data-id="<{$item.expert_id}>">删除</a>
+                </td> -->
+            </tr>
+            <{/foreach}>
+        </tbody>
+        <{else}>
+        <tbody>
+            <tr>
+              <td algin="center" colspan="9">
+                <p class="help-block text-center">暂无数据</p>
+              </td>
+            </tr>
+        </tbody>
+        <{/if}>
+    </table>
+    <div class="text-right">
+        <{pagers data=$pagers}>
+        <{if $total > 0}>
+        <span class="page-number">共&nbsp;<em class="text-aqua"><{$total}></em>&nbsp;条记录</span>
+        <{/if}>
+    </div>
+</div>
+<span class="export-filter" data-value="" data-app="" data-model=""></span>
+
+<script>
+    $('.reservation').daterangepicker({
+        "opens": 'right',
+        "timePicker" : true,
+        "timePicker24Hour" : true,
+        // "separator" : '至',
+        <{if $start_time}>
+        "startDate": "<{$start_time}>",
+        "endDate": "<{$end_time}>",
+        <{/if}>
+        "locale": {
+            "format": 'YYYY-MM-DD HH:mm:ss',
+            // "fromLabel" : '2017-01-02 12:22:33',
+            // "toLabel" : '2017-01-04 13:22:33',
+        },
+    }, function(start, end, label) { // 格式化日期显示框
+        $('#beginTime').val(start.format('YYYY-MM-DD HH:mm:ss'));
+        $('#endTime').val(end.format('YYYY-MM-DD HH:mm:ss'));
+    });
+
+    <{if !$start_time}>
+        $('.reservation').val('');
+    <{/if}>
+
+    $(function () {
+        // $('[data-toggle="tooltip"]').tooltip()
+
+        $('.text-remove').on('click', function(){
+          var _this = $(this);
+          Modal.confirm({msg: "确定删除该专家？"}).on(function(e) {
+            if(e==true) {
+              delItemById(_this.attr('data-id'));
+            }
+          });
+        });
+
+        //删除专家
+        function delItemById(expert_id) {
+          $.post('<{url action=topshop_ctl_activity_vote@expertDelete}>', 'expert_id='+expert_id, function(rs){
+            if(rs.error) {
+              $('#messagebox').message(rs.message);
+              return;
+            }
+            if(rs.success) {
+              $('#messagebox').message(rs.message, 'success');
+              setTimeout(function(){location.reload();}, 800);
+            }
+          });
+        }
+
+    });
+
+    $('.export-filter-btn').click(function (e) {
+        e.preventDefault();
+        var url = $(this).attr('href');
+        var app = $(this).data('app');
+        var model = $(this).data('model');
+
+        var val = $(this).attr('data-value');
+        var filter = '<{$expertParams}>';
+
+        $('.export-filter').attr('data-app',app);
+        $('.export-filter').attr('data-model',model);
+        $('.export-filter').attr('data-value',filter);
+
+        $('#exportDialog').modal({remote: url}).attr('data-app',app).attr('data-model',model);
+    });
+
+    // 重置搜索表单
+    $('#reset-form').on('click',function(){
+      $('input:visible').val('');
+     $('.select-reset').val(-1);
+    });
+</script>

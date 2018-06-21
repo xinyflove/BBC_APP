@@ -1,0 +1,204 @@
+<{include file="topwap/activityvote/header.html" }>
+<script>
+	mui.init();
+</script>
+<!--<div class="mui-content m-915EatQD-foodVoteIndex">
+	<div class="foodVoteIndex-content">
+		<img src="/app/topwap/statics/vote/img/icon_font_FM915.png" alt="">
+		<a href="<{url action=topwap_ctl_activityvote_vote@cat}>?type=popular&active_id=<{$_GET['active_id']}>" class="reviewLink">
+			<h3>大众评审入口 </h3>
+			<span>（投票时间：<{$active.popular_vote_start_time_date}>-<{$active.popular_vote_end_time_date}>）</span>
+		</a>
+		<!--<a href="<{url action=topwap_ctl_activityvote_vote@cat}>?type=expert&active_id=<{$_GET['active_id']}>" class="expertsLink">-->
+		<!--<a id="expert" class="expertsLink">
+			<h3>专家评审入口</h3>
+			<span>（评论时间：<{$active.expert_vote_start_time_date}>-<{$active.expert_vote_end_time_date}>） </span>
+		</a>
+	</div>
+</div>-->
+
+<{if $active.boot_ad_able}>
+<div class="imgStart" id="StartPage">
+	<a href="<{$active.boot_ad_url}>"><img src="<{$active.boot_ad_image}>"/></a>
+	<div class="imgStart_countdown">
+		<div class="countDown_circle">
+			<span id="res">3</span>
+		</div>
+	</div>
+</div>
+<{/if}>
+<div class="shopex-content foodIndex_v2">
+	<div class="downCart">
+		<img src="/app/topwap/statics/vote/img/img_bg01.png" alt="" />
+		<img src="/app/topwap/statics/vote/img/icon_car_effect.png" class="car_effect"/>
+		<!--<img src="/app/topwap/statics/vote/img/img_down_cart.png" alt="" />-->
+	</div>
+	<div class="toggleAdv_bg">
+		<div class="toggleAdv">
+			<a href="<{if $active.top_ad_url}><{$active.top_ad_url}><{else}>javascript:;<{/if}>" class="shopex-block"><img src="<{$active.top_ad_image}>"/></a>
+			<div class="upCart">
+				<img src="/app/topwap/statics/vote/img/img_bg02.png"/>
+				<img src="/app/topwap/statics/vote/img/icon_car_effect.png" class="car_effect" style="top: 15px;"/>
+				<!--<img src="/app/topwap/statics/vote/img/img_up_cart.png"/>-->
+			</div>
+		</div>
+	</div>
+	<div class="foodIndex_v2-entry" style="margin-top: 48%;position:initial">
+		<a href="<{url action=topwap_ctl_activityvote_vote@cat}>?type=popular&active_id=<{$_GET['active_id']}>" class="img_intro_v2" style="margin-top:-2rem;width: 65%;height: 80px;background-size: 100% 80px;/* margin-left: 25%; *//* margin-top: -55px; */padding-top: 15px;text-align: center;margin: 0 auto;margin-left: 16%;padding-left: 1rem;">
+			<h3 style="margin-top: 10px;font-size: 14px;">大众评审入口 </h3>
+			<!--<h3>大众评审入口 </h3>-->
+			<span>（投票时间:<{$active.popular_vote_start_time_date}>-<{$active.popular_vote_end_time_date}>）</span>
+		</a>
+		<a id="expert" href="#" class="img_intro_v2" style="width: 65%;height: 80px;background-size: 100% 80px;/* margin-left: 25%; *//* margin-top: -55px; */padding-top: 15px;text-align: center;margin: 0 auto;margin-left: 16%;padding-left: 1rem;margin-top:-5px">
+			<h3 style="margin-top: 10px;font-size: 14px;">专家评审入口 </h3>
+			<!---<h3>专家评审入口 </h3>-->
+			<span>（投票时间:<{$active.expert_vote_start_time_date}>-<{$active.expert_vote_end_time_date}>）</span>
+		</a>
+	</div>
+	<{if $now>$active.popular_vote_end_time && $now>$active.expert_vote_end_time}>
+	<div class="bd" style="width: 56%;margin:0 auto;margin-top:-12px">
+		<a href="<{url action=topwap_ctl_activityvote_vote@voteResults}>?shop_id=<{$active['shop_id']}>&active_id=<{$_GET['active_id']}>"><img style="width:100%" src="/app/topwap/statics/vote/img/ranking.png"></a></a>
+	</div>
+	<{/if}>
+	<div class="tyzz" style="margin-top:-10px">
+		<p style="text-align: center;color: #fff;margin-bottom:0">特约赞助商</p>
+		<p style="width:60%;margin:0 auto;overflow:hidden;"><img style="width:100%;" src="/app/topwap/statics/vote/img/tyzz.png"></p>
+	</div>
+	<div class="fixed-foot_v2">
+		<p>主办方：FM91.5青岛音乐体育广播/FM87.5经典音乐调频</p>
+		<p>青岛市饭店和烹饪协会/青岛市旅游协会</p>
+		<p>承办方：青岛市广播电视台广告经营中心</p>
+	</div>
+</div>
+
+
+
+<!--输入密码 -->
+<div id="comment-password" style="display: none;">
+	<div class="m-915EatQD-reviewDialog-bg" style="display: block"></div>
+	<div class="m-915EatQD-dialogPassword">
+		<div class="dialogPassword-dotted">
+			<h3>请输入密码</h3>
+			<div class="mui-clearfix">
+				<input type="password" value="" name="sn1" id="sn1" maxlength="1">
+				<input type="password" value="" name="sn2" id="sn2" maxlength="1">
+				<input type="password" value="" name="sn3" id="sn3" maxlength="1">
+				<input type="password" value="" name="sn4" id="sn4" maxlength="1">
+			</div>
+			<a href="#" id="confirm-password" class="btn_ok">确定</a>
+		</div>
+	</div>
+</div>
+<!--add_2017/10/24_by_wanghaichao_start  分享的-->
+<{include file="topwap/index.html"}>
+<!--add_2017/10/24_by_wanghaichao_end-->
+<script>
+    !function (win, $) {
+        $("#expert").click(function(){
+            var time_data = {
+				"active_id":<{$active_id}>,
+        	};
+			var url = "<{url action=topwap_ctl_activityvote_votedetail@validateTime}>";
+            $.post(url,time_data,function (data) {
+                if(data.success === true){
+                    $("#comment-password").show(200);
+                }else{
+                	if(data.error_not_start === true)
+               		{
+                    dialog.toast("还未到评审时间~", 'none', 1000);
+            		}
+                	if(data.error_end === true)
+               		{
+                		//dialog.toast("评审已结束~", 'none', 1000);
+            		}
+                    setTimeout(function () {
+                        window.location.href = "<{url action=topwap_ctl_activityvote_expert@expertList}>?&active_id=<{$_GET['active_id']}>";
+                    },500);
+                }
+            });
+        });
+
+        $(".m-915EatQD-reviewDialog-bg").on('click',function () {
+            $("#comment-password").hide(300);
+        });
+
+        $("#confirm-password").click(function () {
+            var url = "<{url action=topwap_ctl_activityvote_votedetail@validateExpert}>";
+            var ps1 = $("#sn1").val();
+            var ps2= $("#sn2").val();
+            var ps3 = $("#sn3").val();
+            var ps4 = $("#sn4").val();
+            var password = ps1+ps2+ps3+ps4;
+            if(password == ''){
+                $("#comment-password").hide(100);
+                dialog.toast("专家密码不能为空", 'none', 1000);
+                return false;
+        	}
+            var post_data = {
+				"active_id":<{$active_id}>,
+                "comment_password":password
+       		 };
+			$.post(url,post_data,function (data) {
+				if(data.success === true){
+					$("#comment-password").hide(10);
+					dialog.toast(data.message.msg, 'none', 1000);
+					setTimeout(function () {
+						if(data.message.active_is === true){
+							window.location.href = "<{url action=topwap_ctl_activityvote_vote@cat}>?type=expert&active_id=<{$_GET['active_id']}>";
+						}else{
+							window.location.href = "<{url action=topwap_ctl_activityvote_expert@expertList}>?&active_id=<{$_GET['active_id']}>";
+						}
+					},1000);
+				}else{
+					$("#comment-password").hide(100);
+					dialog.toast(data.message, 'none', 1000);
+				}
+			});
+        });
+        var dialog = win.YDUI.dialog;
+    }(window,jQuery);
+    // 输入密码
+    $("#sn1").focus();
+    $("input[name^='sn']").each(function () {
+        $(this).keyup(function (e) {
+            e = window.event || e;
+            var k = e.keyCode || e.which;
+            console.log(k);//k值就是当前输入的值
+            if(k==8){
+                if ($(this).val().length < 1){
+                    $(this).prev().focus();
+                }
+            }else{
+                if ($(this).val().length > 0) {
+                    $(this).next().focus();
+                }
+            }
+        });
+    });
+	
+	$(".downCart,.downCart img").on('click',function(){
+		$(".toggleAdv_bg").show();
+		$(".toggleAdv").slideDown();
+	});
+	// 2、点击回去
+	$(".upCart,.upCart img").on("click",function(){
+		$(".toggleAdv").slideUp("slow",function(){
+			$(".toggleAdv_bg").hide();
+		});
+	});
+	
+$(function(){
+	var num = 3;
+	var res = $("#res");
+	var timer = setInterval(function(){
+		num--;
+		res.html(num);
+		if(num<1){
+			num=1;
+			$("#StartPage").hide();
+			clearInterval(timer);
+		}
+	},1000);
+	
+});
+</script>

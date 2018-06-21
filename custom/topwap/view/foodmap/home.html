@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>915美食地图</title>
+    <link rel="stylesheet" type="text/css" href="/app/topwap/statics/foodmap/font/iconfont.css" />
+    <link rel="stylesheet" type="text/css" href="/app/topwap/statics/foodmap/css/public.css" />
+    <link rel="stylesheet" type="text/css" href="/app/topwap/statics/foodmap/css/915foodmap-all.css" />
+    <link rel="stylesheet" type="text/css" href="/app/topwap/statics/foodmap/css/loaders.css" />
+    <link href="https://cdn.bootcss.com/Swiper/3.4.2/css/swiper.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/app/topwap/statics/foodmap/css/915map-live.css" />
+    <link rel="stylesheet" href="/app/topwap/statics/foodmap/css/main.css">
+</head>
+<body>
+
+<!-- 地图展示区开始 -->
+<div id="container" class="container"></div>
+<!-- 地图展示区结束 -->
+
+<!--红包游戏Box开始-->
+<div class="packet-active">
+    <div class="off-packet-active iconfont icon-guanbi">
+
+    </div>
+    <ul class="couten">
+        <li>
+            <a href="#">
+                <img class="hb_img" src="/app/topwap/statics/foodmap/img/hb_1.png">
+            </a>
+        </li>
+    </ul>
+    <!--获得红包弹出对话框-->
+    <div class="mo">
+        <div class="sen">
+            <img src="/app/topwap/statics/foodmap/img/gx.png" style="width:285px;height: 365px">
+            <h2>获得
+                <span class="price">5</span>元红包</h2>
+            <!--<h3>您还有<span class="restCount">3</span>次抢红包机会</h3>-->
+            <a href="#">确定</a>
+        </div>
+    </div>
+    <!--未获得红包弹出对话框-->
+    <div class="mos2">
+        <div class="sens2">
+            <img src="/app/topwap/statics/foodmap/img/hyh.png" style="width:257px;height: 266px">
+            <h3>未抢到红包
+                <span class="restCount2"></span>
+            </h3>
+            <a href="#">确定</a>
+        </div>
+    </div>
+</div>
+<!--红包游戏Box开始-->
+
+<!-- 侧边栏开始 -->
+<div class="sidebar-right" id="sidebarRight">
+    <ul>
+        <li data-type="all" class="active">
+            <i class="iconfont icon-quanbu"></i>
+        </li>
+        <li data-type="food">
+            <i class="iconfont icon-meishi"></i>
+        </li>
+        <li data-type="activity">
+            <i class="iconfont icon-huodong"></i>
+        </li>
+        <li data-type="live">
+            <i class="iconfont icon-zhibo"></i>
+        </li>
+        <li class="red-packbox">
+            <i class="iconfont icon-red-packet"></i>
+        </li>
+    </ul>
+</div>
+<!-- 侧边栏结束 -->
+
+<!-- 搜索框开始 -->
+<div class="map-search" id="mapSearch">
+    <div class="map-search-input">
+        <div class="map-search-input-img">
+            <img src="/app/topwap/statics/foodmap/img/left.png" onclick="javascript:history.go(-1);"/>
+        </div>
+        <input type="text" name="" id="searchWord" value="" placeholder="请输入美食关键词"/>
+    </div>
+    <div class="map-search-btn">
+        <img src="/app/topwap/statics/foodmap/img/search.png" id="searchBtn"/>
+    </div>
+</div>
+<!-- 搜索框结束 -->
+
+<!-- 展开更多结果按钮开始 -->
+<div class="foodmapFooter" id="showMoreBtn">
+    点击展开更多结果
+</div>
+<!-- 展开更多结果按钮结束 -->
+
+<!-- 展示供应商列表开始 -->
+<div class="mapListfooter" id="showListBox">
+    <ul id="target" draggable="true" class="supplier-list">
+
+    </ul>
+</div>
+<!-- 展示供应商列表结束 -->
+
+<!-- 展示供应商更多列表开始 -->
+<div class="mapend" id="showListMoreBox">
+    <div class="mapend-top">
+        <div class="mapend-header">
+				<span>
+					<img src="/app/topwap/statics/foodmap/img/left.png" />
+				</span>
+            <input type="text" name="" id="searchWord2" value="" placeholder="请输入美食关键词"/>
+            <i>
+                <img src="/app/topwap/statics/foodmap/img/search.png" id="searchBtn2"/>
+            </i>
+        </div>
+        <div class="mapend-screen" id="selectBox">
+            <ul>
+                <li>
+                    <select name="type" data-cate="type" id="type">
+                        <option value="all">全部分类</option>
+                        <option value="food">美食</option>
+                        <option value="activity">活动</option>
+                        <option value="live">直播</option>
+                    </select>
+                </li>
+                <li>
+                    <select name="distance" data-cate="distance" id="distance">
+                        <option value="1000">1000米</option>
+                        <option value="3000">3000米</option>
+                        <option value="5000">5000米</option>
+                        <option value="10000">10000米</option>
+                        <option value="0">全城</option>
+                    </select>
+                </li>
+                <li>
+                    <select name="order" data-cate="order" id="order">
+                        <option value="distance,asc">离我最近</option>
+                    </select>
+                </li>
+            </ul>
+        </div>
+        <div class="mapend-banner">
+            <img src="/app/topwap/statics/foodmap/img/banner.png" />
+        </div>
+        <div class="mapend-list-title">
+            <h2 id="locationInfo"></h2>
+            <img src="/app/topwap/statics/foodmap/img/shuaxin.png" alt="" />
+        </div>
+    </div>
+    <div class="mapend-list">
+        <ul id="supplierMore" class="supplier-list">
+
+        </ul>
+    </div>
+</div>
+<!-- 展示供应商更多列表结束 -->
+
+<!-- 供应商详情开始 -->
+<div class="mapLivefooter" style="display: none;" id="supplierDetail">
+    <div class="mapLivefooter-top">
+        <img src="/app/topwap/statics/foodmap/img/rose.png" class="mapLivefooter-top-rightPosition" onclick="javascript:openGaoDeNav();"/>
+        <div class="swiper-container" style="width:100% ;">
+            <div class="swiper-wrapper" id="voucherList">
+
+            </div>
+            <!-- Add Pagination -->
+            <div class="swiper-pagination"></div>
+        </div>
+    </div>
+    <div class="mapLivefooter-bottom">
+        <a href="#" id="detaliDel">电话</a>
+        <a href="javascript:openGaoDeNav();">导航</a>
+        <a href="#" id="detailFastBuy">立即购买</a>
+    </div>
+</div>
+<!-- 供应商详情结束 -->
+
+<!-- 引入jquery -->
+<script src="https://cdn.bootcss.com/jquery/2.1.1/jquery.min.js"></script>
+<!--第三方js-->
+<script src="/app/topwap/statics/layer/mobile/layer.js"></script>
+<script>
+    //loading带文字
+    layer.open({
+        type: 2,content: '加载中',shadeClose: false
+    });
+</script>
+<!--华东插件-->
+<script src="https://cdn.bootcss.com/touchjs/0.2.14/touch.min.js"></script>
+<!-- 引入高德地图JSAPI -->
+<script src="https://webapi.amap.com/maps?v=1.4.0&key=<{$map_key}>"></script>
+<!-- UI组件库 1.0 -->
+<script src="https://webapi.amap.com/ui/1.0/main.js?v=1.0.11"></script>
+<!--第三方js-->
+<script src="/app/topwap/statics/foodmap/js/ejs.min.js"></script>
+<!-- 自定义js -->
+<script type="text/javascript" src="/app/topwap/statics/foodmap/js/915foodmap-all.js"></script>
+<script>
+    var supplierDataUrl = "<{url action=topwap_ctl_foodmap_index@supplier_data}>";
+    var iconLocationImg = "/app/topwap/statics/foodmap/img/icon_location.png";
+    var openGaoDeNavUrl = "<{url action=topwap_ctl_foodmap_index@map_nav}>";
+    var itemDetailUrl = "<{url action=topwap_ctl_item_detail@index}>";
+    var redEnvelopeDataUrl = "<{url action=topwap_ctl_foodmap_index@red_envelope_list}>";
+    var shopId = "<{$shop_id}>";
+</script>
+<script src="/app/topwap/statics/foodmap/js/main.js"></script>
+
+<!--模版开始-->
+<script type="text/template" id="voucherListTemp">
+    <%$.each(data.supplier_item,function(j,p){%>
+
+    <div class="swiper-slide">
+        <a href="<%=p.url%>" data-type="<%=data.supplier_type%>">
+            <div class="mapLivefooter-top-left">
+                <%if(data.supplier_type=="food"){%>
+                <img src="<%=p.image_default_id%>" />
+                <%}else{%>
+                <img src="<%=data.supplier_img%>" />
+                <%}%>
+            </div>
+            <div class="mapLivefooter-top-right">
+                <h2><%=data.supplier_name%></h2>
+
+                <%if(data.supplier_type=="food"){%>
+                <p class="map-shop"><%= p.title %></p>
+                <p class="map-liveprice">
+                    <span><%= p.mkt_price %></span>
+                    <del><%= p.price %></del>
+                </p>
+                <%}%>
+
+                <%if(data.supplier_type=="live"){%>
+                <p class="map-liststate">主播直播中</p>
+                <%}else if(data.supplier_type=="all"){%>
+                <p class="map-liststate">全部</p>
+                <%}else if(data.supplier_type=="food"){%>
+                <!--<p class="map-liststate">美食</p>-->
+                <%}else{%>
+                <p class="map-liststate">活动</p>
+                <%}%>
+                <p class="map-livedistance"><%= data.supplier_addr%></p>
+            </div>
+        </a>
+    </div>
+    <%})%>
+</script>
+<script type="text/template" id="supplierMoreTemp">
+    <%$.each(data,function(i,item){%>
+    <%$.each(item.supplier_item,function(j,p){%>
+    <li data-url="<%=p.url%>">
+        <div class="mapend-list-left">
+            <%if(item.supplier_type=="food"){%>
+            <img src="<%=p.image_default_id%>" />
+            <%}else{%>
+            <img src="<%=item.supplier_img%>" />
+            <%}%>
+        </div>
+        <div class="mapend-list-right">
+            <h2><%=item.supplier_name%></h2>
+
+            <%if(item.supplier_type=="food"){%>
+            <p class="mapend-shop"><%= p.title %></p>
+            <p class="mapend-listprice">
+                <span><%= p.mkt_price %></span>
+                <del><%= p.price %></del>
+            </p>
+            <%}%>
+
+            <%if(item.supplier_type=="live"){%>
+            <p class="mapend-liststate">主播直播中</p>
+            <%}else if(item.supplier_type=="all"){%>
+            <p class="mapend-liststate">全部</p>
+            <%}else if(item.supplier_type=="food"){%>
+            <!--<p class="mapend-liststate">美食</p>-->
+            <%}else{%>
+            <p class="mapend-liststate">活动</p>
+            <%}%>
+            <p class="mapend-listdistance"><%= item.supplier_addr%></p>
+        </div>
+    </li>
+    <%})%>
+    <%})%>
+</script>
+<script type="text/template" id="supplierListTemp">
+    <%$.each(data,function(index,item){%>
+    <%$.each(item.supplier_item,function(j,p){%>
+    <li data-url="<%=p.url%>">
+        <div class="mapListfooter-list-left">
+            <%if(item.supplier_type=="food"){%>
+            <img src="<%=p.image_default_id%>" />
+            <%}else{%>
+            <img src="<%=item.supplier_img%>" />
+            <%}%>
+        </div>
+        <div class="mapListfooter-list-right">
+            <h2><%=item.supplier_name%></h2>
+
+            <%if(item.supplier_type=="food"){%>
+            <p class="map-shop"><%= p.title %></p>
+            <p class="map-listprice">
+                <span><%= p.mkt_price %></span>
+                <del><%= p.price %></del>
+            </p>
+            <%}%>
+
+            <%if(item.supplier_type=="live"){%>
+            <p class="map-liststate">主播直播中</p>
+            <%}else if(item.supplier_type=="all"){%>
+            <p class="map-liststate">全部</p>
+            <%}else if(item.supplier_type=="food"){%>
+            <%}else{%>
+            <p class="map-liststate">活动</p>
+            <%}%>
+            <p class="map-listdistance"><%= item.supplier_addr%></p>
+        </div>
+    </li>
+    <%})%>
+    <%})%>
+</script>
+<!--模版结束-->
+<script type="text/javascript" charset="utf-8">
+    // 点击确认的时候关闭模态层
+    $(".sen a").click(function () {
+        $(".mo").css("display", "none")
+    });
+    $(".sens2 a").click(function () {
+        $(".mos2").css("display", "none")
+    });
+    /*钱包角度*/
+    var win = (parseInt($("body").css("width"))) - 60;
+    var add = function () {
+        var hb = parseInt(Math.random() * (3 - 1) + 1);
+        var Wh = parseInt(Math.random() * (70 - 30) + 20);
+        var Left = parseInt(Math.random() * (win - 0) + 0);
+        var rot = (parseInt(Math.random() * (45 - (-45)) - 45)) + "deg";
+        //				console.log(rot)
+        num++;
+        $(".couten").append("<li class='li" + num + " ccc' ><img src='/app/topwap/statics/foodmap/img/hb_" + hb + ".png'></a></li>");
+        $(".li" + num).css({
+            "left": Left,
+        });
+        $(".li" + num + " a img").css({
+            "width": Wh,
+            "transform": "rotate(" + rot + ")",
+            "-webkit-transform": "rotate(" + rot + ")",
+            "-ms-transform": "rotate(" + rot + ")", /* Internet Explorer */
+            "-moz-transform": "rotate(" + rot + ")", /* Firefox */
+            "-webkit-transform": "rotate(" + rot + ")",/* Safari 和 Chrome */
+            "-o-transform": "rotate(" + rot + ")" /* Opera */
+        });
+        $(".li" + num).animate({ 'top': $(window).height() + 50 }, 5500, function () {
+            //删掉已经显示的红包
+            this.remove()
+        });
+
+        //setTimeout(add,200)
+
+    }
+    var num = 0;
+    var nums = 0;
+
+    var del = function () {
+        nums++;
+        $(".li" + nums).remove();
+    }
+    //var time1 = setTimeout(add,3000);
+    //var time2 = setTimeout(del,200)
+    var time1;
+    //点击出现红包框后开始下雨
+    //点击红包事件
+    $(".red-packbox").on("click", function () {
+        $(".packet-active").show()
+        var num = 0;
+        var nums = 0;
+        time1 = setInterval(add, 200)
+
+    })
+    //点击关闭红包雨页面
+    $(".off-packet-active").on("click", function () {
+        $(".packet-active").hide()
+        window.clearInterval(time1);
+        $(".packet-active li").remove()
+        //window.clearInterval(add);
+    })
+    $(".couten").on("click", "li", function () {
+        var num2 = parseInt(Math.random() * 2);
+        console.log(num2)
+        if (num2 == 1) {
+            //alert("恭喜中奖")
+            $(".mo").css("display", "block")
+        } else {
+            //alert("很遗憾未中奖")
+            $(".mos2").css("display", "block")
+        }
+    });
+
+</script>
+<script src="https://cdn.bootcss.com/Swiper/3.4.2/js/swiper.min.js"></script>
+<script>
+
+</script>
+</body>
+</html>

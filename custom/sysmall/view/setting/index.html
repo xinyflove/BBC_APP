@@ -1,0 +1,36 @@
+<div class="tableform tableform-tabs">
+    <{tabber}>
+    <{tab name="商城设置"|t:'sysmall'}>
+    <form action="<{url route='shopadmin' app='sysmall' ctl='setting' act='index'}>" method="post">
+        <div class="clear division">
+            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                    <th><{t}>商品审核:<{/t}></th>
+                    <td>
+                        <input type="radio" value="true"  name='goods_check' id="goods_check_true" <{if $goods_check == 'true'}>checked="checked"<{/if}>  />
+                        <label for="goods_check_true"><{t}>开启<{/t}></label>
+                        <input  type="radio" value="false" name='goods_check' id="goods_check_false" <{if $goods_check != 'true'}>checked="checked"<{/if}> />
+                        <label for="goods_check_false"><{t}>关闭<{/t}></label>
+                        <!--NULL 和 'false' 为关闭,'true'为开启-->
+                    </td>
+                </tr>
+
+                <tr>
+                    <th><{t}>允许代售店铺修改销售价:<{/t}></th>
+                    <td>
+                        <input type="radio" value="true"  name='modify_price' id="modify_price_true" <{if $modify_price == 'true'}>checked="checked"<{/if}>  />
+                        <label for="modify_price_true"><{t}>开启<{/t}></label>
+                        <input  type="radio" value="false" name='modify_price' id="modify_price_flase" <{if $modify_price != 'true'}>checked="checked"<{/if}> />
+                        <label for="modify_price_flase"><{t}>关闭<{/t}></label>
+                        <!--NULL 和 'false' 为关闭,'true'为开启-->
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="table-action"><{button type="submit" label="保存"|t:'sysmall' }></div>
+    </form>
+    <{/tab}>
+    <{/tabber}>
+</div>
+

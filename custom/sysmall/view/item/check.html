@@ -1,0 +1,44 @@
+<form id="itemCheckForm" class="tableform" action="?app=sysmall&ctl=item&act=checkSave" method="POST">
+
+    <input type="hidden" name="mall_item[item_id]" value="<{$item_id}>">
+    <div class="division">
+        <table width="100%" border="0" cellpadding="0" cellspacing="0">
+            <tr>
+                <th><{t}>商品审核:<{/t}></th>
+                <td style="padding-top: 7px;">
+                    <input type="radio" value="onsale" name='mall_item[status]' id="status_onsale" checked="checked" />
+                    <label for="status_onsale"><{t}>通过<{/t}></label>
+                    <input  type="radio" value="refuse" name='mall_item[status]' id="status_refuse" />
+                    <label for="status_refuse"><{t}>驳回<{/t}></label>
+                </td>
+            </tr>
+            <tr>
+                <th><{t}>不通过原因：<{/t}></th>
+                <td><{input type="textarea" vtype="" name="mall_item[reason]"}></td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="table-action">
+        <{button label="保存"|t:'syscategory' type="submit" class="btn-primary"}>
+    </div>
+
+</form>
+<script>
+    $('itemCheckForm').store('target',{
+        onComplete:function(rs){
+            if(!rs) return;
+            rs = JSON.decode(rs);
+            if(rs.success){
+                if(window.finderGroup) window.finderGroup['<{$env.get.finder_id}>'].refresh();
+                if($('itemCheckForm').getParent('.dialog')){
+                    var Dlg = $('itemCheckForm').getParent('.dialog').retrieve('instance');
+                    if(Dlg.update){
+                        Dlg.update.retrieve('instance').initContent();
+                    }
+                    Dlg.close();
+                }
+            }
+        }
+    });
+</script>

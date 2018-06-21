@@ -1,0 +1,12 @@
+<app>
+    <name>多店铺商城业务管理</name>
+    <type>site</type>
+    <description>提供多店铺商城业务功能</description>
+    <author>
+        <name>广电开发(PHP Team)</name>
+        <email>xinyflove@sina.com</email>
+        <url>http://qtv.tvplaza.cn</url>
+    </author>
+    <version>0.1</version>
+    <license>shopex license</license>
+</app>

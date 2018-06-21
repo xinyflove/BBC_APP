@@ -1,0 +1,7 @@
+<cronentries>
+    <cron id="foodmap_tasks_supplierSync">
+        <description>批量跟接口同步供应商信息</description>
+        <schedule>* * * * *</schedule>
+        <enabled>true</enabled>
+    </cron>
+</cronentries>

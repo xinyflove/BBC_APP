@@ -1,0 +1,7 @@
+<services>
+	<!-- 账户 -->
+    <service id="openapi.store_app_giftcode">
+        <class>ljstore_app_giftcode</class>
+    </service>
+
+</services>

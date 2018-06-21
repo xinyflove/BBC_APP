@@ -1,0 +1,14 @@
+<app>
+    <name>蓝睛商城</name>
+    <type>site</type>
+    <description>蓝睛商城</description>
+
+    <author>
+        <name>青岛广电开发团队whc</name>
+        <email></email>
+        <url></url>
+    </author>
+
+    <version>1.0</version>
+    <license></license>
+</app>

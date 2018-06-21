@@ -1,0 +1,57 @@
+<div class="box-body">
+    <!--标签-->
+    <div class="form-group">
+        <label class="col-sm-2 control-label">标签：</label>
+        <div class="col-sm-6">
+            <input type="text" name="game_detail[base_desc][label_arr]" value="<{$game_detail.base_desc.label_arr}>" class="form-control" placeholder="例如：活血;养生" required maxlength="50">
+            <span class="help-block">多个标签用;连接。</span>
+        </div>
+    </div>
+    <!--配料-->
+    <div class="form-group">
+        <label class="col-sm-2 control-label">配料：</label>
+        <div class="col-sm-6">
+            <input type="text" name="game_detail[work_desc]" value="<{$game_detail.work_desc}>" class="form-control" placeholder="例如：虾-500克;黄豆芽-80克" required maxlength="50">
+            <span class="help-block">格式为：配料名-配料值，多个标签用;连接。</span>
+        </div>
+    </div>
+    <!--营业许可-->
+    <div class="form-group">
+        <label class="col-sm-2 control-label">营业许可：</label>
+        <div class="col-sm-10">
+            <div class="col-sm-9">
+                <div class="multiple-upload pro-thumb" >
+                    <{if $game_detail.recommend_reason_desc}>
+                    <{foreach from=$game_detail.recommend_reason_desc item=image_id key=key }>
+                    <div class="multiple-item">
+                        <div class="multiple-del glyphicon glyphicon-remove-circle"></div>
+                        <a class="select-image" data-toggle="modal" href="<{url action=topshop_ctl_shop_image@loadImageModal isOnlyShow=item}>" data-target="#gallery_modal">
+                            <input type="hidden" name="listimages[]" value="<{$image_id}>">
+                            <div class="img-put"><img src="<{$image_id|storager:t}>"></div>
+                        </a>
+                    </div>
+                    <{/foreach}>
+                    <{/if}>
+                    <div class="multiple-add" data-toggle="modal" data-isMultiple="true" data-target="#gallery_modal" data-name="listimages[]" data-limit="10" href="<{url action=topshop_ctl_shop_image@loadImageModal isOnlyShow=item}>" ><i class="glyphicon glyphicon-plus"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--做法-->
+    <div class="form-group">
+        <div class="col-sm-12">
+            <div id="floor_7" class="panel panel-default">
+                <div class="panel-heading">
+                    做法
+                </div>
+                <div class="bs-example bs-example-tabs">
+                    <div id="myTabContent" class="tab-content">
+                        <div role="tabpanel" class="tab-pane fade active in" id="home" aria-labelledby="home-tab">
+                            <textarea name="game_detail[base_list_image]" style="width:100%;" class="rich-editor"><{$game_detail.base_list_image}></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

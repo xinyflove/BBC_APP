@@ -1,0 +1,80 @@
+<div class="tableform">
+    <div class="division" style="position:static;">
+        <h3><{t}>基本信息<{/t}></h3>
+        <table width="100%" border="0" cellpadding="0" cellspacing="0"  class="shop-setting">
+            <tr>
+                <th><{t}>商品标题<{/t}>：</th>
+                <td>
+                    <img src="<{$image_default_id|storager:t}>">
+                    <a href="<{url action=topc_ctl_item@index  item_id=$item_id}>" target="_blank"><{$title}></a>
+                </td>
+            </tr>
+            <tr>
+                <th><{t}>商品副标题<{/t}>：</th>
+                <td>
+                    <{if $sub_title}><{$sub_title}><{else}><{$title}><{/if}></td>
+            </tr>
+            <tr>
+                <th><{t}>店铺名称<{/t}>：</th>
+                <td><{$shop_id|shopname}></td>
+            </tr>
+            <tr>
+                <th><{t}>进货价<{/t}>：</th>
+                <td><{$supply_price|cur}></td>
+            </tr>
+            <tr>
+                <th><{t}>销售价<{/t}>：</th>
+                <td><{$price|cur}></td>
+            </tr>
+            <tr>
+                <th><{t}>所属类目<{/t}>：</th>
+                <td><{$catInfo.lv1.cat_name}>><{$catInfo.lv2.cat_name}>><{$catInfo.lv3.cat_name}></td>
+            </tr>
+            <tr>
+                <th><{t}>店铺分类<{/t}>：</th>
+                <{if $parent_id}>
+                <{foreach from=$parentCatInfo item=parentInfo}>
+                <td><{$parentInfo['cat_name']}> > <{$childCatName}></td>
+                <{/foreach}>
+                <{else}>
+                <td><{$childCatName}></td>
+                <{/if}>
+            </tr>
+            <tr>
+                <th><{t}>商品品牌<{/t}>：</th>
+                <td><{$brand_id|brandname}></td>
+            </tr>
+            <tr>
+                <th><{t}>商品库存<{/t}>：</th>
+                <td><{$store}><{$unit}></td>
+            </tr>
+            <tr>
+                <th><{t}>商品重量<{/t}>：</th>
+                <td><{$weight}> 千克(kg)</td>
+            </tr>
+            <tr>
+                <th><{t}>计价单位<{/t}>：</th>
+                <td><{$unit}></td>
+            </tr>
+            <tr>
+                <th><{t}>运费模板<{/t}>：</th>
+                <td><{$templateName}></td>
+            </tr>
+            <tr>
+                <th><{t}>库存计数<{/t}>：</th>
+                <td>
+                    <{if $sub_stock == '0'}>付款减库存<{/if}>
+                    <{if $sub_stock == '1'}>下单减库存<{/if}></td>
+            </tr>
+            <tr>
+                <th><{t}>发布平台<{/t}>：</th>
+                <td>
+                    <{if $use_platform=='0' || !$use_platform}>全平台(pc+wap)
+                    <{elseif $use_platform=='1'}>pc端
+                    <{elseif $use_platform=='2'}>移动端
+                    <{/if}>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>

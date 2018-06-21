@@ -1,0 +1,27 @@
+<services>
+	<!-- 账户 -->
+    <service id="openapi.store_app_giftcode">
+        <class>ljstore_app_giftcode</class>
+    </service>
+
+    <service id="openapi.store_app_giftglist">
+        <class>ljstore_app_giftlist</class>
+    </service>
+
+    <!-- 活动列表 auth:xinyufeng -->
+    <service id="openapi.active_list">
+        <class>ljstore_active_list</class>
+    </service>
+    <!-- 礼品列表 auth:xinyufeng -->
+    <service id="openapi.active_gift_list">
+        <class>ljstore_active_gift_list</class>
+    </service>
+    <!-- 根据手机号获取领取数量 auth:xinyufeng -->
+    <service id="openapi.active_gift_gain">
+        <class>ljstore_active_gift_gain</class>
+    </service>
+    <!-- 商品列表 auth:xinyufeng -->
+    <service id="openapi.item_list">
+        <class>ljstore_item_list</class>
+    </service>
+</services>

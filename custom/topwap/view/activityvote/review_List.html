@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <{include file="topwap/activityvote/header.html" }>
+    <script>
+        mui.init();
+    </script>
+    <style>
+        .expert_preview{
+            border-radius: 5%;
+        }
+        .m-915EatQD-reviewList-content {
+            width: 100%;
+            overflow: hidden;
+            column-count: 2;
+            column-gap: 10px;
+            padding-top:10px;
+        }
+        .m-915EatQD-reviewList-content ul li {
+            background-color: #fff;
+            margin-left: 3.2%;
+            margin-top: 10px;
+            padding: 20px 0;
+            border-radius: 8px;
+        }
+        .m-915EatQD-reviewList-content ul li:first-child {
+            margin-top: 0px;
+
+        }
+    </style>
+</head>
+<body>
+    <div class="mui-content">
+        <!-- m-915EatQD-reviewList-content -->
+        <div class="m-915EatQD-reviewList-content">
+            <ul>
+                <{foreach from=$expert_list item=item}>
+                    <li>
+                        <a href="<{url action=topwap_ctl_activityvote_expert@expertDetail}>?&expert_id=<{$item.expert_id}>" class="mui-block">
+                            <img class="expert_preview" src="<{$item.expert_avatar|storager}>" alt="">
+                            <h3><{$item.expert_name}></h3>
+                            <span><{$item.expert_profile}></span>
+                        </a>
+                    </li>
+                <{/foreach}>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

@@ -18,6 +18,31 @@ class sysmall_data_item {
     }
 
     /**
+     * 数据添加
+     * @param $data
+     * @param $msg
+     * @return bool
+     */
+    public function add($data, &$msg)
+    {
+        if( !$this->__check($data,$msg) )  return false;
+
+        $data['created_time'] = time();
+        $data['modified_time'] = $data['create_time'];
+
+        $mallItemId = $this->mallItemModel->insert($data);
+        if( !$mallItemId )
+        {
+            $msg = app::get('sysmall')->_('数据添加失败');
+            return false;
+        }
+
+        $msg = app::get('sysmall')->_('数据添加成功');
+
+        return $mallItemId;
+    }
+
+    /**
      * 数据更新
      * @param $data
      * @param $msg
@@ -52,45 +77,48 @@ class sysmall_data_item {
 
     /**
      * 数据删除(逻辑删除)
-     * @param $filter
+     * @param $filter 通过mall_item_id删除
      * @return bool
      */
     public function delete($filter)
     {
-        if( !$this->__check($filter, $msg) )
+        if( empty($filter['mall_item_id']) )
         {
-            throw new \LogicException($msg);
+            throw new \LogicException('参数mall_item_id不为空');
             return false;
         }
-
-        $where = " WHERE 1";
-        foreach ($filter as $k => $v)
+        if( is_object($filter['mall_item_id']) )
         {
-            if(!empty($v) && !is_object($v))
+            throw new \LogicException('参数mall_item_id类型错误');
+            return false;
+        }
+        if( !is_array($filter['mall_item_id']) )
+        {
+            $filter['mall_item_id'] = array($filter['mall_item_id']);
+        }
+
+        foreach ($filter['mall_item_id'] as $mall_item_id)
+        {
+            $where = array(
+                'mall_item_id' => $mall_item_id,
+                'fields' => 'shop_id'
+            );
+            $mall_item = app::get('sysmall')->rpcCall('mall.item.get',$where);//获取选货商品详情数据
+
+            $params = array(
+                'mall_item_id' => $mall_item_id,
+                'shop_id' => $mall_item['shop_id']
+            );
+            $res = app::get('sysmall')->rpcCall('mall.item.delete', $params);
+
+            if(!$res)
             {
-                if(is_array($v))
-                {
-                    $v_str = implode(',', $v);
-                    $where .= " AND {$k} IN ({$v_str})";
-                }
-                else
-                {
-                    $where .= " AND {$k} = {$v}";
-                }
+                $msg = app::get('sysmall')->_('数据删除失败');
+                throw new \LogicException($msg);
+                return false;
             }
         }
 
-        $db = app::get('base')->database();
-        $sql = "UPDATE sysmall_item SET deleted = 1".$where;
-        $delete = $db->executeUpdate($sql);
-
-        if(!$delete)
-        {
-            $msg = app::get('sysmall')->_('数据删除失败');
-            throw new \LogicException($msg);
-            return false;
-        }
-        
         return true;
     }
 

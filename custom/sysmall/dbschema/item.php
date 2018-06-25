@@ -16,7 +16,7 @@ return  array(
         'item_id' => array(
             'type' => 'table:item@sysitem',
             'required' => true,
-            'label' => app::get('sysmall')->_('商品名称'),
+            'label' => app::get('sysmall')->_('商品id'),
             'comment' => app::get('sysmall')->_('商品ID'),
             'in_list' => true,
             'default_in_list' => true,

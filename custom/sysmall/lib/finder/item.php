@@ -64,8 +64,7 @@ class sysmall_finder_item {
 
         $params['item_id'] = $mall_item['item_id'];
         $params['fields'] = "*,item_store";
-        //$params['fields'] = "*,sku,item_store,item_status,item_count,item_desc,item_nature,spec_index";
-        $pagedata = app::get('sysitem')->rpcCall('item.get',$params);//var_dump($pagedata);die;
+        $pagedata = app::get('sysitem')->rpcCall('item.get',$params);//获取原始商品详情数据
 
         // 获取运费模板开始
         $tmpParams = array(

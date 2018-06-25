@@ -4,7 +4,7 @@
  * Author: 王衍生
  * authorEmail: 50634235@qq.com
  * company: 青岛广电电商
- * 获取商品在集采商城的详细信息
+ * 获取商品在选货商城的详细信息
  * item.get
  */
 class sysmall_api_item_get{
@@ -12,7 +12,7 @@ class sysmall_api_item_get{
     /**
      * 接口作用说明
      */
-    public $apiDescription = '获取商品在集采商城的详细信息';
+    public $apiDescription = '获取商品在选货商城的详细信息';
 
     /**
      * 定义应用级参数，参数的数据类型，参数是否必填，参数的描述

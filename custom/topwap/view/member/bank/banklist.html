@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>银行卡</title>
+		<link rel="stylesheet" type="text/css" href="<{$pathtopm}>/static/css/bank.css"/>
+		<link rel="stylesheet" type="text/css" href="<{$pathtopm}>/static/css/dialog.css"/>
+		<link rel="stylesheet" href="<{$pathtopm}>/static/fonts/iconfont.css">
+	</head>
+	<body class="bg1">
+		<div class="addbank-header">
+			<a href="<{url action=topwap_ctl_member@ticket}>"><i class="iconfont icon-zuo-"></i></a>
+			<p>银行卡</p>
+		</div>
+		<div class="addbank-body">
+			<{foreach from=$banklist item=item}>
+			<div class="gdbank bank"<{if $item['bank_color']}> style="background:<{$item['bank_color']}>;"<{/if}>>
+				<div class="gdbank-left">
+					<img src="<{if $item['bank_logo']}><{$item['bank_logo']|storager}><{else}><{$pathtopm}>/static/img/gdlogo.png<{/if}>"/>
+				</div>
+				<div class="gdbank-right">
+					<h3><{$item.bank_name}></h3>
+					<span>信用卡（<{$item.card_grade}>）</span>
+					<p class="bankcode-banknum"><{$item.card_number}></p>
+				</div>
+				<i class="iconfont icon-shanchu gdbank-shanchu" data-id=<{$item.account_id}>></i>
+			</div>
+			<{/foreach}>
+			<!--<div class="jsbank bank">
+				<div class="gdbank-left">
+					<img src="img/yu/jsbank.png"/>
+				</div>
+				<div class="gdbank-right">
+					<h3>建设银行</h3>
+					<span>信用卡</span>
+					<p class="bankcode-banknum">24124124214235345234525</p>
+				</div>
+			</div>
+			<div class="qdbank bank">
+				<div class="gdbank-left">
+					<img src="img/yu/qd.png"/>
+				</div>
+				<div class="gdbank-right">
+					<h3>青岛银行</h3>
+					<span>信用卡</span>
+					<p class="bankcode-banknum">24124124214235345234525</p>
+				</div>
+			</div>
+			<div class="zsbank bank">
+				<div class="gdbank-left">
+					<img src="img/yu/zs.png"/>
+				</div>
+				<div class="gdbank-right">
+					<h3>招商银行</h3>
+					<span>信用卡</span>
+					<p class="bankcode-banknum">24124124214235345234525</p>
+				</div>
+			</div>
+			<div class="zgbank bank">
+				<div class="gdbank-left">
+					<img src="img/yu/zg.png"/>
+				</div>
+				<div class="gdbank-right">
+					<h3>中国银行</h3>
+					<span>信用卡</span>
+					<p class="bankcode-banknum">24124124214235345234525</p>
+				</div>
+			</div>
+
+			<div class="jtbank bank">
+				<div class="gdbank-left">
+					<img src="img/yu/jt.png"/>
+				</div>
+				<div class="gdbank-right">
+					<h3>交通银行</h3>
+					<span>信用卡</span>
+					<p class="bankcode-banknum">24124124214235345234525</p>
+				</div>
+			</div>
+			<div class="pabank bank">
+				<div class="gdbank-left">
+					<img src="img/yu/pa.png"/>
+				</div>
+				<div class="gdbank-right">
+					<h3>平安银行</h3>
+					<span>信用卡</span>
+					<p class="bankcode-banknum">24124124214235345234525</p>
+				</div>
+			</div>
+			<div class="nybank bank">
+				<div class="gdbank-left">
+					<img src="img/yu/ny.png"/>
+				</div>
+				<div class="gdbank-right">
+					<h3>中国农业银行</h3>
+					<span>信用卡</span>
+					<p class="bankcode-banknum">24124124214235345234525</p>
+				</div>
+			</div>-->
+		</div>
+		<!--modify_20170930_by_xinyufeng_start 修改按钮-->
+		<!--<div class="addbank-cardadd">
+			<a href="<{url action=topwap_ctl_member_bindbank@index next_page=$next_page}>" style="display:block;width:100%;height:100%"><i class="iconfont icon-iconjia"></i><p>添加银行卡</p><span class="iconfont icon-you"></span></a>
+		</div>-->
+		<div class="addbank-cardadd">
+			<a href="<{url action=topwap_ctl_member_bindbank@index next_page=$next_page}>" style="display:block;width:100%;height:100%;text-align: center;position: relative;"><i class="iconfont icon-iconjia"></i><p>添加银行卡</p></a>
+		</div>
+		<!--modify_20170930_by_xinyufeng_end-->
+		
+	</body>
+	<script src="<{$pathtopm}>/static/js/jquery-2.1.4.js"></script>
+	<script src="<{$pathtopm}>/static/js/dialog.js"></script>
+	<script type="text/javascript" charset="utf-8">
+		for(var i = 0;i<$(".bank").length;i++){
+			var $banknum = $(".bank").eq(i).find(".gdbank-right").find(".bankcode-banknum").text();
+			$banknum = $banknum.replace(/\s/g,'').replace(/(.{4})/g,"$1 ");
+			$(".bank").eq(i).find(".gdbank-right").find(".bankcode-banknum").text($banknum)
+		}
+		
+		//删除		
+		$('.gdbank-shanchu').on('click',function(){
+			var dialog = YDUI.dialog;
+			var this1 = this
+			dialog.confirm('删除', '确认要解除绑定吗？', function () {
+				var account_id=$(this1).attr('data-id');
+				//执行ajax
+				$.ajax({
+					type:"POST",
+					url:"<{url action=topwap_ctl_member_bindbank@unlasing}>",
+					data:{account_id:account_id},
+					dataType:"json",
+					success:function(e){
+						if(e.success){
+							dialog.toast('解绑成功', 'success', 1000);
+							for(var i=0;i<$('.bank').length;i++){
+								$(this1).parent().eq(i).remove()
+							}
+						}else{								
+							dialog.toast(e.message, 'error', 1000);
+						}
+					}
+				});
+		});
+		
+	});
+	</script>
+</html>

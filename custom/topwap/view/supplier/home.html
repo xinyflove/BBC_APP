@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>米粒</title>
+    <{css src="milier/dist/style.css" app="topwap"}>
+    <{css src="milier/css/index.min.css?201806051509" app="topwap"}>
+    <style>
+        .mescroll{
+            position: fixed;
+            top: 0;
+            bottom: 0;
+
+        }
+        .nav-sticky{
+            z-index: 9999;/*需设置zIndex,避免在悬停时,可能会被列表数据遮住*/
+            position: -webkit-sticky;
+            position: sticky;
+            top: 0;/*相对mescroll的div悬停的位置*/
+            background: #fff;
+        }
+        .m-ml-index-nav{
+            height: 103px;
+            padding-bottom: 10px;
+        }
+        .m-ml-index-nav .swiper-scrollbar-drag{
+            background: rgb(111, 148, 65);
+        }
+        .m-ml-index-seacrh{}
+        .m-ml-index-swiperNew .swiperNew-swiper .swiperNew-container .swiper-wrapper .swiper-slide{
+            width: 100px;
+        }
+        .m-ml-index-swiperNew .swiperNew-swiper .swiperNew-container .swiper-wrapper .swiper-slide .swiperNew-slide-img{
+            width: 100px;
+            height: 100px;
+        }
+        .m-ml-index-swiperEle .swiperEle-swiper .swiperEle-container .swiper-wrapper .swiper-slide{
+            width: 100px;
+        }
+        .m-ml-index-swiperEle .swiperEle-swiper .swiperEle-container .swiper-wrapper .swiper-slide .swiperEle-slide-img{
+            width: 100px;
+            height: 100px;
+        }
+        .m-ml-index-swiperNew .swiperNew-swiper .swiperNew-container .swiper-wrapper .swiper-slide .swiperNew-slide-title{
+            font-size: 12px;
+        }
+        .m-ml-index-swiperEle .swiperEle-swiper .swiperEle-container .swiper-wrapper .swiper-slide .swiperEle-slide-title{
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body>
+<div class="loader">
+    <div class="loader-inner ball-grid-pulse">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+</div>
+<div class="m-ml-index mescroll" id="mescroll">
+    <{if $widget_instance}>
+    <!--挂件模版列表开始-->
+    <{foreach from=$widget_instance item=widget key=key}>
+    <{if $widget.template_path}>
+
+    <{include file=$widget.template_path}>
+    <{/if}>
+    <{/foreach}>
+    <!--挂件模版列表结束-->
+    <{/if}>
+    <div class="m-ml-index-fliter">
+        <div id="navWarp">
+        <ul class="index-fliter-top">
+            <{foreach from=$tag_data key=key item=tag_item}>
+            <li>
+                <select name="" id="<{$key}>" class="index-fliter-top-select">
+                    <{foreach from=$tag_item['subtype'] key=subkey  item=sub_tag_item}>
+                    <option data-type="<{$subkey}>"><{$sub_tag_item}></option>
+                    <{/foreach}>
+                </select>
+            </li>
+            <{/foreach}>
+
+        </ul>
+            </div>
+        <div id="upscrollWarp">
+        <ul class="index-fliter-list dataList" id="dataList">
+
+        </ul>
+            </div>
+    </div>
+</div>
+<{script app="topwap" src="milier/dist/public.js" }>
+<script>
+    //搜索框js
+    var searchObj = $('#searchWidgetId');
+    searchObj.focus(function (e) {
+        var KEY_ENTER = 13;
+        searchObj.keydown(function(e) {
+            if (e.keyCode == KEY_ENTER) {
+                var search_keywords = searchObj.val();
+                var url = searchObj.attr('data-url');
+                if(search_keywords != '')
+                {
+                    url += encodeURI('&keyword='+search_keywords);
+                }
+
+                location.href = url;
+            }
+        });
+    });
+</script>
+<script>
+    $(function(){
+        $('.m-ml-index-seacrh input').on('focus',function(){
+            $('.m-ml-index-seacrh img').css('left','15%');
+            $('.m-ml-index-seacrh input').css('padding-left','10%');
+        });
+        $('.m-ml-index-seacrh input').on('blur',function(){
+            $('.m-ml-index-seacrh img').css('left','25%');
+            $('.m-ml-index-seacrh input').css('padding-left','20%');
+        });
+        //首页轮播
+        var indexBanner = new Swiper('.banner-container', {
+            observer: true,
+            observeParents: true,
+            slidesPerView: "auto",
+            autoplay:true,
+            pagination: {
+                el: '.banner-pagination',
+                clickable :true
+            },
+            lazy:true,
+            watchSlidesVisibility:true
+        });
+        //四图导航
+        var indexNav = new Swiper('.nav-container', {
+            observer: true,
+            observeParents: true,
+            slidesPerView: "auto",
+            scrollbar: {
+                el: '.swiper-scrollbar'
+            }
+        });
+        //
+        var indexSwiperNew = new Swiper('.swiperNew-container', {
+            observer: true,
+            observeParents: true,
+            slidesPerView: "auto",
+            lazy:true,
+            watchSlidesVisibility:true
+        });
+        var indexSwiperEle = new Swiper('.swiperEle-container', {
+            observer: true,
+            observeParents: true,
+            slidesPerView: "auto",
+            lazy:true,
+            watchSlidesVisibility:true
+        });
+
+        //上拉加载下拉刷新
+        //创建MeScroll对象,内部已默认开启下拉刷新,自动执行up.callback,刷新列表数据;
+        var mescroll = new MeScroll("mescroll", {
+            //上拉加载的配置项
+            up: {
+
+                page:{size:10},//每次加载1条数据,模拟loadFull
+                loadFull: {
+                    use: true, //列表数据过少,不足以滑动触发上拉加载,是否自动加载下一页,直到满屏或者无更多数据为止;默认false,因为可通过调高page.size避免这个情况
+                    delay: 500 //延时执行的毫秒数; 延时是为了保证列表数据或占位的图片都已初始化完成,且下拉刷新上拉加载中区域动画已执行完毕;
+                },
+                noMoreSize:1,
+                clearEmptyId: "dataList", //1.下拉刷新时会自动先清空此列表,再加入数据; 2.无任何数据时会在此列表自动提示空
+                warpId: "upscrollWarp", //让上拉进度装到upscrollWarp里面
+                callback: getListData //上拉回调,此处可简写; 相当于 callback: function (page) { getListData(page); }
+            }
+        });
+//        上啦悬停
+        var scroll_top,initial_top,screen_top,$bar;
+        $bar = $(".m-ml-index-fliter");
+        var $bar2 = $(".index-fliter-top");
+        initial_top = $bar.offset().top;
+
+        // document.getElementsByClassName("m-ml-index")[0]
+        document.getElementsByClassName("m-ml-index")[0].onscroll = function(){
+            scroll_top = document.getElementsByClassName("m-ml-index")[0].scrollTop
+            screen_top = initial_top - scroll_top;
+//            console.log(screen_top)
+//            console.log(initial_top+51)
+
+
+            if(mescroll.os.ios){
+//                if(screen_top<0){
+//                    $bar2.addClass("nav-sticky")
+//                }else if(scroll_top<=initial_top+51){
+//                    $bar2.removeClass("nav-sticky")
+//                }
+                $('#navWarp').addClass("nav-sticky")
+            }else{
+
+                if(screen_top<0){
+                    $bar2.css({"top":"0px","position":"fixed","background":"#fff","z-index":"9999999"});
+                    $("#upscrollWarp").css({"padding-top":"40px"})
+                }else if(scroll_top<=initial_top+51){
+                    $bar2.css({"position":"static"});
+                    $("#upscrollWarp").css({"padding-top":"0px"})
+                }
+            }
+
+        }
+
+        /*初始化菜单*/
+        var pdType="0-0:1-0:2-0:3-0";//一个默认值
+        var shop_id = "<{$shop_id}>";
+        $(".index-fliter-top li").click(function(){
+
+        })
+
+        $(".index-fliter-top-select").on("change",function(){
+            var arr = [];
+            var len = $(".index-fliter-top-select").length;
+            for(var i = 0; i < len; i++){
+                arr.push($(".index-fliter-top-select").eq(i).find("option:selected").attr("data-type"))
+            }
+            pdType = arr.join(',')
+            //重置列表数据
+            var minHight = mescroll.getClientHeight() - navWarp.offsetHeight;
+            document.getElementById("upscrollWarp").style.minHeight = minHight+"px";
+            mescroll.resetUpScroll();
+        })
+
+
+        /*联网加载列表数据  page = {num:1, size:10}; num:当前页 从1开始, size:每页数据条数 */
+        function getListData(page){
+            //联网加载数据
+            //console.log(shop_id)
+            //console.log("pdType="+pdType+", page.num="+page.num);
+            getListDataFromNet(pdType, page.num, page.size, function(data,num,totalPage){
+                //console.log(num,totalPage)
+                //联网成功的回调,隐藏下拉刷新和上拉加载的状态;
+                //console.log("data.length="+data.length);
+                mescroll.endByPage(num, totalPage);
+                //mescroll.endSuccess(data.length);//传参:数据的总数; mescroll会自动判断列表如果无任何数据,则提示空;列表无下一页数据,则提示无更多数据;
+                //设置列表数据
+                setListData(data);
+            }, function(){
+                //联网失败的回调,隐藏下拉刷新和上拉加载的状态;
+                mescroll.endErr();
+            });
+        }
+
+        /*设置列表数据*/
+        function setListData(data){
+            var listDom=document.getElementById("dataList");
+            for (var i = 0; i < data.length; i++) {
+                var pd=data[i];
+                var str='<a href="<{url action=topwap_ctl_supplier_agentShopInfo@agentShopDetail}>?shop_id='+data[i].shop_id+'&supplier_id='+data[i].supplier_id+'&agent_shop_id='+data[i].agent_shop_id+'">';
+                if(data[i].top > 1){
+                    str += '<div class="list-top">置顶</div>';
+                }
+                str+='<div class="list-leftImg">'
+                str+='<img src="'+data[i].agent_img_src+'" alt=""/>'
+                str+='</div>'
+                str+='<div class="list-rightText">'
+                str+='<h4 class="list-rightText-title">'+data[i].name+'</h4>'
+                str+='<div class="list-rightText-grade">'
+                str+='<div class="list-rightText-grade-icon">'
+                for(var j = 0;j<data[i].length;j++){
+                    str+='<img src="/app/topwap/statics/milier/img/index/icon-start.png" alt="">'
+                }
+                str+='</div>'
+                if(data[i].all_hold_info!=null && data[i].all_hold_info>0){
+                    str+='<p class="list-rightText-grade-num" style="font-weight:normal;font-size: 12px;">'+'<span style="color:red;font-weight:bold;font-size: 15px;">'+data[i].all_hold_info+'折'+'</span>'+'买单</p>'
+                }else{
+                    if(data[i].shop_consumption!=null){
+                        str+='<p class="list-rightText-grade-num">￥'+data[i].shop_consumption+'/人</p>'
+                    }else{
+                        str+='<p class="list-rightText-grade-num">￥'+100+'/人</p>'
+                    }
+                }
+
+
+                str+='</div>'
+                str+='<div class="list-rightText-address">'
+                if(data[i].agent_category_name!=null){
+                    str+='<p>'+data[i].agent_category_name+'</p>'
+                }else{
+                    str+='<p>'+'全部美食'+'</p>'
+                }
+
+                str+='<p>'+data[i].district_info+'</p>'
+
+                if(data[i].distance){
+                    str+='<p>'+data[i].distance+'</p>'
+                }else{
+                    str+='<p>'+''+'</p>'
+                }
+                str+='</div><div class="list-rightText-shop">'
+                if(data[i].agentShopActivityData!=""){
+                    str+='<p class="shop-quan"><i>券</i>'
+                    for(var x = 0;x<data[i].agentShopActivityData.length;x++){
+                        str+='<span>'+data[i].agentShopActivityData[x].title+'</span>'
+                    }
+                    str+='</p>'
+                }
+                str+='</div></div></a>'
+
+                var liDom=document.createElement("li");
+                liDom.innerHTML=str;
+                listDom.appendChild(liDom);
+            }
+        }
+
+        /*联网加载列表数据*/
+        function getListDataFromNet(pdType,pageNum,pageSize,successCallback,errorCallback) {
+            //延时一秒,模拟联网
+            setTimeout(function () {
+                $.ajax({
+                    type: 'GET',
+                    url: '<{url action=topwap_ctl_supplier_index@getAjaxHomeData}>',
+                    dataType: 'json',
+                    data:{
+                        pdType:pdType,
+                        pageNum:pageNum,
+                        shop_id:shop_id
+                    },
+                    success: function(res){
+                        console.log(res)
+                        var listData=[];
+
+                        //pdType 新品
+                        for (var i =0 ; i <res.data.length; i++) {
+
+                            listData.push(res.data[i]);
+                        }
+
+                        //回调
+                        successCallback(listData,res.data.length,res.page_total);
+                    },
+                    error: errorCallback
+                });
+            },1000)
+        }
+    })
+    document.onreadystatechange=function(){
+        if(document.readyState=="complete"){
+            $('body').addClass('loaded');
+            $('.loader').remove();
+        }
+    }
+</script>
+<script src="http://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+<script>
+    //微信config配置信息注入
+    wx.config({
+        debug: false,
+        appId: "<{$signPackage.appId}>",
+        timestamp: "<{$signPackage.timestamp}>",
+        nonceStr: "<{$signPackage.nonceStr}>",
+        signature: "<{$signPackage.signature}>",
+        jsApiList: [
+            'checkJsApi',
+            'openLocation',
+            'getLocation',
+            'onMenuShareTimeline',
+            'onMenuShareAppMessage',
+        ]
+    });
+
+    wx.checkJsApi({
+        jsApiList: [
+            'getLocation'
+        ],
+        success: function (res) {
+            if (res.checkResult.getLocation == false) {
+                alert('你的微信版本太低，不支持微信JS接口，请升级到最新的微信版本！');
+                return;
+            }
+        }
+    });
+
+    wx.ready(function () {
+
+        //自动执行的
+        wx.checkJsApi({
+            jsApiList: [
+                'getLocation',
+            ],
+            success: function (res) {
+            }
+        });
+
+        //如果不支持则不会执行
+        wx.getLocation({
+            type: 'wgs84', // 默认为wgs84的gps坐标，如果要返回直接给openLocation用的火星坐标，可传入'gcj02'
+            success: function (res) {
+                var latitude = res.latitude; // 纬度，浮点数，范围为90 ~ -90
+                var longitude = res.longitude; // 经度，浮点数，范围为180 ~ -180。
+                var speed = res.speed; // 速度，以米/每秒计
+                var accuracy = res.accuracy; // 位置精度
+                //alert(res.latitude);
+                $.ajax({
+                    url: '<{url action=topwap_ctl_supplier_index@setUserGPS}>',
+                    type: 'get',
+                    dataType: 'json',
+                    async: true,
+                    data: {
+                        latitude:latitude,
+                        longitude: longitude
+                    },
+                    success: function(res) {
+                        console.log(res);
+                        if(res==1){
+                            window.location.reload();
+                        }
+                    },
+                    error: function (err) {
+                        console.log(err);
+                    }
+                })
+
+
+
+
+            },
+            cancel: function (res) {
+                //alert('用户拒绝授权获取地理位置');
+                $.ajax({
+                    url: '<{url action=topwap_ctl_supplier_index@setUserGPS}>',
+                    type: 'get',
+                    dataType: 'json',
+                    async: true,
+                    data: {
+                        latitude:'',
+                        longitude: ''
+                    },
+                    success: function(res) {
+                        console.log(res);
+                    },
+                    error: function (err) {
+                        console.log(err);
+                    }
+                })
+            }
+        });
+
+
+        //分享到朋友圈
+        wx.onMenuShareTimeline({
+            title: '米粒儿', // 分享标题
+            link: '<{$signPackage.url}>', // 分享链接
+            imgUrl: "<{resource app='topwap' path='/images/milier/index/milier_index_share.png'}>", // 分享图标
+            success: function () {
+                // 用户确认分享后执行的回调函数
+            },
+            cancel: function () {
+                // 用户取消分享后执行的回调函数
+            }
+        });
+        //分享给朋友
+        wx.onMenuShareAppMessage({
+            title: '米粒儿', // 分享标题
+            desc: '米粒儿平台，媒体认证，正品保证，服务保证。', // 分享描述
+            link: '<{$signPackage.url}>', // 分享链接
+            imgUrl: "<{resource app='topwap' path='/images/milier/index/milier_index_share.png'}>", // 分享图标
+            type: '', // 分享类型,music、video或link，不填默认为link
+            dataUrl: '', // 如果type是music或video，则要提供数据链接，默认为空
+            success: function () {
+                // 用户确认分享后执行的回调函数
+            },
+            cancel: function () {
+                // 用户取消分享后执行的回调函数
+            }
+        });
+
+    });
+
+    wx.error(function (res) {
+        //alert(res.errMsg);
+    });
+</script>
+</body>
+<!-- 王衍生-2018/10/26-start -->
+<{script src="thirdparty.min.js" app="topwap"}>
+<!-- 王衍生-2018/10/26-end -->
+</html>

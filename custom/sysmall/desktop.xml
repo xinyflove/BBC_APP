@@ -1,15 +1,17 @@
 <desktop>
 
     <permissions>
-        <permission id="sysMall" display='true' parent="0" workground='sysshop.workground.shoptype'>选货商城管理</permission>
-        <permission id="sysMall_setting_index" display='true' parent="sysMall" workground='sysshop.workground.shoptype'>商城设置</permission>
-        <permission id="sysMall_item_lists" display='true' parent="sysMall" workground='sysshop.workground.shoptype'>商品列表</permission>
+        <permission id="sysMall" display='true' parent="0" workground='sysmall.workground.mall'>商城管理</permission>
+        <permission id="sysMall_setting_index" display='true' parent="sysMall" workground='sysmall.workground.mall'>商城设置</permission>
+        <permission id="sysMall_page_index" display='true' parent="sysMall" workground='sysmall.workground.mall'>商城页面配置</permission>
+        <permission id="sysMall_item_lists" display='true' parent="sysMall" workground='sysmall.workground.mall'>商品列表</permission>
     </permissions>
 
-    <workground name="商家" id="sysshop.workground.shoptype" controller="admin_seller" action="index" order='110'>
-        <menugroup name="选货商城">
-            <menu controller='setting' action='index' permission='sysMall_setting_index' display='true' order='100'>商城设置</menu>
-            <menu controller='item' action='lists' permission='sysMall_item_lists' display='true' order='100'>商品列表</menu>
+    <workground name="广电优选" id="sysmall.workground.mall" controller="setting" action="index" order='200'>
+        <menugroup name="广电优选">
+            <menu controller='setting' action='index' permission='sysMall_setting_index' display='true' order='10'>商城设置</menu>
+            <menu controller='page' action='index' permission='sysMall_page_index' display='true' order='20'>商城页面配置</menu>
+            <menu controller='item' action='lists' permission='sysMall_item_lists' display='true' order='30'>商品列表</menu>
         </menugroup>
 
     </workground>

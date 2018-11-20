@@ -1,0 +1,24 @@
+<form action="<{url action=topshop_ctl_cash_manage@ajaxCashChangeLogs}>" method="post" role="form" data-validate-onsuccess="ajaxSuccess">
+  <div class="box-body">
+    <!-- Date range -->
+    <div class="form-group">
+      <label>变更时间：</label>
+
+      <div class="input-group">
+        <div class="input-group-addon">
+          <i class="fa fa-calendar"></i>
+        </div>
+        <input type="text" name="modified_time" class="form-control pull-right reservation">
+      </div>
+      <!-- /.input group -->
+    </div>
+    <!-- /.form group -->
+
+  </div>
+  <!-- /.box-body -->
+  <div class="box-footer">
+    <button type="button" class="btn btn-default" id="reset-form">重置</button>
+    <button type="submit" class="btn btn-info pull-right">搜索</button>
+  </div>
+  <!-- /.box-footer -->
+</form>

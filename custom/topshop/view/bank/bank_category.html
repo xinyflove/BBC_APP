@@ -1,0 +1,37 @@
+<div class="modal fade" tabindex="-1" role="dialog" id="categoryDialog">
+	<div class="modal-dialog modal-sm category-modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">
+					<span aria-hidden="true">&times;</span><span class="sr-only">关闭</span>
+				</button>
+				<h4 class="modal-title">选择类目</h4>
+			</div>
+			<div class="modal-body">
+				<div class="category-select">
+					<div class="col-md-12">
+						<div class="input-group">
+							<span class="input-group-addon">
+							<i class="icon icon-search-a"></i>
+							</span> 
+							<input type="search" name="search_category" id="search_category" class="form-control">
+						</div>
+						<div class="list-group list-group-select list-group-brand">
+							<{foreach from=$data.industry_category.ns_bank key=key item=category}>
+							<a href="javascript:void(0);" class="list-group-item brand-item" data-category_code="<{$category.category_code}>" data-category_name="<{$category.category_name}>"><{$category.category_name}></a>
+							<{/foreach}>
+						</div>
+					</div>
+					<div class="cat-select-foot category-foot">
+						<b>当前选择：</b><span></span>
+						<input type="hidden" name="">
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" data-dismiss="modal">保存</button>
+				<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+			</div>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,122 @@
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+<div class="box box-default">
+    <{if empty($data['agent_opration_person_id'])}>
+        <form  action="<{url action=topshop_ctl_supplier_oprationPerson@store}>" method="post" class="form-horizontal clearfix" data-validate-onsuccess="ajaxSubmit" role="form">
+    <{else}>
+        <form  action="<{url action=topshop_ctl_supplier_oprationPerson@update}>" method="post" class="form-horizontal clearfix" data-validate-onsuccess="ajaxSubmit" role="form">
+        <input type='hidden' name='agent_opration_person_id' value="<{$data.agent_opration_person_id}>">
+    <{/if}>
+        <input type='hidden' name='agent_shop_id' value="<{$agent_shop_id}>">
+        <div class="box-body">
+            <div class="form-group">
+                <label class="col-sm-3 control-label">人物名称：</label>
+                <div class="col-sm-3">
+                    <input type="text" name="person_name" value="<{$data.person_name}>" class="form-control" placeholder="" required maxlength="50">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">人物职位选择：</label>
+                <div class="col-sm-3">
+                    <select class="js-expert-select" name="person_position_id">
+                        <option></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">人物图片：</label>
+                <div class="col-sm-5">
+                    <div class="multiple-item" style="position:relative">
+                        <div id="removeImg" class="multiple-del glyphicon glyphicon-remove-circle" style="position: absolute;left: 60px;top: -5px;z-index: 999;"></div>
+                        <a class="select-image" data-toggle="modal" href="<{url action=topshop_ctl_shop_image@loadImageModal}>" data-target="#gallery_modal">
+                            <input class="cat_image" type="hidden" name="person_image" required value="<{$data.person_image}>">
+                            <div class="img-put">
+                                <img  class=""  src="<{$data.person_image|storager}>">
+                                <i class="glyphicon glyphicon-picture"></i>
+                            </div>
+                        </a>
+                    </div>
+                    <span class="help-block">图片大小：750*750 px。</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">手机号：</label>
+                <div class="col-sm-3">
+                    <input type="number" name="person_phone" value="<{$data.person_phone}>" class="form-control" placeholder="" maxlength="50">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">qq：</label>
+                <div class="col-sm-3">
+                    <input type="number" name="person_qq" value="<{$data.person_qq}>" class="form-control" placeholder="" maxlength="50">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">微信：</label>
+                <div class="col-sm-3">
+                    <input type="text" name="person_weixin" value="<{$data.person_weixin}>" class="form-control" placeholder="" maxlength="50">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">邮箱：</label>
+                <div class="col-sm-3">
+                    <input type="text" name="person_email" value="<{$data.person_email}>" class="form-control" placeholder="" maxlength="50">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">简介：</label>
+                <div class="col-sm-3">
+                    <textarea name="person_description" class="form-control" placeholder=""><{$data.person_description}></textarea>
+                </div>
+            </div>
+            <!--<div class="form-group">-->
+                <!--<label class="col-sm-3 control-label">排序：</label>-->
+                <!--<div class="col-sm-3">-->
+                    <!--<input type="number" name="order_sort" value="<{$data.order_sort}>" class="form-control" placeholder="0" >-->
+                <!--</div>-->
+            <!--</div>-->
+        </div>
+
+        <div class="box-footer">
+            <button type="submit" class="btn btn-primary"><{t}>保存<{/t}></button>
+            &nbsp;
+            <a href="<{url action=topshop_ctl_supplier_oprationPerson@index agent_shop_id=$agent_shop_id}>" class="btn btn-default">取消</a>
+        </div>
+    </form>
+</div>
+<script>
+    $(function () {
+        var select_data = [];
+    <{foreach from=$person_position_data item=item}>
+        select_data.push({
+            'id':<{$item.person_position_id}>,
+        'text':'<{$item.position_name}>',
+    <{if $data['person_position_id'] == $item['person_position_id']}>
+        selected:true
+        <{/if}>
+    });
+    <{/foreach}>
+
+            $('.js-expert-select').select2({
+                data:select_data,
+                placeholder:'请选择人物职位',
+                width:'80%'
+            });
+        });
+    function ajaxSubmit (e) {
+        var form = e.target;
+        e.preventDefault();
+        $.post(form.action, $(form).serialize(), function(rs) {
+            if(rs.error) {
+                $('#messagebox').message(rs.message);
+                return;
+            }
+            if(rs.success) {
+                $('#messagebox').message(rs.message, 'success');
+            }
+            if(rs.redirect) {
+                location.href = rs.redirect;
+            }
+        });
+    }
+</script>

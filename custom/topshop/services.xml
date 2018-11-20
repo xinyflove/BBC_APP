@@ -1,0 +1,5 @@
+<services>
+    <service id="openapi.shop_kingdee_data">
+        <class>topshop_extra_kingdeedata</class>
+    </service>
+</services>

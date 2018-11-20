@@ -1,0 +1,102 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>订阅号</title>
+    <{css src="milier/dist/style.css" app="topwap"}>
+    <{css src="milier/css/offical_account.min.css?201806051521" app="topwap"}>
+</head>
+<body>
+<div class="m-mili-offical">
+    <header>
+        <a href="javascript: history.go(-1);"><img src="<{resource app='topwap' path='/images/milier/details/icon-back1.png'}>" alt=""></a>
+        <div>订阅号</div>
+    </header>
+    <section id="mescroll" class="mescroll">
+        <div class="offical-list" id="dataList">
+
+        </div>
+    </section>
+</div>
+
+
+<{script app="topwap" src="milier/dist/public.js" }>
+<script>
+    $(function () {
+        var shop_id = "<{$shop_id}>";
+        var mescroll = new MeScroll('mescroll', {
+            down: {
+                offset: 40
+            },
+            up: {
+                offset: 40,
+                loadFull: {
+                    use: true,
+                    delay: 500
+                },
+                clearEmptyId: "dataList",
+                callback: upCallback
+            }
+        })
+        // data 渲染的数据 appDomid 填充的盒子
+        function setDom(data, appDomid){
+            for(var i in data){
+                var str = '<dl><dt><img src="'+data[i].image_url+'" alt=""></dt>'+
+                '<dd>'+
+                '<p class="title">'+data[i].public_account_name+'</p>'+
+                '<p class="desc">'+data[i].description+'</p>'+
+                '<p class="time">'+data[i].modified_time+'</p>'+
+                '</dd></dl>'
+            var Dl = document.createElement('a');
+                Dl.innerHTML = str;
+                Dl.href = data[i].url;
+                document.getElementById(appDomid).appendChild(Dl);
+            }
+        }
+        // 添加数据 替换url successcb传参必须是数组  如果需要传其他数据结构 重新修改
+        function getData(curpage, pagesize, successcb, errorcb){
+            $.ajax({
+                url: '<{url action=topwap_ctl_supplier_pubAccount@getAjaxData}>',
+                type: 'get',
+                dataType: 'json',
+                async: true,
+                data: {
+                    curpage:curpage,
+                    shop_id:shop_id
+                },
+                success: function(res) {
+                    var dataArr = [];
+//                    if(res.code == 200){
+                        if(res.data){
+                            dataArr = res.data;
+                            successcb(dataArr);
+//                            if(!res.hasmore){
+//                                mescroll.endSuccess(dataArr.length, res.hasmore);
+//                            }
+                        }
+//                    }else{
+//                        errorcb()
+//                    }
+                },
+                error: function (err) {
+                    errorcb();
+                }
+            })
+        }
+
+        function upCallback(page) {
+            // var pageIndex = page.num+14;
+            // page.num = pageIndex;
+            // console.log(page);
+            getData(page.num, page.size, function(data){
+                mescroll.endSuccess(data.length);
+                setDom(data, 'dataList');
+            }, function(){
+                mescroll.endErr();
+            })
+        }
+    })
+</script>
+</body>
+</html>

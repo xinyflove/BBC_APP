@@ -1,0 +1,70 @@
+<div class="box box-primary">
+    <form action="<{url action=topshop_ctl_tvshopping_wapdecorate@save}>" method="post" class="form-horizontal clearfix" data-validate-onsuccess="ajaxSubmit" role="form">
+        <input type="hidden" name="setting[widgets_id]" value="<{$setting.widgets_id}>">
+        <input type="hidden" name="setting[widgets_type]" value="<{$setting.widgets_type}>">
+        <input type="hidden" name="setting[page_type]" value="<{$setting.page_type}>">
+
+        <div class="box-body">
+            <div class="form-group">
+                <label class="col-sm-3 control-label">挂件名称：</label>
+                <div class="col-sm-3">
+                    <input type="text" name="setting[widgets_name]" value="<{$setting.widgets_name}>" class="form-control" placeholder="" required maxlength="90">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label">挂件类型名称：</label>
+                <div class="col-sm-3">
+                    <input type="text" value="<{$widgets[$setting.widgets_type].widget_title}>" class="form-control" readonly>
+                </div>
+            </div>
+
+            <{include file=$widget_config}>
+
+            <!--是否启用-->
+            <div class="form-group">
+                <label class="col-sm-3 control-label">是否启用：</label>
+                <div class="col-sm-3">
+                    <label  class="form-inline">
+                        <input class="" type="radio" name="setting[disabled]" value="0" <{if $setting.disabled != 1}>checked<{/if}>> 是
+                    </label>
+                    <label  class="form-inline">
+                        <input class="" type="radio" name="setting[disabled]" value="1" <{if $setting.disabled == 1}>checked<{/if}>> 否
+                    </label>
+                </div>
+            </div>
+
+            <div class="box-footer">
+                <button type="submit" class="btn btn-primary"><{t}>保存<{/t}></button>
+                &nbsp;
+                <a href="<{url action=topshop_ctl_tvshopping_wapdecorate@index}>" class="btn btn-default">取消</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    function ajaxSubmit (e) {
+        var form = e.target;
+        e.preventDefault();
+        // 王衍生-2018/08/10-start
+        if(typeof submit_validate == 'function'){
+            if(!submit_validate()){
+                return;
+            }
+        }
+        // 王衍生-2018/08/10-end
+        $.post(form.action, $(form).serialize(), function(rs) {
+            if(rs.error) {
+                $('#messagebox').message(rs.message);
+                return;
+            }
+            if(rs.success) {
+                $('#messagebox').message(rs.message, 'success');
+            }
+            if(rs.redirect) {
+                location.href = rs.redirect;
+            }
+        });
+    }
+</script>

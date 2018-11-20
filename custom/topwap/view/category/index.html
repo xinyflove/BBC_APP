@@ -1,0 +1,87 @@
+<!--add_20171101_by_xinyufeng_start-->
+<style>
+  .category-nav-banner img{
+    width: 100%;
+    height: auto;
+    padding: 4% 2%;
+  }
+  .category-nav-item-img{
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #fcfcfc;
+    margin: 0 auto;
+    display: block;
+  }
+  .category-nav-item-text{
+    font-size: 12px;
+    color: #666;
+  }
+  .category-nav .shopex-segmented-control.shopex-segmented-control-inverted .shopex-control-item.shopex-active {
+    color: #ff9d0c;
+  }
+</style>
+<!--add_20171101_by_xinyufeng_end-->
+<section class="container shopex-row shopex-fullscreen category-nav has-footer">
+  <div class="shopex-col-xs-3">
+    <div id="segmentedControls" class="shopex-segmented-control shopex-segmented-control-inverted shopex-segmented-control-vertical">
+      <{foreach from=$data item=catlv1}>
+      <a class="shopex-control-item" href="#content<{$catlv1.cat_id}>" id="category_first<{$catlv1.cat_id}>"><{$catlv1.cat_name}></a>
+      <{/foreach}>
+    </div>
+  </div>
+  <div id="segmentedControlContents" class="shopex-col-xs-9 category-nav-content">
+    <{foreach from=$data item=catlv1 name=lv1cat}>
+    <div id="content<{$catlv1.cat_id}>" class="shopex-control-content <{if $env.foreach.lv1cat.first}>shopex-active<{/if}>">
+      <!--add_20171101_by_xinyufeng_start-->
+      <!-- category-nav-banner start -->
+      <{if $catlv1.cat_ad_pic}>
+      <div class="category-nav-banner">
+        <img src="<{$catlv1.cat_ad_pic|storager:''}>" alt="">
+      </div>
+      <{/if}>
+      <!-- end category-nav-banner -->
+      <!--add_20171101_by_xinyufeng_end-->
+      <{foreach from=$catlv1.lv2 item=catlv2}>
+      <div class="category-nav-group">
+        <div class="category-nav-header"><{$catlv2.cat_name}></div>
+        <div class="category-nav-list">
+          <{foreach from=$catlv2.lv3 item=catlv3}>
+          <!--modify_20171101_by_xinyufeng_start-->
+          <!--<a class="category-nav-item" href="<{url action=topwap_ctl_item_list@index cat_id=$catlv3.cat_id}>"><{$catlv3.cat_name}></a>-->
+          <a class="category-nav-item" href="<{url action=topwap_ctl_item_list@index cat_id=$catlv3.cat_id}>">
+            <{if $catlv3.cat_logo}>
+            <img src="<{$catlv3.cat_logo|storager:''}>" alt="" class="category-nav-item-img">
+            <{else}>
+            <img src="<{$defaultCatImg.S.default_image|storager:''}>" alt="" class="category-nav-item-img">
+            <{/if}>
+            <span class="category-nav-item-text"><{$catlv3.cat_name}></span>
+          </a>
+          <!--modify_20171101_by_xinyufeng_end-->
+          <{/foreach}>
+        </div>
+      </div>
+      <{/foreach}>
+    </div>
+    <{/foreach}>
+  </div>
+</section>
+
+<script>
+  shopex.init({
+    swipeBack: true //启用右滑关闭功能
+  });
+  var controls = document.getElementById("segmentedControls");
+  var contents = document.getElementById("segmentedControlContents");
+
+  controls.querySelector('.shopex-control-item').classList.add('shopex-active');
+  contents.querySelector('.shopex-control-content').classList.add('shopex-active');
+  <!--add_20171107_by_fanglongji_start -->
+  if("<{$select_id}>")
+  {
+      var select_id = "<{$select_id}>";
+      $("#category_first"+select_id).addClass('shopex-active').siblings().removeClass('shopex-active');
+      $("#content"+select_id).addClass('shopex-active').siblings().removeClass('shopex-active');
+  }
+  <!--add_20171107_by_fanglongji_end-->
+</script>

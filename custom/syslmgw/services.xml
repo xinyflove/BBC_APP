@@ -1,0 +1,30 @@
+<services>
+
+	<!-- 账户 -->
+    <service id="openapi.syslmgw_emic_test">
+        <class>syslmgw_emic_test</class>
+    </service>
+    <!--蓝莓购物大数据电商 start-->
+    <service id="openapi.blueberry">
+        <class>syslmgw_emic_blueberry</class>
+    </service>
+    <!--蓝莓购物大数据电商 end-->
+	<!--呼叫中心接口-->
+    <service id="openapi.callcenter">
+        <class>syslmgw_emic_callcenter</class>
+    </service>
+
+    <!--当天来电处理信息统计-->
+    <service id="openapi.syslmgw_today_callin">
+        <class>syslmgw_emic_todaycallin</class>
+    </service>
+	<!--应用话单下载-->
+    <service id="openapi.createBill">
+        <class>syslmgw_emic_createBill</class>
+    </service>
+	<!--915米粒统计数据-->
+    <service id="openapi.rice">
+        <class>syslmgw_emic_rice</class>
+    </service>
+	<!--915end-->
+</services>

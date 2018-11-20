@@ -34,32 +34,57 @@ class sysmall_api_item_push{
     {
         /*add_by_xinyufeng_2018-06-22_start*/
         // 判断原始商品是否上架和是否有供货价
-        $init_params['item_id'] = $params['item_id'];
-        $init_params['fields'] = "supply_price,sysitem_item_status.approve_status";
-        $init_item = app::get('sysitem')->rpcCall('item.get', $init_params);//获取原始商品详情数据
-        if( !intval($init_item['supply_price']) )
+        $initParams['item_id'] = $params['item_id'];
+        $initParams['fields'] = "supply_price,sysitem_item_status.approve_status";
+        $initItem = app::get('sysitem')->rpcCall('item.get', $initParams);//获取原始商品详情数据
+        if( empty($initItem) )
         {
-            throw new LogicException('请完善商品供货价数据！');
+            throw new LogicException('商品不存在！');
         }
-        if( $init_item['approve_status'] != 'onsale' )
+        if( $initItem['approve_status'] != 'onsale' )
         {
             throw new LogicException('请先上架商品！');
         }
-        unset($init_params, $init_item);
+        if( !intval($initItem['supply_price']) )
+        {
+            throw new LogicException('请完善商品供货价数据！');
+        }
+
+        $itemSkuMdl = app::get('sysitem')->model('sku');
+        $skuFilter = array(
+            'item_id' => $params['item_id'],
+            'supply_price' => '0.000',
+        );
+        $initItemSku = $itemSkuMdl->getRow('sku_id', $skuFilter);
+        if( !empty($initItemSku) )
+        {
+            throw new LogicException('请完善商品sku供货价数据！');
+        }
         /*add_by_xinyufeng_2018-06-22_end*/
 
         $mallItemModel = app::get('sysmall')->model('item');
-        $iteminfo = $mallItemModel->getRow('item_id', ['item_id' => $params['item_id']]);
+        $itemInfo = $mallItemModel->getRow('item_id', ['item_id' => $params['item_id']]);
         $data['item_id'] = $params['item_id'];
         $data['shop_id'] = $params['shop_id'];
         $data['status'] = app::get('sysmall')->getConf('sysmall.setting.goods_check') == 'true' ? 'pending' : 'onsale';
         $data['reason'] = '';
         $data['deleted'] = 0;
-        if($iteminfo){
+        if($itemInfo){
             // 更新
             $res = kernel::single('sysmall_data_item')->update($data, $msg);
             if($res)
             {
+                // 由于原始商品更新数据,提示代售商品更新数据
+                if($data['status'] == 'onsale')
+                {
+                    $sellData = array('init_is_change' => 1);
+                    $sellFilter = array(
+                        'init_item_id' => $params['item_id'],
+                        'init_shop_id' => $params['shop_id'],
+                    );
+                    app::get('sysitem')->model('item')->update($sellData, $sellFilter);
+                }
+                
                 return true;
             }
         }else{

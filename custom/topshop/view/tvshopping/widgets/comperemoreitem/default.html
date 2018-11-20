@@ -1,0 +1,172 @@
+<!-- 主播推荐 -->
+<!--<div class="qtvLive-groom">
+	<div class="groom-title">
+		<img src="<{$datas['title_pic']|storager:t}>" class="publicTitle-img" alt="">
+	</div>
+	<div id="qtvLivecompere">
+		<div class="groom-person">
+			<div class="person-left">
+				<img class="imglazyload" data-original="<{$datas['data']['compere']['avatar']|storager:t}>" alt="">
+			</div>
+			<div class="person-right">
+				<h2>每日星主播：<{$datas['data']['compere']['compere_name']}></h2>
+				<p><{$datas['data']['compere']['describe']}></p>
+			</div>
+		</div>
+		<div class="groom-swiper">
+			<div class="swiper-container swiper-container2">
+				<div class="swiper-wrapper">
+					<{foreach from=$datas['data']['item'] item=item}>
+					<div class="swiper-slide">
+						<a href="<{url action=topwap_ctl_item_detail@index item_id=$item.item_id}>">
+							<img class="imglazyload" data-original="<{$item['image_default_id']|storager:t}>" alt="">
+							<h2><{$item['title']}></h2>
+							<p><{$item['price']|cur}></p>
+						</a>
+					</div>
+					<{/foreach}>
+				</div>
+			</div>
+			<div class="swiper-huan" data-page="<{$datas.page}>">换一换</div>
+		</div>
+	</div>
+</div>-->
+
+
+
+<!-- 主播推荐 -->
+<div class="qtvLive-groom">
+	<div class="groom-title">
+		<img src="<{$datas['title_pic']|storager}>" class="publicTitle-img" alt="">
+	</div>
+	<div class="swiper-container swiper-container6">
+		<div class="swiper-wrapper">
+			<{foreach from=$datas['data'] item=item}>
+			<div class="swiper-slide slide-li">
+				<div class="groom-person">
+					<div class="person-left">
+						<img class="imglazyload" data-original="<{$item['compere']['avatar']|storager:t}>" alt="">
+					</div>
+					<div class="person-right">
+						<h2>每日星主播：<{$item['compere']['compere_name']}></h2>
+						<p><{$item['compere']['describe']}></p>
+					</div>
+				</div>
+				<div class="groom-swiper">
+					<div class="swiper-container swiper-container2">
+						<div class="swiper-wrapper">
+							<{foreach from=$item['item'] item=goods}>
+								<div class="swiper-slide">
+                                    <a href="<{url action=topwap_ctl_item_detail@index item_id=$goods.item_id}>">
+                                        <img class="imglazyload" data-original="<{$goods['image_default_id']|storager}>"  alt="">
+                                        <h2><{$goods['title']}></h2>
+                                        <p><{$goods['price']|cur}></p>
+                                    </a>
+								</div>
+							<{/foreach}>
+						</div>
+					</div>
+				</div>
+			</div>
+			<{/foreach}>
+		</div>
+	</div>
+	<div class="swiper-huan"><img src="/app/topwap/tvshopping/images/huan.png" alt=""> 换一换</div>
+</div>
+<script>
+	var swiper2 = new Swiper('.swiper-container2', {
+		slidesPerView: "auto",
+		spaceBetween: 10,
+		freeMode: true,
+	});
+
+	var swiper6 = new Swiper('.swiper-container6', {
+		loop:true,
+		allowTouchMove: false,
+		//navigation: {
+		//	nextEl: '.swiper-huan',
+		//},
+	});
+
+	var clicktag = 0;
+
+	$(".swiper-huan").on("click",function(){
+		if (clicktag == 0) {
+			swiper6.slideNext();
+			clicktag = 1;
+			$(".swiper-huan").find("img").addClass("add_transform")
+
+			setTimeout(function () {
+				clicktag = 0;
+				$(".swiper-huan").find("img").removeClass("add_transform")
+			}, 1000);
+		}
+	});
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+/*	var swiper2 = new Swiper('.swiper-container2', {
+		slidesPerView: "auto",
+		spaceBetween: 10,
+		freeMode: true,
+	});
+	$('#qtvLivecompere').on('click','.swiper-huan',function(){
+		var page=$(this).attr('data-page');   //当前第几页;
+		var pageTotal = "<{$datas.pageTotal}>";
+		var shop_id="<{$datas.shop_id}>";
+		if(page<pageTotal){
+			page++;
+		}else{
+			page=1;
+		}
+		$.ajax({
+			type: "post",
+			url: "<{url action=topwap_ctl_tvshopping@ajaxGetCompere}>",
+			data:{
+				'page':page,
+				'shop_id':shop_id
+			},
+			//dataType: 'json',
+			success: function (res) {
+				$('#qtvLivecompere').html(res);
+			},
+		});
+	});*/
+</script>

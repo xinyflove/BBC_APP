@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>卡券</title>
+		<link rel="stylesheet" href="<{$pathtopm}>/static/fonts/iconfont.css">
+		<link rel="stylesheet" href="<{$pathtopm}>/static/css/bank.css">
+		<style type="text/css">
+			body{
+			    background: #f0f0f0;
+			}
+			.kaquan-contant .kaquan-top .p2{
+				margin-top: 0px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="kaquan">
+			<div class="kaquan-header">
+				<a href="<{url action=topwap_ctl_member@index}>"><i class="iconfont icon-zuo-"></i></a>
+				<p>卡券</p>
+			</div>
+			<div class="kaquan-contant">
+				<div class="kaquan-top">
+					<p class="p1">银行卡</p>
+					<div class="kaquan-card">
+						<a href="<{url action=topwap_ctl_member_bindbank@bankList}>">
+							<div class="img"><img src="<{$pathtopm}>/static/img/card.png" alt=""></div>
+							<p>我的银行卡 (<span> <{$bank_count}> </span>)</p>
+							<i class="iconfont icon-you i"></i>
+						</a>
+					</div>
+					<p class="p1 p2">优惠券</p>
+					<div class="kaquan-card kaquan-card1">
+						<a href="<{url action=topwap_ctl_member_voucher@index}>">
+							<div class="img"><img src="<{$pathtopm}>/static/img/jinquan.png" alt=""></div>
+							<!--<p>购物券 (<span> <{$voucher_count|default:0}> </span>)</p>-->
+							<p>购物券 (<span> 0 </span>)</p>
+							<i class="iconfont icon-you i"></i>
+						</a>
+					</div>
+					<{if $coupon}>
+					<div class="kaquan-card">
+						<a href="<{url action=topwap_ctl_member_coupon@index}>">
+							<div class="img"><img src="<{$pathtopm}>/static/img/youhui.png" alt=""></div>
+							<p>优惠券 (<span> <{$coupon.count|default:0}> </span>)</p>
+							<i class="iconfont icon-you i"></i>
+						</a>
+					</div>
+					<{/if}>
+					<p class="p1 p2">线下店铺</p>
+					<div class="kaquan-card kaquan-card1">
+						<a href="<{url action=topwap_ctl_coupon_voucher@index}>">
+							<div class="img"><img src="<{$pathtopm}>/static/img/jinquan.png" alt=""></div>
+							<p>商家核销 (<span> <{$voucher_count|default:0}> </span>)</p>
+							<i class="iconfont icon-you i"></i>
+						</a>
+					</div>
+					<!--add_20180201_by_fanglongji_start 线下店支付打通后 可以显示出来-->
+					<div class="kaquan-card kaquan-card1">
+						<a href="<{url action=topwap_ctl_member_agentvocher@index}>">
+							<div class="img"><img src="<{$pathtopm}>/static/img/jinquan.png" alt=""></div>
+							<p>到店付款 (<span> <{$agent_voucher_count|default:0}> </span>)</p>
+							<i class="iconfont icon-you i"></i>
+						</a>
+					</div>
+					<!--add_20180201_by_fanglongji_start-->
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

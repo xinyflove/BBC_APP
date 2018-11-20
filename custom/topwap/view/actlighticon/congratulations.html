@@ -1,0 +1,16 @@
+<{include file="topwap/actlighticon/header.html" }>
+<div class="congratulations">
+<div class="congratulations-bg">
+    <{if $giftInfo.need_deliver==1}>
+        <h2>恭喜您<br/> 点亮了所有头像!</h2>
+        <p>奖品正在送达的途中，请耐心等待</p>
+        <div class="congratulations-img">
+      <img src="/app/topwap/statics/lighticon/img/icon_opppp.png" alt="">
+    </div>
+    <{else}>
+        <h2>恭喜您<br/> 点亮了所有头像!</h2>
+        <a href="<{url action=topwap_ctl_actlighticon_lighticon@imgGift img=$giftInfo['image']}>"><p>获得在线美图一张，点击查看~</p></a>
+    <{/if}>
+    <a href="<{url action=topwap_ctl_actlighticon_lighticon@index activity_id=$activity_id}>" id="backHomeBtn"></a>
+</div>
+</div>

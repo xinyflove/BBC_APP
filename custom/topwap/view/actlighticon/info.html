@@ -1,0 +1,88 @@
+<{include file="topwap/actlighticon/header.html" }>
+<div class="personalInfo">
+	<div class="personalInfo-info">
+		<div class="personalInfo-info-title">
+			<p>我要报名</p>
+		</div>
+		<div class="personalInfo-input">
+			<form id="postForm">
+				<ul class="personalInfo-input-ul">
+					<li class="personalInfo-input-ul-li">
+						<p>姓名：</p>
+						<input type="text" name="username" value="" placeholder="请输入姓名">
+					</li>
+					<li class="personalInfo-input-ul-li">
+						<p>手机：</p>
+						<input type="text" name="mobile" value="" placeholder="请输入手机号">
+					</li>
+					<!--<li class="personalInfo-input-ul-li" style="overflow:hidden;">
+						<div id="showCityPicker" class="personalInfo-input-ul-li-div">
+							<p>省市区：</p>
+							<input name="area" type="text" value="" id="cityResult" readonly placeholder="请选择地区">
+							<input type="hidden" required value="" id="cityResultId">
+						</div>
+					</li>-->
+					<li class="personalInfo-input-ul-li">
+						<p>地址：</p>
+						<input type="text" name="addr" value=""  placeholder="请输入地址">
+					</li>
+				</ul>
+				<input type="hidden" name="openid" value="<{$openid}>">
+				<input type="hidden" name="activity_id" value="<{$activity_id}>">
+			</form>
+		</div>
+		<div class="personalInfo-warn">
+			<p>*请填写详细收获地址,获奖后我们将会给您寄奖品哦</p>
+		</div>
+		<div class="personalInfo-btn">
+			<img src="/app/topwap/statics/lighticon/img/icon_ok.png" alt="">
+		</div>
+	</div>
+</div>
+
+<script>
+/* (function($, doc) {
+    $.init();
+    $.ready(function() {
+
+      var cityPicker = new $.PopPicker({
+        layer: 3
+      });
+
+      $.ajax({
+        url: '<{$env.base_url}>/app/ectools/statics/scripts/region.json',
+        type: 'GET',
+        dataType: 'json',
+        success: function(rs){
+          cityPicker.setData(rs);
+        },
+      })
+
+      var showCityPickerButton = doc.getElementById('showCityPicker');
+      var cityResult = doc.getElementById('cityResult');
+      var cityResultId = doc.getElementById('cityResultId');
+      showCityPickerButton.addEventListener('tap', function(event) {
+        cityPicker.show(function(items) {
+          cityResult.value = (items[0] || {}).value + " " + (items[1] || {}).value + " " + (items[2].value? (items[2] || {}).value : " ");
+          cityResultId.value = (items[0] || {}).id + "," + (items[1] || {}).id + "," + (items[2].id? (items[2] || {}).id : "")
+          //返回 false 可以阻止选择框的关闭
+          //return false;
+        });
+      }, false);
+    });
+  })(shopex, document);*/
+
+$('.personalInfo-btn').on('tap',function(){
+	var url = "<{url action=topwap_ctl_actlighticon_lighticon@savePart}>";
+	$.post(url,$('#postForm').serialize(),function(res){
+		if(res.error){
+			shopex.toast(res.message);	
+		}else{
+			shopex.toast(res.message);
+			window.location.href=res.redirect;
+		}
+	});
+});
+  
+
+</script>

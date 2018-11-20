@@ -1,0 +1,12 @@
+<cronentries>
+    <cron id="syslmgw_tasks_downloadBills">
+        <description>定时从易米接口下载应用话单</description>
+        <schedule>*/10 * * * *</schedule>
+        <enabled>false</enabled>
+    </cron>
+    <cron id="syslmgw_tasks_concurrenceStat">
+        <description>定时统计通话并发数</description>
+        <schedule>*/1 * * * *</schedule>
+        <enabled>false</enabled>
+    </cron>
+</cronentries>

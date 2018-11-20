@@ -1,0 +1,472 @@
+<{css app="topwap" src="swiper-3.4.2.min.css"}>
+<{css app="topwap" src="shop_custom.css"}>
+
+<{script app="topwap" src="swiper-3.4.2.jquery.min.js"}>
+<{script app="topwap" src="jquery-2.1.4.js"}>
+<!-- <{script src="shopex.lazyload.js" app="topwap"}>
+<{script src="shopex.lazyload.img.js" app="topwap"}> -->
+<{script src="jquery.lazyload.js" app="site"}>
+<!-- <{script src="shopex.lazyload.img.js" app="topwap"}> -->
+<style>
+	.shopex-table-view{margin-bottom: 50px;}
+</style>
+<div id="offCanvasWrapper" class="shopex-off-canvas-wrap shopex-draggable shopex-slide-in">
+    <!--菜单部分-->
+    <aside id="offCanvasSide" class="shopex-off-canvas-right goods-list-filters">
+      <{include file="topwap/shop/index/shop_cat.html"}>
+    </aside>
+    <div class="shopex-inner-wrap">
+      <div class="shopex-bar">
+        <header class="home-header">
+          <!-- 王衍生-2018/07/06-start -->
+          <{if $thirdparty_app_name}>
+          <i class="shopes-thirdpartyapp-back icon-func bbc-icon bbc-icon-back"></i>
+          <{else}>
+          <i class="icon-func bbc-icon bbc-icon-back shopex-action-back"></i>
+          <{/if}>
+          <!-- 王衍生-2018/07/06-end -->
+          <div class="main">
+            <form action="<{url action=topwap_ctl_shop_list@index shop_id=$shopId}>" method="post" id="goods_search">
+              <div class="shopex-input-row header-search-form"><input type="search" name="search_keywords" class="header-search shopex-input-clear" value="<{$search_keywords}>"  placeholder="搜索店铺内商品"></div>
+            </form>
+          </div>
+          <a id="offCanvasBtn" href="#offCanvasSide" class="icon-func bbc-icon bbc-icon-submenu"></a>
+          <a href="#minimenu" class="icon-func bbc-icon bbc-icon-more-vertical btn-mini-menu"></a>
+        </header>
+      </div>
+
+      <section id="offCanvasContentScroll" class="container shopex-scroll-wrapper">
+		<div class="shopex-scroll">
+        <!--del_2017/9/22_by_wanghaichao_start  删除店招固定配置,
+          <section>
+            <{include file="topwap/shop/index/shop.html"}>
+          </section>
+        del_2017/9/22_by_wanghaichao_end-->
+
+        <{if $widgets}>
+        <{foreach from=$widgets item=widgetDetail}>
+          <{if $widgetDetail.widgets_type=="nav"}>
+          <section>
+            <div class="shop-nav">
+              <{foreach from=$widgetDetail.params item=item}>
+                <div class="shop-nav-item">
+                  <{if $item.type=="link"}>
+                  <a href="<{$item.navlink}>"><{$item.name}></a>
+                  <{elseif $item.type=="goods"}>
+                  <a href="<{url action=topwap_ctl_newshop@shopItemList item_id=$item.item_ids shop_id=$widgetDetail.shop_id}>"><{$item.name}></a>
+                  <{elseif $item.type=="promotion"}>
+                  <a href="<{if $item.promotion_type =='activity'}><{url action=topwap_ctl_activity@detail activity_id=$item.promotion_id}><{else}>
+                  <{url action=topwap_ctl_promotion@getPromotionItem promotion_id=$item.promotion_id}><{/if}>"><{$item.name}></a>
+                  <{/if}>
+                </div>
+              <{/foreach}>
+            </div>
+          </section>
+          <{elseif $widgetDetail.widgets_type=="coupon"}>
+            <section class="section-white">
+              <{include file="topwap/shop/index/shop_coupon.html"}>
+            </section>
+			<div style="width:100%;height:10px;background-color:#e4e5e6"></div>
+          <{elseif $widgetDetail.widgets_type=="slider"}>
+            <section class="shopex-slider" id="slider">
+              <{include file="topwap/shop/index/slider.html"}>
+            </section>
+			<div style="width:100%;height:10px;background-color:#e4e5e6"></div>
+          <{elseif $widgetDetail.widgets_type=="goods"}>
+            <section class="widgets-goods-like section-white no-goods-scroll">
+              <{include file="topwap/shop/index/item.html"}>
+            </section>
+           <{elseif $widgetDetail.widgets_type=="goods_fix"}>
+           <section class="widgets-goods-like section-white">
+             <{include file="topwap/shop/index/item_fix.html"}>
+           </section>
+			<div style="width:100%;height:10px;background-color:#e4e5e6"></div>
+          <{elseif $widgetDetail.widgets_type=="oneimg"}>
+            <section class="single-img section-white oneimage-papa">
+              <a href="<{$widgetDetail.params.imglink}>">
+                <img class="oneimage" src="<{$widgetDetail.params.imgurl|storager:m}>" alt="">
+              </a>
+            </section>
+			<div style="width:100%;height:10px;background-color:#e4e5e6"></div>
+          <!--add_20170913_by_xinyufeng_start 季度推荐-->
+          <{elseif $widgetDetail.widgets_type=="quarter"}>
+          <section class="shopex-quarter" id="quarter">
+            <{include file="topwap/shop/index/quarter.html"}>
+          </section>
+			<div style="width:100%;height:10px;background-color:#e4e5e6"></div>
+          <!--add_20170913_by_xinyufeng_end-->
+		  <!--add_20170915_by_xinyufeng_start 当季推荐-->
+          <{elseif $widgetDetail.widgets_type=="current_quarter"}>
+          <section class="shopex-current_quarter" id="current_quarter">
+            <{include file="topwap/shop/index/current_quarter.html"}>
+          </section>
+			<div style="width:100%;height:10px;background-color:#e4e5e6"></div>
+          <!--add_20170915_by_xinyufeng_end-->
+		  <!--add_20170915_by_xinyufeng_start 中部轮播广告-->
+          <{elseif $widgetDetail.widgets_type=="wapslidermid"}>
+          <section class="shopex-wapslidermid" id="wapslidermid">
+            <{include file="topwap/shop/index/wapslidermid.html"}>
+          </section>
+			<div style="width:100%;height:10px;background-color:#e4e5e6"></div>
+          <!--add_20170915_by_xinyufeng_end-->
+          <!-- add start 王衍生 20170915 -->
+          <{elseif $widgetDetail.widgets_type=="tagsgoods"}>
+
+            <{include file="topwap/shop/index/tagsgoods.html"}>
+
+			<div style="width:100%;height:10px;background-color:#e4e5e6"></div>
+          <{elseif $widgetDetail.widgets_type=="goods3list"}>
+
+            <{include file="topwap/shop/index/goods3list.html"}>
+			<div style="width:100%;height:10px;background-color:#e4e5e6"></div>
+          <!-- add end 王衍生 20170915-->
+          <!--add_20170913_by_gurundong_start 热卖-->
+          <{elseif $widgetDetail.widgets_type=="hotsell"}>
+          <{include file="topwap/shop/index/hotsell.html"}>
+			<div style="width:100%;height:10px;background-color:#e4e5e6"></div>
+          <!--add_20170918_by_gurundong_end-->
+          <!--add_20170913_by_gurundong_start 二图展示-->
+          <{elseif $widgetDetail.widgets_type=="wap2image"}>
+          <{include file="topwap/shop/index/wap2image.html"}>
+		 <div style="width:100%;height:10px;background-color:#e4e5e6"></div>
+          <!--add_20170913_by_gurundong_end-->
+		  <!--add_2017/9/18_by_wanghaichao_start-->
+          <{elseif $widgetDetail.widgets_type=="wap3image"}>
+          <section class="shopex-wap3image" id="wap3image">
+            <{include file="topwap/shop/index/wap3image.html"}>
+          </section>
+			<div style="width:100%;height:10px;background-color:#e4e5e6"></div>
+          <{elseif $widgetDetail.widgets_type=="category"}>
+          <section class="shopex-category" id="category">
+            <{include file="topwap/shop/index/category.html"}>
+          </section>
+			<div style="width:100%;height:10px;background-color:#e4e5e6"></div>
+          <{elseif $widgetDetail.widgets_type=="icon"}>
+          <section class="shopex-icon" id="icon" style="width:100%">
+            <{include file="topwap/shop/index/icon.html"}>
+          </section>
+			<div style="width:100%;height:10px;background-color:#e4e5e6"></div>
+          <{elseif $widgetDetail.widgets_type=="shopsigns"}>
+          <section class="shopex-icon" id="shopsigns" style="width:100%">
+            <{include file="topwap/shop/index/shopsigns.html"}>
+          </section>
+			<div style="width:100%;height:10px;background-color:#e4e5e6"></div>
+		  <!--add_2017/9/18_by_wanghaichao_end-->
+          <{/if}>
+        <{/foreach}>
+        <{/if}>
+        </div>
+      </section>
+
+      <!-- off-canvas backdrop -->
+      <div class="shopex-off-canvas-backdrop"></div>
+    </div>
+</div>
+
+<div id="minimenu" class="bbc-mini-menu shopex-popover">
+  <div class="shopex-popover-arrow"></div>
+  <div>
+    <ul class="shopex-table-view">
+      <li class="shopex-table-view-cell">
+        <a href="<{url action=topwap_ctl_default@index}>"><i class="bbc-icon bbc-icon-home-empty"></i> 首页</a>
+      </li>
+      <li class="shopex-table-view-cell">
+        <a href="<{url action=topwap_ctl_category@index}>"><i class="bbc-icon bbc-icon-category-empty"></i> 分类</a>
+      </li>
+      <li class="shopex-table-view-cell">
+        <a href="<{url action=topwap_ctl_cart@index}>"><i class="bbc-icon bbc-icon-cart-empty"></i> 购物车</a>
+      </li>
+      <li class="shopex-table-view-cell">
+        <a href="<{url action=topwap_ctl_member@index}>"><i class="bbc-icon bbc-icon-user-empty"></i> 会员</a>
+      </li>
+    </ul>
+  </div>
+</div>
+<!--add_2017/9/22_by_wanghaichao_start-->
+<footer class="navigation">
+  <ul class="nav-group">
+	<li class="active"><a href="#"><i class="bbc-icon iconfont icon-shouye"></i><span>首页</span></a></li>
+	<li><a  href="#offCanvasSide" ><i class="bbc-icon iconfont icon-fenlei"></i><span>分类</span></a></li>
+	<!--modify_20170925_by_xinyufeng_start 显示购物车数量-->
+	<!--<li class="active"><a href="http://lbbc.com/wap/cart.html"><i class="bbc-icon bbc-icon-cart"></i><span>购物车</span></a></li>-->
+	<li style="position:relative">
+	  <a href="<{url action=topwap_ctl_cart@index}>">
+		<i class="bbc-icon iconfont icon-gouwuche"></i>
+		<span>购物车</span>
+	  </a>
+	  <{if $cartCount}>
+	  <i class="cart-number" id="carNumber" style="position: absolute;top: -4px;width: 16px;height: 16px;border-radius: 50%;background-color: #ffac20;color: #ffffff;font-size: 12px;line-height: 16px;right:28px;"><{$cartCount}></i>
+	  <{/if}>
+	</li>
+	<!--modify_20170925_by_xinyufeng_end-->
+	<li>
+	  <a href="<{url action=topwap_ctl_member@index}>">
+		<i class="bbc-icon iconfont icon-wode"></i>
+		<span>我的</span>
+	  </a>
+	</li>
+  </ul>
+</footer>
+<{if $extsetting.params.start.is_upbanner && !$ad_show}>
+<!---------启动页面-------------->
+<section class="container_startq" <{if $ad_show}>style="display:none"<{/if}>>
+	<section class="startAnimate" style="background:rgba(0,0,0,0.5)">
+		<a href="<{$extsetting.params.start.up_link}>">
+			<section class="startAnimateContent" data-img="" style="background: url(<{$extsetting.params.start.up_banner|storager}>) no-repeat center center;background-size:100% 100%;border-radius:15px;width:68%;height:50%;left:50%;margin-left:-34%;top:50%;margin-top:-50%;">
+					<!--<img src="/app/topwap/statics/static/img/rotate.png" alt="">
+					<span id="s">03s</span>-->
+				<!--<a href="<{$extsetting.params.start.up_link}>" class="startAnimateContent-linkEnter">查看详情</a>-->
+			</section>
+		</a>
+		<div class="close_start" style="width:2rem;height:2rem;border-radius:5rem;border:2px solid #fff;color:#fff;text-align:center;margin:0 auto;line-height:1.8rem;font-family:'微软雅黑';position: fixed;left: 50%;margin-left: -1rem;top: 78%;z-index: 999999999;">X</div>
+	</section>
+</section>
+<!-----------启动页面结束-------------->
+<{else}>
+<!--page loading start-->
+<section class="m-public-pageLoading">
+	<div class="pic">
+		<img src="/app/topwap/statics/static/img/icon_rotate.gif"/>
+	</div>
+</section>
+<{/if}>
+<!--add_2017/9/22_by_wanghaichao_end-->
+<!--add_2017/9/28_by_wanghaichao_start
+<!-- 客服 -->
+<!--modify_20171109_by_fanglongji_start 有客服配置的显示，没有的不显示 -->
+<{if $shopdata.customer}>
+<a href="<{$shopdata.customer}>" class="fixed_kf">
+<img src="/app/topwap/statics/static/img/fixed_kf.png">
+</a>
+<{/if}>
+<!--modify_20171109_by_fanglongji_end-->
+<!--add__2017/9/28by_wanghaichao_end-->
+<!--add_2017/9/29_by_wanghaichao_start  分享的-->
+<{include file="topwap/index.html"}>
+<!--add_2017/9/29_by_wanghaichao_end-->
+<script>
+  // 王衍生-2018/07/06-start
+  <{if $thirdparty_app_name}>
+  $('body').on('tap', '.shopes-thirdpartyapp-back', function(){
+      dsBridge.call("backApp", {msg: "backApp"});
+  });
+  <{/if}>
+  // 王衍生-2018/07/06-end
+  $(function()
+  {
+    /*图片延迟加载*/
+    // var list = document.getElementById("offCanvasContentScroll");
+    // document.body.removeAttribute('data-imagelazyload');
+    // shopex(document).imageLazyload({
+    //   placeholder: '<{$env.app.topwap.res_url}>/images/lazy.png',
+    //   force:false,
+    //   // diff:500
+    // });
+    $("img.imglazyload").lazyload({
+        placeholder: '<{$env.app.topwap.res_url}>/images/lazy.png',
+        effect : "fadeIn"
+     });
+
+  });
+
+  var gallery = shopex("#slider");
+  gallery.slider({
+    interval:5000//自动轮播周期，若为0则不自动播放，默认为0；
+  });
+  shopex.init({
+    swipeBack: false,
+  });
+  //侧滑容器父节点
+  var offCanvasWrapper = shopex('#offCanvasWrapper');
+  //主界面容器
+  var offCanvasInner = offCanvasWrapper[0].querySelector('.shopex-inner-wrap');
+  //菜单容器
+  var offCanvasSide = document.getElementById("offCanvasSide");
+  //Android暂不支持整体移动动画
+  // if (!shopex.os.android) {
+  //   document.getElementById("move-togger").classList.remove('shopex-hidden');
+  //   var spans = document.querySelectorAll('.android-only');
+  //   for (var i = 0, len = spans.length; i < len; i++) {
+  //     spans[i].style.display = "none";
+  //   }
+  // }
+  //移动效果是否为整体移动
+  var moveTogether = false;
+  //侧滑容器的class列表，增加.shopex-slide-in即可实现菜单移动、主界面不动的效果；
+  var classList = offCanvasWrapper[0].classList;
+  //变换侧滑动画移动效果；
+  shopex('.shopex-input-group').on('change', 'input', function() {
+    if (this.checked) {
+      offCanvasSide.classList.remove('shopex-transitioning');
+      offCanvasSide.setAttribute('style', '');
+      classList.remove('shopex-slide-in');
+      classList.remove('shopex-scalable');
+      switch (this.value) {
+        case 'main-move':
+          if (moveTogether) {
+            //仅主内容滑动时，侧滑菜单在off-canvas-wrap内，和主界面并列
+            offCanvasWrapper[0].insertBefore(offCanvasSide, offCanvasWrapper[0].firstElementChild);
+            moveTogether = false;
+          }
+          break;
+        case 'main-move-scalable':
+          if (moveTogether) {
+            //仅主内容滑动时，侧滑菜单在off-canvas-wrap内，和主界面并列
+            offCanvasWrapper[0].insertBefore(offCanvasSide, offCanvasWrapper[0].firstElementChild);
+          }
+          classList.add('shopex-scalable');
+          break;
+        case 'menu-move':
+          classList.add('shopex-slide-in');
+          break;
+        case 'all-move':
+          moveTogether = true;
+          //整体滑动时，侧滑菜单在inner-wrap内
+          offCanvasInner.insertBefore(offCanvasSide, offCanvasInner.firstElementChild);
+          break;
+      }
+      offCanvasWrapper.offCanvas().refresh();
+    }
+  });
+  // document.getElementById('offCanvasShow').addEventListener('tap', function() {
+  //   offCanvasWrapper.offCanvas('show');
+  // });
+  // document.getElementById('offCanvasHide').addEventListener('tap', function() {
+  //   offCanvasWrapper.offCanvas('close');
+  // });
+  //主界面和侧滑菜单界面均支持区域滚动；
+  shopex('#offCanvasSideScroll').scroll();
+  if($('.no-goods-scroll').length <=0){
+	 shopex('#offCanvasContentScroll').scroll();
+  }
+  //实现ios平台的侧滑关闭页面；
+  if (shopex.os.plus && shopex.os.ios) {
+    offCanvasWrapper[0].addEventListener('shown', function(e) { //菜单显示完成事件
+      plus.webview.currentWebview().setStyle({
+        'popGesture': 'none'
+      });
+    });
+    offCanvasWrapper[0].addEventListener('hidden', function(e) { //菜单关闭完成事件
+      plus.webview.currentWebview().setStyle({
+        'popGesture': 'close'
+      });
+    });
+  }
+
+  shopex('body').on('shown', '.shopex-popover', function(e) {
+    //console.log('shown', e.detail.id);//detail为当前popover元素
+  });
+  shopex('body').on('hidden', '.shopex-popover', function(e) {
+    //console.log('hidden', e.detail.id);//detail为当前popover元素
+  });
+
+  $('#shop_collect').on('tap',function(){
+    var shop_id = $(this).data('shopid');
+    var $this = $(this);
+    $.post('<{url action=topwap_ctl_member_favorite@ajaxAddShopCollect}>',{'shop_id':shop_id},function(rs){
+      if(rs.redirect){
+        location.href = rs.redirect;
+      }else{
+        shopex.alert(rs.message);
+        if(rs.success){
+          $this.addClass('has-favorited');
+          $this.find('i').removeClass('bbc-icon-star-empty').addClass('bbc-icon-faverite');
+          $this.find('span').html('已收藏');
+        }
+      }
+    })
+  })
+
+  $('.shopex-scroll').on('tap','li',function(){
+    var link = $(this).data('link');
+    if(link){
+      location.href = link;
+    }
+  });
+
+  $('#offCanvasContentScroll').on('tap', 'a', function() {
+    window.location.href = $(this).attr('href');
+  });
+
+  // shopex(document).imageLazyload({
+  //   placeholder: '../images/60x60.gif'
+  // });
+  //启动页面js
+<{if $extsetting.params.start.is_upbanner}>
+function load(){
+
+// 获取元素
+var oContainer=document.querySelector(".container_start");
+var oS = document.querySelector("#s");
+var oRotate=document.querySelector(".rotate");
+var duration=3000;
+var s=duration/1000;
+
+var timer=setTimeout(function(){
+	$('.container_start').addClass("animated");
+	$('.container_start').addClass("fadeOut");
+	$('.container_start').hide();
+	clearTimeout(timer);
+},duration);
+
+var timerInterval=setInterval(function(){
+	s--;
+	if(s<=0){
+		clearInterval(timerInterval);
+		// oRotate.setAttribute("href","http://www.baidu.com");
+	}
+
+	oS.innerHTML="0"+s+"s";
+	// if(oS.innerHTML=="00s"){
+	// 	oS.innerHTML="跳转";
+	// 	oS.style.left=3+"px";
+	// 	oS.parentNode.children[0].remove();
+	// }
+},1000);
+}
+window.onload=function(){
+	//$('.container').slideDown(500);
+	load();
+};
+<{/if}>
+
+
+// 当页面数据加载完成的时候,让加载模块消失
+document.onreadystatechange=function(){
+	if(document.readyState=="complete"){
+	//处理延迟加载
+	 $(function() {
+		$(".m-public-pageLoading").addClass('fadeOut');
+		$(".m-public-pageLoading").hide();
+		//$("img").delayLoading({
+		//	defaultImg: "<{$pathtopm}>/images/lazy_item.png", // 预加载前显示的图片
+		//	errorImg: "", // 读取图片错误时替换图片(默认：与defaultImg一样)
+		//	imgSrcAttr: "src", // 读取图片的src
+		//	setImg: "originalSrc", //记录图片路径的属性(默认：originalSrc，把页面img的src属性值传给originalSrc属性)
+		//	beforehand: 0, // 预先提前多少像素加载图片(默认：0)
+		//	event: "scroll", // 触发加载图片事件(默认：scroll)
+		//	duration: "normal", // 三种预定淡出(入)速度之一的字符串("slow", "normal", or "fast")或表示动画时长的毫秒数值(如：1000),默认:"normal"
+		//	container: window, // 对象加载的位置容器(默认：window)
+		//	success: function(imgObj) {}, // 加载图片成功后的回调函数(默认：不执行任何操作)
+		//	error: function(imgObj) {} // 加载图片失败后的回调函数(默认：不执行任何操作)
+		//});
+	 });
+	}
+}
+/*add 2017/9/29 wanghaichao start*/
+
+$('title').html('<{$shopdata.shop_name}>');
+/*add 2017/9/29 wanghaichao end*/
+
+/*add 2017/9/29 wanghaichao start*/
+$('.close_start').on('click',function(){
+	$('.container_startq').hide();
+});
+$(function(){
+	var oneImageWidth = $('.oneimage').width();
+	var oneImageHeight = oneImageWidth*0.35;
+	$('.oneimage').css({'height':oneImageHeight});
+	$('.oneimage-papa').css({'height':oneImageHeight});
+});
+/*add 2017/9/29 wanghaichao end*/
+</script>

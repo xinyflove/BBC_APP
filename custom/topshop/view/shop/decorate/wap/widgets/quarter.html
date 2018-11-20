@@ -1,0 +1,90 @@
+<!--add_20170914_by_xinyufeng_start 季度推荐-->
+<script>
+  var quarterFormItem = '<div class="quarter-item form-item"><div class="form-group"><div class="input-group"><input name="imgsrc"  type="text" class="form-control" readonly placeholder="图片地址"><span class="input-group-addon select-image" data-toggle="modal" data-imgurl="" href="<{url action=topshop_ctl_shop_image@loadImageModal}>" data-target="#gallery_modal">选择图片</span></div></div><div class="form-group"><input type="text" name="imglink" class="form-control" placeholder="图片链接"></div><div class="form-item-action action-remove"><i class="glyphicon glyphicon-remove"></i></div></div>';
+</script>
+<script type="text/html" id="quarter">
+<style>
+	.quarter-box{
+		background: #ffffff;
+		/*padding: 6px 0;*/
+	}
+	.quarter-box img{
+		width: 100%;
+		height: 120px;
+	}
+	.quarter-box .swiper-slide a {
+		display: block;
+		height: 120px;
+	}
+</style>
+<div class="decorate-layout-items" id="<%= wid %>" data-widgets="quarter">
+	<div class="swiper-container quarter-box">
+		<div class="swiper-wrapper">
+			<% if(list && list.length > 0){ %>
+				<% for(var i=0; i<list.length; i++){ %>
+				<div class="swiper-slide">
+					<a href="<%= list[i].imglink %>">
+						<img src="<%= list[i].imgsrc %>">
+					</a>
+				</div>
+				<% } %>
+			<% }else{ %>
+				<div class="swiper-slide">
+					<a href="#">
+						<img src="http://placehold.it/240x240">
+					</a>
+				</div>
+				<div class="swiper-slide">
+					<a href="#">
+						<img src="http://placehold.it/240x240">
+					</a>
+				</div>
+				<div class="swiper-slide">
+					<a href="#">
+						<img src="http://placehold.it/240x240">
+					</a>
+				</div>
+			<% } %>
+		</div>
+	</div>
+</div>
+</script>
+<script type="text/html" id="quarter_form">
+<div class="quarter" data-id="<%= wid %>">
+  <h5>季度推荐</h5>
+  <div class="quarter-items-list">
+	<% if(list && list.length > 0){ %>
+	  <% for(var i=0; i<list.length; i++){ %>
+	  <div class="quarter-item form-item">
+		<div class="form-group">
+		  <div class="input-group">
+			<input name="imgsrc" type="text" readonly class="form-control" value="<%= list[i].imgsrc %>" placeholder="图片地址">
+			<span class="input-group-addon select-image" data-toggle="modal" data-imgurl="<%= list[i].imgurl %>" href="<{url action=topshop_ctl_shop_image@loadImageModal}>" data-target="#gallery_modal">选择图片</span>
+		  </div>
+		</div>
+		<div class="form-group">
+		  <input type="text" name="imglink" class="form-control" value="<%= list[i].imglink %>" placeholder="图片链接">
+		</div>
+		<% if(i!=0){ %>
+		<div class="form-item-action action-remove"><i class="glyphicon glyphicon-remove"></i></div>
+		<% } %>
+	  </div>
+	  <% } %>
+	<% }else{ %>
+	<div class="quarter-item form-item">
+	  <div class="form-group">
+		<div class="input-group">
+		  <input name="imgsrc" type="text" readonly class="form-control" placeholder="图片地址">
+		  <span class="input-group-addon select-image" data-toggle="modal" data-imgurl="" href="<{url action=topshop_ctl_shop_image@loadImageModal}>" data-target="#gallery_modal">选择图片</span>
+		</div>
+	  </div>
+	  <div class="form-group">
+		<input type="text" name="imglink" class="form-control" placeholder="图片链接">
+	  </div>
+	</div>
+	<% } %>
+  </div>
+  <button class="btn btn-default btn-block action-add">添加</button>
+</div>
+</script>
+<!--add_20170914_by_xinyufeng_end-->

@@ -1,0 +1,64 @@
+<!--add_20170914_by_gurundong_start 热卖-->
+
+<section class="hotsell" <{if $shopdata.bg_color}>style="background:<{$shopdata.bg_color}>"<{/if}>>
+<div class="swiper-container hotsell-box hotsell">
+    <div>
+        <a href="<{$widgetDetail.params.imglink}>">
+        <{if $widgetDetail.params.imgurl}>
+        <img class="hotsell-banner imglazyload"  data-original="<{$widgetDetail.params.imgurl|storager:'m'}>" alt="">
+        <{else}>
+        <img class="hotsell-banner imglazyload"   data-original="<{$widgetDetail.params.imgurl|storager:'m'}>" alt="">
+        <{/if}>
+        </a>
+    </div>
+    <div class="swiper-wrapper">
+		<{foreach from=$widgetDetail.showitems.list item=item}>
+            <div class="swiper-slide">
+                <div class="thumbnail">
+                    <div class="thumb-img hotsell-item">
+                        <a href="<{url action=topwap_ctl_item_detail@index item_id=$item.item_id}>">
+                            <{if $item.image_default_id}>
+                            <img  class="imglazyload" data-original="<{$item.image_default_id|storager:'m'}>" alt="">
+                            <{else}>
+                            <img  class="imglazyload" data-original="<{$defaultImageId.M.default_image|storager:'m'}>" alt="">
+                            <{/if}>
+                        </a>
+                    </div>
+                    <div class="caption">
+                        <h1 class="goods-title"><{if $item.activity}><span class="tag"><{$item.activity.activity_tag}></span><{/if}><{$item.title}></h1>
+                        <div class="price">
+                            <div class="amount"><{$item.price|cur}></div>
+                        </div>
+                    </div>
+                    <{if ($item.store-$item.freez) < 1 }>
+                    <!-- 已售罄 -->
+                    <div class="soldout">
+                        <img src="<{$sell_out_img|storager:m}>" alt="">
+                    </div>
+                    <{/if}>
+                </div>
+            </div>
+		<{/foreach}>
+    </div>
+</div>
+<script type="text/javascript">
+$(document).ready(function () {
+    var swiper = new Swiper('.hotsell-box', {
+        slidesPerView: 2.5,
+		spaceBetween: 10,
+		//autoplay: 3000,//可选选项，自动滑动
+    });
+});
+$(function(){
+	var $divWidth = $('.swiper-slide').width();
+	$('.hotsell-item img').css({'height':$divWidth});
+	
+	var bannerWidth = $('.hotsell .hotsell-box img').width();
+	var bannerHeight = bannerWidth*0.375;
+	$('.hotsell .hotsell-box img').css({'height':bannerHeight});
+
+})
+
+</script>
+</section>
+<!--add_20170914_by_gurundong_end-->

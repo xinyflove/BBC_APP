@@ -1,0 +1,82 @@
+<div class="box box-primary clearfix">
+    <div class="mailbox-controls with-border">
+        <a  href="<{url action=topshop_ctl_export@export app=syspromotion model=lottery_result}>" data-app="syspromotion" data-model="lottery_result" class="btn btn-primary btn-sm export-filter-btn ">
+            <i class="glyphicon glyphicon-export"></i>
+            导出
+          </a>
+    </div>
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th>用户名</th>
+            <th>奖品名称</th>
+            <th>中奖时间</th>
+            <th>需要发货</th>
+            <th>收货信息</th>
+        </tr>
+        </thead>
+        <{if $lotteryList}>
+        <tbody>
+            <{foreach from=$lotteryList item=item}>
+            <tr>
+                <td>
+                    <{$item.loginName}>
+                </td>
+                <td>
+                    <{$item.bonus_desc}>
+                </td>
+                <td>
+                    <{$item.created_time|cdate:'FDATE_STIME'}>
+                </td>
+                <td>
+                    <{if $item.prizeInfo.is_delivery == 'on'}>
+                    是
+                    <{else}>
+                    否
+                    <{/if}>
+                </td>
+                <td>
+                    <{if $item.addr}>
+                    地址：<{$item.receiver_area|region}> <{$item.addr}>&nbsp;&nbsp;&nbsp;&nbsp;收货人：<{$item.receiver_name}>&nbsp;&nbsp;&nbsp;&nbsp;电话：<{$item.receiver_phone}>
+                    <{/if}>
+
+                </td>
+            </tr>
+            <{/foreach}>
+        </tbody>
+        <{else}>
+        <tbody>
+            <tr>
+              <td algin="center" colspan="9">
+                <p class="help-block text-center">暂无数据</p>
+              </td>
+            </tr>
+        </tbody>
+        <{/if}>
+    </table>
+    <div class="text-right">
+        <{pagers data=$pagers}>
+        <{if $total > 0}>
+        <span class="page-number">共&nbsp;<em class="text-aqua"><{$total}></em>&nbsp;条记录</span>
+        <{/if}>
+    </div>
+</div>
+<span class="export-filter" data-value="" data-app="" data-model=""></span>
+
+<script>
+        $('.export-filter-btn').click(function (e) {
+        e.preventDefault();
+        var url = $(this).attr('href');
+        var app = $(this).data('app');
+        var model = $(this).data('model');
+
+        var val = $(this).attr('data-value');
+        var filter = '{"lottery_id":"'+<{$lottery_id}>+'"}';
+
+        $('.export-filter').attr('data-app',app);
+        $('.export-filter').attr('data-model',model);
+        $('.export-filter').attr('data-value',filter);
+
+        $('#exportDialog').modal({remote: url}).attr('data-app',app).attr('data-model',model);
+    });
+</script>

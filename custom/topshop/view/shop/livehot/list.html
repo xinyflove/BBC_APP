@@ -1,0 +1,98 @@
+<style>
+    .item_delete{
+        cursor:pointer;
+    }
+</style>
+<div class="callout callout-info">
+    <h4>直播热售说明：</h4>
+
+    <p>请添加直播热售的商品，注意商品状态，及时添加直播广告图！</p>
+</div>
+<div class="box box-primary clearfix">
+    <div class="mailbox-controls with-border">
+        <a class="btn btn-default btn-sm act-addcat" href="<{url action=topshop_ctl_shop_livehot@add}>">
+            <i class="fa fa-plus-square-o"></i> 添加直播热售商品
+        </a>
+    </div>
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th>热售ID</th>
+            <th>商品名称</th>
+            <th>状态</th>
+            <th>直播热售图</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <{if $data}>
+        <tbody>
+        <{foreach from=$data item=item}>
+        <tr>
+            <td>
+                <{$item.livehot_id}>
+            </td>
+            <td>
+                <{$item.item.title}>
+            </td>
+            <td>
+                <{if !$item.item.livehot_img}>
+                    <span class="label label-danger">未激活(无直播热售图)</span>
+                <{elseif $item.item.approve_status == "instock"}>
+                    <span class="label label-danger">未激活(商品未上架)</span>
+                <{else}>
+                    <span class="label label-success">已激活</span>
+                <{/if}>
+            </td>
+            <td>
+                <{if $item.item.livehot_img}>
+                    <img style="width: 70px;height: auto" src="<{$item.item.livehot_img|storager:t}>" alt="">
+                <{else}>
+                    <i class="text-danger">无</i>
+                <{/if}>
+            </td>
+            <td>
+                <{if !$item.item.livehot_img}>
+                <a href="<{url action=topshop_ctl_item@edit item_id=$item.item_id}>">添加直播图</a><br>
+                <{elseif $item.item.approve_status == 'instock'}>
+                <a href="<{url action=topshop_ctl_item@itemList}>">上架商品</a><br>
+                <{else}>
+                <{/if}>
+                <a class="item_delete" data-id="<{$item.livehot_id}>">删除</a>
+            </td>
+        </tr>
+        <{/foreach}>
+        </tbody>
+        <{else}>
+        <tbody>
+        <tr>
+            <td algin="center" colspan="9">
+                <p class="help-block text-center">暂无数据</p>
+            </td>
+        </tr>
+        </tbody>
+        <{/if}>
+    </table>
+    <div class="text-right">
+        <{pagers data=$pagers}>
+        <{if $total > 0}>
+        <span class="page-number">共&nbsp;<em class="text-aqua"><{$total}></em>&nbsp;条记录</span>
+        <{/if}>
+    </div>
+</div>
+
+<script>
+$('.item_delete').click(function () {
+   var id = $(this).data('id');
+   var del = $(this);
+   var url = '<{url action=topshop_ctl_shop_livehot@delete}>';
+   $.post(url,{'id':id},function (rs) {
+       $(del).parent().parent().remove();
+//       if(rs.error) {
+//           $('#messagebox').message(rs.message);
+//       }
+//       if(rs.success) {
+//           $('#messagebox').message(rs.message, 'success');
+//       }
+   });
+});
+</script>

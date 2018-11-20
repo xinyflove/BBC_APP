@@ -1,0 +1,231 @@
+<!-- // start add 王衍生 20170928 -->
+<style>
+  header .header-left {
+      position: relative;
+      float: left;
+      height: 3rem;
+      color: #c0c0c0;
+      font-size: 1.6rem;
+      z-index: 10;
+  }
+  .goods-filters .goods-filters-item.active {
+      color: #ffac20;
+  }
+
+  .tag {
+      display: inline-block;
+      height: 1.2rem;
+      line-height: 1.2rem;
+      margin-right: .3rem;
+      font-size: 0.7rem;
+      padding: 0 0.4rem;
+      border-radius: 0.2rem;
+      color: #fff;
+      background: #ffac20;
+  }
+
+  .thumbnail .caption .price .amount {
+      -webkit-box-flex: 1;
+      height: 1rem;
+      line-height: 1rem;
+      color: #ffac20;
+      font-size: 1rem;
+  }
+
+  .goods-filters .goods-filters-item.active .order-desc:before {
+      border-bottom-color: #ffac20;
+  }
+
+  .goods-filters .goods-filters-item.active .order-asc:after {
+      border-top-color: #ffac20;
+  }
+</style>
+<!-- // end add 王衍生 20170928 -->
+
+
+<header class="page-header">
+  <i class="header-left icon-func bbc-icon bbc-icon-back shopex-action-back"></i>
+  <div class="header-title">
+    <{if $promotiontype=='fullminus'}><{$promotionInfo.fullminus_name}><{/if}>
+    <{if $promotiontype=='coupon'}><{$promotionInfo.coupon_name}><{/if}>
+    <{if $promotiontype=='fulldiscount'}><{$promotionInfo.fulldiscount_name}><{/if}>
+    <{if $promotiontype=='xydiscount'}><{$promotionInfo.xydiscount_name}><{/if}>
+  </div>
+</header>
+<section class="container no-fix">
+  <!--  满 <mark>100</mark> 元减 <mark>30</mark> 元 -->
+  <div id="pullrefresh" class="shopex-scroll-wrapper bbc-pullrefresh-top">
+    <div class="shopex-scroll">
+      <div class="content-bottom-padded" style="margin-bottom:0 !important">
+		<div class="TV-coupon-header">
+			<h1 class="coupon-title"><{$promotionInfo.coupon_name}></h1>
+			  <div class="coupon-box">
+			    <h2>已经领取的优惠券: <i id="total"><{$total|cur}></i></h2>
+			  <p>有效期：<{$promotionInfo.canuse_start_time}>-<{$promotionInfo.canuse_end_time}></p>
+		    <span class="coupon-countent" data-id="<{$promotionInfo.coupon_id}>" data-shopid="<{$promotionInfo.shop_id}>">点击领取&gt;</span>
+		  </div>
+		  <p class="coupon-info">使用产品范围</p>
+		<span class="coupon-down"><img src="/app/topwap/statics/images/down.png" alt=""></span>
+	  </div>
+	  <!--<div class="coupon-countent" style="width: 54%;margin: 0 auto;margin-top:1rem;color:#fff;padding:0;position:relative" data-id="<{$promotionInfo.coupon_id}>" data-shopid="<{$promotionInfo.shop_id}>">
+			<p class="price" style="margin-left: 2rem;font-size: 1.5rem;"><{$promotionInfo.deduct_money|cur}></p>
+			<p style="font-size:0.7rem;margin-left:1.1rem;margin-top:0.3rem"><{$promotionInfo.canuse_start_time}>-<{$promotionInfo.canuse_end_time}></p>
+			<p style="width: 3rem;position: absolute;color:#d44e53;top: 0.5rem;right: -0.4rem;font-weight: bold;">立即<br>领取</p>
+		  </div>
+        </div>
+      </div>-->
+
+      <div class="section-white goods-filters">
+        <div class="goods-filters-item active" data-order="">综合</div>
+        <div class="goods-filters-item" data-order="price">价格 <i class="goods-filters-order order-asc"></i></div>
+        <div id="show_style" class="goods-show-style"><i class="bbc-icon bbc-icon-thumb"></i></div>
+      </div>
+
+      <ul class="shopex-table-view pro-list-grid goods-list">
+        <{include file="topwap/promotion/itemlist.html"}>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<{include file="topwap/common/listaddcart.html"}>
+<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+<{script src="share.js" app="topwap"}>
+<script>
+  //微信分享
+  $(function(){
+    var imgUrl = "<{$shopinfo.shop_logo}>";
+    wxShare({
+      title: $('.promotion-name').html(),
+      desc: $('.promotion-exp').html(),
+      link: location.href,
+      imgUrl: imgUrl,
+    });
+  });
+
+
+  var flag = localStorage.getItem('list_type');
+  if(flag && flag == 'gallery'){
+    $('#show_style .bbc-icon').addClass('bbc-icon-thumb').removeClass('bbc-icon-gallery');
+    $('.goods-list').addClass('pro-list-grid').removeClass('pro-list-normal');
+  }else if(flag && flag == 'thumb'){
+    $('#show_style .bbc-icon').addClass('bbc-icon-gallery').removeClass('bbc-icon-thumb');
+    $('.goods-list').addClass('pro-list-normal').removeClass('pro-list-grid');
+  }
+
+  var promotion_id = "<{$filter.promotion_id}>";
+
+  $('#show_style').on('tap',function(){
+    if($(this).find('.bbc-icon').hasClass('bbc-icon-gallery')){
+      $(this).find('.bbc-icon').removeClass('bbc-icon-gallery').addClass('bbc-icon-thumb');
+      $('.goods-list').addClass('pro-list-grid').removeClass('pro-list-normal');
+      shopex('#pullrefresh').pullRefresh().scrollTo(0,0);
+      localStorage.setItem('list_type','gallery');
+    }else if($(this).find('.bbc-icon').hasClass('bbc-icon-thumb')){
+      $(this).find('.bbc-icon').removeClass('bbc-icon-thumb').addClass('bbc-icon-gallery');
+      $('.goods-list').addClass('pro-list-normal').removeClass('pro-list-grid');
+      shopex('#pullrefresh').pullRefresh().scrollTo(0,0);
+      localStorage.setItem('list_type','thumb');
+    }
+
+  });
+
+  var count = 1;
+  var totalpage = "<{$pagers.total}>";
+  var listwrapper = document.body.querySelector('.goods-list');
+  var order;
+
+  $('.goods-filters-item').on('tap',function(){
+    $(this).addClass('active').siblings().removeClass('active');
+    order = $(this).data('order');
+    var filterItem = $(this).find('.goods-filters-order')
+    if(filterItem && $(this).hasClass('active') && filterItem.hasClass('order-asc')){
+      filterItem.removeClass('order-asc').addClass('order-desc');
+      order = order? order+' '+'asc':'';
+    }else if(filterItem && $(this).hasClass('active') && filterItem.hasClass('order-desc')){
+      filterItem.removeClass('order-desc').addClass('order-asc');
+      order = order? order+' '+'desc':'';
+    }
+    getList(1,order,function(rs){
+      $(listwrapper).html(rs);
+      shopex('#pullrefresh').pullRefresh().scrollTo(0,0);
+      shopex('#pullrefresh').pullRefresh().enablePullupToRefresh();
+    });
+  });
+
+  shopex.init({
+      swipeBack: false,
+      pullRefresh: {
+          container: '#pullrefresh',
+          down: {
+              callback: pulldownRefresh
+          },
+          up: {
+              contentrefresh: '正在加载...',
+              callback: pullupRefresh
+          }
+      }
+  });
+  /**
+   * 下拉刷新具体业务实现
+   */
+  function pulldownRefresh() {
+    count = 1;
+    setTimeout(function() {
+      getList(count,order,function(rs){
+        $(listwrapper).html(rs);
+        shopex('#pullrefresh').pullRefresh().endPulldownToRefresh()
+        shopex('#pullrefresh').pullRefresh().enablePullupToRefresh(); //refresh completed
+      })
+    }, 1500);
+  }
+  /**
+   * 上拉加载具体业务实现
+   */
+  function pullupRefresh() {
+    setTimeout(function() {
+      shopex('#pullrefresh').pullRefresh().endPullupToRefresh((++count > totalpage));
+      if(!(count > totalpage)) {
+        //参数为true代表没有更多数据了。
+        getList(count,order,function(rs){
+          $(listwrapper).append(rs);
+        })
+      }
+    }, 1500);
+  }
+
+function getList(num,order,callback){
+  $.ajax({
+    url: '<{url action=topwap_ctl_promotion@ajaxGetPromotionItem type=$promotiontype}>',
+    type: 'get',
+    dataType: 'html',
+    data: {
+      'promotion_id':promotion_id,
+      'coupon_id':'<{$promotionInfo.coupon_id}>',
+      'pages': num,
+      'order_by': order
+    },
+    success: callback
+  });
+};
+
+$('.coupon-countent').on('tap',function(){
+  var coupon_id = $(this).data('id');
+  var shop_id = $(this).data('shopid');
+  $.post('<{url action=topwap_ctl_shop_coupon@receiveConpon}>',{'coupon_id':coupon_id,'shop_id':shop_id},function(rs){
+    if( rs.error ){
+      //shopex.alert(rs.message);
+      shopex.toast(rs.message);
+	  if(rs.message=='请登录'){
+		window.location.href="<{url action=topwap_ctl_passport@goLogin}>?next_page=<{url action=topwap_ctl_promotion@getCoupon coupon_id=$promotionInfo.coupon_id}>";
+	  }
+    }else if(rs.success){
+		shopex.toast(rs.message.msg);
+		$('#total').html(rs.message.total);
+    }else{
+		shopex.toast(rs.message);
+	}
+  })
+});
+</script>
+

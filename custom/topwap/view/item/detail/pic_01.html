@@ -1,0 +1,28 @@
+<!-- m-tvplazaNew-details-slider start -->
+<section class="m-tvplazaNew-details-slider swiper-container" id="Baby" style="position: relative;">
+	<ul class="swiper-wrapper">
+		<{if !$item.list_image}>
+		<li class="swiper-slide">
+			<a href="javascript:;">
+				<img src="<{$image_default_id.L.default_image|storager}>" alt="">
+			</a>
+		</li>
+		<{else}>
+		<{foreach from=$item.list_image item=image_id}>
+		<li class="swiper-slide">
+			<a href="javascript:;">
+				<img src="<{$image_id|storager:'m'}>" alt="">
+			</a>
+		</li>
+		<{/foreach}>
+		<{/if}>
+	</ul>
+	<div class="swiper-pagination"></div>
+	<{if ($item.store-$item.freez) < 1 }>
+	<!-- 已售罄 -->
+	<div class="soldout">
+		<img src="<{$sell_out_img|storager}>" alt="">
+	</div>
+	<{/if}>
+</section>
+<!-- end m-tvplazaNew-details-slider -->

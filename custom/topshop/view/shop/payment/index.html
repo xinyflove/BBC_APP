@@ -1,0 +1,323 @@
+<style>
+  .tabs-container > .nav-tabs > li.active >a {border-top-color:#3c8dbc;}
+  .nav-tabs{background-color:#fff;}
+  .panel-default{border-color:#fff;}
+  .tabs-container > .nav-tabs > li > a{color:#444;}
+  .form-horizontal .control-label{font-size:14px;font-weight:normal;}
+  .input-group{margin-right:10px;margin-left:10px;width:770px;}
+  .input-group-addon{width:200px;}
+  .box-footer{margin-top:-20px;}
+</style>
+<{if $mer_collection == 'off'}>
+您现在还没有开通配置此功能的权限，请联系平台管理员进行开通！
+<{else}>
+<form action="<{url action=topshop_ctl_shop_payment@savePayment}>" method="post" class="form-horizontal form-validate"  enctype="multipart/form-data" >
+  <div class="tabs-container">
+      <ul class="nav nav-tabs" id="myTab">
+          <li class="active"><a href="javascript:void(0)">原生微信支付</a></li>
+          <li><a href="javascript:void(0)">银联商务扫码(umspaywechat)</a></li>
+          <li><a href="javascript:void(0)">银联商务扫码(umspayalipay)</a></li>
+          <li><a href="javascript:void(0)">银联商务公众号</a></li>
+          <li><a href="javascript:void(0)">银联商务银行卡(pc)</a></li>
+          <li><a href="javascript:void(0)">银联商务银行卡(wap)</a></li>
+          <li><a href="javascript:void(0)">原生支付宝支付(pc)</a></li>
+          <li><a href="javascript:void(0)">微信H5支付</a></li>
+      </ul>
+
+      <div class="tab-content">
+          <div class="tab-pane  active" id="tab_0">
+              <!-- 微信支付 子商户 -->
+              <div class="panel panel-default" >
+                  <div class="panel-body">
+                      <div class="col-sm-9 col-xs-12">
+                          <h4>原生微信支付(子商户版)</h4>
+                      </div>
+                      <div class="col-sm-2 pull-right" style="padding-top:10px;text-align: right" >
+                          <input type="checkbox" class="js-switch" name="payment[wxservicepayapi][open]"  value="1" <{if $payment['wxservicepayapi']['open']==1}> checked <{/if}> /> 启用
+                      </div>
+                  </div>
+
+                  <div class="panel-body" id="wxservicepayapi_sub" >
+
+                      <!--<div class="form-group" >-->
+                          <!--<label class="col-xs-12 col-sm-3 col-md-2 control-label must">公众号(AppId)</label>-->
+                          <!--<div class="col-sm-9">-->
+                              <!--<input type="text" name="payment[wxservicepayapi][sub_appid]" class="form-control" value="<{$payment['wxservicepayapi']['sub_appid']}>"/>-->
+                          <!--</div>-->
+                      <!--</div>-->
+
+                      <!--<div class="form-group" >-->
+                          <!--<label class="col-xs-12 col-sm-3 col-md-2 control-label must">公众号应用密钥(AppSecret)</label>-->
+                          <!--<div class="col-sm-9">-->
+                              <!--<input type="text" name="payment[wxservicepayapi][sub_appsecret]" class="form-control" value="<{$payment['wxservicepayapi']['sub_appsecret']}>"/>-->
+                          <!--</div>-->
+                      <!--</div>-->
+
+                      <div class="form-group" >
+                          <div class="input-group">
+                              <div class="input-group-addon">子商户号(Mch_Id)</div>
+                              <input type="text" name="payment[wxservicepayapi][sub_mchid]" class="form-control" value="<{$payment['wxservicepayapi']['sub_mchid']}>"/>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          <div class="tab-pane  active" id="tab_1" style="display:none;">
+            <div class="panel panel-default" >
+                <div class="panel-body">
+                    <div class="col-sm-9 col-xs-12">
+                        <h4>银联商务扫码(子商户版)</h4>
+                    </div>
+                    <div class="col-sm-2 pull-right" style="padding-top:10px;text-align: right" >
+                        <input type="checkbox" class="js-switch" name="payment[umspay][open]"  value="1" <{if $payment['umspay']['open']==1}> checked <{/if}> /> 启用
+                    </div>
+                </div>
+
+                <div class="panel-body" id="umspay_sub" >
+                    <div class="form-group" >
+                        <div class="input-group">
+                            <div class="input-group-addon">子商户号(Mch_Id)</div>
+                            <input type="text" name="payment[umspay][sub_mchid]" class="form-control" value="<{$payment['umspay']['sub_mchid']}>"/>
+                        </div>
+                    </div>
+                    <div class="form-group" >
+                        <div class="input-group">
+                            <div class="input-group-addon">终端号（TId）</div>
+                            <input type="text" name="payment[umspay][sub_tid]" class="form-control" value="<{$payment['umspay']['sub_tid']}>"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          </div>
+          <div class="tab-pane" id="tab_2" style="display:none;">
+              <div class="panel panel-default" >
+                  <div class="panel-body">
+                      <div class="col-sm-9 col-xs-12">
+                          <h4>银联商务扫码(子商户版)</h4>
+                      </div>
+                      <div class="col-sm-2 pull-right" style="padding-top:10px;text-align: right" >
+                          <input type="checkbox" class="js-switch" name="payment[umsalipay][open]"  value="1" <{if $payment['umsalipay']['open']==1}> checked <{/if}> /> 启用
+                      </div>
+                  </div>
+
+                  <div class="panel-body" id="umsalipay_sub" >
+                      <div class="form-group" >
+                          <div class="input-group">
+                              <div class="input-group-addon">子商户号(Mch_Id)</div>
+                              <input type="text" name="payment[umsalipay][sub_mchid]" class="form-control" value="<{$payment['umsalipay']['sub_mchid']}>"/>
+                          </div>
+                      </div>
+                      <div class="form-group" >
+                          <div class="input-group">
+                              <div class="input-group-addon">终端号（TId）</div>
+                              <input type="text" name="payment[umsalipay][sub_tid]" class="form-control" value="<{$payment['umsalipay']['sub_tid']}>"/>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          <div class="tab-pane  active" id="tab_3" style="display:none;">
+            <div class="panel panel-default" >
+                <div class="panel-body">
+                    <div class="col-sm-9 col-xs-12">
+                        <h4>银联商务公众号(子商户版)</h4>
+                    </div>
+                    <div class="col-sm-2 pull-right" style="padding-top:10px;text-align: right" >
+                        <input type="checkbox" class="js-switch" name="payment[umspaypub][open]"  value="1" <{if $payment['umspaypub']['open']==1}> checked <{/if}> /> 启用
+                    </div>
+                </div>
+
+                <div class="panel-body" id="umspaypub_sub" >
+                    <div class="form-group" >
+                        <div class="input-group">
+                                <div class="input-group-addon">子商户号(Mch_Id)</div>
+                                <input type="text" name="payment[umspaypub][sub_mchid]" class="form-control" value="<{$payment['umspaypub']['sub_mchid']}>"/>
+                        </div>
+                    </div>
+                    <div class="form-group" >
+                        <div class="input-group">
+                                <div class="input-group-addon">终端号（TId）</div>
+                                <input type="text" name="payment[umspaypub][sub_tid]" class="form-control" value="<{$payment['umspaypub']['sub_tid']}>"/>
+                        </div>
+                    </div>
+                    <!--<div class="form-group" >-->
+                        <!--<div class="input-group">-->
+                            <!--<div class="input-group-addon">AppId（AppId）</div>-->
+                            <!--<input type="text" name="payment[umspaypub][sub_appid]" class="form-control" value="<{$payment['umspaypub']['sub_appid']}>"/>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                    <!--<div class="form-group" >-->
+                        <!--<div class="input-group">-->
+                            <!--<div class="input-group-addon">App密码（AppSecrect）</div>-->
+                            <!--<input type="text" name="payment[umspaypub][sub_appsecret]" class="form-control" value="<{$payment['umspaypub']['sub_appsecret']}>"/>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                </div>
+            </div>
+          </div>
+          <div class="tab-pane  active" id="tab_4" style="display:none;">
+            <div class="panel panel-default" >
+                <div class="panel-body">
+                    <div class="col-sm-9 col-xs-12">
+                        <h4>PC端银联商务银行卡(子商户版)</h4>
+                    </div>
+                    <div class="col-sm-2 pull-right" style="padding-top:10px;text-align: right" >
+                        <input type="checkbox" class="js-switch" name="payment[upacp][open]"  value="1" <{if $payment['upacp']['open']==1}> checked <{/if}> /> 启用
+                    </div>
+                </div>
+
+                <div class="panel-body" id="upacp_sub" >
+                    <div class="form-group" >
+                        <div class="input-group">
+                            <div class="input-group-addon">子商户号(Mch_Id)</div>
+                            <input type="text" name="payment[upacp][sub_mchid]" class="form-control" value="<{$payment['upacp']['sub_mchid']}>"/>
+                        </div>
+                    </div>
+                    <div class="form-group" >
+                        <div class="input-group">
+                            <div class="input-group-addon">证书密码(PASSWORD)</div>
+                            <input type="text" name="payment[upacp][pfx_pass]" class="form-control" value="<{$payment['upacp']['pfx_pass']}>"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-group">
+                            <div class="input-group-addon">PFX证书文件</div>
+                            <input type="file" name="upacp_sub_pfx_file" class="form-control" />
+                            <input type="text" readonly="true" name="payment[upacp][pfx]" value="<{$payment['upacp']['pfx']}>"/>
+                            <{if $payment['upacp']['pfx']}>
+                            <span class='label label-success'>已上传</span>
+                            <{else}>
+                            <span class='label label-danger'>未上传</span>
+                            <{/if}>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          </div>
+          <div class="tab-pane  active" id="tab_5" style="display:none;">
+              <div class="panel panel-default" >
+                  <div class="panel-body">
+                      <div class="col-sm-9 col-xs-12">
+                          <h4>WAP端银联商务银行卡(子商户版)</h4>
+                      </div>
+                      <div class="col-sm-2 pull-right" style="padding-top:10px;text-align: right" >
+                          <input type="checkbox" class="js-switch" name="payment[wapupacp][open]"  value="1" <{if $payment['wapupacp']['open']==1}> checked <{/if}> /> 启用
+                      </div>
+                  </div>
+                  <div class="panel-body" id="wapupacp_sub" >
+                      <div class="form-group" >
+                          <div class="input-group">
+                              <div class="input-group-addon">子商户号(Mch_Id)</div>
+                              <input type="text" name="payment[wapupacp][sub_mchid]" class="form-control" value="<{$payment['wapupacp']['sub_mchid']}>"/>
+                          </div>
+                      </div>
+                      <div class="form-group" >
+                          <div class="input-group">
+                              <div class="input-group-addon">证书密码(PASSWORD)</div>
+                              <input type="text" name="payment[wapupacp][pfx_pass]" class="form-control" value="<{$payment['wapupacp']['pfx_pass']}>"/>
+                          </div>
+                      </div>
+
+                      <div class="form-group">
+                          <div class="input-group">
+                              <div class="input-group-addon">PFX证书文件</div>
+                              <input type="file" name="wapupacp_sub_pfx_file" class="form-control" />
+                              <input type="text" readonly="true" name="payment[wapupacp][pfx]" value="<{$payment['wapupacp']['pfx']}>"/>
+                              <{if $payment['wapupacp']['pfx']}>
+                              <span class='label label-success'>已上传</span>
+                              <{else}>
+                              <span class='label label-danger'>未上传</span>
+                              <{/if}>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          <div class="tab-pane  active" id="tab_6" style="display:none;">
+              <div class="panel panel-default" >
+                  <div class="panel-body">
+                      <div class="col-sm-9 col-xs-12">
+                          <h4>PC端原生支付宝扫码</h4>
+                      </div>
+                      <div class="col-sm-2 pull-right" style="padding-top:10px;text-align: right" >
+                          <input type="checkbox" class="js-switch" name="payment[alipayservice][open]"  value="1" <{if $payment['alipayservice']['open']==1}> checked <{/if}> /> 启用
+                      </div>
+                  </div>
+                  <div class="panel-body" id="alipayservice_sub" >
+                      <div class="form-group" >
+                          <div class="input-group">
+                              <div class="input-group-addon">子商户号(Mch_Id)</div>
+                              <input type="text" name="payment[alipayservice][sub_mchid]" class="form-control" value="<{$payment['alipayservice']['sub_mchid']}>"/>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          <div class="tab-pane  active" id="tab_7" style="display:none;">
+                <!-- 微信H5支付 -->
+                <div class="panel panel-default" >
+                    <div class="panel-body">
+                        <div class="col-sm-9 col-xs-12">
+                            <h4>微信H5支付(子商户版)</h4>
+                        </div>
+                        <div class="col-sm-2 pull-right" style="padding-top:10px;text-align: right" >
+                            <input type="checkbox" class="js-switch" name="payment[wxserviceh5pay][open]"  value="1" <{if $payment['wxserviceh5pay']['open']==1}> checked <{/if}> /> 启用
+                        </div>
+                    </div>
+
+                    <div class="panel-body" id="wxserviceh5pay_sub" >
+                        <div class="form-group" >
+                            <div class="input-group">
+                                <div class="input-group-addon">子商户号(Mch_Id)</div>
+                                <input type="text" name="payment[wxserviceh5pay][sub_mchid]" class="form-control" value="<{$payment['wxserviceh5pay']['sub_mchid']}>"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+      </div>
+  </div>
+   <div class="box-footer center">
+    <button type="submit" class="btn btn-primary">提交</button>
+   </div>
+</form>
+<{/if}>
+
+
+<script type="text/javascript">
+  function ajaxSubmit (e) {
+    var form = e.target;
+    e.preventDefault();
+    $.post(form.action, $(form).serialize(), function(rs) {
+      if(rs.error) {
+        $('#messagebox').message(rs.message);
+        return;
+      }
+      if(rs.success) {
+        $('#messagebox').message(rs.message, 'success');
+      }
+      if(rs.redirect) {
+        setTimeout(function(){location.href=rs.redirect;}, 800);
+      }
+    });
+  }
+    $(function ()
+    {
+        $('#myTab li').click(function()
+        {
+            var index = $(this).index();
+            $(this).addClass('active');
+            $(this).siblings().removeClass('active');
+            $('#tab_' + index).show();
+            $('#tab_' + index).siblings().hide();
+        })
+
+        $(":file").change(function() {
+            var up_file = $(this).val();
+            var arr = up_file.split('\\');
+            var arr_length = arr.length;
+            var file_name = arr[arr_length-1];
+            $(this).next().val(file_name);
+        })
+    })
+</script>

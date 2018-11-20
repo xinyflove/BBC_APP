@@ -39,6 +39,32 @@ return  array(
 			'default_in_list' => true,  // 定义在desktop finder列表中初始安装的情况下, 对应列是否默认显示在列表中, 默认值为false.
 			'searchtype' => 'has',
 		),
+
+        'bank_logo' => array (
+			'type' => 'string',
+			'default' => '',
+			'required' => true,
+			'comment' => app::get('sysbankmember')->_('银行logo'),
+			'label' => app::get('sysbankmember')->_('银行logo'),   // 定义在desktop finder中列的名称
+			'width' => 150, // 定义在desktop finder中列的初始宽度
+            'filtertype' => 'normal',
+            'editable' => false,
+			'in_list' => false,  // 定义在desktop finder配置列表项中是否可以勾选显示, 默认值为false.
+			'default_in_list' => false,  // 定义在desktop finder列表中初始安装的情况下, 对应列是否默认显示在列表中, 默认值为false.
+			
+		),
+
+        'bank_color' => array (
+			'type' => 'string',
+			'default' => '',
+			'required' => true,
+			'comment' => app::get('sysbankmember')->_('银行颜色'),
+			'label' => app::get('sysbankmember')->_('银行颜色'),   // 定义在desktop finder中列的名称
+			'width' => 150, // 定义在desktop finder中列的初始宽度
+			'in_list' => false,  // 定义在desktop finder配置列表项中是否可以勾选显示, 默认值为false.
+			'default_in_list' => false,  // 定义在desktop finder列表中初始安装的情况下, 对应列是否默认显示在列表中, 默认值为false.
+		),
+
         'create_time' => array(
             'type' => 'time',
             'required' => true,

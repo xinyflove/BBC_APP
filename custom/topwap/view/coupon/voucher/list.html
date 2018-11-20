@@ -1,0 +1,673 @@
+<{css app="topwap" src="iconfont_news.css"}>
+<style>
+html,
+body {
+  background-color: #efeff4;
+}
+
+.shopex-bar~.shopex-content .shopex-fullscreen {
+  top: 44px;
+  height: auto;
+}
+
+.shopex-pull-top-tips {
+  position: absolute;
+  top: -1.8rem;
+  left: 50%;
+  margin-left: -0.8rem;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 100%;
+  z-index: 1;
+}
+
+.shopex-bar~.shopex-pull-top-tips {
+  top: 2rem;
+}
+
+.shopex-pull-top-wrapper {
+  width: 42px;
+  height: 42px;
+  display: block;
+  text-align: center;
+  background-color: #efeff4;
+  border: 1px solid #ddd;
+  border-radius: 25px;
+  background-clip: padding-box;
+  box-shadow: 0 4px 10px #bbb;
+  overflow: hidden;
+}
+
+.shopex-pull-top-tips.shopex-transitioning {
+  -webkit-transition-duration: 200ms;
+  transition-duration: 200ms;
+}
+
+.shopex-pull-top-tips .shopex-pull-loading {
+  /*-webkit-backface-visibility: hidden;
+      -webkit-transition-duration: 400ms;
+      transition-duration: 400ms;*/
+  margin: 0;
+}
+
+.shopex-pull-top-wrapper .shopex-icon,
+.shopex-pull-top-wrapper .shopex-spinner {
+  margin-top: 7px;
+}
+
+.shopex-pull-top-wrapper .shopex-icon.shopex-reverse {
+  /*-webkit-transform: rotate(180deg) translateZ(0);*/
+}
+
+.shopex-pull-bottom-tips {
+  text-align: center;
+  background-color: #efeff4;
+  font-size: .9rem;
+  line-height: 2.2rem;
+  color: #777;
+}
+
+.shopex-pull-top-canvas {
+  overflow: hidden;
+  background-color: #fafafa;
+  border-radius: 40px;
+  box-shadow: 0 4px 10px #bbb;
+  width: 40px;
+  height: 40px;
+  margin: 0 auto;
+}
+
+.shopex-pull-top-canvas canvas {
+  width: 40px;
+}
+
+.shopex-slider-indicator.shopex-segmented-control {
+  background-color: #efeff4;
+}
+
+.shopex-scroll > .shopex-table-view > .shopex-table-view-cell {
+  padding: 0;
+  background: #fff;
+  margin-bottom: 10px;
+}
+/*add_start_gurundong_2017-09-28*/
+header .header-left,header .header-right{
+  color: #989898 !important;
+}
+mark,.shopex-segmented-control.shopex-segmented-control-inverted .shopex-control-item.shopex-active{
+  color:#f0ad4e;
+}
+.icon-dianpu{
+  height: 23px;
+  width: 23px;
+  display: block;
+  float: left;
+  margin-right: 4px;
+  line-height: 27px;
+}
+.shopex-segmented-control.shopex-scroll-wrapper .shopex-scroll{width:100%;}
+.icon-dianpu:before {
+  font-size: 22px;
+}
+.shopex-control-items{width: auto;overflow: hidden;line-height: 36px;text-align: center;text-overflow: ellipsis;white-space: nowrap;color:#333;-webkit-transition: background-color 0.1s linear;transition: background-color 0.1s linear;display:block;float:left;width:25%}
+.shopex-active {border-bottom:2px solid #f0ad4e;}
+
+.order-list .inner-wrap {
+    margin-bottom: 10px;
+    background: #fff;
+}
+.select-store .store-n {
+    padding: 0.8em;
+    background: #FFFFFF;
+}
+.select-store .store-n a {
+    font-size: 1.1em;
+}
+.order-list .store-g {
+    border-bottom: 1px solid #ccc;
+}
+.select-store .store-g > ul > li {
+    padding: 10px;
+}
+.select-store .store-g > ul > li .g-info {
+    display: -webkit-box;
+    display: box;
+}
+.select-store .store-g > ul > li .g-info .info-l {
+    width: 75px;
+    text-align: left;
+}
+.select-store .store-g > ul > li .g-info .info-l a {
+    width: 60px;
+    height: 60px;
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;
+    background: #efefef;
+}
+.select-store .store-g > ul > li .g-info .info-l a img {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+}
+.select-store .store-g > ul > li .g-info .info-m {
+    -webkit-box-flex: 1;
+    box-flex: 1;
+    word-break: break-all;
+    width: 1%;
+}
+.order-list .code {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.order-list .g-name {
+    display: block;
+}
+.order-list .real, .order-list .num {
+    color: #999;
+    display: block;
+}
+.select-store .store-g > ul > li .g-info .info-r {
+    width: 100px;
+}
+.select-store .store-g > ul > li .g-info .info-r .g-price {
+    text-align: right;
+    padding-bottom: 10px;
+}
+.store-n {border-bottom:1px solid #eee}
+/*add_end_gurundong_2017-09-28*/
+.bbc-tab-bar .shopex-segmented-control.shopex-segmented-control-inverted .shopex-control-item.shopex-active{color:#f0ad4e}
+.bbc-tab-bar .shopex-segmented-control.shopex-segmented-control-inverted ~ .shopex-slider-progress-bar{background-color:#f0ad4e}
+
+
+.m-voucher-body{background-color: #fff;padding: 11px 10px 11px 10px;overflow: hidden;position: relative;margin: 8px auto 0 auto;border-radius: 5px;}
+.m-voucher-top{border-bottom: 1px dashed #f2f2f2; padding-bottom: 10px;}
+.m-voucher-top dl dt img{display: block;width: 90px !important;height: 90px;border:1px solid #eee;margin-right: 10px;}
+.m-voucher-top dl dd{margin-left:10px;}
+.m-voucher-top dl dd h3{width: 60%;font-size: 15px;color: #000;font-weight: normal;}
+.m-voucher-top dl dd p{font-size: 12px;color: #999;margin: 5px 0;}
+.m-voucher-top dl dd .tipblock span{width: 45px;height: 18px;background-color: #fff4eb;line-height: 18px;text-align: center;font-size: 12px;color: #ff9d0c;}
+.m-voucher-top dl dd .tipblock div{padding: 3px 20px;border:1px solid #ff9d0c;color: #ff9d0c;font-size: 12px;border-radius: 4px;margin-top:-8px;}
+.m-voucher-bottom{padding-top: 10px;font-size: 12px;color: #333;}
+.m-voucher-bottom span:nth-child(2){background: url("/app/topwap/statics/static/img/voucher_store.png") no-repeat left center;background-size: 15px 13px;padding-left: 20px;}
+.circle_bottom_left{width: 10px;height: 10px;background-color: #f5f5f5;position: absolute;bottom: 35px;left: -5px;border-radius: 50%;}
+.circle_bottom_right{width: 10px;height: 10px;background-color: #f5f5f5;position: absolute;bottom: 35px;right: -5px;border-radius: 50%;}
+.voucher_ewm{position: absolute;top: 10px;right: 8px;width: 25px !important;height: 25px;}
+.voucher_zsz, .voucher_tkz{position: absolute;top: 0;right: 0;width: 56.5px !important;height: 56.5px;}
+.voucher_yzs,.voucher_ysy, .voucher_ytk, .voucher_ygq{position: absolute;top: 8px;right: -15px;width: 78px !important;height: 82px;}
+.zsBox{position: relative;}
+.zs{position: absolute;left: 0;top: 0;width: 100%;height: 100%;}
+.zsStyle{background-color: #ff9d0c;color: #fff !important;}
+
+.cd-popup {
+	position: fixed;
+	left: 0;
+	top: 0;
+	height: 100%;
+	width: 100%;
+	background-color: rgba(0, 0, 0, 0.5);
+	opacity: 0;
+	visibility: hidden;
+	-webkit-transition: opacity 0.3s 0s, visibility 0s 0.3s;
+	-moz-transition: opacity 0.3s 0s, visibility 0s 0.3s;
+	transition: opacity 0.3s 0s, visibility 0s 0.3s;
+	z-index: 9999999;
+}
+
+.cd-popup.is-visible1,
+.cd-popup.is-visible1 {
+	opacity: 1;
+	visibility: visible;
+	-webkit-transition: opacity 0.3s 0s, visibility 0s 0s;
+	-moz-transition: opacity 0.3s 0s, visibility 0s 0s;
+	transition: opacity 0.3s 0s, visibility 0s 0s;
+}
+
+.cd-popup-container {
+	box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+	-webkit-transform: translateY(-60px);
+	-moz-transform: translateY(-60px);
+	-ms-transform: translateY(-60px);
+	-o-transform: translateY(-60px);
+	transform: translateY(-60px);
+	-webkit-backface-visibility: hidden;
+	-webkit-transition-property: -webkit-transform;
+	-moz-transition-property: -moz-transform;
+	transition-property: transform;
+	-webkit-transition-duration: 0.3s;
+	-moz-transition-duration: 0.3s;
+	-ms-transition-duration: 0.3s;
+	-o-transition-duration: 0.3s;
+	transition-duration: 0.3s;
+	overflow: hidden;
+	position: relative;
+	top: 50%;
+	left: 50%;
+}
+
+.is-visible1 .cd-popup-container1 {
+	-webkit-transform: translateY(0);
+	-moz-transform: translateY(0);
+	-ms-transform: translateY(0);
+	-o-transform: translateY(0);
+	transform: translateY(0);
+}
+
+.cd-popup-container1 {
+	width: 297px;
+	height: 212px;
+	background-color: #fff;
+	border-radius: 6px;
+	margin-top:-106px;
+	margin-left: -148.5px;
+}
+.cd-popup-container1 img{
+	width: 100px;
+	height: 100px;
+	position: absolute;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	margin: auto;
+}
+#code_ewm table{margin:0 auto;}
+</style>
+
+<header class="page-header">
+  <i class="header-left icon-func bbc-icon bbc-icon-back shopex-action-back"></i>
+  <div class="header-title">
+    我的代金券
+  </div>
+  <a href="#minimenu" class="header-right icon-func bbc-icon bbc-icon-more-vertical btn-mini-menu"></a>
+</header>
+<section class="container">
+  <div id="slider" class="shopex-slider shopex-fullscreen bbc-pullrefresh-top bbc-tab-bar">
+    <div id="sliderSegmentedControl" class="shopex-slider-indicator shopex-segmented-control shopex-segmented-control-inverted">
+      <a class="shopex-control-item shopex-active" data-status="0" href="#item1mobile">未使用</a>
+      <a class="shopex-control-item" data-status="1" href="#item2mobile">已使用</a>
+      <a class="shopex-control-item" data-status="2" href="#item3mobile">已赠送</a>
+      <a class="shopex-control-item" data-status="3" href="#item4mobile">已退款</a>
+      <a class="shopex-control-item" data-status="4" href="#item5mobile">已过期</a>
+    </div>
+    <div id="sliderProgressBar" class="shopex-slider-progress-bar shopex-col-xs-3" style="transform: translate3d(0px, 0px, 0px) translateZ(0px);width:20%;"></div>
+	<div class="shopex-slider-group">
+      <div id="item1mobile" class="shopex-slider-item shopex-control-content shopex-active">
+        <{if !$vouchers}>
+        <{include file="topwap/empty/trade-voucher.html"}>
+        <{else}>
+        <div id="scroll1" class="shopex-scroll-wrapper">
+          <div class="shopex-scroll" data-count="1" data-index="0">
+            <ul class="shopex-table-view coupons-list">
+            <div class="shopex-loading">
+              <div class="shopex-spinner">
+              </div>
+            </div>
+            </ul>
+          </div>
+        </div>
+        <{/if}>
+      </div>
+      <div id="item2mobile" class="shopex-slider-item shopex-control-content">
+        <div id="scroll2" class="shopex-scroll-wrapper">
+          <div class="shopex-scroll" data-count="1" data-index="1">
+          <ul class="shopex-table-view coupons-list">
+            <div class="shopex-loading">
+              <div class="shopex-spinner">
+              </div>
+            </div>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div id="item3mobile" class="shopex-slider-item shopex-control-content">
+        <div id="scroll3" class="shopex-scroll-wrapper">
+          <div class="shopex-scroll" data-count="1" data-index="2">
+          <ul class="shopex-table-view coupons-list">
+            <div class="shopex-loading">
+              <div class="shopex-spinner">
+              </div>
+            </div>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div id="item4mobile" class="shopex-slider-item shopex-control-content">
+        <div id="scroll4" class="shopex-scroll-wrapper">
+          <div class="shopex-scroll" data-count="1" data-index="3">
+          <ul class="shopex-table-view coupons-list">
+            <div class="shopex-loading">
+              <div class="shopex-spinner">
+              </div>
+            </div>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div id="item5mobile" class="shopex-slider-item shopex-control-content">
+        <div id="scroll5" class="shopex-scroll-wrapper">
+          <div class="shopex-scroll" data-count="1" data-index="4">
+          <ul class="shopex-table-view coupons-list">
+            <div class="shopex-loading">
+              <div class="shopex-spinner">
+              </div>
+            </div>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!--tv-ticket-dialog start-->
+<section class="tv-ticket-dialog">
+	<div class="cd-popup" id="dialog">
+		<div class="cd-popup-container cd-popup-container1">
+			<div id="code_ewm" style="padding:50px;">
+			</div>
+			<!--<img id="code_ewm" src="/app/topwap/statics/static/img/ewm.png"/>-->
+		</div>
+	</div>
+</section>
+<div id="share_img"style="position:fixed;z-index:99999999999999;top:0;bottom:0;left:0;right:0;background:rgba(0,0,0,0.5);display:none">
+<img src="/app/topwap/statics/static/img/share.png" style="width:100%;">
+</div>
+<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+<script src="/app/topwap/statics/static/js/jquery.qrcode.min.js"></script>
+<script>
+
+	//打开窗口
+	$('body').on('tap','.voucher_ewm', function(event) {
+		var voucher_code=$(this).attr('data-voucher-code');
+		var that=$(this);
+		//alert(voucher_code);
+		
+		$('#code_ewm').empty();
+		
+		$('#code_ewm').qrcode({
+			render: "table",
+			width: 100,
+			height:100,
+			text: voucher_code,
+		});
+		event.preventDefault();
+		$('.cd-popup').addClass('is-visible1');
+
+		//$('.cd-popup').addClass('is-visible1');
+		//$.post('<{url action=topwap_ctl_coupon_voucher@getewm}>',{voucher_id:voucher_id},function(e){
+		//	if(e.success){
+		//		$('#code_ewm').attr('src',e.message);
+		//		event.preventDefault();
+		//		$('.cd-popup').addClass('is-visible1');
+		//	}
+		//});
+
+	});
+
+
+	//生成二维码
+	
+function toUtf8(str) {   
+    var out, i, len, c;   
+    out = "";   
+    len = str.length;   
+    for(i = 0; i < len; i++) {   
+    	c = str.charCodeAt(i);   
+    	if ((c >= 0x0001) && (c <= 0x007F)) {   
+        	out += str.charAt(i);   
+    	} else if (c > 0x07FF) {   
+        	out += String.fromCharCode(0xE0 | ((c >> 12) & 0x0F));   
+        	out += String.fromCharCode(0x80 | ((c >>  6) & 0x3F));   
+        	out += String.fromCharCode(0x80 | ((c >>  0) & 0x3F));   
+    	} else {   
+        	out += String.fromCharCode(0xC0 | ((c >>  6) & 0x1F));   
+        	out += String.fromCharCode(0x80 | ((c >>  0) & 0x3F));   
+    	}   
+    }   
+    return out;   
+}  
+
+	//关闭窗口
+	$('.cd-popup').on('touchstart', function(event) {
+		if($(event.target).is('.cd-popup-close1') || $(event.target).is('.cd-popup')) {
+			event.preventDefault();
+			$(this).removeClass('is-visible1');
+		}
+	});
+
+  $('body').on('tap', '.give_other', function(e) {
+	$('.zsStyle').removeClass('zsStyle');
+	$(this).addClass('zsStyle');
+	$('#share_img').show();
+	var ua=window.navigator.userAgent;
+	var reg=/MicroMessenger/i;
+	var iswechat=reg.test(ua);
+	var url=document.location.href;
+	var that=$(this);
+	var appId = '<{$signPackage.appId}>';
+	var timestamp = '<{$signPackage.timestamp}>';
+	var nonceStr = '<{$signPackage.nonceStr}>';
+	var signature = '<{$signPackage.signature}>';
+	var voucher_id=$(this).attr('data-id');
+	var url=$(this).attr('data-url');
+	var title=$(this).attr('data-title');
+	var imgUrl=$(this).attr('data-image');
+	var shareData = {
+	  title:title,
+	  desc: '我分享了一张代金券给你,快来领取吧',
+	  link: url,
+	  imgUrl: imgUrl,
+	  success: function () { 
+		  //alert('分享成功!')
+		var url="<{url action=topwap_ctl_coupon_voucher@giveVoucher}>";
+		$.post(url, {
+		  voucher_id: voucher_id,
+		  merge: false
+		}, function(rs) {
+			if(rs.success){
+				$('#share_img').hide();
+				that.parents('.m-voucher-body').hide();
+				//shopex.toast('分享成功!');
+			}else{
+				shopex.toast('分享失败!');
+			}
+		});
+	  },
+	};
+	wx.config({
+		debug: false,
+		appId: appId,
+		timestamp: timestamp,
+		nonceStr: nonceStr,
+		signature: signature,
+		jsApiList: [
+		  'checkJsApi',
+		  'onMenuShareTimeline',
+		  'onMenuShareAppMessage',
+		  'onMenuShareQQ',
+		  'onMenuShareWeibo',
+		  'onMenuShareQZone',
+		]
+	});
+	wx.ready(function () {
+	  //分享到朋友圈
+	  wx.onMenuShareTimeline(shareData);
+	  //发送给朋友
+	  wx.onMenuShareAppMessage(shareData);
+	  //分享到QQ
+	  wx.onMenuShareQQ(shareData);
+	  //分享到腾讯微博
+	  wx.onMenuShareWeibo(shareData);
+	  //分享到QQ空间
+	  wx.onMenuShareQZone(shareData);
+	});
+  });
+
+  $('body').on('tap','#share_img',function(){
+	$(this).hide();
+  });
+  
+  $('body').on('tap', '.revoke', function(e) {
+	var that=$(this);
+	var voucher_id=$(this).attr('data-id');
+	var url="<{url action=topwap_ctl_coupon_voucher@revokeVoucher}>";
+	$.post(url, {
+	  voucher_id: voucher_id,
+	  merge: false
+	}, function(rs) {
+		if(rs.success){
+			shopex.toast('撤销成功!');
+			that.parents('.m-voucher-body').hide();
+			//window.location.reload();
+		}else{
+			shopex.toast(rs.message);
+		}
+	})
+  });
+</script>
+
+
+<{script src="shopex.pullToRefresh.js" app=topwap}>
+<{script src="shopex.pullToRefresh.material.js" app=topwap}>
+ <script>
+    shopex.init();
+    (function() {
+      var totalpage;
+      //阻尼系数
+      var deceleration = shopex.os.ios ? 0.003 : 0.0009;
+      shopex('.shopex-scroll-wrapper').scroll({
+        bounce: false,
+        indicators: true, //是否显示滚动条
+        deceleration: deceleration
+      });
+      shopex.ready(function() {
+        shopex('.shopex-scroll-wrapper').scroll({
+          indicators: true //是否显示滚动条
+        });
+        var active = document.getElementById('sliderSegmentedControl').querySelector('.shopex-active');
+        var activeId = document.getElementById('item' + active.dataset.status + 'mobile');
+        var item1 = document.getElementById('item1mobile');
+        var item2 = document.getElementById('item2mobile');
+        var item3 = document.getElementById('item3mobile');
+        var item4 = document.getElementById('item4mobile');
+        var item5 = document.getElementById('item5mobile');
+        if (active.dataset.status != 0) {
+          shopex('#slider').slider().gotoItem(active.dataset.status, 1);
+        } else {
+          setTimeout(function() {
+            var el = item1.querySelector('.shopex-table-view');
+            getList(0, 1, el, null, false);
+          }, 500);
+        }
+
+        document.getElementById('slider').addEventListener('slide', function(e) {
+          if (e.detail.slideNumber === 0) {
+            if (item1.querySelector('.shopex-loading')) {
+              setTimeout(function() {
+                count = 1;
+                var el = item1.querySelector('.shopex-table-view');
+                getList(e.detail.slideNumber, 1, el, item1, false);
+              }, 500);
+            }
+          }
+          if (e.detail.slideNumber === 1) {
+            if (item2.querySelector('.shopex-loading')) {
+              setTimeout(function() {
+                count = 1;
+                var el = item2.querySelector('.shopex-table-view');
+                getList(e.detail.slideNumber, 1, el, item2, false);
+              }, 500);
+            }
+          } else if (e.detail.slideNumber === 2) {
+            if (item3.querySelector('.shopex-loading')) {
+              setTimeout(function() {
+                count = 1;
+                var el = item3.querySelector('.shopex-table-view');
+                getList(e.detail.slideNumber, 1, el, item3, false);
+              }, 500);
+            }
+          }else if (e.detail.slideNumber === 3) {
+            if (item4.querySelector('.shopex-loading')) {
+              setTimeout(function() {
+                count = 1;
+                var el = item4.querySelector('.shopex-table-view');
+                getList(e.detail.slideNumber, 1, el, item4, false);
+              }, 500);
+            }
+          }else if (e.detail.slideNumber === 4) {
+            if (item5.querySelector('.shopex-loading')) {
+              setTimeout(function() {
+                count = 1;
+                var el = item5.querySelector('.shopex-table-view');
+                getList(e.detail.slideNumber, 1, el, item5, false);
+              }, 500);
+            }
+          }
+        });
+
+        var count = 1;
+        //循环初始化所有下拉刷新，上拉加载。
+        shopex.each(document.querySelectorAll('.shopex-slider-group .shopex-scroll'), function(index, pullRefreshEl) {
+          shopex(pullRefreshEl).pullToRefresh({
+            down: {
+              callback: function() {
+                count = 1;
+                var self = this;
+                  var status_index = self.element.dataset.index;
+                  setTimeout(function() {
+                  var ul = self.element.querySelector('.shopex-table-view');
+                  getList(status_index, count, ul, null, false);
+                  self.endPullDownToRefresh();
+                  self.refresh(self.element);
+                }, 1000);
+              }
+            },
+            up: {
+              callback: function() {
+                var self = this;
+                setTimeout(function() {
+                  var status_index = self.element.dataset.index;
+                  totalpage = self.element.dataset.count;
+                  shopex(self.element).pullToRefresh().endPullUpToRefresh(++count > totalpage);
+                  var ul = self.element.querySelector('.shopex-table-view');
+                  if(!(count > totalpage)){
+                    getList(status_index, count, ul, null, true);
+                  }
+                }, 1000);
+              }
+            }
+          });
+        });
+
+        var getList = function(status, num, el, emptyel, isPullup) {
+          $.ajax({
+            url: '<{url action=topwap_ctl_coupon_voucher@ajaxVoucherShow}>',
+            type: 'get',
+            dataType: 'json',
+            data: {
+              's': status,
+              'pages': num
+            },
+            success: function(rs) {
+              console.log(rs);
+              var page_total = rs.pagers.total;
+              $(el).parent().attr('data-count', page_total);
+              if (isPullup == false) {
+                if(rs.html.indexOf('nodata-wrapper') > 0)
+                  $(emptyel).html(rs.html);
+                else
+                  $(el).html(rs.html);
+              } else {
+                $(el).append(rs.html);
+              }
+              stylePrice('coupon');
+            }
+          });
+        };
+      });
+    })();
+    </script>

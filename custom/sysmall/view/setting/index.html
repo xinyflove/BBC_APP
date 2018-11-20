@@ -18,13 +18,38 @@
                 <tr>
                     <th><{t}>允许代售店铺修改销售价:<{/t}></th>
                     <td>
-                        <input type="radio" value="true"  name='modify_price' id="modify_price_true" <{if $modify_price == 'true'}>checked="checked"<{/if}>  />
+                        <input type="radio" value="true"  name='modify_price' id="modify_price_true" <{if $modify_price != 'false'}>checked="checked"<{/if}>  />
                         <label for="modify_price_true"><{t}>开启<{/t}></label>
-                        <input  type="radio" value="false" name='modify_price' id="modify_price_flase" <{if $modify_price != 'true'}>checked="checked"<{/if}> />
+                        <input  type="radio" value="false" name='modify_price' id="modify_price_flase" <{if $modify_price == 'false'}>checked="checked"<{/if}> />
                         <label for="modify_price_flase"><{t}>关闭<{/t}></label>
-                        <!--NULL 和 'false' 为关闭,'true'为开启-->
+                        <!--'false' 为关闭,NULL 和 'true'为开启-->
                     </td>
                 </tr>
+
+                <tr>
+                    <th><{t}>限制非自营店铺分类:<{/t}></th>
+                    <td>
+                        <input type="radio" value="true"  name='cate_permission' id="cate_permission_true" <{if $cate_permission != 'false'}>checked="checked"<{/if}>  />
+                        <label for="cate_permission_true"><{t}>是<{/t}></label>
+                        <input  type="radio" value="false" name='cate_permission' id="cate_permission_false" <{if $cate_permission == 'false'}>checked="checked"<{/if}> />
+                        <label for="cate_permission_false"><{t}>否<{/t}></label>
+                        <!--'false' 为否,NULL 和 'true'为是-->
+                    </td>
+                </tr>
+
+                <!--优选商城主持人账号是否需要审核2018-10-29 jiangyunhan start-->
+                <tr>
+                    <th><{t}>主持人账号审核:<{/t}></th>
+                    <td>
+                        <input type="radio" value="true"  name='hosts_check' id="hosts_check_true" <{if $hosts_check == 'true'}>checked="checked"<{/if}>  />
+                        <label for="hosts_check_true"><{t}>开启<{/t}></label>
+                        <input  type="radio" value="false" name='hosts_check' id="hosts_check_false" <{if $hosts_check != 'true'}>checked="checked"<{/if}> />
+                        <label for="hosts_check_false"><{t}>关闭<{/t}></label>
+
+                    </td>
+                </tr>
+                <!--优选商城主持人账号是否需要审核2018-10-29 jiangyunhan end-->
+
             </table>
         </div>
 

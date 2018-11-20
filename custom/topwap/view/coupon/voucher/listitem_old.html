@@ -1,0 +1,65 @@
+<{if $vouchers}>
+<{foreach from=$vouchers item=voucheritem}>
+<div class="inner-wrap">
+  <div class="select-store">
+    <div class="store-n">
+      <i class="iconfont icon-dianpu"></i>
+      <label for="name">
+        <a class="shopex-linkto" href="<{url action=topwap_ctl_newshop@index shop_id=$voucheritem.shop_id app=$app}>">
+          <{$voucheritem.shop_id|shopname}>
+        </a>
+      </label><i class="bbc-icon bbc-icon-forward font-gray-40"></i>
+    </div>
+    <div class="store-g">
+      <ul>
+        <li>
+          <div class="g-info">
+            <div class="info-l">
+              <a class="shopex-linkto" href="<{url action=topwap_ctl_coupon_voucher@detail oid=$voucheritem.oid app=$app}>" class="g-pic">
+                <img src="<{$voucheritem.pic_path|storager:t}>" alt="">
+              </a>
+            </div>
+            <div class="info-m">
+              <div class="code">订单号:<{$voucheritem.oid}></div>
+              <a class="g-name shopex-linkto" href="<{url action=topwap_ctl_coupon_voucher@detail oid=$voucheritem.oid app=$app}>">
+                <{$voucheritem.title}></br><{$voucheritem.spec_nature_info}>
+              </a>
+              <span class="real"> 实付款: <i><{$voucheritem.payment|cur}></i> </span>
+              <span class="num">共<i><{$voucheritem.num}></i>件</span>
+            </div>
+            <div class="info-r">
+              <div class="g-price" style="padding-top: 2rem;">
+				<{if $voucheritem.type!='history'}>
+                <a class="shopex-linkto" href="<{url action=topwap_ctl_item_detail@index item_id=$voucheritem.item_id app=$app}>" style="border: 2px solid #f0ad4e;padding: .5em .6em;border-radius: 5px;color: #f0ad4e;">再次购买</a>
+				<{/if}>
+                <{if $voucheritem.status == "WAIT_WRITE_OFF" || $voucheritem.status == "WRITE_PARTIAL"}>
+                <a class="shopex-linkto" href="<{url action=topwap_ctl_coupon_voucher@detail oid=$voucheritem.oid app=$app}>" style="border: 2px solid #f0ad4e;padding: .4em 0em;width:5.5em;float:right;display:block;margin-top:10px;text-align:center;border-radius: 5px;color: #f0ad4e;">使用</a>
+				<{/if}>
+				<!--add_2017/11/16_by_wanghaichao_start-->
+				<{if $voucheritem.allow_refund && ($voucheritem.status=='WAIT_WRITE_OFF' || $voucheritem.status=='WRITE_PARTIAL') && !$voucheritem.aftersales_status}>
+                <!--<a class="shopex-linkto" href="<{url action=topwap_ctl_member_aftersales@virtualAftersalesApply oid=$voucheritem.oid tid=$voucheritem.tid app=$app}>" style="border: 2px solid #f0ad4e;padding: .4em 0em;width:5.5em;float:right;display:block;margin-top:10px;text-align:center;border-radius: 5px;color: #f0ad4e;">退款 </a>-->
+				<{/if}>
+				<!--add_2017/11/16_by_wanghaichao_end-->
+              </div>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+<{/foreach}>
+<{else}>
+
+<{/if}>
+<script>
+  $(function () {
+    $(".data-list .inner-wrap").each(function () {
+//      alert($(this).find(".store-g ul").html());
+        if($.trim($(this).find(".store-g ul").html())==''){
+          $(this).hide();
+        }
+    })
+  })
+
+</script>

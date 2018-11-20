@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title></title>
+    <{css src="offline_pay.css" app="topwap"}>
+</head>
+
+<body>
+    <header class="page-header pay-header">
+        <i class="header-left icon-func bbc-icon bbc-icon-back shopex-action-back"></i>
+        <div class="header-title">领券中心</div>
+    </header>
+    <{if !$item_info}>
+    <div class="nodata-layout">
+        <div class="nodata-icon"><i class="bbc-icon bbc-icon-coupon-nodata"></i></div>
+        <div class="nodata-tip">该店暂时没有发布优惠券，再等等吧，亲</div>
+        <div class="nodata-guide">
+        </div>
+    </div>
+    <{else}>
+    <div class="shopex-scroll-wrapper" style="top: 159px;height: 70%;" id="pullrefresh">
+        <div class="shopex-scroll" data-count="1">
+            <div class="ns-gc-container" >
+                <{foreach from=$item_info item=item}>
+                <{if $item.agent_price == 1}>
+                <div class="ns-gc-ticket mg_orange">
+                <{else}>
+                <div class="ns-gc-ticket bg_orange">
+                <{/if}>
+                    <dl class="clearfix">
+                        <dt class="shopex-pull-left">
+                            <img src="<{$item.image_default_id}>" alt="">
+                        </dt>
+                        <dd class="shopex-pull-left dd-2">
+                            <h3 class="shopex-ellipsis-2"><{$item.title}></h3>
+                            <!--<span><{$item.show_title}></span>-->
+                            <span class="show_pay_title"><{$item.min_desc}></span>
+                            <span class="show_pay_title"><{$item.max_desc}></span>
+                            <!--<p style="font-size:12px;color: #ffac20;"><{$item.show_pay_title}></p>-->
+                        </dd>
+                        <dd class="shopex-pull-right dd-3">
+                            <{if !$item.real_store}>
+                            <img src="<{resource app='topwap' path='/images/img_circle_g.png'}>" alt="" class="dd-3-img">
+                            <{else}>
+                            <a data-link="<{url action=topwap_ctl_item_detail@index item_id=$item.item_id}>">
+                                <{if $item.agent_price == 1}>
+                                <img src="<{resource app='topwap' path='/images/img_circle_m.png'}>" alt="" class="dd-3-img">
+                                <{else}>
+                                <img src="<{resource app='topwap' path='/images/img_circle_q.png'}>" alt="" class="dd-3-img">
+                                <{/if}>
+                                <p class="dd-3-p"><{$item.re_percent}></p>
+                            </a>
+                            <{/if}>
+                        </dd>
+                    </dl>
+                </div>
+                <{/foreach}>
+            </div>
+        </div>
+    </div>
+    <{/if}>
+</body>
+
+</html>
+<script>
+    $('#slider').css('height','110px');
+    $('.ns-gc-container').on('tap','a',function() {
+        var link = $(this).data('link');
+        location.href = link;
+    });
+
+    var count = 1;
+    var totalpage = "<{$total_page}>";
+    var agent_shop_id = "<{$agent_shop_id}>";
+    var listwrapper = $('.ns-gc-container');
+
+    shopex.init({
+        swipeBack: false,
+        pullRefresh: {
+            container: '#pullrefresh',
+            down: {
+                callback: pulldownRefresh
+            },
+            up: {
+                contentrefresh: '正在加载...',
+                callback: pullupRefresh
+            }
+        },
+        swipe: true,
+        dobluetap: true,
+        longtap: true
+    });
+
+    /**
+     * 下拉刷新具体业务实现
+     */
+    function pulldownRefresh() {
+        setTimeout(function() {
+            count = 1;
+            var param = {
+                'page_no': count,
+                'agent_shop_id': agent_shop_id
+            }
+            getList(param, function(rs) {
+                if(rs.success)
+                {
+                    listwrapper.html(rs.html);
+                    shopex('#pullrefresh').pullRefresh().endPulldownToRefresh()
+                }
+            });
+        }, 1000);
+    }
+    /**
+     * 上拉加载具体业务实现
+     */
+    function pullupRefresh() {
+        setTimeout(function() {
+            shopex('#pullrefresh').pullRefresh().endPullupToRefresh((++count > totalpage)); //参数为true代表没有更多数据了。
+            var param = {
+                'page_no': count,
+                'agent_shop_id': agent_shop_id
+            }
+            getList(param, function(rs) {
+                if(rs.success)
+                {
+                    listwrapper.append(rs.html);
+                    shopex('#pullrefresh').pullRefresh().endPulldownToRefresh()
+                }
+            });
+        }, 1000);
+    }
+
+    function getList(param, callback) {
+        $.ajax({
+            url: '<{url action=topwap_ctl_offlinepay_pay@ajaxGetOfflineCoupon}>',
+            type: 'get',
+            dataType: 'json',
+            data: param,
+            success: callback
+        });
+    };
+
+</script>

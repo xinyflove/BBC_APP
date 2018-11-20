@@ -1,0 +1,139 @@
+<{if $datas.itemList && $datas.current}>
+<!--TV直播-->
+<div class="m-lm-index-TVshow">
+    <div class="m-lm-index-publicTitle">
+        <img data-original="<{$datas.title_pic|storager:'m'}>" alt="" class="imglazyload publicTitle-img">
+        <div class="publicTitle-more">
+            <a href="<{$datas.more_link}>">
+                <p>更多<img src="/app/topwap/tvshopping/images/more_icon.png" alt=""></p>
+            </a>
+        </div>
+    </div>
+    <!-- video -->
+    <div class="TVshow-live"></div>
+    <!--代替video的图片-->
+    <div class="TVshow-livimg">
+        <p class="time-living">直播中</p>
+        <div class="back"></div>
+        <img src="/app/topwap/tvshopping/images/start_icon.png" alt="" class="imglazyload livimg-start">
+        <img data-original="<{$datas.current.image_default_id|storager:'l'}>" alt="" class="imglazyload livimg-back" src="<{$env.app.topwap.res_url}>/images/lmlazy750_316.png">
+
+    </div>
+    <div class="swiper-container TVshow-container">
+        <div class="swiper-wrapper">
+            <{foreach from=$datas.itemList item=item}>
+            <div class="swiper-slide m-lm-index-swiperList1">
+                <a href="<{$item.url}>">
+                    <div class="swiperList-img">
+                        <img data-src="<{$item.item.image_default_id|storager:'s'}>" alt="" class="swiper-lazy">
+                        <div class="swiper-lazy-preloader"></div>
+                    </div>
+                    <div class="swiperList-time">
+                        <!-- 已结束的样式类名为time-lived-->
+                        <!-- 直播中的样式类名为time-living-->
+                        <!-- 未开始的样式类名为time-live-->
+                        <{if $item.status == 'future'}>
+                        <p class="time-live">未开始</p>
+
+                        <{elseif $item.status == 'past'}>
+                        <p class="time-lived">已结束</p>
+
+                        <{else}>
+                        <p class="time-living">直播中</p>
+
+                        <{/if}>
+                        <p class="time-left"><{$item.date}></p>
+                    </div>
+                    <div class="swiperList-text">
+                        <p><{$item.item.title}></p>
+                    </div>
+                    <div class="swiperList-price">
+                        <!-- <p>￥<i>98</i>.00</p> -->
+                        <p><{$item.item.price|cur}></p>
+
+                    </div>
+                </a>
+            </div>
+            <{/foreach}>
+        </div>
+    </div>
+</div>
+<script>
+    var TVshow = (function () {
+        function liveSwiper() {
+            //video
+            var videoObject = {
+                container: '.TVshow-live',//“#”代表容器的ID，“.”或“”代表容器的class
+                variable: 'player',//该属性必需设置，值等于下面的new chplayer()的对象
+                autoplay: false,//自动播放
+                live: true,
+                // mobileCkControls: false,
+                poster: '<{$datas.current.image_default_id|storager}>',
+                video: '<{$datas.current.live_url|storager}>'//视频地址
+            };
+            var player = new ckplayer(videoObject);
+            //swiper
+            var swiperT = new Swiper('.TVshow-container', {
+                slidesPerView: 'auto',
+                centeredSlides: true,
+                initialSlide: <{$datas.live_index}>, //设置轮播初始位置的索引
+                lazy: {
+                    loadPrevNext: true,
+                },
+                watchSlidesVisibility: true,
+
+            });
+            // 点击图片，视频显示并播放
+            $('.TVshow-livimg').on('click', function () {
+                $('.TVshow-live').show();
+                $('.TVshow-livimg').hide();
+                $('.TVshow-live video').get(0).play();
+            })
+            // $('.TVshow-live video').get(0).addEventListener('pause', function () {
+            //     if ($('.TVshow-live video').get(0).paused) {
+            //         $('.TVshow-live').hide();
+            //         $('.TVshow-livimg').show();
+            //     }
+            // })
+            //如果视频正在播放，视频距离顶部的距离小于滚动距离，就让视频一直停在顶部
+            var start = $('.m-lm-index-TVshow').offset().top + 48;
+            $('.m-lm-index').on('scroll', function () {
+                if(!$('.TVshow-live video').get(0).paused){
+                    console.log(document.body.clientHeight)
+                    console.log($('.m-lm-index-TVshow').offset().top)
+                    if (start < $('.m-lm-index').scrollTop() || document.body.clientHeight<$('.m-lm-index-TVshow').offset().top+48+211+52.8) {
+                        console.log(1)
+                        $('.TVshow-live').css({
+                            "position": "fixed",
+                            "top": 0
+                        })
+                    } else {
+                        $('.TVshow-live').css({
+                            "position": "relative",
+                            "top": 0
+                        })
+                    }
+                }else{
+                    if (start > $('.m-lm-index').scrollTop() && document.body.clientHeight>$('.m-lm-index-TVshow').offset().top+48+211+52.8) {
+                        $('.TVshow-live').css({
+                            "position": "relative",
+                            "top": 0
+                        })
+
+                    }
+                }
+
+            })
+        }
+        function init() {
+            liveSwiper();
+        };
+        return {
+            init: init
+        };
+    })();
+    $(function () {
+        TVshow.init();
+    });
+</script>
+<{/if}>

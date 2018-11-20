@@ -1,0 +1,61 @@
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal">
+		<span aria-hidden="true">&times;</span><span class="sr-only">关闭</span>
+	</button>
+	<h4 class="modal-title">选择供应商</h4>
+</div>
+<div class="modal-body">
+	<div class="brand-select">
+		<div class="col-md-12">
+			<div class="input-group">
+				<span class="input-group-addon" id="supplier-select"
+					style="cursor: pointer;"> <i class="icon icon-search-a"></i>
+				</span> <input type="search" name="search_supplier" id="modesearch_supplier"
+					class="form-control modesearch_supplier" placeholder="供应商名称">
+			</div>
+			<div class="modal-footer">
+				<button type="button" id="modesupplier-save" data-key="<{$key}>" class="btn action-supplier-save btn-primary">保存</button>
+				<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+			</div>
+			<div class="list-group list-modesupplier">
+				<table class="table table-hover">
+					<thead>
+						<tr>
+							<th>供应商简称</th>
+							<th>公司名称</th>
+							<th>地址</th>
+							<th>来源</th>
+							<th>选择</th>
+						</tr>
+					</thead>
+					<{if $data}>
+					<tbody>
+						<{foreach from=$data item=item}>
+						<tr>
+							<td class="supplier_name"><{$item.supplier_name}></td>
+							<td><{$item.company_name}></td>
+							<td title="<{$item.addr}>"><{$item.addr|cut:60}></td>
+							<td>
+								<{if $item.shop_id==$shopid}>当前店铺
+								<{else}>其他店铺
+								<{/if}>
+							</td>
+							<td><input type="radio" name="modesupplier-info" class="supplier-info" value="<{$item.supplier_id}>"/></td>
+						</tr>
+						<{/foreach}>
+					</tbody>
+					<{else}>
+					<tbody id="none_cat">
+						<tr class="none-information">
+							<td colspan="6"><p class="help-block text-center">暂无数据</p></td>
+						</tr>
+					</tbody>
+					<{/if}>
+				</table>
+			</div>
+		</div>
+		<div class="cat-select-foot supplier-foot">
+			<!--<b>当前选择：</b><span></span>-->
+		</div>
+	</div>
+</div>

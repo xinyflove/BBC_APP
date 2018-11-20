@@ -1,0 +1,56 @@
+<!--主播推荐-->
+<div class="m-lm-index-anchor">
+	<div class="m-lm-index-publicTitle">
+		<img src="<{$datas['title_pic']|storager}>" alt="" class="publicTitle-img">
+	</div>
+	<div class="swiper-container anchor-container">
+		<div class="swiper-wrapper">
+			<{foreach from=$datas['data'] item=item }>
+			<div class="swiper-slide">
+				<a href="<{url action=topwap_ctl_item_detail@index item_id=$item['item'].item_id}>">
+					<img class="anchor-slide-img imglazyload" data-original="<{$item['item']['image_default_id']|storager:m}>" alt="">
+					<div class="anchor-slide-content">
+						<div class="content-user">
+							<div>
+								<img class="imglazyload" data-original="<{$item['compere']['avatar']|storager:t}>" alt="">
+							</div>
+							<p>主持人：<{$item['compere']['compere_name']}></p>
+						</div>
+						<p class="content-title"><{$item['item']['title']}></p>
+						<p class="content-text"><{$item['item']['sub_title']}></p>
+					</div>
+				</a>
+			</div>
+			<{/foreach}>
+		</div>
+		<div class="swiper-pagination anchor-pagination"></div>
+	</div>
+</div>
+<script>
+	var anchor = (function () {
+		function bindEvent() {
+			var swiperA = new Swiper('.anchor-container', {
+				pagination: {
+					el: '.anchor-pagination',
+				},
+				// autoplay: true,
+				slidesPerView: 'auto',
+				centeredSlides: true,
+				initialSlide: 1, //设置轮播初始位置的索引
+				lazy: {
+					loadPrevNext: true,
+				},
+				watchSlidesVisibility: true,
+			});
+		};
+		function init() {
+			bindEvent();
+		};
+		return {
+			init: init
+		}
+	})();
+	$(function () {
+		anchor.init();
+	})
+</script>

@@ -1,0 +1,71 @@
+<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+<script>
+    var ua=window.navigator.userAgent;
+    var reg=/MicroMessenger/i;
+    var iswechat=reg.test(ua);
+    var url=document.location.href;
+
+if (iswechat) {
+      //$.ajax({
+
+/*modify__by_wanghaichao_start*/
+/*url: 'wap\/wxshare.html?url='+url,?*/
+		//url:'<{url action=topwap_ctl_jssdk@index}>?url='+url,
+/*modify__by_wanghaichao_end*/
+       // type: 'get',
+       // dataType: 'json',
+       // success: function(rs) {
+         // console.log(rs);
+        var appId = "<{$signPackage['appId']}>";
+        var timestamp = "<{$signPackage['timestamp']}>";
+        var nonceStr = "<{$signPackage['nonceStr']}>";
+        var signature = "<{$signPackage['signature']}>";
+        var shareData = {
+		/*modify__by_wanghaichao_start  插入修改的参数*/
+          /*title:'',
+          desc: '',
+          link: url,
+          imgUrl: $('.header-logo a img').attr('src'),*/
+          title:'<{$weixin.shareTitle}>',
+          desc: '<{$weixin.descContent}>',
+          link: '<{$weixin.linelink}>',
+          imgUrl: '<{$weixin.imgUrl}>',
+          success: function () {
+            if(typeof onMenuShare_collback == 'function'){
+                onMenuShare_collback();
+            }
+          }
+		/*modify__by_wanghaichao_end*/
+        };
+        wx.config({
+            debug: false,
+            appId: appId,
+            timestamp: timestamp,
+            nonceStr: nonceStr,
+            signature: signature,
+            jsApiList: [
+              'checkJsApi',
+			  'translateVoice',
+              'onMenuShareTimeline',
+              'onMenuShareAppMessage',
+              'onMenuShareQQ',
+              'onMenuShareWeibo',
+              'onMenuShareQZone',
+            ]
+        });
+        wx.ready(function () {
+          //分享到朋友圈
+          wx.onMenuShareTimeline(shareData);
+          //发送给朋友
+          wx.onMenuShareAppMessage(shareData);
+          //分享到QQ
+          wx.onMenuShareQQ(shareData);
+          //分享到腾讯微博
+          wx.onMenuShareWeibo(shareData);
+          //分享到QQ空间
+          wx.onMenuShareQZone(shareData);
+        });
+    //    }
+      //});
+}
+</script>

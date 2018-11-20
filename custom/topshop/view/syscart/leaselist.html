@@ -1,0 +1,232 @@
+<style type="text/css">
+  .export-box{margin:5px 0 5px 0;}
+</style>
+<section class="content-header">
+	<h1>租赁管理<small></small></h1>
+	<ol class="breadcrumb breadcrumb-primary"></ol>
+	</section>
+	  <!--<div class="info"><span>营销方式说明：</span>店铺级的促销方式，同一订单内，【特定】商品售价满【特定】金额【特定】会员可享受【特定】的金额优惠，比如：满500减50；该促销方式最多可同时设置5条满减区间规则；该促销方式支持上不封顶配置，自动根据设置计算优惠金额；该促销方式与优惠券不互斥，与其他互斥。</div>-->
+<!--<p style="margin-top:10px;">
+	<a class="btn btn-default text-blue act-addcat" href="<{url action=topshop_ctl_syscart_syscart@leaseAdd}>">
+		<i class="glyphicon glyphicon-plus"></i>
+		添加租赁信息
+	</a>
+</p>-->
+<div class="panel panel-outter">
+  <div class="panel-heading">
+    <h4>租赁查询</h4>
+    <form class="form-horizontal">
+      <div class="form-group">
+        <div class="col-xs-6">
+          <span class="order-form-w1">车主姓名：</span>
+		  <input id="owner_name" class="x-input" type="text" name="owner_name">
+        </div>
+        <div class="col-xs-6">
+          <span class="order-form-w1">手机号码：</span>
+		  <input class="x-input" id="mobile" type="text" name="mobile">
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-xs-6">
+          <span class="order-form-w1">公司名称：</span>
+		  <input class="x-input" id="company_name" type="text" name="company_name">
+        </div>
+        <div class="col-xs-6">
+          <span class="order-form-w1">车牌号：</span>
+		  <input id="cart_number" class="x-input" type="text" name="cart_number">
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-xs-6">
+          <span class="order-form-w1">销售人员：</span>
+		  <input id="sale_manager" class="x-input" type="text" name="sale_manager">
+        </div>
+      </div>
+      <div class="text-center">
+        <button id="submit" type="submit" class="btn btn-primary">提交</button>
+        <button id="cancel" type="reset" class="btn btn-default">重置</button>
+      </div>
+    </form>
+  </div>
+  <div class="text-right export-box">
+    <!--<a href="<{url action=topshop_ctl_syscart_syscart@exportToExcel}>" data-app="sysclearing" data-model="settlement" class="export-filter-btn export-filter-settlement btn btn-default">导出当月租赁报表</a>-->
+    <a href="<{url action=topshop_ctl_syscart_syscart@exportToExcel}>" class="btn btn-default"  target="_blank">导出当月租赁报表</a>
+  </div>
+  <div class="report">
+    <div class="box box-primary">
+      <table class="table table-primary table-bordered text-center table-valign-middle">
+        <thead>
+          <tr>
+            <td>序号</td>
+            <td>汽车品牌</td>
+            <td>车牌号</td>
+            <td>车主姓名</td>
+            <td>车主手机号</td>
+            <td>租购定金</td>
+            <td>租购押金</td>
+            <td>还款总额</td>
+            <!--<td>剩余还款金额</td>-->
+            <td>每期还款金额</td>
+            <td>期数</td>
+            <td>每月还款日</td>
+            <td>已还款期数</td>
+            <td>备注</td>
+            <td>换租操作</td>
+            <td>停租操作</td>
+            <td>操作</td>
+          </tr>
+        </thead>
+        <tbody>
+          <{foreach from=$leaseList item=item}>
+          <tr>
+            <!---<td>
+              <div><{$item.account_start_time|cdate:'FDATE'}></div>
+              <div>~</div>
+              <div><{$item.account_end_time|cdate:'FDATE'}></div>
+            </td>-->
+			<td>
+				<{$item.lease_id}>
+			</td>
+			<td>
+				<{$item.cart_name}>
+			</td>
+            <td>
+              <{$item.cart_number}>
+            </td>
+            <td>
+              <{$item.owner_name}>
+            </td>
+            <td>
+              <{$item.mobile}>
+            </td>
+            <td>
+              <{$item.front_money|cur}>
+            </td>
+            <td>
+              <{$item.lease_deposit}>
+            </td>
+            <td>
+              <{$item.lease_total|cur}>
+            </td>
+            <!--<td>
+              <{$item.lease_balance}>
+            </td>-->
+			<td>
+              <{$item.lease_each|cur}>
+			</td>
+			<td>
+              <{$item.lease_stages}>
+			</td>
+			<td>
+              <{$item.repayment_date}>日
+			</td>
+			<td>
+              <{$item.repaid_stages}>期
+			</td>
+			<td>
+              <a href="#" title="<{$item.remarks}>">详情</a>
+			</td>
+            <!--<td>
+              <{$item.settlement_time|cdate:'FDATE'}>
+            </td>-->
+            <!--<td>
+              <{$item.settlement_status|json2value:'{"1":"未结算","2":"已结算"}'}>
+            </td>-->
+			<td>
+			<{if $item.status!=3}>
+		 	<a href="<{url action=topshop_ctl_syscart_lease@forrent lease_id=$item.lease_id}>">换租</a>
+			<{else}>
+				已停租
+			<{/if}>
+			</td>
+			<td>
+			<{if $item.status!=3}>
+				<a href="<{url action=topshop_ctl_syscart_modal_stages@ajaxStopLease lease_id=$item.lease_id response=html}>" data-toggle="modal" data-target="#leaseCancel" class="btn btn-warning">停租</a>
+			<{else}>
+				已停租
+			<{/if}>
+			</td>
+            <td>
+              <div>
+                <a href="<{url action=topshop_ctl_syscart_syscart@stageslist lease_id=$item.lease_id}>">查询明细</a>
+              </div>
+            </td>
+          </tr>
+          <{/foreach}>
+        </tbody>
+      </table>
+	  <div style="width: 400px;float: left;margin:0 20px;font-size: 20px;">
+		总还款额:<em style="color:red"><{$total.lease_total|cur}>元</em>
+	  </div>
+      <div class="text-right">
+        <{pagers data=$pagers}>
+        <{if $count > 0}>
+        <span class="page-number">共&nbsp;<em class="text-aqua"><{$count}></em>&nbsp;条记录</span>
+        <{/if}>
+      </div>
+    </div>
+  </div>
+</div>
+<span class="export-filter" data-value="">
+
+
+<!--停租的弹框-->
+<div class="modal fade" id="leaseCancel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+    </div>
+  </div>
+</div>
+
+
+<script>
+$('.report input[type=radio]:checked').trigger('change');
+$('.reservation').daterangepicker({
+  format: 'YYYY/MM/DD',
+  opens: 'right'
+});
+
+$("#submit").click(function() {
+    var owner_name=$("#owner_name").val();
+	var mobile=$('#mobile').val();
+	var company_name=$('#company_name').val();
+	var cart_number=$('#cart_number').val();
+	var sale_manager=$('#sale_manager').val();
+	window.location.href="<{url action=topshop_ctl_syscart_syscart@leaselist}>?owner_name="+owner_name+'&mobile='+mobile+'&company_name='+company_name+'&cart_number='+cart_number+'&sale_manager='+sale_manager;
+});
+$('#cancel').click(function(){
+	window.location.href="<{url action=topshop_ctl_syscart_syscart@leaselist}>";
+});
+
+$(document).ready(
+  function() {
+    $(".sidebar .sidebar-menu li a i.glyphicon").eq(1).removeClass("glyphicon-list-alt").addClass("glyphicon-cloud");
+  }
+);
+
+$('.export-filter-btn').click(function (e) {
+
+    e.preventDefault();
+    var url = $(this).attr('href');
+    var app = $(this).data('app');
+    var model = $(this).data('model');
+
+    $('#exportDialog').modal({remote: url}).attr('data-app',app).attr('data-model',model);
+
+    var type = $(this).hasClass('export-filter-settlement');
+    if( type ) {
+      var timearea = $('#timearea').val();
+      var settlement_type = $('#settlement_type').val();
+      var filter = '{"timearea":"'+timearea+'","settlement_status":"'+settlement_type+'"}';
+    }else{
+      var val = $(this).attr('data-value');
+      var filter = '{"timearea":"'+val+'"}';
+    }
+    $('.export-filter').attr('data-value',filter);
+});
+
+$('#leaseCancel').on('hide.bs.modal', function (e) {
+    $(this).removeData('bs.modal');
+})
+</script>

@@ -1,0 +1,67 @@
+<div class="data-list clearfix">
+  <{if $withdrawList}>
+  <table class="table table-bordered table-goods ">
+    <thead>
+    <tr>
+      <th></th>
+      <th>提现编号</th>
+      <th>申请时间</th>
+      <th>起始时间</th>
+      <th>结束时间</th>
+      <th>申请金额</th>
+      <th>状态</th>
+      <th>操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    <{foreach from=$withdrawList item=item}>
+    <tr>
+      <td>
+        <label class="checkbox-inline">
+          <input type="checkbox" value="<{$item.id}>">&nbsp;
+        </label>
+      </td>
+      <td><{$item.id}></td>
+      <td><{$item.create_time|cdate:'FDATE'}></td>
+      <td><{$item.start_time|cdate:'FDATE'}></td>
+      <td><{$item.end_time|cdate:'FDATE'}></td>
+      <td><{$item.money}></td>
+      <td>
+        <{if $item.status==1}>待审核
+        <{elseif $item.status==2}>审核通过
+        <{elseif $item.status==3}>审核未通过
+        <{elseif $item.status==4}>成功
+        <{elseif $item.status==5}>失败
+        <{elseif $item.status==6}>取消
+        <{else}>异常
+        <{/if}>
+      </td>
+      <td>
+        <a href="<{url action=topshop_ctl_clearing_withdraw@detail id=$item.id}>">详情</a>
+        <{if$item.status==1}>
+        <a href="<{url action=topshop_ctl_clearing_withdraw@delWithdraw id=$item.id}>" data-toggle="modal" data-target="#delWithdraw">取消</a>
+        <{/if}>
+      </td>
+    </tr>
+    <{/foreach}>
+    </tbody>
+  </table>
+  <div class="text-right">
+    <{pagers data=$pagers}>
+    <{if $count > 0}>
+    <span class="page-number">共&nbsp;<em class="text-aqua"><{$count}></em>&nbsp;条记录</span>
+    <{/if}>
+  </div>
+  <{else}>
+  <p class="help-block text-center">暂无数据</p>
+  <{/if}>
+</div>
+
+<script>
+    $('.pagination li a').click(function(e){
+        e.preventDefault();
+        if($(this).parent().hasClass('disabled') || $(this).parent().hasClass('ellipsis')) return;
+        var urlData = $(this).attr('href');
+        $(this).parents('.data-list').empty().load(urlData)
+    })
+</script>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <{include file='topshop/tvshopping/common/header.html'}>
+    <link rel="stylesheet" href="/app/topwap/tvshopping/css/program.css?1532055472">
+</head>
+<body>
+    <div class="m-lm-program">
+        <header>
+            <a class="back" href="javascript:history.back();" style="background: url(/app/topwap/tvshopping/images/back.png) no-repeat center center; background-size: 10px 17px;"></a>
+            <p>节目列表</p>
+        </header>
+        <section>
+            <ul class="tab">
+                <{foreach from=$date_list key=key item=item}>
+                <li class="<{if $item.today}>active<{/if}>" data-idx="<{$key}>" data-select-date="<{$item.select_date}>">
+                    <p><{$item.date}></p>
+                    <p><{$item.week}></p>
+                </li>
+                <{/foreach}>
+            </ul>
+            <div class="mescroll" id="mescroll">
+                <div class="list" id="dataList">
+
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <{include file='topshop/tvshopping/common/footer.html'}>
+    <script>
+        var getLiveListDataUrl = "<{url action=topwap_ctl_tvshopping@ajaxLiveListData shop_id=$shop_id}>";
+        var size = "<{$size}>";
+    </script>
+    <script src="/app/topwap/tvshopping/js/program.js"></script>
+</body>
+</html>

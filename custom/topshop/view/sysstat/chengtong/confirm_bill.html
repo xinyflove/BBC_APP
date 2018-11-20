@@ -1,0 +1,224 @@
+<aside class="control-sidebar control-sidebar-light" style="height: 100%;">
+  <!-- Create the tabs -->
+  <ul class="nav nav-tabs nav-justified control-sidebar-tabs">
+    <li class=""><a href="#">筛选</a></li>
+    <li class=""><a href="#" data-toggle="control-sidebar"><i class="glyphicon glyphicon-remove"></i></a></li>
+  </ul>
+      <!-- Tab panes -->
+  <div class="tab-content">
+    <div class="form-group">
+      <label>账期时间</label>
+      <div class="input-group">
+        <input type="text" class="form-control pull-right reservation" name="timearea" id="timearea" value="<{$timearea}>">
+        <div class="input-group-addon">
+          <i class="fa fa-calendar"></i>
+        </div>
+      </div>
+      <div class="input-group">
+        <label>物流类型</label>
+        <select name="delivery_type" class="form-control select-reset" id="delivery_type">
+          <option value="SEND_GOODS" <{if $delivery_type == 'SEND_GOODS'}> selected <{/if}>>发货</option>
+          <option value="REFUND_GOODS" <{if $delivery_type == 'REFUND_GOODS'}> selected <{/if}>>退货</option>
+          <option value="EXCHANGING_GOODS" <{if $delivery_type=='EXCHANGING_GOODS'}> selected <{/if}>>换货</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label>结算状态</label>
+        <select name="bill_status" class="form-control select-reset" id="bill_status">
+          <option value="UN_CHECKED" <{if $bill_status == 'UN_CHECKED'}> selected <{/if}>>未对账</option>
+          <option value="CHECKED_SUCC" <{if $bill_status =='CHECKED_SUCC'}> selected <{/if}>>对账成功</option>
+          <option value="CHECKED_FAIL" <{if $bill_status =='CHECKED_FAIL'}> selected <{/if}>>对账失败</option>
+        </select>
+      </div>
+    </div>
+    <div class="box-footer">
+      <button type="button" class="btn btn-default" id="reset-form">重置</button>
+      <a href="javascript:void(0);" id="settle_search" class="btn btn-primary pull-right">查询</a>
+    </div>
+  </div>
+</aside>
+<div class="row">
+  <div class="col-md-12">
+    <div class="box box-primary">
+      <div class="mailbox-controls with-border">
+        <div class="box-header">
+          <a  data-href="<{url action=topshop_ctl_export_ctbill@exportCtBill}>" onclick="exportCtBill(this)"  class="btn btn-primary btn-sm">
+            <i class="glyphicon glyphicon-export"></i>
+            导出
+          </a>
+          <a  data-href="<{url action=topshop_ctl_clearing_chengtong_settlement@balanceAccount}>" onclick="balanceAccount(this)" class="btn btn-primary btn-sm">
+            <i class="glyphicon glyphicon-export"></i>
+            对账
+          </a>
+          <button data-toggle="control-sidebar" class="btn btn-default btn-sm pull-right">
+            <div class="text-light-blue">
+              <i class="fa fa-search"></i>
+              搜索
+            </div>
+          </button>
+        </div>
+      </div>
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>聚合id</th>
+            <th>物流单号</th>
+            <th>订单id</th>
+            <th>订单金额</th>
+            <th>城通应收</th>
+            <th>城通实收</th>
+            <th>配送类型</th>
+            <th>物流状态</th>
+            <th>对账状态</th>
+            <th>创建时间</th>
+          </tr>
+        </thead>
+        <tbody>
+           <{foreach from=$data item=item}>
+            <tr>
+              <td><{$item.aggregation_id}></td>
+              <td><{$item.logi_no}></td>
+              <td>
+                <{foreach from=$item.tid_array item=tid}>
+                <p><a target="_blank" href="<{url action=topshop_ctl_trade_detail@index tid=$tid}>"><{$tid}></a></p>
+                <{/foreach}>
+              </td>
+              <td><{$item.trade_payment}></td>
+              <td><{$item.receivable_payment}></td>
+              <td><{$item.amount_real}></td>
+              <td>
+                <{if $item.delivery_type === 'SEND_GOODS'}>
+                发货
+                <{elseif $item.delivery_type === 'REFUND_GOODS'}>
+                退货
+                <{else $item.delivery_type === 'EXCHANGING_GOODS'}>
+                换货
+                <{/if}>
+              </td>
+              <td>
+                <{if $item.status == 'succ'}>
+                成功到达
+                <{elseif $item.status == 'failed'}>
+                发货失败
+                <{elseif $item.status == 'cancel'}>
+                已取消
+                <{elseif $item.status == 'lost'}>
+                货物丢失
+                <{elseif $item.status == 'progress'}>
+                运送中
+                <{elseif $item.status == 'timeout'}>
+                超时
+                <{elseif $item.status == 'ready'}>
+                准备发货
+                <{elseif $item.status == 'rppm'}>
+                客户拒收
+                <{else $item.status == 'push_failed'}>
+                推送失败
+                <{/if}>
+              </td>
+              <td>
+                <{if $item.bill_status == 'UN_CHECKED'}>
+                未对账
+                <{elseif $item.bill_status == 'CHECKED_SUCC'}>
+                对账成功
+                <{else $item.bill_status == 'CHECKED_FAIL'}>
+                对账失败
+                <{/if}>
+              </td>
+              <td><{$item.create_time|cdate:'FDATE_STIME'}></td>
+            </tr>
+            <{/foreach}>
+        </tbody>
+      </table>
+      <div class="text-right">
+        <{pagers data=$pagers}>
+        <{if $count > 0}>
+        <span class="page-number">共&nbsp;<em class="text-aqua"><{$count}></em>&nbsp;条记录</span>
+        <{/if}>
+      </div>
+      <{if !$data}>
+      <div class="help-block text-center"><{t}>暂无数据<{/t}></div>
+      <{/if}>
+    </div>
+  </div>
+</div>
+<span class="export-filter" data-value="" data-app="" data-model=""></span>
+<script>
+  $('.report input[type=radio]:checked').trigger('change');
+  $('.reservation').daterangepicker({
+      format: 'YYYY/MM/DD',
+      opens: 'right'
+  });
+  $('.reservation').val('');
+
+  $("#settle_search").click(function() {
+      var timearea=$("#timearea").val();
+      var delivery_type = $('#delivery_type').val();
+      var bill_status = $('#bill_status').val();
+
+      window.location.href="<{url action=topshop_ctl_clearing_chengtong_settlement@billDetail}>?timearea="+timearea+"&delivery_type="+delivery_type+"&bill_status="+bill_status;
+  });
+
+  $(document).ready(
+      function() {
+          $(".sidebar .sidebar-menu li a i.glyphicon").eq(1).removeClass("glyphicon-list-alt").addClass("glyphicon-cloud");
+      }
+  );
+  $('.export-filter-btn').click(function (e) {
+      e.preventDefault();
+      var url = $(this).attr('href');
+      var app = $(this).data('app');
+      var model = $(this).data('model');
+
+      $('.export-filter').attr('data-app',app);
+      $('.export-filter').attr('data-model',model);
+
+      $('#exportDialog').modal({remote: url}).attr('data-app',app).attr('data-model',model);
+
+      var timearea = $('#timearea').val();
+      var delivery_type = $('#delivery_type').val();
+      var bill_status = $('#bill_status').val();
+      var filter = '{"timearea":"'+timearea+'","delivery_type":"' + delivery_type+'","bill_status":"' + bill_status+'"}';
+      $('.export-filter').attr('data-value',filter);
+  });
+
+  // 重置表单
+  $('#reset-form').on('click',function(){
+      $('input:visible').val('');
+      $('.select-reset').val(-1);
+  });
+
+  //导出
+  function exportCtBill()
+  {
+      var timearea = "<{$timearea}>";
+      var delivery_type = $('#delivery_type').val();
+      var bill_status = $('#bill_status').val();
+      window.open("<{url action=topshop_ctl_export_ctbill@exportCtBill}>?timearea="+timearea+"&delivery_type="+delivery_type+"&bill_status="+bill_status);
+  }
+
+  /**
+   * 开始对账
+   */
+  function balanceAccount()
+  {
+      $.ajax({
+          url:'<{url action=topshop_ctl_clearing_chengtong_settlement@balanceAccount}>',
+          type:'get',
+          dataType:'json',
+          success:function(rs)
+          {
+              if(rs.error)
+              {
+                  $('#messagebox').message(rs.message, 'error');
+              }
+              if(rs.success)
+              {
+                  $('#messagebox').message(rs.message, 'success');
+                  location.reload();
+              }
+          }
+      })
+  }
+</script>
+

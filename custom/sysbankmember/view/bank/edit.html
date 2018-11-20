@@ -13,6 +13,17 @@
                 <td>
                     <{input type="text" name="bank[bank_name]" vtype="required" value=$bankInfo.bank_name  maxlength='20' class="x-input "}></td>
             </tr>
+			
+            <tr>
+                <th><em class="red">*</em><{t}>银行logo：<{/t}></th>
+				<td><{input type="image" vtype="required"  name="bank[bank_logo]" value=$bankInfo.bank_logo  maxlength='20' class="x-input "}> </td>
+            </tr>
+
+            <tr>
+                <th><em class="red">*</em><{t}>颜色：<{/t}></th>
+				<td><{input type="color" vtype="required"  name="bank[bank_color]" value=$bankInfo.bank_color  maxlength='20' class="x-input "}> </td>
+            </tr>
+
         </table>
     </div>
 

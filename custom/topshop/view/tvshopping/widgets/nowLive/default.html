@@ -1,0 +1,127 @@
+    <{if $datas.data1}>
+    <{foreach from=$datas.data1 item=item key=key}>
+    <div class="qtvLive-live">
+        <div class="live-title">
+            <img data-original="<{$datas.now|storager:'m'}>" alt="" class="imglazyload publicTitle-img" src="<{$env.app.topwap.res_url}>/images/lmlazy750_316.png">
+        </div>
+        <div class="live-content">
+            <div class="content-video"></div>
+            <a href="<{url action=topwap_ctl_item_detail@index item_id=$key}>">
+                <div class="content-list">
+                    <div class="list-left">
+                        <img class="imglazyload" data-original="<{$datas.item[$key].image_default_id|storager:'s'}>" alt="">
+                    </div>
+                    <div class="list-right">
+                        <p class="right-data">播出时间 <{$item.live_start_time|date:'H:i'}>-<{$item.live_end_time|date:'H:i'}></p>
+                        <h2>
+                                <{$datas.item[$key].title}>
+                        </h2>
+                        <span><{$datas.item[$key].price|cur}></span>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+    <script >
+        var videoObject = {
+            container: '.content-video',//“#”代表容器的ID，“.”或“”代表容器的class
+            variable: 'player',//该属性必需设置，值等于下面的new chplayer()的对象
+            autoplay: false,//自动播放
+            live: true,
+            mobileCkControls: false,
+            poster: '<{$item.image_default_id|storager}>',
+            // video: 'http://live.hkstv.hk.lxdns.com/live/hks/playlist.m3u8'//视频地址
+            video: '<{$item.live_url|storager}>'//视频地址
+        };
+        var player = new ckplayer(videoObject);
+
+        var start = $('.qtvLive-live').offset().top+48;
+        $(".m-lm-qtvLive").on('scroll', function () {
+
+            if(!$('.qtvLive-live video').get(0).paused){
+                console.log(document.body.clientHeight)
+                console.log($('.qtvLive-live').offset().top)
+                if (start < $(".m-lm-qtvLive").scrollTop() || document.body.clientHeight<$('.qtvLive-live').offset().top+48) {
+                    $('.content-video').css({
+                        "position": "fixed",
+                        "left":0,
+                        "top": 0
+                    })
+                }else {
+                    $('.content-video').css({
+                        "position": "relative",
+                        "top": 0
+                    })
+                }
+            }else{
+                if (start > $(".m-lm-qtvLive").scrollTop() && document.body.clientHeight>$('.qtvLive-live').offset().top+48) {
+                    $('.content-video').css({
+                        "position": "relative",
+                        "top": 0
+                    })
+
+                }
+            }
+
+        })
+    </script>
+    <{/foreach}>
+    <{/if}>
+
+    <!-- 即将播出 -->
+    <{if $datas.data3}>
+    <div class="qtvLive-playSoon">
+        <div class="playSoon-title">
+            <img data-original="<{$datas.future|storager:'m'}>" class="imglazyload publicTitle-img" alt="">
+        </div>
+        <div class="playSoon-content">
+            <ul>
+                <{foreach from=$datas.data3 item=item key=key}>
+                <a href="<{url action=topwap_ctl_item_detail@index item_id=$key}>">
+                    <li>
+                        <div class="list-left">
+                            <img class="imglazyload" data-original="<{$datas.item[$key].image_default_id|storager:'s'}>" alt="">
+                        </div>
+                        <div class="list-right">
+                            <p class="right-data">播出时间 <{$item.live_start_time|date:'H:i'}>-<{$item.live_end_time|date:'H:i'}></p>
+                            <h2>
+                                    <{$datas.item[$key].title}>
+                            </h2>
+                            <span><{$datas.item[$key].price|cur}></span>
+                        </div>
+                    </li>
+                </a>
+                <{/foreach}>
+            </ul>
+        </div>
+    </div>
+    <{/if}>
+
+    <!-- 精彩回放 -->
+    <{if $datas.data2}>
+    <div class="qtvLive-old">
+        <div class="old-title">
+            <img data-original="<{$datas.past|storager:'m'}>" class="imglazyload publicTitle-img" alt="">
+        </div>
+        <div class="old-content">
+            <ul>
+                <{foreach from=$datas.data2 item=item key=key}>
+                <a href="<{url action=topwap_ctl_item_detail@index item_id=$key}>">
+                    <li>
+                        <div class="list-left">
+                            <img class="imglazyload" data-original="<{$datas.item[$key].image_default_id|storager:'s'}>" alt="">
+                        </div>
+                        <div class="list-right">
+                            <p class="right-data">播出时间 <{$item.live_start_time|date:'H:i'}>-<{$item.live_end_time|date:'H:i'}></p>
+                            <h2>
+                                    <{$datas.item[$key].title}>
+                            </h2>
+                            <span><{$datas.item[$key].price|cur}></span>
+                        </div>
+                    </li>
+                </a>
+                <{/foreach}>
+            </ul>
+        </div>
+    </div>
+    <{/if}>

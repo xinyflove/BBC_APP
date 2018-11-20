@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="apple-mobile-web-app-capable" content="yes"> 
+	<title>买手推荐</title>
+    <{css src="min/style.min.css" app="topwap"}>
+    <{css src="milier/dist/style.css" app="topwap"}>
+    <{css src="milier/css/ms_recommend.css" app="topwap"}>
+</head>
+<body>
+	<div class="m-ml-ms">
+        <div class="m-ml-details-head">
+            <a href="javascript:history.back(-1)">
+                <img src="<{resource app='topwap' path='/images/milier/details/icon-back1.png'}>" class="head-icon1"/>
+            </a>
+            <p class="banner-title">买手推荐</p>
+        </div>
+		<div class="ms-banner">
+            <div class="swiper-container banner-container">
+                <{if $widget.template_path}>
+                <{include file=$widget.template_path}>
+                <{/if}>
+            </div>
+        </div>
+        <div class="ms-search">
+        	<input type="text" id="search_buyer" placeholder="输入商品名、功效">
+        </div>
+        <ul class="ms-list" id="datalist">
+            <li></li>
+            <li></li>
+        </ul>
+        <div style="text-align: center;display: none;" id="no_data">暂时没有数据！</div>
+        <div style="text-align: center;display: none;" id="no_more_data">没有更多数据了！</div>
+	</div>
+    <input type="hidden" id="shop_id" value="<{$shop_id}>">
+</body>
+<{script src="min/core.min.js" app="topwap"}>
+<{script app="topwap" src="milier/dist/public.js" }>
+<script>
+	var imgH = $('.showimg').eq(0).width() +'px';
+	$('.showimg').css('height', imgH);
+	var msBanner = new Swiper('.banner-container', {
+		autoplay:  true,
+		lazy:true,
+        watchSlidesVisibility:true,
+		pagination: {
+            el: '.banner-pagination',
+            clickable :true,
+        },
+	})
+    // 瀑布流布局
+    // var imgData = []; // 数据存放 数据格式和data.js里一样 输出全部数据  不加分页
+    var $box = $("#datalist"),
+        $li = $box.find("li"),
+        max_index = 0;
+	    page_no = 0;
+        request_again_flag = false;
+        buyer_search_name = null;
+	    getData(10);
+
+    $(window).scroll(function() {
+        if (max_index >= maxLength || (page_no > 1 && !request_again_flag))
+        {
+            $('#no_more_data').show();
+            return false;
+        }
+        request_again_flag = false;
+        $('#no_more_data').hide();
+        var allTop = $(window).height() + $(document).scrollTop();
+        if (allTop > $box.offset().top + $box.height() - 200) {
+            getData(10);
+        }
+    });
+
+    function fLoad() {
+        var imgLength = imgData.length;
+        if(imgLength == 0)
+        {
+            $('#no_data').show();
+            return;
+        }
+        $('#no_data').hide();
+        for(var i=0;i<imgLength;i++) {
+            var data = imgData[i];
+            var oImg = new Image();
+            oImg.src = data.groom_image;
+            // oImg.onload = function() {
+                var $div = $('<div class="content content'+data.id+'">'+
+                    '<a href="'+data.href+'"><img class="showimg" src="'+data.groom_image+'" alt=""></a>'+
+                    '<div class="info">'+
+                    '<p class="title">'+data.groom_title+'</p>'+
+                    '<p class="desc">'+data.groom_summary+'</p>'+
+                    '<div class="user">'+
+                    '<div class="">'+
+                    '<div class="label">'+
+                    '</div>'+
+                    '</div>'+
+                    '<div class="'+data.laud_class+'" onclick="laud(this)" value="'+data.id+'">'+ data.laud_quantity +
+                    '</div></div></div></div>');
+                $div.css("display", "none");
+                findShort().append($div);
+                $div.fadeIn();
+                var label = $('.content' + data.id).find('.label');
+                var html = '';
+                if(data.tag_name.length){
+                    for(var j =0; j< data.tag_name.length;j++){
+                        html += '<span class="yellow">'+data.tag_name[j]+'</span>'
+                    }
+                }
+                label.html(html);
+            // }
+        }
+        $(".ms-list .content a img").height($(".ms-list .content a img").width())
+    }
+
+    function getData(page_size)
+    {
+        var shop_id = $('#shop_id').val();
+        page_no++;
+        $.ajax({
+            url : "<{url action=topwap_ctl_supplier_buyer@ajaxGetBuyerList}>",
+            type : 'get',
+            dataType : 'json',
+            async : true,
+            data : {
+                page_no : page_no,
+                page_size : page_size,
+                shop_id : shop_id,
+                buyer_search_name : buyer_search_name
+            },
+            success : function(res) {
+                request_again_flag = true;
+                maxLength = parseInt(res.count);
+                imgData = res.data;
+                max_index += parseInt(res.page_size);
+                fLoad(10);
+            }
+        })
+    }
+    function findShort() {
+        var obj;
+        var short = 99999;
+        $li.each(function(i) {
+            var height = $(this).height();
+            if (height < short) {
+                short = height;
+                obj = this;
+            }
+        });
+        return $(obj);
+    }
+
+    document.onkeydown=function(e){  //对整个页面文档监听
+        var keyNum=window.event ? e.keyCode :e.which;  //获取被按下的键值
+        if(keyNum == 13)
+        {
+            buyer_search_name = document.getElementById('search_buyer').value;
+            if(buyer_search_name == '' && buyer_search_name == undefined)
+            {
+                return false;
+            }
+            search_buyer();
+        }
+    }
+
+    function search_buyer()
+    {
+        page_no = 0;
+        max_index = 0;
+        $li.html('');
+        getData(10);
+    }
+
+    function laud(_this)
+    {
+        var _that = $(_this);
+        var id = _that.attr('value');
+        if(_that.hasClass('user-liked'))
+        {
+            return false;
+        }
+        $.ajax({
+            url : "<{url action=topwap_ctl_supplier_buyer@laud}>",
+            type : 'get',
+            dataType : 'json',
+            async : false,
+            data : {
+                id : id,
+            },
+            success : function(res) {
+                if(res.redirect)
+                {
+                    location.href=res.redirect;
+                    return false;
+                }
+                if(res.res)
+                {
+                    var laud_quantity = parseInt($(_that).html());
+                    _that.html(laud_quantity+1);
+                    _that.removeClass('user-like').addClass('user-liked');
+                }
+                else
+                {
+                    shopex.alert(res.error_message);
+                }
+            }
+        })
+    }
+    $('.ms-search input').on('focus', function () {
+        $('.ms-search input').css('background-position', '5%');
+        $('.ms-search input').css('text-align', 'left');
+        $('.ms-search input').css('padding-left', '9%');
+    });
+    $('.ms-search input').on('blur', function () {
+        $('.ms-search input').css('background-position', '25%');
+        $('.ms-search input').css('text-align', 'center');
+        $('.ms-search input').css('padding-left', '0');
+    });
+
+</script>
+</html>

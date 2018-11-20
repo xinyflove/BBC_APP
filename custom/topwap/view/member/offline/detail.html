@@ -1,0 +1,220 @@
+<style>
+#commonfoots,#commonfoot{display:none}
+body {
+	font-family: "microsoft yahei";
+	font-size: 16px;
+	background: #eee;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+}
+header .header-right,header .header-left{color:#989898}
+.tv-fl {
+	float: left;
+}
+
+.tv-fr {
+	float: right;
+}
+
+
+.tv-ticket-content-top {
+	width: 100%;
+	height: 42px;
+	background: url(/app/topwap/statics/static/img/icon_paio3_01.png) no-repeat center;
+	background-size: 100% 100%;
+	clear: both;
+	margin-bottom:0;
+}
+
+.tv-ticket-content-top h3 {
+	font-weight: normal;
+	font-size: 16px;
+	color: #333;
+	margin: 5px 0 0 15px;
+}
+
+.tv-ticket-content-top span {
+	font-size: 14px;
+	color: #999;
+	display: block;
+	margin: 5px 15px 0 0;
+}
+
+
+.cd-popup {
+	position: fixed;
+	left: 0;
+	top: 0;
+	height: 100%;
+	width: 100%;
+	background-color: rgba(0, 0, 0, 0.5);
+	opacity: 0;
+	visibility: hidden;
+	-webkit-transition: opacity 0.3s 0s, visibility 0s 0.3s;
+	-moz-transition: opacity 0.3s 0s, visibility 0s 0.3s;
+	transition: opacity 0.3s 0s, visibility 0s 0.3s;
+	z-index: 9999999;
+}
+
+.cd-popup.is-visible1,
+.cd-popup.is-visible1 {
+	opacity: 1;
+	visibility: visible;
+	-webkit-transition: opacity 0.3s 0s, visibility 0s 0s;
+	-moz-transition: opacity 0.3s 0s, visibility 0s 0s;
+	transition: opacity 0.3s 0s, visibility 0s 0s;
+}
+
+.cd-popup-container {
+	box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+	-webkit-transform: translateY(-60px);
+	-moz-transform: translateY(-60px);
+	-ms-transform: translateY(-60px);
+	-o-transform: translateY(-60px);
+	transform: translateY(-60px);
+	-webkit-backface-visibility: hidden;
+	-webkit-transition-property: -webkit-transform;
+	-moz-transition-property: -moz-transform;
+	transition-property: transform;
+	-webkit-transition-duration: 0.3s;
+	-moz-transition-duration: 0.3s;
+	-ms-transition-duration: 0.3s;
+	-o-transition-duration: 0.3s;
+	transition-duration: 0.3s;
+	overflow: hidden;
+	position: relative;
+	top: 50%;
+	left: 50%;
+}
+
+.is-visible1 .cd-popup-container1 {
+	-webkit-transform: translateY(0);
+	-moz-transform: translateY(0);
+	-ms-transform: translateY(0);
+	-o-transform: translateY(0);
+	transform: translateY(0);
+}
+
+.cd-popup-container1 {
+	width: 297px;
+	height: 212px;
+	background-color: #fff;
+	border-radius: 6px;
+	margin-top:-106px;
+	margin-left: -148.5px;
+}
+.cd-popup-container1 img{
+	width: 100px;
+	height: 100px;
+	position: absolute;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	margin: auto;
+}
+.select-store .store-g > ul > li {
+    padding: 10px;
+    border-bottom: 1px dashed #DAD9DE;
+}
+.select-store .store-g > ul > li .g-info {
+    display: -webkit-box;
+    display: box;
+}
+.select-store .store-g > ul > li .g-info .info-l {
+    width: 75px;
+    text-align: left;
+}
+.select-store .store-g > ul > li .g-info .info-l a {
+    width: 60px;
+    height: 60px;
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;
+    background: #efefef;
+}
+.select-store .store-g > ul > li .g-info .info-l a img {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+}
+.select-store .store-g > ul > li .g-info .info-m {
+    -webkit-box-flex: 1;
+    box-flex: 1;
+    word-break: break-all;
+    width: 1%;
+}
+.tv-ticket-content {
+    width: 94%;
+    margin: 10px auto;
+}
+
+.tv-ticket-content-bottom {
+    background-color: #fff;
+    padding: 0 15px;
+}
+.tv-ticket-content-bottom ul li {
+    width: 100%;
+    height: 44px;
+    line-height: 44px;
+    border-bottom: 1px dotted #eee;
+    position: relative;
+}
+.tv-ticket-content-bottom ul li span {
+    margin-right: 5px;
+}
+.tv-ticket-content-bottom ul li span, .tv-ticket-content-bottom ul li del {
+    color: #999;
+    font-size: 14px;
+}
+.tv-ticket-content-bottom ul li img {
+    width: 24px;
+    height: 24px;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    margin-top: -12px;
+}
+</style>
+<header class="page-header">
+  <a href="<{url action=topwap_ctl_member_agentvocher@index}>"><i class="header-left icon-func bbc-icon bbc-icon-back"></i></a>
+  <div class="header-title"><{t}>线下卡券详情<{/t}></div>
+</header>
+<div class="inner-wrap" style="margin-top:2.8em;background:#fff">
+  <div class="select-store">
+    <div class="store-g">
+      <ul>
+        <li>
+          <div class="g-info">
+            <div class="info-l">
+              <a  class="g-pic">
+                <img src="<{$order.pic_path|storager:t}>" alt="">
+			  </a>
+            </div>
+            <div class="info-m">
+              <div class="code"><{$supplier.company_name}>:<{$order.title}></div>
+              <a class="g-name">
+				X<{$order.num}></br>
+              </a>
+              <span class="real"> 总价: <i><{$order.payment|cur}></i> </span>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+</div>
+<div style="line-height:30px;padding-left:15px;padding-top:8px">
+	卡券
+</div>
+<section class="tv-ticket-content">
+	<section class="tv-ticket-content-top">
+		<h3 class="tv-fl">已使用(<{$voucher_use}>张)  有效期:<{$start_time}>~<{$end_time}></h3>
+	</section>
+</section>
+<div style="background:#fff;margin-top:20px;padding-left:10px;line-height:40px">
+	<p>订单编号:<{$order.oid}><p>
+</div>

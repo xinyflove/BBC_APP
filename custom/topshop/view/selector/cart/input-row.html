@@ -1,0 +1,18 @@
+<table wdith="100%" class="table table-primary table-hover table-goods">
+  <tr date-cartid="<{$cartRow.cart_id}>" class='package_input'>
+    <td style="border-top:none">
+      <input type="hidden" name="cart_id" value="<{$cartRow.cart_id}>" />
+		<span style="display:block;float:left">汽车品牌:</span><{$cartRow.cart_name}>
+    </td>
+     <td style="border-top:none">
+		<span style="display:block;float:left">车架号:</span><{$cartRow.frame_code}>
+    </td>
+        <td style="border-top:none"><a class="item-del" href="#">删除</a></td>
+  </tr>
+</table>
+<script>
+  $('.item-del').click(function(e) {
+    e.preventDefault();
+    $(this).parents('tr').remove();
+  });
+</script>

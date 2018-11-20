@@ -1,0 +1,12 @@
+<app>
+    <name>创客业务管理</name>
+    <type>site</type>
+    <description>提供创客业务功能</description>
+    <author>
+        <name>广电开发(PHP Team)</name>
+        <email></email>
+        <url></url>
+    </author>
+    <version>0.1</version>
+    <license>shopex license</license>
+</app>

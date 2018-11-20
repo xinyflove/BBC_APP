@@ -1,0 +1,103 @@
+<style>
+  .m-915EatQD-PrizeTab-content {
+    width: 100%;
+    overflow: hidden;
+  }
+  .m-915EatQD-PrizeTab-content .hd {
+    width: 100%;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    background-color: #fff;
+  }
+  .m-915EatQD-PrizeTab-content .hd li {
+    float: left;
+    width: 33.3%;
+    font-size: 15px;
+    color: #999;
+    cursor: pointer;
+  }
+  .m-915EatQD-PrizeTab-content .hd li.active {
+    color: #fbd301;
+    border-bottom: 1px solid #fbd301;
+  }
+  .m-915EatQD-PrizeTab-content .bd {
+    display: none;
+  }
+  .m-915EatQD-PrizeTab-content .bd .activeBg {
+    background: url("/app/topwap/statics/images/img_jiangpin_active.png") no-repeat;
+    color: #f9e4ad;
+  }
+  .m-915EatQD-PrizeTab-content .bd .activeBg p {
+    color: #f9e4ad !important;
+  }
+  .m-915EatQD-PrizeTab-content .bd .grayBg {
+    background: url("/app/topwap/statics/images/img_jiangpin.png") no-repeat;
+    color: #999;
+  }
+  .m-915EatQD-PrizeTab-content .bd .icon_ygq {
+    background: url("/app/topwap/statics/images/icon_ygq.png") no-repeat;
+    background-size: 78.5px 78.5px;
+    display: block;
+    position: absolute;
+    width: 78.5px;
+    height: 78.5px;
+    left: 20px;
+    top: 50%;
+    margin-top: -39.25px;
+  }
+  .m-915EatQD-PrizeTab-content .bd .icon_ysy {
+    background: url("/app/topwap/statics/images/icon_ysy.png") no-repeat;
+    background-size: 78.5px 78.5px;
+    display: block;
+    position: absolute;
+    width: 78.5px;
+    height: 78.5px;
+    right: 20px;
+    top: 50%;
+    margin-top: -39.25px;
+  }
+  .m-915EatQD-PrizeTab-content .bd .prize {
+    width: 100%;
+    height: 128px;
+    background-size: 100% 128px;
+    margin: 10px auto 0 auto;
+    padding: 20px 15px 0 0;
+    position: relative;
+    text-align: right;
+  }
+  .m-915EatQD-PrizeTab-content .bd .prize h3{
+    font-weight: normal;
+  }
+  .profile{
+    width: 81%;
+    float: right;
+    text-align: right;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+</style>
+<{foreach from=$data item=item}>
+<li>
+  <div class="section-container coupon-item">
+  <div class="section-init">
+    <div class="m-915EatQD-PrizeTab-content coupon-item-rule">
+      <div class="bd" style="display: block">
+        <div class="prize grayBg">
+          <h3><{$item.gift_name}></h3>
+          <div style="clear: both">
+            <div class="profile"><{$item.gift_profile}></div>
+            <div class="profile">使用日期：<{$item.start_time|cdate:'FDATE'}> - <{$item.end_time|cdate:'FDATE'}></div>
+          </div>
+          <em class="icon_ygq"></em>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+  <{if $item.is_valid == 1}>
+  </a>
+  <{/if}>
+</li>
+<{/foreach}>

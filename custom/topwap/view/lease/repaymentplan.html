@@ -1,0 +1,28 @@
+<{include file="topwap/lease/header.html"}>
+<body>
+    <!--m-fmcc-repaymentPlan-list start-->
+    <section class="m-fmcc-repaymentPlan-list" id="List">
+        <{foreach from=$stages item=item key=key}>
+        <ul>
+        <li class="retainbb"><h3 class="hz-fl">还款期次</h3><span class="hz-fr">第<{$key+1}>期</span></li>
+        <li class="retainbb"><h3 class="hz-fl">还款日期</h3><span class="hz-fr"><{$item.repay_time|cdate:'Y-m-d'}></span></li>
+        <li class="retainbb"><h3 class="hz-fl">分期金额</h3><span class="hz-fr r"><{$item.due_amount}></span></li>
+        <li class="retainbb"><h3 class="hz-fl">抵扣金额</h3><span class="hz-fr r"><{$item.deductible_amount}></span></li>
+        <li class="retainbb"><h3 class="hz-fl">应还金额</h3><span class="hz-fr r"><{$item.due_amount-$item.deductible_amount}></span></li>
+        <li class="m-fmcc-paymentsDetails-totalCount" style="margin-top:0;">
+            <{if $item.payment_status == 1}>
+            <a href="javascript:void(0);" style="height: 0.8rem;line-height: 0.8rem;background-color: #2dbc90;">已还清</a>
+            <{else}>
+            <a href="<{url action=topwap_ctl_lease_paycenter@index}>?stages_id=<{$item.stages_id}>" style="height: 0.8rem;line-height: 0.8rem;">去还款</a>
+            <{/if}>
+        </li>
+        </ul>
+        <{/foreach}>
+    </section>
+    <!--end m-fmcc-repaymentPlan-list-->
+
+    <script src="/app/topwap/statics/cart/js/fontSize.js"></script>
+    <script>
+    </script>
+</body>
+</html>

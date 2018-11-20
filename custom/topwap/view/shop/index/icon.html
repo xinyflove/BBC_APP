@@ -1,0 +1,27 @@
+<!-- 头条新闻 m-tvplazaShopIndex-topnews start-->
+<section class="m-tvplazaShopIndex-topnews horizontal-view" style="margin-top:0;margin-bottom:0">
+	<a href="#" class="left horizontal-view">
+		<i class="icon_topnews" style="background:url(<{$widgetDetail.params.imgurl|storager:t}>) no-repeat center; background-size: 50px 40px;width:50px;height:44px;background-position: 0 4px;"></i>
+	</a>
+	<div class="m-tvplazaShopIndex-topnews-bd">
+		<ul>
+			<{foreach from=$widgetDetail.article item=items}>
+				<a href="<{url action=topwap_ctl_content@shopArticle aid=$items.article_id shop_id=$shopId}>">
+				<!--<a href="#">-->
+					<li class="horizontal-view">
+						<!--modify_20171108_by_fanglongji_start
+						<span><{$items.label}></span>
+						 -->
+						<span><{$items.new_label}></span>
+						<!--modify_20171108_by_fanglongji_end-->
+						<p class="hz-ellipsis" style="width:70%"><{$items.title}></p>
+					</li>
+				</a>
+			 <{/foreach}>
+		</ul>
+	</div>
+	<!-- <div class="right">
+		<span>更多</span>
+	</div> -->
+</section>
+<!--end m-tvplazaShopIndex-topnews-->

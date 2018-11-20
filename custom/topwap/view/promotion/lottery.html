@@ -1,0 +1,365 @@
+<{script src="jquery-2.1.4.js" app="topwap"}>
+<!-- <{script src="dialog.js" app="site"}> -->
+<{script src="awardRotate.js" app="topwap"}>
+<{script src="lottery.js" app="topwap"}>
+
+<{if $lottery_rules}>
+	<{foreach from=$lottery_rules item=rules key=key}>
+	<img src="<{$rules.img|storager:'t'}>" id="<{$rules.bonus_type}>_<{$key}>" style="display:none;">
+	<{/foreach}>
+<{/if}>
+<style>
+.goback {
+    width: 90%;
+    margin: 0 auto;
+    height: 35px;
+}
+.goback img {
+    width: 28px;
+    height: 28px;
+    margin-top: 6px;
+}
+body{
+    /* height: 100%; */
+    background: #82dff8;
+}
+.prize_link {
+width: 100%;
+height: 30px;
+/* text-align: right; */
+    padding: 5px 10px;
+    font-size: 15px;
+
+}
+.prize_link a{
+    float: right;
+    font-size: 15px;
+}
+.prize_link	img{
+	width: 20px;
+	height: 20px;
+	/* display: inline-block; */
+	/* text-align: right; */
+	float: right;
+	vertical-align: middle;
+	/* margin-bottom: 3px; */
+}
+
+.lotter-wrap .title {
+    position: relative;
+    color: #6d2512;
+    text-align: center;
+    margin-bottom: 0px;
+}
+.lotter-wrap .title h1 {
+    font-size: 30px;
+    margin-bottom: 10px;
+}
+.lotter-wrap .title .dirscript {
+    font-size: 18px;
+}
+.lotter-wrap .title-before, .lotter-wrap .title-after {
+    color: #fff;
+    -webkit-text-shadow: #6d2512 3px 0 0,#6d2512 0 3px 0,#6d2512 -3px 0 0,#6d2512 0 -3px 0;
+    -moz-text-shadow: #6d2512 3px 0 0,#6d2512 0 3px 0,#6d2512 -3px 0 0,#6d2512 0 -3px 0;
+    text-shadow: #6d2512 3px 0 0,#6d2512 0 3px 0,#6d2512 -3px 0 0,#6d2512 0 -3px 0;
+    *filter: Glow(Color=#000, Strength=1);
+}
+.lotter-wrap .title-before {
+    color: #fff7a6;
+}
+.lotter-wrap .qrcode {
+    position: absolute;
+    top: 10px;
+    right: 50px;
+    width: 100px;
+    padding: 10px;
+    background: #fff;
+    border-radius: 5px;
+    text-align: center;
+}
+.lotter-wrap .lotter-content {
+    position: relative;
+}
+.lotter-wrap .prize-box {
+    /* float: left; */
+    width: 100%;
+    /* padding-top: 20px; */
+}
+.lotter-wrap .prize-rule {
+    /* float: none; */
+    width: 100%;
+    color: #882c0d;
+}
+.lotter-wrap .rule-content {
+    position: relative;
+    background: #fff8c2;
+    border-radius: 5px;
+    /* padding: 35px 30px 20px; */
+    width: 85%;
+    margin: 20px auto 10px;
+    /* margin-bottom: 50px; */
+}
+.lotter-wrap .rule-name {
+    position: absolute;
+    top: -20px;
+    left: 0;
+    background: #f7d15f;
+    /* width: 190px; */
+    height: 40px;
+    line-height: 40px;
+    padding-left: 10px;
+    color: #872b0d;
+    font-size: 15px;
+}
+.lotter-wrap .rule-name:after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: -20px;
+    width: 0;
+    height: 0;
+    border-left: 20px solid #f7d15f;
+    border-top: 20px solid transparent;
+    border-bottom: 20px solid transparent;
+}
+.lotter-wrap .rule-list {
+    line-height: 25px;
+    font-size: 12px;
+    padding: 5px 10px;
+}
+.lotter-wrap .rule-list ol {
+    list-style-type: decimal;
+}
+.lotter-wrap .prize-result {
+    padding: 0;
+    background: #fff8c2;
+    border-radius: 5px;
+    text-align: center;
+    width: 80%;
+    margin: 0 auto;
+
+}
+.lotter-wrap .prize-result .btn {
+    margin-bottom: 10px;
+}
+.lotter-wrap .prize-result p {
+    font-size: 14px;
+}
+.lotter-wrap .chance {
+    font-size: 15px;
+    margin: 20px 0;
+    padding: 1px 5px;
+}
+.lotter-wrap .chance span {
+    display: inline-block;
+    padding: 1px 15px;
+    /* border: 1px solid #ff9140; */
+    margin: 0 5px;
+}
+
+.banner {
+    display: block;
+    width: 85%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.banner .turnplate {
+    display: block;
+    width: 100%;
+    position: relative;
+    background: url(/app/topwap/statics/images/turnplate-bg.png);
+    background-size: 100% 100%;
+}
+
+.banner .turnplate canvas.item {
+    width: 100%;
+}
+
+.banner .turnplate img.pointer {
+    position: absolute;
+    width: 25.5%;
+    height: 34.4%;
+    left: 37.2%;
+    top: 27.7%;
+}
+
+.prize-info input {
+    width: 60%;
+}
+
+#edit_headimg{
+    cursor:pointer;
+}
+</style>
+<input type="hidden" name="lotterid" value="<{$lottery_id}>">
+<input type="hidden" name="last_modified_time" value="<{$modified_time}>">
+<div class="bread-crumbs">
+	<div class="lotter-wrap">
+			<div class="goback">
+					<a href="javascript:history.back(-1)">
+						<img src="/app/topwap/statics/images/icon_back.png" alt="">
+					</a>
+			</div>
+		<section class="title">
+			<h1><span class="title-before">幸运大转盘</span><span class="title-after">抽奖活动</span></h1>
+			<p class="dirscript"></p>
+		</section>
+		<section class="lotter-content clearfix">
+			<div class="prize-rule">
+				<div class="prize-result">
+                    <{if !is_null($take_limit) || !is_null($today_take_limit)}>
+                    <div class="chance">
+                        <{if !is_null($take_limit) && !is_null($today_take_limit)}>
+                        您共还有<span class="take_limit"><{$take_limit}></span>次抽奖机会，今天还有<span class="today_take_limit lotter-limit"><{$today_take_limit}></span>次抽奖机会。
+
+                        <{elseif !is_null($take_limit)}>
+                        您共还有<span class="take_limit lotter-limit"><{$take_limit}></span>次抽奖机会。
+
+                        <{elseif !is_null($today_take_limit)}>
+                        您今天还有<span class="today_take_limit lotter-limit"><{$today_take_limit}></span>次抽奖机会。
+
+                        <{/if}>
+                    </div>
+                    <{/if}>
+
+					<{if $lottery_type=='0' || $lottery_type=='2'}>
+					<button class="btn btn-major btn-lg action-exchange"><span><span>兑换抽奖机会</span></span></button>
+					<p>
+						<span class="pointer"><{$lottery_point_num}></span>积分兑换一次抽奖机会
+						<label data-region-id="<{$addrList.region_id}>" data-addr-id="<{$addrList.addr_id}>" data-addr="<{$addrList.addr}>" data-name="<{$addrList.name}>" data-mobile="<{$addrList.mobile}>" data-zip="<{$addrList.zip}>" title="<{$addrList.area|region}>" class="prize-info-data"></label>
+					</p>
+					<{/if}>
+				</div>
+			</div>
+
+			<div class="prize-box">
+					<!--转盘-->
+				   <div class="banner">
+					   <div class="turnplate">
+						   <canvas class="item" id="wheelcanvas" width="422px" height="422px">
+						   </canvas>
+						   <{img src="turnplate-pointer.png" class="pointer" app="topwap"}>
+					   </div>
+				   </div>
+			</div>
+
+            <div class="rule-content">
+                <div class="prize_link">
+                    <span>活动规则</span>
+
+                    <a href="<{url action=topwap_ctl_member_lottery@prizeList}>">查看奖品</a>
+                    <img src="/app/topwap/statics/images/icon-hint.png" alt="">
+                </div>
+                <div class="rule-list">
+                    <{$lottery_desc|nl2br}>
+                </div>
+            </div>
+		</section>
+	</div>
+</div>
+<div id="confirm_dialog" class="confirm-dialog text-center" style="display: none;">
+	<p class="text-center">确定要用 <span class="font-red exchange-limit"></span> 积分兑换一次抽奖机会吗？</p>
+	<p class="text-center">
+	    <button type="button" class="btn btn-import action-sure"><span><span>确定</span></span></button>
+	    <button type="button" class="btn btn-simple dialog-btn-close"><span><span>取消</span></span></button>
+	 </p>
+</div>
+
+<script>
+$(document).ready(function(){
+	// 奖品信息
+	var lotteryType = $.parseJSON('<{$bonusInfo}>');
+	// 活动id
+	var lotterId = $('input[name="lotterid"]').val();
+	// 活动最后修改时间
+	var last_modified_time = $('input[name="last_modified_time"]').val();
+	// 抽奖机会
+	// var lotterLimit = $.trim($('.lotter-limit').text());
+	var restaraunts = [];
+	var colors = [];
+	var desc = "";
+	for(var key in lotteryType) {
+		switch(lotteryType[key].bonus_type) {
+			case 'hongbao':
+				if(lotteryType[key].hongbaotype == "stochastic") {
+					restaraunts.push(lotteryType[key].id + "-" + lotteryType[key].bonus_type + "+随机红包");
+				} else if(lotteryType[key].hongbaotype == "fixed") {
+					restaraunts.push(lotteryType[key].id + "-" + lotteryType[key].bonus_type + "+红包" + lotteryType[key].hongbaomoney + "元");
+				}
+				break;
+			case 'point':
+				restaraunts.push(lotteryType[key].id + "-" + lotteryType[key].bonus_type + "+积分" + lotteryType[key].num + "点");
+				break;
+			case 'none':
+				restaraunts.push(lotteryType[key].id + "-" + lotteryType[key].bonus_type + "+" + lotteryType[key].bonus_desc);
+				desc = lotteryType[key].bonus_desc;
+				break;
+			case 'custom':
+				restaraunts.push(lotteryType[key].id + "-" + lotteryType[key].bonus_type + "+" + lotteryType[key].bonus_desc);
+				break;
+			case 'coupon':
+				restaraunts.push(lotteryType[key].id + "-" + lotteryType[key].bonus_type + "+" + lotteryType[key].bonus_desc);
+				break;
+		}
+		colors.push(lotteryType[key].color);
+	}
+
+	// if(lotterLimit <= 0) flag = false;
+	var region = "<{$env.base_url}>/app/ectools/statics/scripts/region.json";
+	var nextpage = "<{url action=topc_ctl_lottery@lottery_info_dialog}>";
+	var saveUrl = '<{url action=topc_ctl_member_lottery@saveAddr}>';
+	readyTurnplate(restaraunts, colors, '<{url action=topwap_ctl_lottery@getPrize}>', {"lottery_id": + lotterId , "last_modified_time": + last_modified_time }, $('.lotter-limit'), region, nextpage, saveUrl);
+});
+window.onload = function(){
+	drawRouletteWheel();
+    // 兑换抽奖机会
+	$('.action-exchange').on('click', function() {
+		var limit = $.trim($('.pointer').text());
+		$('#confirm_dialog').dialog({
+			title: "提示",
+			width: 300,
+			modal: true,
+			onShow: function(){
+				var that = this;
+				var lotterId = $('input[name="lotterid"]').val();
+				this.content.find('.exchange-limit').text(limit);
+				this.content.find('.action-sure').click(function(){
+					$.post('<{url action=topc_ctl_lottery@getExchangeNum}>', {'lottery_joint_limit': $.trim($('.lotter-limit').text()), 'pointNum': $.trim($('.pointer').text()), 'lotteryid':lotterId}, function(rs){
+						if(rs.error) {
+							Message.error(rs.message);
+							return;
+						}
+						$('.lotter-limit').text(rs);
+					});
+					that.hide();
+				});
+			}
+		});
+	});
+}
+var onMenuShare_collback = function () {
+    var lotterId = $('input[name="lotterid"]').val();
+    $.post('<{url action=topwap_ctl_lottery@onMenuShareCollback}>', {'lottery_id':lotterId}, function(rs){
+        if(rs.error) {
+            shopex.alert(rs.message);
+            if(rs.redirect) {
+                setTimeout(function() {
+                    window.location.href = rs.redirect;
+                }, 1500);
+            }
+        }
+        if(rs.success) {
+            shopex.alert(rs.message.message);
+            if( typeof(rs.message.take_limit) == 'number'){
+                $(".prize-result").find(".take_limit").text(rs.message.take_limit)
+            }
+            if( typeof(rs.message.today_take_limit) == 'number'){
+                $(".prize-result").find(".today_take_limit").text(rs.message.today_take_limit)
+            }
+        }
+    });
+}
+</script>
+<{include file="topwap/index.html"}>

@@ -1,0 +1,24 @@
+<div class="panel-heading">
+  <div class="text-center">
+    <ul class="step-bar">
+      <li class="on">
+        <div class="state">已下单，待付款</div>
+        <div class="time"><{$trade.created_time|cdate}></div>
+        <i class="glyphicon glyphicon-chevron-right"></i>
+      </li>
+      <li class="on">
+        <div class="state">已付款，待核销</div>
+        <div class="time"><{$trade.pay_time|cdate}></div>
+      </li>
+      <li class="on">
+        <div class="state">已付款，部分核销</div>
+        <!--<div class="time"><{$trade.end_time|cdate}></div>-->
+      </li>
+      <li>
+        <div class="state">已付款，全部核销</div>
+        <div class="time"><{$trade.end_time|cdate}></div>
+      </li>
+    </ul>
+  </div>
+</div>
+

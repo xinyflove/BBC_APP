@@ -1,0 +1,287 @@
+<style>
+  .shop-coupon-list {
+    padding: 12px;
+    background: #efefef;
+    border-radius: 5px;
+  }
+  .shop-coupon-list.form-list {
+    padding: 0;
+  }
+  .shop-coupon-list li {
+    position: relative;
+    background: #fff;
+    margin-bottom: 10px;
+    padding: 6px;
+  }
+  .shop-coupon-list li:last-child {
+    margin: 0;
+  }
+  .shop-coupon-list li.active {
+    box-shadow: 0 0 5px #ff0000;
+  }
+  .shop-coupon-list .coupon-amount {
+    font-size: 24px;
+    color: #ff0000;
+  }
+  .shop-coupon-list .coupon-rule {
+    padding-left: 24px;
+    color: #666;
+  }
+  .shop-coupon-list .coupon-deadline {
+    padding-left: 24px;
+    font-size: 11px;
+    color: #dadadd;
+  }
+  .shop-coupon-list .coupon-del {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    color: #ccc;
+  }
+</style>
+<{if !$is_lm}>
+<div class="panel panel-default">
+    <p class="help-block text-center">您现在还没有开通配置此功能的权限，请联系平台管理员进行开通！</p>
+</div>
+<{else}>
+<form method="post" action="<{url action=topshop_ctl_account_interests@save}>" class="form-horizontal clearfix" data-validate-onsuccess="ajaxSubmit" role="form">
+  <input type="hidden" name="interest_id" value="<{$shop_interests.interest_id}>"/>
+  <div class="panel panel-default">
+    <div class="panel-heading">设置会员权益规则</div>
+    <div class="box-body">
+      <div class="form-group">
+        <label for="" class="col-sm-1 control-label">描述：</label>
+        <div class="col-sm-7">
+          <div id="floor_7" class="panel panel-default">
+            <div class="bs-example bs-example-tabs">
+              <ul id="myTab" class="nav nav-tabs" role="tablist">
+                <li role="presentation" class="active"><a href="#profile" role="tab" id="profile-tab" data-toggle="tab" aria-controls="profile" aria-expanded="false">移动端</a></li>
+              </ul>
+              <div id="myTabContent" class="tab-content">
+                <div role="tabpanel" class="tab-pane fade active in" id="profile" aria-labelledby="profile-tab">
+                  <textarea name="rule_desc" class="rich-editor" style="width:100%; height:300px"><{$shop_interests.rule_desc}></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-12 col-sm-12 col-md-12">
+      <div class="nav-tabs-custom" id="tabs">
+        <ul class="nav nav-tabs">
+          <li class="active"><a href="#tab_0" data-toggle="tab">会员日</a></li>
+          <li class=""><a href="#tab_1" data-toggle="tab">生日特权</a></li>
+          <li><a href="#tab_2" data-toggle="tab">专享礼包</a></li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="tab_0">
+            <div class="form-group">
+              <label for="" class="col-sm-1 control-label">简介：</label>
+              <div class="col-sm-4">
+                <textarea name="member_day_desc" required class="form-control" maxlength="150" rows="4"><{$shop_interests.member_day_desc}></textarea>
+              </div>
+            </div>
+             <{* <div class="form-group">
+                <label for="" class="col-sm-1 control-label">日期设定：</label>
+                <div class="col-sm-2">
+                  <input type="number" name="interests[account][grade][account_date]" required placeholder="每月几号" value="<{$shop_interests.interests.account.grade.account_date}>" min="1" max="31" class="form-control">
+                </div>
+              </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">折扣设定（取值范围0~10）</div>
+                  <div class="panel-body">
+                    <{if $grade_list}>
+                    <{foreach from=$grade_list item=list}>
+                    <div class="form-group">
+                      <label for="" class="col-sm-1 control-label"><{$list.grade_name}>：</label>
+                      <div class="col-sm-2">
+                        <input type="number" name="interests[account][grade][discount][<{$list.grade_id}>]" required placeholder="折扣" max="10" min="0" value="<{$shop_interests.interests.account.grade.discount[$list.grade_id]}>" class="form-control">
+                      </div>
+                    </div>
+                    <{/foreach}>
+                    <{/if}>
+                </div>
+            </div>*}>
+          </div>
+          <div class="tab-pane" id="tab_1">
+            <div class="form-group">
+              <label for="" class="col-sm-1 control-label">简介：</label>
+              <div class="col-sm-4">
+                <textarea name="birthday_privilege_desc" required class="form-control" maxlength="150" rows="4"><{$shop_interests.birthday_privilege_desc}></textarea>
+              </div>
+            </div>
+              <div class="panel panel-default">
+                <div class="panel-heading">礼金设定（翻倍范围0~10）</div>
+                <div class="panel-body">
+                  <{if $grade_list}>
+                  <{foreach from=$grade_list item=list}>
+                  <div class="form-group">
+                    <label for="" class="col-sm-1 control-label"><{$list.grade_name}>：</label>
+                    <div class="col-sm-2">
+                      <input type="number" name="interests[account][birthday][cash][<{$list.grade_id}>]" required placeholder="翻倍数" max="10" min="1" value="<{$shop_interests.interests.account.birthday.cash[$list.grade_id]}>" class="form-control">
+                    </div>
+                  </div>
+                  <{/foreach}>
+                  <{/if}>
+                </div>
+              </div>
+          </div>
+
+          <div class="tab-pane" id="tab_2">
+            <div class="form-group">
+              <label for="" class="col-sm-1 control-label">简介：</label>
+              <div class="col-sm-4">
+                <textarea name="vip_package_desc" required class="form-control" maxlength="150" rows="4"><{$shop_interests.vip_package_desc}></textarea>
+              </div>
+            </div>
+            <div class="panel panel-default">
+              <div class="panel-heading">优惠券选择</div>
+              <div class="panel-body">
+                <{if $grade_list}>
+                <{foreach from=$grade_list item=list}>
+                <div class="form-group">
+                  <label for="" class="col-sm-1 control-label"><{$list.grade_name}>：</label>
+                  <div class="col-sm-2">
+                    <a class="btn btn-primary form-control select-coupons" href="<{url action=topshop_ctl_promotion_coupon@ajaxCouponList
+ pages=1 page_size=10 platform=app}>" data-coupon_ids="" data-toggle="modal" data-target="#coupons_modal" data-insertwhere="#selected_coupons">选择优惠券</a>
+                    <input type="hidden" class="coupon_id" name="interests[account][vip][coupon][<{$list.grade_id}>][coupon_id]" value="<{$shop_interests.interests.account.vip.coupon[$list.grade_id].coupon_id}>"/>
+                    <input type="hidden" class="coupon_name" name="interests[account][vip][coupon][<{$list.grade_id}>][coupon_name]" value="<{$shop_interests.interests.account.vip.coupon[$list.grade_id].coupon_name}>"/>
+                  </div>
+                  <div class="col-sm-2 coupon_content">
+                  <{$shop_interests.interests.account.vip.coupon[$list.grade_id].coupon_name}>
+                  </div>
+                </div>
+                <{/foreach}>
+                <{/if}>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-4">
+
+    </div>
+    <div class="col-md-2">
+      <button type="submit" class="btn btn-primary btn-lg btn-block action-save">保存</button>
+    </div>
+  </div>
+</form>
+<!--优惠券选择器，弹出页面预留dialog-->
+<div class="modal fade" id="coupons_modal" tabindex="-1" role="dialog">
+  <div class="panel panel-default modal-dialog" style="width: 420px">
+    <div class="modal-content"></div>
+  </div>
+</div>
+<{/if}>
+<script>
+    $('.rich-editor').summernote({
+        height: 400,
+        tabsize: 2,
+        uploadURI: '<{url action=toputil_ctl_image@uploadImages from=shop}>',
+        uploadPerfix: 'upload_file'
+    });
+    function ajaxSubmit (e) {
+        var form = e.target;
+        e.preventDefault();
+        $.post(form.action, $(form).serialize(), function(rs) {
+            if(rs.error) {
+                $('#messagebox').message(rs.message);
+                return;
+            }
+            if(rs.success) {
+                $('#messagebox').message(rs.message, 'success');
+            }
+            if(rs.redirect) {
+                location.href = rs.redirect;
+            }
+        });
+    }
+    // 优惠券选择器
+    var couponsChoose = function(options){
+        options = $.extend({
+            handle: '.select-coupons',
+            modalDom: '#coupons_modal',
+            insertWhere: '#selected_coupons',
+            submitBtn: '#choose_coupons',
+            items: '.shop-coupon-list li'
+        }, options || {});
+
+
+        $(options.handle).on('click', function(){
+            var selectId = [];
+            var obj_input = $(this).next('input').val();
+            selectId = obj_input.split(',');
+            $(this).addClass('click_here');
+
+            $(options.modalDom).on('shown.bs.modal',function(){
+                var coupons = $(options.modalDom).find(options.items);
+                for (var i = 0; i < selectId.length; i++) {
+                    for (var j = 0; j < coupons.length; j++) {
+                        if(selectId[i] == $(coupons[j]).data('couponid')){
+                            $(coupons[j]).addClass('active');
+                        }
+                    };
+                };
+            });
+
+            $(options.modalDom).on('hidden.bs.modal',function(){
+                $(this).removeData();
+                $('.select-coupons').removeClass('click_here');
+            });
+        });
+
+        $(options.modalDom).on('click', options.items, function(){
+            var list = $(options.modalDom).find('.active');
+            if(list.length > 5 && !$(this).hasClass('active')) return;
+            $(this).toggleClass('active');
+        })
+        .on('click', options.submitBtn, function(){
+                var list = $(options.modalDom).find('.active');
+                var checked_id = [];
+                var checked_name = '';
+                var all_list = $(options.handle);
+                if(list.length != 0){
+                    for (var i = 0; i < list.length; i++) {
+                        if(checked_id == '')
+                        {
+                            checked_id = $(list[i]).data('couponid');
+                        }
+                        else
+                        {
+                            checked_id += ',';
+                            checked_id += $(list[i]).data('couponid');
+                        }
+                        if(checked_name == '')
+                        {
+                            checked_name = $(list[i]).data('couponname');
+                        }
+                        else
+                        {
+                            checked_name += ',';
+                            checked_name += $(list[i]).data('couponname');
+                        }
+                    };
+                }else{
+                    alert('请选择优惠券!');
+                }
+                $(all_list).each(function(k,v) {
+                  if($(this).hasClass('click_here'))
+                  {
+                      $(this).nextAll('.coupon_id').val(checked_id);
+                      $(this).nextAll('.coupon_name').val(checked_name);
+                      var coupon_html = checked_name;
+                      $(this).parent().next('.coupon_content').html(coupon_html);
+                      $(this).removeClass('click_here');
+                  }
+                });
+              $('#coupons_modal').modal('hide');
+        })
+    };
+    couponsChoose();
+</script>

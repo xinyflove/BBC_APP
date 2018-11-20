@@ -1,0 +1,66 @@
+<div class="form-group">
+    <label class="col-sm-3 control-label">正在直播图标：</label>
+    <div class="col-sm-3">
+        <div class="multiple-item" style="position:relative">
+            <div class="multiple-del glyphicon glyphicon-remove-circle removeImg" style="position: absolute;left: 60px;top: -5px;z-index: 999;"></div>
+            <a class="select-image" data-toggle="modal" href="<{url action=topshop_ctl_shop_image@loadImageModal}>" data-target="#gallery_modal">
+                <input class="nowLive" type="hidden" name="now" value="<{$setting.now}>">
+                <div class="img-put">
+                    <img  class=""  src="<{$setting.now}>">
+                    <i class="glyphicon glyphicon-picture"></i>
+                </div>
+            </a>
+        </div>
+        <span class="help-block">图片大小：435*34 px。</span>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">即将播出图标：</label>
+    <div class="col-sm-3">
+        <div class="multiple-item" style="position:relative">
+            <div class="multiple-del glyphicon glyphicon-remove-circle removeImg" style="position: absolute;left: 60px;top: -5px;z-index: 999;"></div>
+            <a class="select-image" data-toggle="modal" href="<{url action=topshop_ctl_shop_image@loadImageModal}>" data-target="#gallery_modal">
+                <input class="nowLive" type="hidden" name="future" value="<{$setting.future}>">
+                <div class="img-put">
+                    <img  class=""  src="<{$setting.future}>">
+                    <i class="glyphicon glyphicon-picture"></i>
+                </div>
+            </a>
+        </div>
+        <span class="help-block">图片大小：435*34 px。</span>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label">精彩回放图标：</label>
+    <div class="col-sm-3">
+        <div class="multiple-item" style="position:relative">
+            <div class="multiple-del glyphicon glyphicon-remove-circle removeImg" style="position: absolute;left: 60px;top: -5px;z-index: 999;"></div>
+            <a class="select-image" data-toggle="modal" href="<{url action=topshop_ctl_shop_image@loadImageModal}>" data-target="#gallery_modal">
+                <input class="nowLive" type="hidden" name="past" value="<{$setting.past}>">
+                <div class="img-put">
+                    <img  class=""  src="<{$setting.past}>">
+                    <i class="glyphicon glyphicon-picture"></i>
+                </div>
+            </a>
+        </div>
+        <span class="help-block">图片大小：435*34 px。</span>
+    </div>
+</div>
+
+<script>
+    $('.removeImg').on('click',function(){
+        $(this).next().find('input').attr('value','');
+        $(this).next().find('img').attr('src','');
+    });
+
+    var submit_validate = function(){
+        if($('.nowLive[value=""]').length > 0){
+            $('#messagebox').message('请配置所有图标');
+            return false;
+        }
+        return true;
+    }
+
+</script>

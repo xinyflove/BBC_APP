@@ -1,0 +1,244 @@
+<style>
+.form-group{overflow:hidden}
+.box {width:49%;float:left;min-height:373px}
+.content {overflow:hidden}
+</style>
+<form  action="<{url action=topshop_ctl_shop_setting@save_ext_setting}>" method="post" data-validate-onsuccess="ajaxSubmit" role="form">
+  <div class="box box-default" style="margin-right:10px">
+    <div class="box-header with-border">
+      <!--<h3 class="box-title"><a href="<{url subdomain=$shop.subdomain action=topc_ctl_shopcenter@index shop_id=$shop.shop_id}>" target="_blank"><{t}><{$shop.shop_id|shopname}><{/t}></a></h3>-->
+	  <h3 class="box-title">店铺首页启动页</h3>
+    </div>
+    <div class="box-body">
+      <{if $setting_id}><input type="hidden" name="setting_id" value="<{$setting_id}>"><{/if}>
+      <div class="row">
+        <div class="col-md-12">
+		  <div class="form-group" style="overflow:hidden">
+			<label class="col-sm-5 control-label">是否加载页面启动图片:</label>
+			<div class="col-sm-5">
+			  <input type="radio" name="start[is_upbanner]" value="0" <{if !$setting.start.is_upbanner}>checked<{/if}>> 不启用
+			  <input type="radio" name="start[is_upbanner]" value="1" <{if $setting.start.is_upbanner == 1}>checked<{/if}>> 启用
+			</div>
+		  </div>
+
+		  <div class="form-group" style="overflow:hidden">
+			<label class="col-sm-5 control-label"><{t}>页面启动图<{/t}>：</label>
+			<div class="col-sm-5">
+			  <a class="select-image" data-toggle="modal" href="<{url action=topshop_ctl_shop_image@loadImageModal}>" data-target="#gallery_modal">
+				<input type="hidden" name="start[up_banner]" value="<{$setting.start.up_banner}>">
+				<div class="img-put">
+				  <img src="<{$setting.start.up_banner|storager}>">
+				  <i class="glyphicon glyphicon-picture"></i>
+				</div>
+			  </a>
+			  <span class="help-block">尺寸标准：280*370px。</span>
+			</div>
+		  </div>
+		  <div class="form-group" style="overflow:hidden">
+			<label class="col-sm-5 control-label"><{t}>页面启动链接<{/t}>：</label>
+			<div class="col-sm-5">
+			  <label class="control-label">
+				<input type=text name="start[up_link]" value=<{$setting.start.up_link}>>
+			  </label>
+			</div>
+		  </div>
+		<!--add_2017/9/19_by_wanghaichao_end-->
+		
+
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="box box-default">
+    <div class="box-header with-border">
+	  <h3 class="box-title">店铺活动配置</h3>
+    </div>
+    <div class="box-body">
+      <div class="row">
+        <div class="col-md-12">
+
+		  <div class="form-group">
+			<label class="col-sm-5 control-label">活动:</label>
+			<div class="col-sm-5">
+			  <input type="radio" name="activity[is_hot]" value="0" <{if !$setting.activity.is_hot}>checked<{/if}>> 不启用
+			  <input type="radio" name="activity[is_hot]" value="1" <{if $setting.activity.is_hot == 1}>checked<{/if}>> 启用
+			</div>
+		  </div>
+
+		  <div class="form-group">
+			<label class="col-sm-5 control-label"><{t}>活动图标<{/t}>：</label>
+			<div class="col-sm-5">
+			  <a class="select-image" data-toggle="modal" href="<{url action=topshop_ctl_shop_image@loadImageModal}>" data-target="#gallery_modal">
+				<input type="hidden" name="activity[shop_hotsell]" value="<{$setting.activity.shop_hotsell}>">
+				<div class="img-put">
+				  <img src="<{$setting.activity.shop_hotsell|storager}>">
+				  <i class="glyphicon glyphicon-picture"></i>
+				</div>
+			  </a>
+			  <span class="help-block">尺寸标准：117*117px。</span>
+			</div>
+		  </div>
+
+		  <div class="form-group">
+			<label class="col-sm-5 control-label"><{t}>活动链接<{/t}>：</label>
+			<div class="col-sm-5">
+			  <label class="control-label">
+				<input type=text name="activity[hot_link]" value=<{$setting.activity.hot_link}> >
+			  </label>
+			</div>
+		  </div>
+
+		  <div class="form-group">
+			<label class="col-sm-5 control-label"><{t}>活动banner<{/t}>：</label>
+			<div class="col-sm-5">
+			  <a class="select-image" data-toggle="modal" href="<{url action=topshop_ctl_shop_image@loadImageModal}>" data-target="#gallery_modal">
+				<input type="hidden" name="activity[hotsell_banner]" value="<{$setting.activity.hotsell_banner}>">
+				<div class="img-put">
+				  <img src="<{$setting.activity.hotsell_banner|storager}>">
+				  <i class="glyphicon glyphicon-picture"></i>
+				</div>
+			  </a>
+			  <span class="help-block">尺寸标准：750*264px。</span>
+			</div>
+		  </div>
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="box box-default" style="margin-right:10px">
+    <div class="box-header with-border">
+      <!--<h3 class="box-title"><a href="<{url subdomain=$shop.subdomain action=topc_ctl_shopcenter@index shop_id=$shop.shop_id}>" target="_blank"><{t}><{$shop.shop_id|shopname}><{/t}></a></h3>-->
+	  <h3 class="box-title">手机端支付完成图片分享设置</h3>
+	  <a href="/images/voucher/shaer_bg.rar" target="_blank" class="btn btn-primary" style="float:right;">下载背景图模板</a>
+    </div>
+    <div class="box-body">
+      <div class="row">
+        <div class="col-md-12">
+
+			<div class="form-group">
+			  <label for="" class="col-sm-5 control-label">分享背景图：</label>
+			  <div class="col-sm-5">
+				  <a class="select-image" data-toggle="modal" href="<{url action=topshop_ctl_shop_image@loadImageModal}>" data-target="#gallery_modal">
+					  <input type="hidden" name="shareimg[bg_img]" value="<{$setting.shareimg.bg_img}>">
+					  <div class="img-put">
+						  <img src="<{$setting.shareimg.bg_img|storager}>" />
+						  <i class="glyphicon glyphicon-picture"></i>
+					  </div>
+				  </a>
+				<span class="help-block">尺寸标准：750*1200px。</span>
+			  </div>
+			</div>
+
+			<div class="form-group">
+			  <label for="" class="col-sm-5 control-label">店铺二维码：</label>
+			  <div class="col-sm-5">
+				  <a class="select-image" data-toggle="modal" href="<{url action=topshop_ctl_shop_image@loadImageModal}>" data-target="#gallery_modal">
+					  <input type="hidden" name="shareimg[shop_code]" value="<{$setting.shareimg.shop_code}>">
+					  <div class="img-put">
+						  <img src="<{$setting.shareimg.shop_code|storager}>" />
+						  <i class="glyphicon glyphicon-picture"></i>
+					  </div>
+				  </a>
+				<span class="help-block">尺寸标准：382*382</span>
+			  </div>
+			</div>
+
+	
+			<div class="form-group">
+			  <label for="" class="col-sm-5 control-label">是否显示昵称：</label>
+			  <div class="col-sm-5">
+				<label><input type="radio" name="shareimg[is_showname]" value="1" <{if $setting.shareimg.is_showname==1}>checked<{/if}>>显示</label>
+				<label><input type="radio" name="shareimg[is_showname]" value="2"  <{if $setting.shareimg.is_showname!=1}>checked<{/if}>>不显示</label>
+			  </div>
+			</div>
+
+
+			<div class="form-group">
+			  <label for="" class="col-sm-5 control-label">分享描述：</label>
+			  <div class="col-sm-7">
+				<textarea class="form-control"  name="shareimg[share_describe]" placeholder="店铺首页分享描述" maxlength="30"><{$setting.shareimg.share_describe}></textarea>
+			 <span class="help-block">30字以内</span>
+			  </div>
+			</div>
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="box box-default" style="height:403px">
+    <div class="box-header with-border">
+      <!--<h3 class="box-title"><a href="<{url subdomain=$shop.subdomain action=topc_ctl_shopcenter@index shop_id=$shop.shop_id}>" target="_blank"><{t}><{$shop.shop_id|shopname}><{/t}></a></h3>-->
+	  <h3 class="box-title">手机端首页/商品详情页分享配置</h3>
+    </div>
+    <div class="box-body">
+      <div class="row">
+        <div class="col-md-12">
+
+			<div class="form-group">
+			  <label for="" class="col-sm-5 control-label">首页分享标题：</label>
+			  <div class="col-sm-7">
+				<input type="text" name="share[shopcenter_title]" value="<{$setting.share.shopcenter_title}>" class="form-control" placeholder="分享标题" maxlength="20">
+				<span class="help-block">20字以内</span>
+			  </div>
+			</div>
+
+			<div class="form-group">
+			  <label for="" class="col-sm-5 control-label">店铺首页分享描述：</label>
+			  <div class="col-sm-7">
+				<textarea class="form-control"  name="share[shopcenter_describe]" placeholder="店铺首页分享描述" maxlength="30"><{$setting.share.shopcenter_describe}></textarea>
+				<span class="help-block">30字以内</span>
+			  </div>
+			</div>
+
+
+			<div class="form-group">
+			  <label for="" class="col-sm-5 control-label">商品详情页分享描述：</label>
+			  <div class="col-sm-7">
+				<textarea class="form-control"  name="share[goods_describe]" placeholder="商品详情页分享描述" maxlength="30"><{$setting.share.goods_describe}></textarea>
+				<span class="help-block">30字以内</span>
+			  </div>
+			</div>
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+	
+  <div class="box box-default" style="width:99%;overflow:hidden;height:50px;min-height:60px;text-align:center;margin-top:-10px">
+	<div class="box-footer">
+	  <button type="submit" class="btn btn-primary">保存</button>
+	</div>
+  </div>
+</form>
+
+<script>
+  function ajaxSubmit (e) {
+    var form = e.target;
+    e.preventDefault();
+    $.post(form.action, $(form).serialize(), function(rs) {
+      if(rs.error) {
+        $('#messagebox').message(rs.message);
+        return;
+      }
+      if(rs.success) {
+        $('#messagebox').message(rs.message, 'success');
+      }
+      if(rs.redirect) {
+        setTimeout(function(){location.href=rs.redirect;}, 800);
+      }
+    });
+  }
+</script>
+<script>
+  $(document).ready(
+    function() {
+      $(".sidebar .sidebar-menu li a i.glyphicon").eq(1).removeClass("glyphicon-list-alt").addClass("glyphicon-cog");
+    }
+  );
+</script>

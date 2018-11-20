@@ -96,12 +96,23 @@ class sysmall_mdl_item extends dbeav_model{
      * */
     public function getList($cols='*', $filter=array(), $offset=0, $limit=-1, $orderBy=null)
     {
-        //var_dump($filter);
+
         if($orderBy == null)
         {
             $orderBy = $this->defaultOrder;
         }
 
-        return parent::getList($cols, $filter, $offset, $limit, $orderBy);
+        $lists = parent::getList($cols, $filter, $offset, $limit, $orderBy);
+
+
+        foreach($lists as &$list){
+            if(isset($list['item_id'])){
+                $sql = 'select title from sysitem_item where item_id='.$list['item_id'];
+                $result = app::get('base')->database()->executeQuery($sql)->fetch();
+                $list['title'] = $result['title'];
+            }
+        }
+
+        return $lists;
     }
 }

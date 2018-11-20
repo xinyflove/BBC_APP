@@ -1,0 +1,105 @@
+<{if !$is_lm}>
+<div class="panel panel-default">
+    <p class="help-block text-center">您现在还没有开通配置此功能的权限，请联系平台管理员进行开通！</p>
+</div>
+<{else}>
+<form  action="<{url action=topshop_ctl_cash_manage@save}>" method="post" class="form-horizontal clearfix" data-validate-onsuccess="ajaxSubmit" role="form">
+    <div class="nav-tabs-custom" id="tabs">
+        <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active">
+                <a href="<{url action=topshop_ctl_cash_manage@config}>">礼金配置</a>
+            </li>
+            <li role="presentation">
+                <a href="">活动列表</a>
+            </li>
+            <li role="presentation" >
+                <a href="<{url action=topshop_ctl_cash_manage@cashChangeLogs}>">礼金统计</a>
+            </li>
+        </ul>
+        <div class="tab-content no-padding">
+            <input type='hidden' name='id' value="<{$id}>">
+
+            <div class="panel panel-default">
+                <div class="panel-heading">礼金设置</div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label for="" class="col-sm-2 control-label">开启礼金抵扣：</label>
+                        <div class="col-sm-2" id="is_cash_open">
+                            <label><input type="radio" name="is_open" value="on" <{if $is_open}>checked<{/if}>>是</label>
+                            <label><input type="radio" name="is_open" value="off"  <{if !$is_open || !$id}>checked<{/if}>>否</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="convert_rate" <{if !$is_open}>style="display: none;"<{/if}>>
+                        <label for="" class="col-sm-2 control-label">礼金兑换比率：</label>
+                        <div class="col-sm-2">
+                            <input type="number" required name="convert_rate" value="<{$convert_rate}>"  min="0" class="form-control">
+                            <span class="help-block">默认1元 = 1礼金</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="deduct_rate" <{if !$is_open}>style="display: none;"<{/if}>>
+                        <label for="" class="col-sm-2 control-label">礼金抵扣金额比率：</label>
+                        <div class="col-sm-2">
+                            <input type="number" required min="0" name="deduct_rate" value="1" readonly="readonly" class="form-control">
+                            <span class="help-block">默认1礼金 = 1元</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="max_deduct_price" <{if !$is_open}>style="display: none;"<{/if}>>
+                        <label for="" class="col-sm-2 control-label">每单礼金抵扣金额上限：</label>
+                        <div class="col-sm-2">
+                            <input type="number" required  min="1" name="max_deduct_price" value="<{$max_deduct_price}>" class="form-control">
+                            <span class="help-block">1 <= x <=99;默认为订单总金额*0.01</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary btn-lg btn-block action-save">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<{/if}>
+<script>
+
+function ajaxSubmit (e) {
+  var form = e.target;
+  e.preventDefault();
+  $.post(form.action, $(form).serialize(), function(rs) {
+    if(rs.error) {
+      $('#messagebox').message(rs.message);
+      return;
+    }
+    if(rs.success) {
+      $('#messagebox').message(rs.message, 'success');
+    }
+    if(rs.redirect) {
+      location.href = rs.redirect;
+    }
+  });
+}
+
+$('#is_cash_open').find('input[type=radio]').click(function()
+{
+    if($(this).val() == 'on')
+    {
+        $('#max_deduct_price').show();
+        $('#deduct_rate').show();
+        $('#convert_rate').show();
+    }
+    else
+    {
+        $('#max_deduct_price').hide();
+        $('#deduct_rate').hide();
+        $('#convert_rate').hide();
+    }
+});
+
+
+</script>

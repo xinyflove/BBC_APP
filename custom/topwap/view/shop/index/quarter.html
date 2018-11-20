@@ -1,0 +1,45 @@
+<!--add_20170914_by_xinyufeng_start 季度推荐-->
+<!-- Swipe CSS -->
+<{css app="topwap" src="swiper-3.4.2.min.css"}>
+<!-- Swipe JS -->
+<{script app="topwap" src="swiper-3.4.2.jquery.min.js"}>
+<style>
+.quarter-box{
+	background: #ffffff;
+	/*padding: 6px 0;*/
+}
+.quarter-box img{
+	width: 100%;
+	height: 120px;
+}
+.quarter-box .swiper-slide a {
+	display: block;
+	height: 120px;
+}
+</style>
+<div class="swiper-container quarter-box" <{if $shopdata.bg_color}>style="background:<{$shopdata.bg_color}>"<{/if}>>
+    <div class="swiper-wrapper">
+		<{foreach from=$widgetDetail.params item=item}>
+        <div class="swiper-slide">
+			<a class="quarter-a" href="<{$item.imglink}>">
+                <img  class="imglazyload quarter-img" data-original="<{$item.imgurl|storager:m}>">
+            </a>
+		</div>
+		<{/foreach}>
+    </div>
+</div>
+<script type="text/javascript">
+$(document).ready(function () {
+    var swiper = new Swiper('.quarter-box', {
+        slidesPerView: 2.5,
+		spaceBetween: 10,
+		//autoplay: 3000,//可选选项，自动滑动
+    });
+});
+$(function(){
+	var $divWidth = $('.swiper-slide').width();
+	$('.quarter-a').css({'height':$divWidth});
+	$('.quarter-img').css({'height':$divWidth});
+})
+</script>
+<!--add_20170914_by_xinyufeng_end-->

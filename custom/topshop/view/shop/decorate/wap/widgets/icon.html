@@ -1,0 +1,84 @@
+  <!--add_2017/9/15_by_wanghaichao_start-->  
+  <!-- icon -->
+  <script type="text/html" id="icon">
+   <div class="decorate-layout-items" id="<%= wid %>" data-widgets="icon">
+		<section class="m-tvplazaShopIndex-topnews horizontal-view" style="margin-top:0.2rem">
+			<a href="#" class="left horizontal-view">
+				<% if(imgsrc!=""){ %>
+					<i class="icon_topnews" style="background:url(<%= imgsrc %>) no-repeat center; background-size: 50px 50px;width:50px;height:50px;"	></i>
+				<% }else{%>
+					<i class="icon_topnews" style="background:url('http://placehold.it/320x60') no-repeat center; background-size: 50px 50px;width:50px;height:50px;"	></i>
+				<% }%>
+			</a>
+			<div class="m-tvplazaShopIndex-topnews-bd">
+				<ul>
+					<% if(list.length>0){ %>
+						<% for (var i = 0; i < list.length; i++) { %>
+							<a href="#">
+								<li class="horizontal-view">
+									<span><%= list[i].new_label %></span>
+									<p class="hz-ellipsis" style="color:#000"><%= list[i].title %></p>
+								</li>
+							</a>
+						<% } %>
+					<% }else{ %>
+						<a href="#">
+							<li class="horizontal-view">
+								<span>热点</span>
+								<p class="hz-ellipsis" style="color:#000">热点标题</p>
+							</li>
+						</a>
+						<a href="#">
+							<li class="horizontal-view">
+								<span>资讯</span>
+								<p class="hz-ellipsis" style="color:#000">店铺文章</p>
+							</li>
+						</a>
+					<% } %>
+				</ul>
+			</div>
+		</section>
+   </div>
+  </script>
+  <script type="text/html" id="icon_form">
+ 	<form class="icon" data-id="<%= wid %>">
+      <h5>文章图标</h5>
+      <div class="form-group">
+        <div class="input-group">
+          <input name="imgsrc" type="text" readonly class="form-control" value="<%= imgsrc %>" placeholder="图片地址">
+          <span class="input-group-addon select-image" data-imgurl="<%= imgurl %>" data-toggle="modal" href="<{url action=topshop_ctl_shop_image@loadImageModal}>" data-target="#gallery_modal">选择图片</span>
+        </div>
+      </div>
+      <div class="form-group">
+        <input type="text" name="imglink" class="form-control" value="<%= imglink %>" placeholder="图片链接">
+      </div>
+
+      <div class="form-group">
+        <p class="help-block">已选择文章</p>
+        <div id="selected_article">
+          <% if(list.length > 0){ %>
+            <ul class="shop-article-list form-list">
+            <% for(var i=0; i<list.length; i++){ %>
+            <li data-articleid="<%= list[i].article_id %>">
+			<div style="width:250px;overflow:hidden;float:left">
+              标题: <div class="article-title"><%= list[i].title %></div>
+				<!--modify_20171108_by_fanglongji_start
+			     标签:<div class="article-label"><%= list[i].label %></div>
+				 -->
+				标签:<div class="article-label"><%= list[i].new_label %></div>
+				<!--modify_20171108_by_fanglongji_end-->
+			</div>
+              <!-- <div class="article-deadline"><%= list[i].deadline %></div> -->
+              <div class="article-del" style="float:right"><i class="fa fa-times"></i></div>
+            </li>
+            <% } %>
+            </ul>
+          <% } %>
+        </div>
+      </div>
+      <div class="form-group">
+        <a class="btn btn-primary form-control select-article" href="<{url action=topshop_ctl_shop_article@ajaxArticleList pages=1 page_size=10}>" data-article_ids="" data-toggle="modal" data-target="#article_modal" data-insertwhere="#selected_article">选择文章</a>
+      </div>
+    </form>
+  </script>
+  <!--add_2017/9/15_by_wanghaichao_end-->

@@ -1,0 +1,47 @@
+<style type="text/css">
+    section.content{padding:0;}
+    aside.left-side{display:none;}
+    .right-side{margin-left:0;}
+    .custom-service{width:100%;min-height:510px;border:none;}
+    .message-box{margin-top:100px;    }
+    .msg-content{min-height:200px;line-height:200px;font-size:18px;}
+    .
+</style>
+
+<{if $status===1000}>
+<iframe id="curstom-service" class="custom-service" name="custom-service" src="<{$url}>">
+</iframe>
+<{elseif in_array($status,array(1001,1002,1003,2000))}>
+<div class="row message-box">
+    <div class="col-md-6 col-md-offset-3">
+        <div class="panel panel-default">
+            <div class="panel-heading bg-red">
+                <h3 class="panel-title">操作失败</h3>
+            </div>
+            <div class="panel-body">
+                <p class="text-center msg-content">
+                    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>&nbsp;
+                    <{$msg}>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+<{else}>
+<div class="row message-box">
+    <div class="col-md-6 col-md-offset-3">
+        <div class="panel panel-default">
+            <div class="panel-heading bg-red">
+                <h3 class="panel-title">操作失败</h3>
+            </div>
+            <div class="panel-body">
+                <p class="text-center msg-content">
+                    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>&nbsp;无法连接到客服平台,请刷新再试，如仍无法连接，请联系技术人员。
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+<{/if}>
+

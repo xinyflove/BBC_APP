@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>米粒视频</title>
+    <{css src="milier/dist/style.css" app="topwap"}>
+    <{css src="milier/css/video_list.css" app="topwap"}>
+</head>
+<body style="background: #fff">
+    <div class="m-mili-video">
+        <header class="video-header">
+            <div class="title"><img onclick="history.go(-1)" src="<{resource app='topwap' path='/images/milier/icon-videoList.png'}>" alt="" class="video-header-title-back">米粒视频</div>
+            <div class="search"><input type="text" name="video_search_name" id="search_video" placeholder="点击搜索美食视频"></div>
+        </header>
+        <section id="mescroll" class="mescroll">
+            <div class="video-list" id="dataList"  data-url="<{url action=topwap_ctl_supplier_agentVideoList@ajaxGetVideoList}>">
+
+            </div>
+        </section>
+    </div>
+    <input type="hidden" id="shop_id" value="<{$shop_id}>">
+</body>
+<{script app="topwap" src="milier/dist/public.js" }>
+<{script app="topwap" src="milier/js/video_list.min.js" }>
+</html>

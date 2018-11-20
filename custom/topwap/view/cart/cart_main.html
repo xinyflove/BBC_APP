@@ -1,0 +1,335 @@
+<section class="container has-footer">
+  <{if $nologin}>
+  <div class="section-container bg-white">
+    <div class="section-init fontS font-gray-40">你可以在登录后同步您购物车中的商品</div>
+    <button class="shopex-btn shopex-btn-warning  shopex-btn-outlined bbc-btn-waring bbc-btn-outlined">登录</button>
+  </div>
+  <{/if}>
+  <div class="cart-list">
+    <{foreach from=$aCart item=item name='name' key=shop_id}>
+    <section class="order-goods">
+      <div class="section-title order-goods-header">
+        <div class="shopex-checkbox bbc-checkbox shop-checkbox">
+          <label></label>
+          <input name="cart_shop[<{$shop_id}>]" data-name="cart_shop[<{$shop_id}>]" type="checkbox" <{if $selectShop[$shop_id] == true}>checked<{/if}> >
+        </div>
+
+        <!--modify_20170923_by_xinyufeng_start 页面布局修改-->
+        <!--<div class="title-txt"><a href="<{url action=topwap_ctl_shop@index shop_id=$item.shop_id}>"><{$item.shop_name}> <i class="shopex-icon shopex-icon-arrowright"></i></a></div>-->
+        <div class="title-txt">
+          <p class="shop-name"><i class=""></i><{$item.shop_name}></p>
+          <a class="shop-enter" href="<{url action=topwap_ctl_shop@index shop_id=$item.shop_id}>">
+            进入店铺 <i class="shopex-icon shopex-icon-arrowright"></i>
+          </a>
+        </div>
+        <!--modify_20170923_by_xinyufeng_end-->
+
+        <{if $item.hasCoupon}>
+        <div class="more-link"><a href="<{url action=topwap_ctl_shop_coupon@index shop_id=$item.shop_id}>" class="shopex-btn shopex-btn-danger action-btn orange">领券</a></div>
+        <{/if}>
+      </div>
+      <div class="promotion-goods">
+        <{foreach from=$item.cartByPromotion item=itemPromotion key=key}>
+        <div class="promotion-goods-group">
+          <{if $key!='0' && in_array($key, $item.usedCartPromotion)}>
+          <div class="group-header section-title">
+            <div class="title-txt">
+              <span class="tag tag-outline"><{$item.basicPromotionListInfo[$key].promotion_tag}></span> <{$item.basicPromotionListInfo[$key].promotion_name}>
+            </div>
+            <div class="more-link"><a href="<{url action=topwap_ctl_promotion@getPromotionItem promotion_id=$item.basicPromotionListInfo[$key].promotion_id}>">更多<i class="bbc-icon bbc-icon-forward"></i></a></div>
+          </div>
+          <{/if}>
+
+          <ul class="order-goods-list">
+            <{foreach from=$item.object item=goods key=key}>
+            <{if in_array($goods.cart_id,$itemPromotion.cart_ids)}>
+
+              <{if $goods.valid}>
+                <{include file="topwap/cart/cart_item.html"}>
+              <{else}>
+                <{include file="topwap/cart/fail_cart_item.html"}>
+              <{/if}>
+
+            <{/if}>
+            <{/foreach}>
+          </ul>
+        </div>
+        <{/foreach}>
+      </div>
+      <div class="order-goods-footer">
+        <div class="content-padded content-right">
+          小计：<mark><{$item.cartCount.total_fee|cur}></mark>
+        </div>
+      </div>
+    </section>
+    <{/foreach}>
+  </div>
+</section>
+
+<div class="action-bar-mini">
+  <!-- <{*<div class="action-bar-mini-item" style="display: none;">
+    <div class="shopex-input-row shopex-checkbox shopex-left bbc-checkbox">
+      <label>全选</label>
+      <input id="checkAll" name="cart_all" data-name="cart_all" type="checkbox" <{if $selectAll == true}>checked<{/if}> >
+    </div>
+  </div>*}> -->
+  <div id="edit_off" class="action-bar-op-item">
+    <div class="action-bar-op-info cart-list-total">
+      <div>合计: <mark class="total-price"><{$totalCart.totalAfterDiscount|cur}></mark></div>
+      <div class="cart-post-fee">(不含运费）</div>
+    </div>
+    <button type="submit" id="cart_checkout" class="action-bar-op-btn action-settle">
+      <!--modify_20170925_by_xinyufeng_start 文字修改-->
+      <!--结算-->
+      下单
+      <!--modify_20170925_by_xinyufeng_end-->
+    </button>
+  </div>
+  <div id="edit_on" class="action-bar-op-item content-right" style="display: none;">
+    <!--modify_20170926_by_xinyufeng_start 样式修改-->
+    <!--<div class="action-bar-op-info"><span id="cart_del"><i class="bbc-icon bbc-icon-remove fontm"></i> 删除</span></div>-->
+    <div class="action-bar-op-info">
+      <span id="cart_del" class="del-action-btn">
+        删除
+      </span>
+    </div>
+    <!--modify_20170926_by_xinyufeng_end-->
+  </div>
+</div>
+
+<script>
+  $('.cart-main').off();
+  // 购物车中 全选/全不选
+  $('.cart-main').on('change','#checkAll', function(event) {
+    // start add 王衍生 20170925
+    return false;
+    reject_shops(this);
+    // end add 王衍生 20170925
+    var value = this.checked?true:false;
+    if(value === true){
+      $('input[type="checkbox"]').each(function() {
+        if(!$(this).attr('disabled'))
+          $(this).prop('checked', true);
+      });
+      $('.order-goods-list input[type="hidden"][name^="cart_id"]').val(1);
+    }else{
+      $('input[type="checkbox"]').prop('checked', false);
+      $('.order-goods-list input[type="hidden"][name^="cart_id"]').val(0);
+    }
+    if($('.cart-main').hasClass('checkout-action')){
+      updateItem();
+    }
+  });
+  // 一个店铺中 全选/全不选 
+  $('.cart-main .cart-list').on('change','.order-goods-header input[type="checkbox"]',function(event){
+    // start add 王衍生 20170925
+    reject_shops(this);
+    // end add 王衍生 20170925
+
+    var value = this.checked?true:false;
+    if(value === true){
+      $(this).parents('.order-goods').find('.order-goods-list input[type="checkbox"]').each(function() {
+        //alert($(this).attr('disabled'));
+        if(!$(this).attr('disabled')){
+			$(this).prop('checked', true);
+		}
+      });
+	  $(this).parents('.order-goods').find('.order-goods-list input[type="hidden"][name^="cart_id"]').each(function(){
+        if(!$(this).attr('disabled')){
+			$(this).val(1);
+		}else{
+			$(this).val(0);
+		}
+	  });
+      //$(this).parents('.order-goods').find('.order-goods-list input[type="hidden"][name^="cart_id"]').val(1);
+    }else{
+      $(this).parents('.order-goods').find('.order-goods-list input[type="checkbox"]').prop('checked', false);
+      $(this).parents('.order-goods').find('.order-goods-list input[type="hidden"][name^="cart_id"]').val(0);
+    }
+    if($('.cart-main').hasClass('checkout-action')){
+      updateItem();
+    }
+  })
+  // 单个商品
+  $('.cart-main .cart-list').on('change','.shop-item-checkbox input[type="checkbox"]',function(event){
+    // start add 王衍生 20170925
+    reject_shops(this);
+    // end add 王衍生 20170925
+    var fa = $(this).parents('.promotion-goods');
+    var shop = $(this).parents('.order-goods').find('.section-title input[type="checkbox"]');
+    var totalChecked = $(fa).find('input[type="checkbox"]');
+    var totalCheck = $(fa).find('input[type="checkbox"]:checked');
+
+    var val = this.checked?true:false;
+    if(val === true){
+      $(this).parent().find('input[type="hidden"]').val(1);
+    }else{
+      $(this).parent().find('input[type="hidden"]').val(0);
+    }
+    if($('.cart-main').hasClass('checkout-action')){
+      if(val === true) {
+        chooseChk.push($(this).attr('data-name'));
+      } else {
+        var index = chooseChk.indexOf($(this).attr('data-name'));
+        if(index >= 0) {
+          chooseChk.splice(index, 1);
+        }
+      }
+    }
+    if(totalCheck.length == totalChecked.length) {
+      $(shop).prop('checked', true);
+    }else{
+      $(shop).prop('checked', false);
+    }
+
+    if($('.cart-main').hasClass('checkout-action')){
+      updateItem();
+    }
+  })
+  // 改变数量
+  .on('change', '.action-modify', function() {
+    _that = $(this);
+    if($('.cart-main').hasClass('checkout-action')){
+      updateItem(_that);
+    }
+  })
+
+  $('#cart_del').on('tap',function(){
+    var form = $('#cart_submit');
+    var data = '';
+    if(!form.find('input[data-name^="cart_id"]:checked').length) {
+      shopex.alert('请选择需要删除的商品');
+      return
+    }
+    var checkedItem = form.find('input[data-name^="cart_id"]:checked');
+    for (var i = 0; i < checkedItem.length; i++) {
+      var delDom = $(checkedItem[i]).data('cartid');
+      data += delDom+',';
+    };
+    var btnArray = ['否', '是'];
+    shopex.confirm('是否删除所选商品？', '提示', btnArray, function(e) {
+      if (e.index == 1) {
+        updateCart(data)
+      } else {
+        return
+      }
+    });
+  })
+
+  $('body').off();
+  // 促销活动
+  $('body').on('tap','.promotion-select',function(e){
+    if(!isPromotionSelect) return;
+    var that = $(this);
+    var goods_id = that.data('id');
+    var sku_id = that.data('skuid');
+    var promotion_id = that.find('input[type="hidden"]').val();
+    $.post('<{url action=topwap_ctl_cart@ajaxGetItemPromotion}>', {'item_id': goods_id,'sku_id':sku_id}, function(data) {
+      var listwrapper = $('#promotion');
+      listwrapper.html(data);
+      if(promotion_id != '') {
+        listwrapper.find('li').each(function() {
+          if($(this).attr('data-id') == promotion_id) {
+            $(this).addClass('shopex-selected');
+            return true;
+          }
+        });
+      }
+      listwrapper.off('tap');
+      listwrapper.on('tap','.action-bar-op-btn',function(){
+        var checked = listwrapper.find('.shopex-selected');
+        if(checked.length > 0){
+          var id = $(checked).data('id');
+          var name = $(checked).find('a').text();
+          that.find('input[type="hidden"]').val(id);
+          updateItem();
+          shopex('#promotion').popover('hide');
+        }else{
+          shopex.alert('请选择一种优惠方式');
+        }
+      });
+    });
+  });
+
+  function updateItem(that) {
+    if(flag) {
+      setChooseChk();
+    }
+    var form = $('#cart_submit');
+    $.post('<{url action=topwap_ctl_cart@updateCart}>', form.serialize(), function(rs) {
+      if(rs.error)
+      {
+          if(that != undefined)
+          {
+              var original_val = parseInt(that.val());
+              that.val(original_val-1);
+          }
+          return shopex.alert(rs.message);
+      }
+      $('.cart-main').html(rs.message);
+      if(flag) {
+        setChooseChk();
+        flag = false;
+      }
+      shopex('.shopex-numbox').numbox();
+      // $('#cart_checkout').data('ajaxCallback', function(rs, target) {
+      //   localStorage.setItem('_cart_params', form.serialize());
+      // });
+
+      /*add_20170926_by_xinyufeng_start 购物车显示数量js*/
+      showCartNum();
+      /*add_20170926_by_xinyufeng_end*/
+    });
+  }
+
+  function updateCart(data) {
+    $.post('<{url action=topwap_ctl_cart@removeCart}>', {'cart_id': data}, function(rs){
+        if(rs.error) {
+          return shopex.alert(rs.message);
+        }
+        updateAll();
+    });
+  }
+
+  function updateAll() {
+    var form = $('#cart_submit');
+    $.post('<{url action=topwap_ctl_cart@ajaxBasicCart}>', form.serialize(), function(rs) {
+      $('.cart-main').html(rs.message);
+      if(!$('.cart-list').find('.order-goods').length) {
+        location.reload();
+      }
+      shopex('.shopex-numbox').numbox();
+      // $('#cart_checkout').data('ajaxCallback', function(rs, target) {
+      //     localStorage.setItem('_cart_params', target.parents('form').serialize());
+      // });
+      if($('.cart-main').hasClass('del-action')){
+        $('#edit_on').show();
+        $('#edit_off').hide();
+        $('.invalid').find('input[type="hidden"]').removeAttr('disabled');
+        $('.invalid').find('input[type="checkbox"]').removeAttr('disabled');
+        $('.shoex-numbox-txt').show();
+        $('.shopex-numbox').hide();
+        $('.order-goods-header .more-link').hide();
+      }
+    });
+  }
+
+  /**
+   * 排斥其它商家商品，只能选择同一商家的商品
+   * 可优化 编辑时可全选，全不选
+   * @Author   王衍生
+   * @DateTime 2017-09-25T17:01:43+0800
+   * @param    {[type]}                 o [description]
+   * @return   {[type]}                   [description]
+   */
+  function reject_shops(o){
+      // return;
+      // 其它商家商品不被选择
+      $(o).parents('.order-goods').siblings('.order-goods').find('.order-goods-list input[type="checkbox"]').prop('checked', false);
+      $(o).parents('.order-goods').siblings('.order-goods').find('.order-goods-list input[type="hidden"][name^="cart_id"]').val(0);
+
+      // 其它商家全选按钮不被选择
+      $(o).parents('.order-goods').siblings('.order-goods').find('input[type="checkbox"][name^="cart_shop"]').prop('checked', false);
+  }
+</script>
+

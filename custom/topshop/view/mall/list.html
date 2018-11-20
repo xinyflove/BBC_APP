@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>广电优选商品列表</title>
+    <link rel="stylesheet" href="/app/topshop/mall/statics/lib/layui/css/layui.css">
+    <link rel="stylesheet" href="/app/topshop/mall/statics/lib/common/public.css">
+    <link rel="stylesheet" href="/app/topshop/mall/statics/css/styleSheet.css">
+</head>
+
+<body>
+
+<div id="header">
+    <{include file="topshop/mall/header.html"}>
+
+    <section>
+        <!--面包屑开始-->
+        <div class="pc-page-map">
+            <div>
+                <{foreach from=$breadcrumb item=crumb name=bread}>
+                <{if $crumb.url}>
+                <{if $env.foreach.bread.last}>
+                <span><{$crumb.title}></span>
+                <{else}>
+                <a href="<{$crumb.url}>"><{$crumb.title}></a>
+                <{/if}>
+                <{else}>
+                <span><{$crumb.title}></span>
+                <{/if}>
+                <{if $env.foreach.bread.last}><{else}><span>&gt;</span><{/if}>
+                <{/foreach}>
+            </div>
+        </div>
+        <!--面包屑结束-->
+        <div class="pc-list-content">
+            <!--筛选条件开始-->
+            <{if $screen.cat}>
+            <dl>
+                <dt>类目</dt>
+                <dd>
+                    <{foreach from=$screen.cat item=cat_row name=name}>
+                        <{if $cat_row.cat_id == $filter.cat_id}>
+                    <a href="<{url action=topshop_ctl_mall_list@index}>" class="active">
+                        <{$cat_row.cat_name}><i class="close-tag"></i>
+                    </a>
+                        <{else}>
+                    <a href="<{url action=topshop_ctl_mall_list@index cat_id=$cat_row.cat_id}>"><{$cat_row.cat_name}><i class="close-tag"></i></a>
+                        <{/if}>
+                    <{/foreach}>
+                </dd>
+            </dl>
+            <{/if}>
+            <{if $screen.brand}>
+            <dl class="brand" style="display: none;">
+                <dt>品牌</dt>
+                <dd>
+                    <{foreach from=$screen.brand item=brand_row name=name}>
+                        <{if $brand_row.brand_id == $filter.brand_id}>
+                    <a href="javascript:;" data-id="<{$brand_row.brand_id}>" data-type="brand_add">
+                        <{$brand_row.brand_name}><i class="close-tag"></i>
+                    </a>
+                        <{else}>
+                    <a href="javascript:;" data-id="<{$brand_row.brand_id}>" data-type="brand_add"><{$brand_row.brand_name}><i class="close-tag"></i></a>
+                        <{/if}>
+                    <{/foreach}>
+                </dd>
+            </dl>
+            <{/if}>
+            <{if $screen.props}>
+            <!--自然属性-->
+            <{foreach from=$screen.props item=row name=name}>
+            <dl class="brand" style="display: none;">
+                <dt><{$row.prop_name}></dt>
+                <dd>
+                    <{foreach from=$row.prop_value item=item }>
+                    <{if $item.prop_index == $filter.prop_index}>
+                    <a href="<{url action=topshop_ctl_mall_list@index brand_id=$item.prop_index}>" class="active"><{$item.prop_value}></a>
+                    <{else}>
+                    <a href="<{url action=topshop_ctl_mall_list@index brand_id=$item.prop_index}>" class="active"><{$item.prop_value}></a>
+                    <{/if}>
+                    <{/foreach}>
+                </dd>
+            </dl>
+            <{/foreach}>
+            <{/if}>
+            <!--筛选条件结束-->
+            <div class="filter">
+                <!--<a href="javascript:;" class="sort active" data-type='created_time_asc'>综合排序</a>-->
+                <a href="javascript:;" class="sort asce" data-type='modified_time_asc'>上架时间</a>
+                <a href="javascript:;" class="sort" data-type='paid_quantity_asc'>销量</a>
+                <a href="javascript:;" class="sort" data-type='price_asc'>价格</a>
+                <a href="javascript:;" class="sort" data-type='profit_asc'>毛利率</a>
+                <div class="goods-total">
+                    共<i><{$count}></i>件商品
+                </div>
+            </div>
+            <!--商品列表开始-->
+            <div class="list-box">
+            </div>
+            <!--商品列表结束-->
+            <div class="pc-page" id="pageDemo"></div>
+        </div>
+    </section>
+
+    <{include file="topshop/mall/footer.html"}>
+
+</div>
+</body>
+<script src="/app/topshop/mall/statics/lib/jquery/jquery-3.3.0.min.js"></script>
+<script src="/app/topshop/mall/statics/lib/layui/layui.all.js"></script>
+<script src="/app/topshop/mall/statics/lib/jquery/jquery.fly.js"></script>
+<script src="/app/topshop/mall/statics/lib/jquery/jquery.lazyload.js"></script>
+<script src="/app/topshop/mall/statics/js/common.js"></script>
+<script>
+    var pageConf = eval('('+'<{$filter_json}>'+')');
+    var z_event = {
+        init() {
+            this.initLayPage();
+            this.addCarts();
+            this.filter();
+
+
+            // 点击分类筛选
+            $('.brand a').on('click', 'a', function(e){
+                $(this).addClass('active').siblings('a').removeClass('active');
+            })
+            $('.brand a').on('click', '.close-tag', function(e){
+                //console.log($(e.target).parent('a'));
+                $(e.target).parent('a').removeClass('active');
+            })
+        },
+        initLayPage() {
+
+            $.post("<{url action=topshop_ctl_mall_list@listData}>", pageConf, function (data) {
+                if(data != '')
+                {
+                    console.log(1);
+                    layui.use(['laypage', 'layer'], function () {
+                        var page = layui.laypage;
+                        page.render({
+                            elem: 'pageDemo',
+                            count: '<{$count}>',
+                            curr: pageConf.pages,
+                            limit: pageConf.page_size,
+                            theme: '#FFF',
+                            layout: ['prev', 'page', 'next', 'count', 'skip'],
+                            jump: function (obj, first) {
+                                if (!first) {
+                                    pageConf.pages = obj.curr;
+                                    pageConf.page_size = obj.limit;
+                                    z_event.initLayPage();
+                                }
+                            }
+                        });
+                        $('.list-box').html(data); //页面填充
+                        preferred.init();
+						z_event.addCarts();
+                    });
+                }
+            });
+        },
+        addCarts() {
+            $('.chosebtn').on('click', function (e) {
+                if (!$(this).hasClass('oversale')) {
+					var id=$(this).attr('data-id');
+					var _this = this;
+				
+					$.post('<{url action=topshop_ctl_mall_item@pullItem}>', 'item_id='+id, function(rs){
+						if(rs.error) {
+							layer.msg(rs.message);
+							return;
+						}
+						if(rs.success) {
+							var offset_tar = $('#scrollTop').position();
+							var flyer = $(_this).parent().find('.goods-img>img').clone().css({
+								"width": '50px',
+								"height": "50px",
+								'border-radius': '50%',
+								'position': "absolute",
+								"bottom": '0',
+								"left": '40%'
+							});
+							$(_this).after(flyer);
+							flyer.animate({
+								bottom: '100px'
+							}, 500);
+
+							setTimeout(function () {
+								flyer.fly({
+									start: {
+										left: e.clientX,
+										top: e.clientY - 100
+									},
+									end: {
+										left: offset_tar.left,
+										top: offset_tar.top
+									},
+									onEnd: function () {
+										flyer.remove();
+									}
+								});
+							}, 300);
+							var count = $('#scrollTop').find('.count').html();
+							count++;
+							$('.count').html(count);
+							layer.msg(rs.message);
+							$(_this).html('已优选');
+							$(_this).addClass('oversale');
+						}
+					});
+                }
+            })
+        },
+        filter() {
+            // 筛选条件
+            // 筛选条件 0降序 1升序
+            var filterWord = decodeURIComponent(preferred.getQueryString('filter')) ;
+            //console.log(filterWord);
+            switch (filterWord) {
+                case '销量':
+                    //console.log(1);
+                    $('.filter>a').eq(1).addClass('active').siblings('a').removeClass('active');
+                case 'salenum_0': // 销量
+                    $('.filter>a').eq(1).addClass('asce').siblings('a').removeClass('asce');
+                    $('.filter>a').eq(1).attr('href', '?filter=salenum_1')
+                    break;
+                case '价格':
+                    $('.filter>a').eq(2).addClass('active').siblings('a').removeClass('active');
+                case 'salenum_1':
+                    $('.filter>a').eq(1).addClass('down').siblings('a').removeClass('down');
+                    $('.filter>a').eq(1).attr('href', '?filter=salenum_0')
+                    break;
+                case '上架时间':
+                    $('.filter>a').eq(3).addClass('active').siblings('a').removeClass('active');
+                case 'price_0':  // 价格
+                    $('.filter>a').eq(2).addClass('asce').siblings('a').removeClass('asce');
+                    $('.filter>a').eq(2).attr('href', '?filter=price_1')
+                    break;
+                case '毛利率':
+                    $('.filter>a').eq(4).addClass('active').siblings('a').removeClass('active');
+                case 'price_1':
+                    $('.filter>a').eq(2).addClass('down').siblings('a').removeClass('down');
+                    $('.filter>a').eq(2).attr('href', '?filter=price_0')
+                    break;
+                case 'saleTime_0': // 上架时间
+                    $('.filter>a').eq(3).addClass('asce').siblings('a').removeClass('asce');
+                    $('.filter>a').eq(3).attr('href', '?filter=saleTime_1');
+                    break;
+                case 'saleTime_1':
+                    $('.filter>a').eq(3).addClass('down').siblings('a').removeClass('down');
+                    $('.filter>a').eq(3).attr('href', '?filter=saleTime_0');
+                    break;
+                case 'profit_0': // 毛利率
+                    $('.filter>a').eq(4).addClass('asce').siblings('a').removeClass('asce');
+                    $('.filter>a').eq(4).attr('href', '?filter=profit_1');
+                    break;
+                case 'profit_1':
+                    $('.filter>a').eq(4).addClass('down').siblings('a').removeClass('down');
+                    $('.filter>a').eq(4).attr('href', '?filter=profit_0');
+                    break;
+                default:
+                    $('.filter>a').eq(0).addClass('asce').siblings('a').removeClass('asce');
+                    break;
+            }
+        }
+    }
+    z_event.init();
+	
+	$('.sort').on('click',function(){
+		var sort=$(this).attr('data-type');
+		var that=$(this);
+
+		if(that.hasClass('asce') || that.hasClass('down')){
+			if(sort.indexOf('asc')!=-1){
+				sort=sort.replace('asc','desc');
+				$('.asce').removeClass('asce');
+				that.addClass('down');
+			}else{
+				sort=sort.replace('desc','asc');
+				$('.down').removeClass('down');
+				that.addClass('asce');
+			}
+			that.attr('data-type',sort);
+			pageConf.orderBy=sort;
+			pageConf.pages=1;
+			z_event.initLayPage();
+		}else{
+			$('.down').removeClass('down');
+			$('.asce').removeClass('asce');
+			that.addClass('asce');
+			that.attr('data-type',sort);
+			if(sort.indexOf('desc')!=-1){
+				sort=sort.replace('desc','asc');
+			}
+			//type=sort.replace('asc','desc');
+			that.attr('data-type',sort);
+			pageConf.orderBy=sort;
+			pageConf.pages=1;
+			z_event.initLayPage();
+		}
+	});
+</script>
+
+</html>

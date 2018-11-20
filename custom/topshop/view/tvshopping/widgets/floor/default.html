@@ -1,0 +1,38 @@
+<div class="qtvLive-hot <{$setting.widgets_type}>-<{$setting.widgets_id}>">
+    <div class="hot-title">
+        <img class=" publicTitle-img" src="<{$datas.title_pic|storager:'m'}>">
+    </div>
+    <div class="hot-Products">
+        <a href="<{$datas.ad_link}>">
+            <img class="" src="<{$datas.ad_pic|storager:'l'}>" alt="">
+        </a>
+    </div>
+    <div class="hot-swiper">
+        <div class="swiper-container .swiper-container">
+            <div class="swiper-wrapper">
+                <{foreach from=$datas.item item=item}>
+                    <div class="swiper-slide">
+                        <a href="<{url action=topwap_ctl_item_detail@index item_id=$item.item_id}>">
+                            <img class="" src="<{$item.image_default_id|storager:'s'}>">
+                            <h2>
+                                <{$item.title}>
+                            </h2>
+                            <p>
+                                <{$item.price|cur}>
+                            </p>
+                        </a>
+                    </div>
+                <{/foreach}>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    <{if $datas.item}>
+    new Swiper('.<{$setting.widgets_type}>-<{$setting.widgets_id}> .swiper-container', {
+        slidesPerView: "auto",
+        spaceBetween: 10,
+        freeMode: true,
+    });
+    <{/if}>
+</script>

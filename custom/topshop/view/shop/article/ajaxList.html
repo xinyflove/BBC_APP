@@ -1,0 +1,40 @@
+<style>
+.shop-article-list li.active {
+    box-shadow: 0 0 5px #ff0000;
+}
+.shop-article-list li {cursor:pointer;padding:10px;box-shadow: 0 0 5px #eee;}
+</style>
+<div class="panel-heading">
+  <div class="clearfix">
+    <div class="pull-left">
+      <h2 class="panel-title">选择文章</h2>
+      <small class="text-muted">最多选择2篇</small>
+    </div>
+    <div class="pull-right">
+      <button id="choose_article" type="button" class="btn btn-primary">确定</button>
+      <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+    </div>
+  </div>
+</div>
+<div class="panel-body">
+  <{if $list}>
+    <ul class="shop-article-list">
+    <{foreach from=$list item=articlelist}>
+      <li data-articleid="<{$articlelist.article_id}>">
+        <!--modify_20171108_by_fanglongji_start
+         标签:<div class="article-label"><{$articlelist.label}></div>
+         -->
+        标签:<div class="article-label"><{$articlelist.new_label}></div>
+        <!--modify_20171108_by_fanglongji_end-->
+        标题:<div class="article-title"><{$articlelist.title}></div>
+        <!-- <div class="article-deadline"><{$articlelist.canuse_start_time|cdate:'FDATE_STIME'}> - <{$articlelist.canuse_end_time|cdate:'FDATE_STIME'}></div> -->
+      </li>
+    <{/foreach}>
+    </ul>
+  <{else}>
+    <div class="item-filter-row">
+      <div align="center">暂未添加文章</div>
+    </div>
+  <{/if}>
+</div>
+

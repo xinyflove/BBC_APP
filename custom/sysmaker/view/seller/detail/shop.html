@@ -1,0 +1,29 @@
+<div class="tableform">
+    <a href="<{$url}>" target="dialog::{title:'绑定店铺', width:500, height:280}">
+        <span class="btn btn-default btn-sm">绑定店铺信息</span>
+    </a>
+    <div class="division">
+        <table width="100%" cellspacing="0" cellpadding="0">
+            <tr>
+                <th style="text-align: left;width: 20%"><label><{t}>店铺名称<{/t}></label></th>
+                <th style="text-align: left;width: 10%"><label><{t}>审核状态<{/t}></label></th>
+                <th style="text-align: left;"><label><{t}>不通过原因<{/t}></label></th>
+            </tr>
+            <{foreach from=$data item=item}>
+            <tr>
+                <td><{$item.shop_name}></td>
+                <td>
+                    <{if $item.status == 'pending'}>
+                    待审核
+                    <{elseif $item.status == 'refuse'}>
+                    审核拒绝
+                    <{else}>
+                    审核通过
+                    <{/if}>
+                </td>
+                <td><{$item.reason}></td>
+            </tr>
+            <{/foreach}>
+        </table>
+    </div>
+</div>

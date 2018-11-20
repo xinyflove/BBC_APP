@@ -1,0 +1,87 @@
+<{include file="topwap/lease/header.html"}>
+<style type="text/css">
+    .m-fmcc-success-content{
+        margin-top:0.8rem;
+        padding-top: 1.1rem;
+        /*margin-bottom:2.1rem;*/
+    }
+    .m-fmcc-success-content img{
+        width: 1.84rem;
+        height: 1.84rem;
+        display: block;
+        margin: 0 auto;
+    }
+    .m-fmcc-success-content h3{
+        font-size: 0.48rem;
+        color: #303030;
+        font-weight: normal;
+        text-align: center;
+        margin: 0.3rem 0 0.8rem 0;
+    }
+    .m-fmcc-success-content p{
+        font-size: 0.36rem;
+        color: #303030;
+        text-align: center;
+    }
+    .m-fmcc-success-content p a{
+        color: #2dbc90;
+        display: inline-block;
+        text-decoration: underline;
+        margin: 0 0.03rem;
+
+    }
+    .m-fmcc-success-content .btn{
+        width: 6.9rem;
+        height: 0.98rem;
+        background-color: #2dbc90;
+        line-height: 0.98rem;
+        text-align: center;
+        color: #fff;
+        font-size: 0.34rem;
+        margin: 0.64rem 0 0.2rem 0;
+        border-radius: 0.04rem;
+        text-decoration: none;
+    }
+
+    .backHome{
+        margin-top: 0.3rem !important;
+    }
+</style>
+<body>
+
+<!--m-fmcc-success-content start-->
+<section class="m-fmcc-success-content">
+    <{if $status=='succ'}>
+    <img src="/app/topwap/statics/cart/img/payment_success.png"/>
+    <h3>缴费成功</h3>
+    <!--<p>可在<a href="#">缴费明细</a>页面中查看</p>-->
+    <p><a href="<{url action=topwap_ctl_lease_default@index}>" class="btn">返回首页</a></p>
+    <{else}>
+    <img src="/app/topwap/statics/cart/img/payment_error.png"/>
+    <h3>支付失败</h3>
+    <!--<p>可在<a href="#">缴费明细</a>页面中查看</p>-->
+    <p>
+        <!--<a href="<{url action=topwap_ctl_lease_default@index}>" class="btn">继续支付</a>-->
+        <a href="<{url action=topwap_ctl_lease_default@index}>" class="btn backHome">返回首页</a>
+    </p>
+    <{/if}>
+</section>
+<section class="m-fmcc-selectIndex-adsense">
+	<!--m-fmcc-selectIndex-adsense-top start-->
+	<div class="m-fmcc-selectIndex-adsense-top hz-cf">
+		<span class="hz-fl" style="padding-left:0;background:none">广电新能源汽车</span>
+		<!--<span class="hz-fr">12:30</span>-->
+	</div>
+	<!--end m-fmcc-selectIndex-adsense-top-->
+	<!--m-fmcc-selectIndex-adsense-content start-->
+	<section class="m-fmcc-selectIndex-adsense-content">
+	<a href="<{url action=topwap_ctl_newshop@index shop_id=32}>">
+		<img src="/app/topwap/statics/cart/img/img01.png" alt="">
+	</a>
+	</section>
+	<!--end m-fmcc-selectIndex-adsense-content-->
+</section>
+<!--end m-fmcc-selectIndex-adsense-->
+<!--<script type="text/javascript" src="js/fontSize.js" ></script>-->
+</body>
+</html>

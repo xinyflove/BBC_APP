@@ -16,7 +16,7 @@ class sysbankmember_ctl_bank extends desktop_controller{
             array(
                 'label'=>app::get('sysbankmember')->_('银行添加'),
                 'href'=>'?app=sysbankmember&ctl=bank&act=edit',
-                'target'=>'dialog::{title:\''.app::get('sysbankmember')->_('银行添加').'\',width:400,height:165}'
+                'target'=>'dialog::{title:\''.app::get('sysbankmember')->_('银行添加').'\',width:400,height:365}'
             ),
         );
 

@@ -1,0 +1,48 @@
+
+<!--中间banner轮播，如果想要禁止自动轮播，data-auto为空字符串！！！！-->
+<div class="swiper-container m-lm-index-swiper_M" data-auto='1'>
+	<div class="swiper-wrapper">
+		<{foreach from=$datas['pic'] item=pic key=key}>
+		<div class="swiper-slide">
+			<a href="<{$datas['url'][$key]}>">
+                <!--<img data-src="<{$pic|storager}>" alt="" class="swiper-lazy">-->
+				<img  class="imglazyload midside" data-original="<{$pic|storager}>" src="<{$env.app.topwap.res_url}>/images/lmlazy750_232.png">
+				<!--<div class="swiper-lazy-preloader"></div>-->
+			</a>
+		</div>
+		<{/foreach}>
+	</div>
+	<div class="swiper-pagination swiper_M-pagination"></div>
+</div>
+<script>
+var swiper_M = (function () {
+	function bindEvevt() {
+		var auto = Boolean($('.m-lm-index-swiper_M').attr('data-auto'));//获取控制轮播自动播放的自定义属性
+		var swiperM = new Swiper('.m-lm-index-swiper_M', {
+			pagination: {
+				el: '.swiper_M-pagination',
+			},
+			autoplay: auto,
+			slidesPerView: 'auto',
+			lazy: {
+				loadPrevNext: true,
+			},
+		});
+	};
+	function init() {
+		bindEvevt();
+	};
+	return {
+		init: init
+	}
+})();
+$(function () {
+	swiper_M.init();
+});
+
+$(function(){
+	var midWidth = $('.midside').width();
+	var midHight=midWidth*0.31;
+	$('.midside').css({'height':midHight});
+});
+</script>

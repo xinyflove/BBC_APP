@@ -1,0 +1,64 @@
+<{if $datas.item}>
+<!--天天特价-->
+<div class="m-lm-index-offer">
+    <div class="m-lm-index-publicTitle">
+        <img class="imglazyload publicTitle-img" data-original="<{$datas.title_pic|storager:'m'}>" alt="">
+        <div class="publicTitle-more">
+            <a href="<{$datas.more_link}>">
+                <p>更多<img src="/app/topwap/tvshopping/images/more_icon.png" alt=""></p>
+            </a>
+        </div>
+    </div>
+    <div class="swiper-container offer-container">
+        <div class="swiper-wrapper">
+            <{foreach from=$datas.item item=item}>
+            <div class="swiper-slide">
+                <a href="<{url action=topwap_ctl_item_detail@index item_id=$item.item_id}>">
+                    <div class="offer-container-img">
+                        <img data-src="<{$item.image_default_id|storager:'m'}>" alt="" class="swiper-lazy">
+                        <div class="swiper-lazy-preloader"></div>
+                    </div>
+                    <div class="offer-container-text">
+                        <p><{$item.title}></p>
+                    </div>
+                    <div class="offer-container-price">
+                        <p><{$item.price|cur}></p>
+                        <span><{$item.mkt_price|cur}></span>
+                    </div>
+                </a>
+            </div>
+            <{/foreach}>
+        </div>
+        <div class="swiper-pagination offer-pagination"></div>
+    </div>
+</div>
+<script>
+var offer = (function () {
+    function bindEvent() {
+        var swiper_O = new Swiper('.offer-container', {
+            pagination: {
+                el: '.offer-pagination',
+            },
+            slidesPerView: 'auto',
+            centeredSlides: true,
+            initialSlide: 1, //设置轮播初始位置的索引
+            spaceBetween: 20, //设置轮播间隔
+            slidesOffsetBefore: -35,
+            lazy: {
+                loadPrevNext: true,
+            },
+            watchSlidesVisibility: true,
+        });
+    };
+    function init() {
+        bindEvent();
+    };
+    return {
+        init: init
+    }
+})();
+$(function () {
+    offer.init();
+})
+</script>
+<{/if}>

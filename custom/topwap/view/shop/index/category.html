@@ -1,0 +1,56 @@
+<!-- m-tvplazaShopIndex-navClassify start -->
+		<ul class="m-tvplazaShopIndex-navClassify" <{if $shopdata.bg_color}>style="background:<{$shopdata.bg_color}>"<{/if}>>
+			<{foreach from=$widgetDetail['params'] item=item}>
+			<{if $item.imgurl}>
+			<li>
+				<a href="<{$item.imglink}>">
+					<img class="imglazyload" data-original="<{$item.imgurl|storager:t}>" alt="" style="width: 50px;height: 50px;">
+					<span><{$item.imgtitle}></span>
+				</a>
+			</li>
+			<{/if}>
+			<{/foreach}>
+			<!--<li>
+				<a href="#">
+					<img src="img/nav_img03.png" alt="">
+					<span>德国铺子</span>
+				</a>
+			</li>
+			<li>
+				<a href="#">
+					<img src="img/nav_img02.png" alt="">
+					<span>厨洁卫浴</span>
+				</a>
+			</li>
+			<li>
+				<a href="#">
+					<img src="img/nav_img07.png" alt="">
+					<span>养生食材</span>
+				</a>
+			</li>
+			<li>
+				<a href="#">
+					<img src="img/nav_img05.png" alt="">
+					<span>居家用品</span>
+				</a>
+			</li>
+			<li>
+				<a href="#">
+					<img src="img/nav_img04.png" alt="">
+					<span>护肤保养</span>
+				</a>
+			</li>
+			<li>
+				<a href="#">
+					<img src="img/nav_img06.png" alt="">
+					<span>休闲食品</span>
+				</a>
+			</li>
+			<li>
+				<a href="#">
+					<img src="img/nav_img_more.png" alt="">
+					<span>了解更多</span>
+				</a>
+			</li>-->
+		</ul>
+		<!-- end m-tvplazaShopIndex-navClassify -->

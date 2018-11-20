@@ -1,0 +1,96 @@
+<style>
+    .lottery-list .lottery-img{
+      /* padding-right: 10px; */
+      padding-top: 0.5rem;
+
+    }
+
+    .lottery-list .lottery-img img {
+      /* margin: 5px auto; */
+      height: 65px;
+      width: 65px !important;
+    }
+
+    .lottery-list .shopex-content {
+      background-color: #fff;
+    }
+    .lottery-list .lottery-one {
+      /* height: 110px; */
+      background-color: #fff;
+      margin-top: 10px;
+      padding: 0.5rem;
+
+    }
+
+    .lottery-list .lottery-addr .shopex-row {
+      margin-top: 5px;
+    }
+    .lottery-list .lottery-addr .addr-link {
+      margin-top: 20px;
+    }
+</style>
+<{foreach from=$data item=item}>
+  <li class="shopex-table-view-cell lottery-one">
+    <div class="shopex-content">
+      <div class="shopex-row">
+        <div class="shopex-col-sm-3 shopex-col-xs-3 lottery-img">
+          <img class="" src="<{$item.prizeInfo.img|storager}>">
+        </div>
+        <div class="shopex-col-sm-9 shopex-col-xs-9 lottery-addr">
+
+            <div class="shopex-col-sm-12 shopex-col-xs-12">
+                <div class="shopex-row">
+                  <div class="shopex-col-sm-3 shopex-col-xs-4 prop_name">
+                    奖品名称:
+                  </div>
+                  <div class="shopex-col-sm-9 shopex-col-xs-8 ">
+                    <{$item.bonus_desc}>
+                  </div>
+                </div>
+
+                <{if $item.addr}>
+
+                <div class="shopex-row">
+                  <div class="shopex-col-sm-3 shopex-col-xs-4 prop_name">
+                    收货地址:
+                  </div>
+                  <div class="shopex-col-sm-9 shopex-col-xs-8">
+                    <{$item.receiver_area|region}>&nbsp;
+                      <{$item.addr}>
+                  </div>
+                </div>
+                <div class="shopex-row">
+                  <div class="shopex-col-sm-3 shopex-col-xs-4 prop_name">
+                    联系人：
+                  </div>
+                  <div class="shopex-col-sm-2 shopex-col-xs-8">
+                    <{$item.receiver_name}>
+                  </div>
+                  <div class="shopex-col-sm-2 shopex-col-xs-4 prop_name">
+                    电话：
+                  </div>
+                  <div class="shopex-col-sm-4 shopex-col-xs-8">
+                    <{$item.receiver_phone}>
+                  </div>
+                </div>
+
+                <{elseif $item.prizeInfo.is_delivery=='on' }>
+                <div class="shopex-row addr-link">
+                    <div class="shopex-col-sm-12 shopex-col-xs-12">
+                        <a class="" href="<{url action=topwap_ctl_member_lottery@addrList result_id=$item.result_id}>">
+                            <button type="button" class="shopex-col-sm-12 shopex-col-xs-12 shopex-btn shopex-btn-warning shopex-btn-outlined">点击设置奖品的收货地址</button>
+
+                        </a>
+                    </div>
+                </div>
+                <{else}>
+
+                <{/if}>
+
+              </div>
+
+        </div>
+      </div>
+    </div>
+  </li>
+  <{/foreach}>

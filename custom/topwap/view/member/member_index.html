@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+  <meta name="author" content="shopex UED Team" />
+  <link rel="stylesheet" href="/app/topwap/tvshopping/lib/style.css">
+  <link rel="stylesheet" href="/app/topwap/tvshopping/lib/newtv.css">
+  <link rel="stylesheet" href="/app/topwap/tvshopping/lib/public.css">
+  <link rel="stylesheet" href="/app/topwap/tvshopping/lib/mine.css?v=324324">
+  <title>个人中心</title>
+  <script src="/app/topwap/tvshopping/js/jquery3.3.1.js"></script>
+</head>
+
+<body id="mine_body">
+<{if $auth_shop_id && !$_SESSION['thirdparty_app']}>
+<div class="imgWapper">
+  <div class="imgBox">
+    <img class="close" src="/app/topwap/statics/images/fuchuang/close.png" alt="">
+    <a href="<{$float_banner_url}>">
+      <img class="banner" src="<{$float_banner|storager:'m'}>" alt="">
+    </a>
+  </div>
+</div>
+<{/if}>
+<div class="m-lm-mine">
+  <div class="mine-avator">
+    <div class="avator-img">
+      <a href="<{url action=topwap_ctl_member@goSetHeadImg}>">
+        <img src="<{$userInfo.headimg_url|storager}>" alt="">
+      </a>
+    </div>
+    <div class="avator-name">
+      <p><{$account}></p>
+      <p style="color:#999999;font-size:14px;"><{$userInfo.grade_name}></p>
+      <a href="<{url action=topwap_ctl_member@detail}>">编辑资料</a>
+    </div>
+    <{if $isCheckin}>
+      <{if !$checkin_status}>
+        <div class="sign"></div>
+      <{else}>
+        <div class="sign active"></div>
+      <{/if}>
+    <{/if}>
+  </div>
+  <div class="mine-order">
+    <div class="nav">
+      我的订单
+      <a href="<{url action=topwap_ctl_member_trade@tradeList}>">查看全部</a>
+    </div>
+    <ul class="nav-tab">
+      <li>
+        <a href="<{url action=topwap_ctl_member_trade@tradeList s=1}>">
+          <img src="/app/topwap/tvshopping/images/mine/1.png" alt="">
+          <span>待付款</span>
+        </a>
+
+      </li>
+      <li>
+        <a href="<{url action=topwap_ctl_member_trade@tradeList s=2}>">
+          <img src="/app/topwap/tvshopping/images/mine/2.png" alt="">
+          <span>待发货</span>
+        </a>
+      </li>
+      <li>
+        <a href="<{url action=topwap_ctl_member_trade@tradeList s=3}>">
+          <img src="/app/topwap/tvshopping/images/mine/3.png" alt="">
+          <span>待收货</span>
+        </a>
+      </li>
+      <li>
+        <a href="<{url action=topwap_ctl_member_trade@tradeList s=4}>">
+          <img src="/app/topwap/tvshopping/images/mine/4.png" alt="">
+          <span>待评论</span>
+        </a>
+      </li>
+      <li>
+        <a href="<{url action=topwap_ctl_member_trade@canceledTradeList}>">
+          <img src="/app/topwap/tvshopping/images/mine/5.png" alt="">
+          <span>取消记录</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<!-- 常用功能 -->
+<div class="m-lm-func">
+  <div class="nav">
+    常用功能
+  </div>
+  <ul class="nav-tab">
+    <li>
+      <a href="<{url action=topwap_ctl_member_benefit@benefitList}>">
+        <img src="/app/topwap/tvshopping/images/mine/func_1.png" alt="">
+        <span>会员权益</span>
+      </a>
+    </li>
+    <li>
+      <a href="<{url action=topwap_ctl_member_lijin@index}>">
+        <img src="/app/topwap/tvshopping/images/mine/cash.png" alt="">
+        <span>我的礼金</span>
+      </a>
+    </li>
+    <li>
+      <a href="<{url action=topwap_ctl_coupon_voucher@index}>">
+        <img src="/app/topwap/tvshopping/images/mine/func_3.png" alt="">
+        <span>商家核销</span>
+      </a>
+    </li>
+    <li>
+      <a href="<{url action=topwap_ctl_member_agentvocher@index}>">
+        <img src="/app/topwap/tvshopping/images/mine/func_4.png" alt="">
+        <span>到店付款</span>
+      </a>
+    </li>
+    <li>
+      <a href="<{url action=topwap_ctl_member_point@point}>">
+        <img src="/app/topwap/tvshopping/images/mine/func_2.png" alt="">
+        <span>我的积分</span>
+      </a>
+    </li>
+  </ul>
+</div>
+<!-- 我的工具 -->
+<div class="m-lm-tool">
+  <div class="nav">
+    我的工具
+  </div>
+  <ul class="nav-tab">
+    <li>
+      <a href="<{url action=topwap_ctl_member_coupon@index}>">
+        <img src="/app/topwap/tvshopping/images/mine/tool_1.png" alt="">
+        <span>优惠券</span>
+      </a>
+    </li>
+    <li>
+      <a href="<{url action=topwap_ctl_member_votegift@index}>">
+        <img src="/app/topwap/tvshopping/images/mine/tool_2.png" alt="">
+        <span>奖品中心</span>
+      </a>
+    </li>
+    <li>
+      <a href="<{url action=topwap_ctl_member_hongbao@index}>">
+        <img class="red" src="/app/topwap/tvshopping/images/mine/tool_3.png" alt="">
+        <span>我的红包</span>
+      </a>
+    </li>
+    <li>
+      <a href="<{url action=topwap_ctl_member_bindbank@bankList}>">
+        <img src="/app/topwap/tvshopping/images/mine/tool_4.png" alt="">
+        <span>银行卡</span>
+      </a>
+    </li>
+    <li>
+      <a href="<{url action=topwap_ctl_member_aftersales@aftersalesList}>">
+        <img class="record" src="/app/topwap/tvshopping/images/mine/tool_5.png" alt="">
+        <span>退换货记录</span>
+      </a>
+    </li>
+    <li>
+      <a href="<{url action=topwap_ctl_member_offlinepay@payInfo}>">
+        <img class="pay" src="/app/topwap/tvshopping/images/mine/tool_6.png" alt="">
+        <span>我的付款</span>
+      </a>
+    </li>
+    <li>
+      <a href="<{url action=topwap_ctl_member_rate@index}>">
+        <img src="/app/topwap/tvshopping/images/mine/tool_7.png" alt="">
+        <span>我的评价</span>
+      </a>
+    </li>
+    <li>
+      <a href="<{url action=topwap_ctl_member_address@addrList}>">
+        <img class="addr" src="/app/topwap/tvshopping/images/mine/tool_8.png" alt="">
+        <span>我的地址</span>
+      </a>
+    </li>
+    <li>
+      <a href="<{url action=topwap_ctl_member_complaints@complaintsList}>">
+        <img src="/app/topwap/tvshopping/images/mine/tool_9.png" alt="">
+        <span>我的投诉</span>
+      </a>
+    </li>
+    <li>
+      <a href="<{url action=topwap_ctl_member_favorite@index}>">
+        <img src="/app/topwap/tvshopping/images/mine/tool_10.png" alt="">
+        <span>收藏</span>
+      </a>
+    </li>
+    <li>
+      <a href="<{url action=topwap_ctl_member@security}>">
+        <img class="safe" style="height: 24px;width: 21px;" src="/app/topwap/tvshopping/images/mine/safe.png" alt="">
+        <span>安全中心</span>
+      </a>
+    </li>
+    <li>
+      <a href="<{url action=topwap_ctl_member@setting}>">
+        <img src="/app/topwap/tvshopping/images/mine/setting.png" alt="">
+        <span>设置</span>
+      </a>
+    </li>
+  </ul>
+</div>
+
+</body>
+
+</html>
+<script>
+    //会员签到
+    var flag = true;
+    $('.mine-avator .sign').on('click',function(){
+        if (flag) {
+            if($(this).hasClass('active'))
+            {
+                shopex.alert("您今天已经签到过了");
+            }
+            flag = false;//改变flag状态，防止重复提交
+            var url = "<{url action=topwap_ctl_member@checkin}>";
+            var that = $(this);
+            $.post(url,function(rs){
+                if(rs.success){
+                    that.addClass('active');
+                    //shopex.alert(rs.message + "，成功领取" + that.attr('2018/8/27') + "积分" );
+                    shopex.alert(rs.message);
+                }
+            });
+        }
+    });
+    $(function () {
+        //    悬浮窗滚动事件
+        window.onscroll = function(e){
+            if($(window).scrollTop()==0){
+                $(".imgWapper").show();
+            }else{
+                $(".imgWapper").hide();
+            }
+        }
+        $(".close").on("click",function(){
+
+            $(".imgBox").remove();
+            $(".imgWapper").hide();
+        })
+    });
+</script>

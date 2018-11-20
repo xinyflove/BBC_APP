@@ -1,0 +1,239 @@
+<!--p>
+<span class="btn btn-default"><input type="checkbox" name="" id="selectAll"> 全选</span>
+<button type="button" class="btn btn-default text-blue">
+  下单时间<i class="icon-arrow-down-a"></i></button>
+</p-->
+<div class="data-list clearfix">
+    <{if $list}>
+    <{foreach from=$list item=item}>
+    <table class="table table-primary table-goods table-bordered">
+        <thead>
+        <tr>
+            <td colspan="5">
+                <span style="margin-left: 5px">卡券金额类型：<{$item.agent_price_name}></span>
+                <span style="margin-left: 5px">卡券使用类型：<{$item.agent_type_name}></span>
+                <span style="margin-left: 5px">订单号：<{$item.sys_tid}></span>
+                <span style="margin-left: 5px">
+                    供应商：<{$item.supplier.company_name}>
+                </span>
+                <span style="margin-left: 5px">下单时间: <{$item.careated_time|cdate}></span>
+                <span style="margin-right: 5px">消费状态：
+                    <span class="red">
+                        <{$item.agent_status_name}>
+                    </span>
+                </span>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="6">
+                <{if $item.agent_type == 'CASH_VOCHER'}>
+                    <span style="margin-right: 5px">
+                        代金金额: <{$item.deduct_price}>元
+                    </span>
+                    <span style="margin-right: 5px">
+                        最小消费金额: <{$item.min_consum}>元
+                    </span>
+                    <span style="margin-right: 5px">
+                        单次使用限制: <{$item.agent_use_limit}>张
+                    </span>
+                <{elseif $item.agent_type == 'DISCOUNT'}>
+                    <span style="margin-right: 5px">
+                        折扣率: <{$item.deduct_price}>折
+                    </span>
+                    <span style="margin-right: 5px">
+                        最大折扣金额: <{$item.max_deduct_price}>元
+                    </span>
+                <{elseif $item.agent_type == 'REDUCE'}>
+                    <span style="margin-right: 5px">
+                        优惠金额: <{$item.deduct_price}>元
+                    </span>
+                    <span style="margin-right: 5px">
+                        最低消费金额: <{$item.min_consum}>元
+                    </span>
+                <{/if}>
+                <{if $item.status=='COMPLETE'}>
+                <span style="margin-right: 5px">
+                    核销日期：<{$item.write_time|cdate}>
+                </span>
+                <{/if}>
+            </td>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td class="col-1">
+                <label class="checkbox-inline">
+                    <input type="checkbox" value="<{$item.voucher_id}>">&nbsp;
+                </label>
+            </td>
+            <td class="col-2">
+                <div class="goods2">
+                    <div class="left">
+                        <{if $item.pic_path}>
+                        <img src="<{$item.pic_path|storager:t}>" alt="<{$item.title}>">
+                        <{else}>
+                        <img src="<{$item.item.image_default_id|storager:t}>" alt="<{$item.title}>">
+                        <{/if}>
+                    </div>
+                    <div class="right">
+                        <a href="<{url action=topc_ctl_item@index item_id=$item.item_id}>"><{$item.item.title}></a>
+                        <{if $item.agent_price == 1}>
+                        <div>价格：<span class="text-orange"><{$item.order.price|cur}></span></div>
+                        <{else}>
+                        <div>价格: <span class="text-orange">免费</span></div>
+                        <{/if}>
+                    </div>
+                </div>
+            </td>
+            <td class="col-2">
+                <div>生效日期：<{$item.start_time|cdate}></div>
+                <div>失效日期：<span class="item_end_time"><{$item.end_time|cdate}></span>&nbsp;&nbsp;&nbsp;<button class="btn btn-sm btn-danger reservation pull-right">失效日期修改</button>
+                    <input type="hidden" class="item_end_id" value="<{$item.vocher_id}>">
+                </div>
+            </td>
+            <td class="col-2">
+                <div>
+                    <{if $item.agent_price == 1}>
+                    <div>收货人:<{$item.trade.receiver_name}></div>
+                    <div>收货人手机:<{$item.trade.receiver_mobile}></div>
+                    <{else}>
+                        <{if !empty($item.user.mobile)}>
+                        <div>手机号:<{$item.user.mobile}></div>
+                        <{/if}>
+                        <{if !empty($item.user.username)}>
+                        <div>用户真实姓名:<{$item.user.username}></div>
+                        <{/if}>
+                        <{if !empty($item.user.login_account)}>
+                        <div>登录名:<{$item.user.login_account}></div>
+                        <{/if}>
+                        <{if !empty($item.user.name)}>
+                        <div>用户昵称:<{$item.user.name}></div>
+                        <{/if}>
+                    <{/if}>
+                </div>
+            </td>
+            <td class="col-2">
+                <div>
+                    <{if $item.agent_price == 1}>
+                    <!--为有偿劵-->
+                    <a href="<{url action=topshop_ctl_trade_detail@index tid=$item.sys_tid}>"
+                       target="view_window">查看相关订单</a>
+                    <{else}>
+                    <!--为无偿劵-->
+                    <a class="agent_price_0" data-tid="<{$item.tid}>" href="" data-toggle="modal">查看消费详情</a>
+                    <!--<a href="<{url action=topshop_ctl_trade_detail@getAgentPrice0 tid=$item.tid}>"-->
+                       <!--target="view_window">查看相关订单</a>-->
+                    <{/if}>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <{/foreach}>
+
+    <div class="text-right">
+        <{pagers data=$pagers}>
+        <{if $count > 0}>
+        <span class="page-number" style="height: 30px;">共&nbsp;<em class="text-aqua"><{$count}></em>&nbsp;条记录</span>
+        <{/if}>
+    </div>
+    <{else}>
+    <p class="text-muted well no-shadow text-center">暂无数据</p>
+    <{/if}>
+</div>
+
+<script>
+    $('.pagination li a').click(function (e) {
+        e.preventDefault();
+        if ($(this).parent('li').hasClass('disabled')) return;
+        var urlData = $(this).attr('href');
+        $(this).parents('.data-list').empty().load(urlData)
+    });
+    $('.agent_price_0').click(function () {
+        var tid = $(this).data('tid');
+        $.ajax({
+            type:"GET",
+            url:'<{url action=topshop_ctl_trade_detail@ajaxGetAgentPrice0}>',
+            data:{
+                'tid':tid
+            },
+            dataType:"json",
+            async:false,
+            success:function(data){
+                if(data.success === true)
+                {
+                    $('#offlineTradeModal').on('show.bs.modal',
+                        function() {
+//                            $('#offline_trade_table').find('td:nth-child(1)').text(data.message.data.agent_shop_data.agent_shop_name);
+//                            $('#offline_trade_table').find('td:nth-child(2)').text(data.message.data.agent_shop_data.agent_shop_addr);
+//                            $('#offline_trade_table').find('td:nth-child(3)').text(data.message.data.agent_shop_data.supplier_name);
+//                            $('#offline_trade_table').find('td:nth-child(4)').text(data.message.data.total_fee);
+//                            $('#offline_trade_table').find('td:nth-child(5)').text(data.message.data.payment);
+//                            $('#offline_trade_table').find('td:nth-child(6)').text(data.message.data.voucher_fee);
+//                            $('#offline_trade_table').find('td:nth-child(7)').text(data.message.data.pay_time);
+                            $('#offline_data1').text(data.message.data.agent_shop_data.agent_shop_name);
+                            $('#offline_data2').text(data.message.data.agent_shop_data.agent_shop_addr);
+                            $('#offline_data3').text(data.message.data.agent_shop_data.supplier_name);
+                            $('#offline_data4').text(data.message.data.total_fee);
+                            $('#offline_data5').text(data.message.data.payment);
+                            $('#offline_data6').text(data.message.data.voucher_fee);
+                            $('#offline_data7').text(data.message.data.pay_time);
+                        });
+                    $('#offlineTradeModal').modal('show');
+                }
+                if(data.error === true)
+                {
+                    alert('没有查询到消费信息！');
+                }
+            }
+        });
+    });
+    //待修改日期
+    var check_time;
+    //待修改id
+    var check_id;
+    //当前选择
+    var now_time_picker;
+    $('.reservation').daterangepicker({
+        "timePicker": true,
+        "autoApply":true,
+        "opens": "right",
+        "timePicker24Hour": true,
+        "timePickerIncrement": 1,
+        "singleDatePicker": true,
+        "locale": {
+            "format": "YYYY/MM/DD HH:mm"
+        }
+    },function(start, end, label) {
+        check_time = this.startDate.format(this.locale.format);
+    });
+    $('.reservation').on('show.daterangepicker',function () {
+        //每次选择清楚全局日期
+        check_time = null;
+        //清楚全局id
+        check_id = null;
+        //清楚全局
+        now_time_picker = null;
+    });
+    $('.reservation').on('apply.daterangepicker', function() {
+        now_time_picker = $(this);
+        check_id = $(this).parent().find('.item_end_id').val();
+        if(!check_time){
+            alert('没有选择时间');
+            return false;
+        }
+        $('#myModal').modal('show');
+    });
+    $('#change_e_time').click(function () {
+        $.post('<{url action=topshop_ctl_trade_agentVoucher@ajaxChangeTime}>',{'voucher_id':check_id,'end_time':check_time},function(data){
+            if(data.status)
+            {
+                $(now_time_picker).parent().find('.item_end_time').html(check_time);
+                alert(data.message);
+            }else{
+                alert(data.message);
+            }
+        },'json');
+        $('#myModal').modal('hide');
+    });
+</script>

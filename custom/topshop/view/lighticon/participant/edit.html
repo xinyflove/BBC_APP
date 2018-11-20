@@ -1,0 +1,65 @@
+<div class="box box-default">
+  <form  action="<{url action=topshop_ctl_lighticon_operand@operandSave}>" method="post" class="form-horizontal" data-validate-onsuccess="ajaxSubmit" id="form_delivery" role="form">
+    <input type="hidden" name="activity_id" value="<{$activity_id}>">
+    <input type="hidden" name="operand_id" value="<{$operand_id}>">
+    <div class="box-body">
+
+      <div class="form-group">
+        <label class="col-sm-2 control-label" >标题：</label>
+        <div class="col-sm-3">
+          <input type="text" name="operand[title]" value="<{$operand.title}>" class="form-control" placeholder="最少4个字符 不能纯数字" required maxlength="50" data-validate-length-min="1">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="col-sm-2 control-label">专家头像：</label>
+        <div class="col-sm-5">
+          <div class="multiple-item" style="position:relative">
+            <div id="removeImg" class="multiple-del glyphicon glyphicon-remove-circle" style="position: absolute;left: 60px;top: -5px;z-index: 999;">
+            </div>
+            <a class="select-image" data-toggle="modal" href="<{url action=topshop_ctl_shop_image@loadImageModal}>" data-target="#gallery_modal">
+              <input class="right_logo" type="hidden" name="operand[figureurl]" value="<{$operand.figureurl}>">
+              <div class="img-put">
+                <img  class="rightlogo"  src="<{$operand.figureurl}>">
+                <i class="glyphicon glyphicon-picture"></i>
+              </div>
+            </a>
+          </div>
+          <span class="help-block">尺寸标准：60*60 px。</span>
+        </div>
+      </div>
+
+      <!--活动浏览量基数-->
+      <div class="form-group">
+        <label class="col-sm-2 control-label">排序：</label>
+        <div class="col-sm-3">
+            <input type="number" required min="0" name="operand[order]" value="<{$operand.order}>" class="form-control">
+            <span class="help-block">数字越大越靠前</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="box-footer">
+      <button type="submit" class="btn btn-primary"><{t}>保存<{/t}></button>
+    </div>
+
+  </form>
+</div>
+<script>
+  function ajaxSubmit (e) {
+    var form = e.target;
+    e.preventDefault();
+    $.post(form.action, $(form).serialize(), function(rs) {
+      if(rs.error) {
+        $('#messagebox').message(rs.message);
+        return;
+      }
+      if(rs.success) {
+        $('#messagebox').message(rs.message, 'success');
+      }
+      if(rs.redirect) {
+        location.href = rs.redirect;
+      }
+    });
+  }
+</script>

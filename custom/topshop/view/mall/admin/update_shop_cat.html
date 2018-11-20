@@ -1,0 +1,84 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+    <h4 class="modal-title" id="myModalLabel">商品店铺分类修改</h4>
+</div>
+
+<form action="<{url action=topshop_ctl_mall_admin_update@save}>" method="post" class="bg-white" role="form" id="update_form" data-validate-onsuccess="ajaxSubmit">
+    <div class="modal-body">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                店铺自定义分类
+                <label  data-toggle="tooltip" data-placement="top" title="可以选择多个店铺自定义分类的叶子节点分类">
+                    <i class="fa fa-question-circle text-aqua"></i>
+                </label>
+            </div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <label for="" class="col-sm-3 control-label">店铺中分类：</label>
+                    <div class="col-sm-6">
+                        <select name="item[shop_cids][]" multiple id="act-selectshopcat" class="form-control">
+                            <{foreach from=$shopCatList item=shop_cat}>
+                            <{if $shop_cat.children}>
+                            <optgroup label='<{$shop_cat.cat_name}>'>
+                                <{else}>
+                                <option value='<{$shop_cat.cat_id}>'
+                                <{if $shop_cat.selected}>
+                                selected=selected
+                                <{/if}>
+                                ><{$shop_cat.cat_name}></option>
+                                <{/if}>
+
+                                <{if $shop_cat.children}>
+                                <{foreach from=$shop_cat.children item=shop_cat_children}>
+                                <option value='<{$shop_cat_children.cat_id}>'
+                                <{if $shop_cat_children.selected}>
+                                selected
+                                <{/if}>
+                                ><{$shop_cat_children.cat_name}></option>
+                                <{/foreach}>
+                                <{/if}>
+
+                                <{if $shop_cat.children}>
+                            </optgroup>
+                            <{/if}>
+                            <{/foreach}>
+                        </select>
+                    </div>
+                    <span class="label label-info">还没有店铺分类？点击</span> <a href="<{url action=topshop_ctl_item_cat@index}>" target="_blank"> 添加店铺分类</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <!--商品id-->
+        <input type="hidden" name="item_id" value="<{$item_id}>">
+        <!--操作类型-->
+        <input type="hidden" name="op" value="<{$op}>">
+        <button type="submit" class="btn btn-primary">保存</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+    </div>
+</form>
+
+<script>
+    $('#update_form').Validator();
+
+    function ajaxSubmit (e) {
+        var form = e.target;
+        e.preventDefault();
+        $.post(form.action, $(form).serialize(), function(rs) {
+            $(form).find('button[type=submit]').prop('disabled', false);
+            if(rs.error) {
+                $('#messagebox').message(rs.message);
+                return;
+            }
+            if(rs.success) {
+                $('#messagebox').message(rs.message, 'success');
+            }
+            if(rs.redirect) {
+                location.href = rs.redirect;
+            }
+        });
+    }
+</script>

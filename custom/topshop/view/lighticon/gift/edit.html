@@ -1,0 +1,68 @@
+<form  action="<{url action=topshop_ctl_lighticon_gift@giftSave}>" method="post" class="form-horizontal form-group" data-validate-onsuccess="ajaxSubmit" id="form_delivery" role="form">
+    <input type="hidden" name="activity_id" value="<{$activity_id}>">
+    <div class="box box-primary ">
+        <table class="table table-hover ">
+            <thead>
+            <tr>
+                <th>奖品名称</th>
+                <th>奖品图片</th>
+                <th>奖品数量</th>
+                <th>已领取量</th>
+                <th>中奖概率</th>
+                <th>是否需要发货</th>
+            </tr>
+            </thead>
+            <tbody>
+            <{foreach from=$gift.data item=item}>
+            <tr class="">
+                <td><input type="text" name="gift[<{$item.gift_id}>][gift_name]" value="<{$item.gift_name}>" class="form-control" placeholder="最少4个字符 不能纯数字" required maxlength="50" data-validate-length-min="1">
+                </td>
+                <td>
+                    <a class="select-image" data-toggle="modal" href="<{url action=topshop_ctl_shop_image@loadImageModal}>" data-target="#gallery_modal">
+                        <input class="right_logo" type="hidden" required name="gift[<{$item.gift_id}>][image]" value="<{$item.image}>">
+                        <div class="img-put">
+                        <img  class="rightlogo"  src="<{$item.image}>">
+                        <i class="glyphicon glyphicon-picture"></i>
+                        </div>
+                    </a>
+                </td>
+                <td>
+                    <input type="number" required min="0" name="gift[<{$item.gift_id}>][gift_total]" value="<{$item.gift_total}>" class="form-control">
+                </td>
+                <td>
+                    <input type="number" disabled min="0" name="gift[<{$item.gift_id}>][gain_total]" value="<{$item.gain_total}>" class="form-control">
+                </td>
+                <td>
+                    <input type="number" required min="0" name="gift[<{$item.gift_id}>][percentage]" value="<{$item.percentage}>" class="form-control">
+                </td>
+                <td>
+                    <input type="checkbox" name="gift[<{$item.gift_id}>][need_deliver]" value="1" <{if $item.need_deliver == 1}> checked <{/if}>>
+                </td>
+            </tr>
+            <{/foreach}>
+            </tbody>
+        </table>
+    </div>
+    <div class="box-footer">
+        <button type="submit" class="btn btn-primary"><{t}>保存<{/t}></button>
+    </div>
+</form>
+
+<script>
+  function ajaxSubmit (e) {
+    var form = e.target;
+    e.preventDefault();
+    $.post(form.action, $(form).serialize(), function(rs) {
+      if(rs.error) {
+        $('#messagebox').message(rs.message);
+        return;
+      }
+      if(rs.success) {
+        $('#messagebox').message(rs.message, 'success');
+      }
+      if(rs.redirect) {
+        location.href = rs.redirect;
+      }
+    });
+  }
+</script>

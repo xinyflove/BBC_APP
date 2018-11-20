@@ -1,0 +1,203 @@
+<link href="/app/topwap/statics/static/css/public.css" rel="stylesheet"/>
+<link href="/app/topwap/statics/static/css/tvsuit.css" rel="stylesheet"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+<body style="background: #f2f1f4">
+	<header class="page-header">
+	  <a href="<{url action=topwap_ctl_item_detail@index item_id=$_GET['item_id']}>"><i class="header-left icon-func bbc-icon bbc-icon-back" style="color:#989898"></i></a>
+	  <div class="header-title">组合促销</div>
+	  <a href="#minimenu" class="header-right icon-func bbc-icon bbc-icon-more-vertical btn-mini-menu"></a>
+	</header>
+    <div class="tvSuit" style="margin-top:3.6rem">
+	<{foreach from=$data item=item name="pname"}>
+        <div class="tvSuit-list">
+            <div class="tvSuit-list-head">
+                <p class="tvSuit-list-head-title"><{$item.package_name}></p>
+                <p class="tvSuit-list-head-price"><{$item.package_total_price|cur}></p>
+                <div class="tvSuit-list-head-more">
+                    <img src="/app/topwap/statics/static/img/icon_more.png" alt="">
+                </div>
+            </div>
+            <div class="tvSuit-list-content">
+                <ul class="tvSuit-list-content-ul">
+					<{foreach from=$item.items item="img"}>
+                    <li>
+                        <img src="<{$img.image_default_id}>" alt="">
+                    </li>
+					<{/foreach}>
+                </ul>
+            </div>
+            <div class="tvSuit-list-contentOpen">
+                <div class="tvSuit-list-contentOpen-list">
+                    <ul class="package_<{$item.package_id}>">
+						<{foreach from=$item.items item="good"}>
+                        <li>
+							<div class="tvSuit-list-contentOpen-list-li-img">
+								<img src="<{$good.image_default_id}>" alt="">
+							</div>
+							<div class="tvSuit-list-contentOpen-list-li-text">
+								<p><{$good.title}></p>
+								<{if $good.sku_ids}> 
+								<div class="shopex-table-view-cell">
+								  <a class="shopex-navigate-right section-list-item action-select-spec" data-item-id="<{$good.item_id}>" data-pack-id="<{$item.package_id}>">
+									<div class="section-list-key">已选</div>
+									<div class="section-list-val action-selected-spec-<{$good.item_id}>" data-selected="0">请选择商品规格</div>
+								  </a>
+								</div>
+								<{/if}>
+							</div>
+							<div class="clear"></div>
+                        </li>
+						<div class="item_sku_<{$good.item_id}>">
+							<input class="item_sku" type="hidden" value="<{$good.sku_id}>">
+						</div>
+						<{/foreach}>
+                    </ul>
+                    <div class="tvSuit-list-contentOpen-list-bottom">
+                        <div class="price">
+                            <p class="price1"><{$item.package_name}>：</p>
+                            <p class="price2"><{$item.package_total_price|cur}></p>
+                            <p class="price3">原价：<i><{$item.old_total_price|cur}></i></p>
+                        </div>
+                        <div class="suit">
+                            <p>立省<{$item.cut_total_price|cur}></p>
+                        </div>
+                        <div class="btn">
+							<input class="package" type="hidden" value="<{$item.package_id}>">
+                            <button class="action-addcart">加入购物车</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+		<{/foreach}>
+    </div>
+	<!--add_2017/12/18_by_wanghaichao_start-->
+	<!----规格的选择---->
+	<div id="sku" class="shopex-popover shopex-popover-action shopex-popover-bottom">
+	  <div class="bbc-popover-modal goods-sku-modal">
+		<i class="bbc-icon bbc-icon-error btn-modal-close"></i>
+		<div class="goods-modal-brief">
+		  <div class="goods-modal-brief-thumbnail"><a href="#"><img class="item_img" src=""></a></div>
+		  <div class="goods-modal-brief-caption">
+			<div class="action-update-spec">
+			  请选择商品规格
+			</div>
+			<input type="hidden" class="action-update-quantity" value="<{$item.storealStorere}>">
+		  </div>
+		</div>
+		<div class="itemSpec">
+		<!--<{include file="topwap/item/detail/itemspec.html"}>-->
+		</div>
+		<div class="goods-sku-op">
+		  <!--<div class="goods-sku-op-item addcart-item-num">
+			<div class="shopex-numbox" data-numbox-min="1">
+			  <button class="shopex-btn shopex-btn-numbox-minus action-decrease" type="button">-</button>
+			  <input id="test" name="item[quantity]" min="1" max="<{if $item.limit_quantity}><{$item.limit_quantity}><{elseif $activityDetail.activity_info.buy_limit}><{$activityDetail.activity_info.buy_limit}><{else}><{$item.realStore}><{/if}>" class="shopex-input-numbox action-quantity-input" type="number" value="1">
+			  <button class="shopex-btn shopex-btn-numbox-plus action-increase" type="button">+</button>
+			</div>
+		  </div>-->
+		  <div class="goods-sku-op-item goods-op-buy">
+			<div class="action-sure">确定</div>
+		  </div>
+		</div>
+	  </div>
+	</div>
+	<!--add_2017/12/18_by_wanghaichao_end-->
+
+<script src="/app/topwap/statics/static/js/jquery-2.1.4.js"></script>
+<script>
+	var pun = true;
+	$('.tvSuit-list').click(function(){
+		$('.open').removeClass('open');
+		$(this).addClass('open');
+	});
+	
+	//规格选择点击事件
+	$(".action-select-spec").on('tap',function(){
+		var item_id=$(this).attr('data-item-id');
+		var package_id=$(this).attr('data-pack-id');
+		var url="<{url action=topwap_ctl_item_detail@getItemSpec}>";
+		$.post(url, {item_id:item_id,package_id:package_id}, function(rs) {
+			$('.itemSpec').html(rs.html);
+			$('.item_img').attr('src',rs.image);
+			$('.action-sure').attr('data-item-id',item_id);
+			$('.action-update-spec').html('请选择商品规格');
+			shopex('#sku').popover('show');
+		});
+	});
+
+	$('.btn-modal-close').on('tap',function(){
+		$('.action-fastbuy').removeClass('selected-action');
+		$('.action-addtocart').removeClass('selected-action');
+		$('.action-fastbuy, .action-addtocart').show();
+		shopex('#sku').popover('hide');
+	});
+  //商品规格选择
+	$(document).on('click', '.goods-sku-options>span', function() {
+		var spec_select=$('#skuScroll');
+		$(this).addClass('checked').siblings().removeClass('checked');
+		var selected = spec_select.find('.checked');
+		var selectedSpec = [];
+		selected.each(function(index, el) {
+		  selectedSpec.push($(this).html());
+		});
+		$('.action-update-spec').html(selectedSpec.join('*'));
+	});
+	$('.action-sure').on('tap', function() {
+		var item_id=$(this).attr('data-item-id');
+		$('.action-selected-spec-'+item_id).html($('.action-update-spec').html());
+		$('.action-selected-spec-'+item_id).attr('data-selected', '1');
+		var spec_select=$('#skuScroll');
+		var selected = spec_select.find('.checked');
+		var spec_size = spec_select.find('li').length;
+		if(spec_select.find('.checked').length < spec_size) {
+		  shopex.toast('<{t}>请先选择完整规格<{/t}>');
+		  return false;
+		}
+		var selectedSpec = [];
+		selected.each(function(index, el) {
+		  selectedSpec.push($(this).attr('data-spec-value-id'));
+		});
+		var sku=selectedSpec.join('_');
+		var value=$('.sku_'+sku).val();
+		$('.item_sku_'+item_id).find('.item_sku').val(value);
+		shopex('#sku').popover('hide');
+		return ;
+	});
+
+	//加入购物车
+	$('.action-addcart').on('tap',function(){
+		var pack_id=$(this).siblings('.package').val();
+		var packages=$('.package_'+pack_id);
+		var item_sku=packages.find('.item_sku');
+		var url="<{url action=topwap_ctl_cart@addCart}>";
+		var package_sku_id=[];
+		item_sku.each(function(index,el){
+			if($(this).val()==''){
+				package_sku_id='';
+				return false;
+			}
+			package_sku_id.push($(this).val());
+		});
+		if(package_sku_id==''){
+			shopex.toast('<{t}>请先选择完整规格<{/t}>');	
+			return false;
+		}
+		var package_sku_ids=package_sku_id.join(',');
+		$.post(url, {obj_type:'package',mode:'cart',package_id:pack_id,package_sku_ids:package_sku_ids,quantity:1}, function(rs) {
+			if(rs.error) {
+				shopex.alert(rs.message); return ;
+			}else{
+				var btnArray = ['再逛逛', '去购物车'];
+				shopex.confirm('加入购物车成功!', '成功提示', btnArray, function(e) {
+				  if (e.index == 1) {
+					window.location.href="<{url action=topwap_ctl_cart@index}>";
+				  } else {
+					return
+				  }
+				});
+			}
+		});
+	});
+
+</script>

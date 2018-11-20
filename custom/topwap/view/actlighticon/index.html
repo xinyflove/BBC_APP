@@ -1,0 +1,78 @@
+<{include file="topwap/actlighticon/header.html" }>
+<div class="index-banner">
+	<img src="/app/topwap/statics/lighticon/img/img_index_bgtop.png" alt="" class="index-banner1">
+	<{if $info['activity_start_time']>$time}>
+		<a  href="#" class="no_start"><img src="/app/topwap/statics/lighticon/img/icon_activity_01.png" alt="" class="index-banner2"></a>
+	<{elseif $info['activity_end_time']<$time}>
+		<{if $join.join=='HAS_JOIN'}>
+		<a  href="<{url action=topwap_ctl_actlighticon_lighticon@lightUp activity_id=$info.activity_id shop_id=$info.shop_id participant_id=$join.participant_id}>"><img src="/app/topwap/statics/lighticon/img/active-rule11.png" alt="" class="index-banner2"></a>
+		<{else}>
+		<a  href="#" class="has_end"><img src="/app/topwap/statics/lighticon/img/icon_activity_01.png" alt="" class="index-banner2"></a>
+		<{/if}>
+	<{else}>
+		<{if $join.join!='HAS_JOIN'}>
+		<a  href="<{url action=topwap_ctl_actlighticon_lighticon@info activity_id=$info.activity_id}>"><img src="/app/topwap/statics/lighticon/img/icon_activity_01.png" alt="" class="index-banner2"></a>
+		<{else}>
+		<a  href="<{url action=topwap_ctl_actlighticon_lighticon@lightUp activity_id=$info.activity_id shop_id=$info.shop_id participant_id=$join.participant_id}>"><img src="/app/topwap/statics/lighticon/img/active-rule11.png" alt="" class="index-banner2"></a>
+		<{/if}>
+	<{/if}>
+</div>
+<div class="index-info">
+	<ul class="index-info-ul">
+		<!--<li>
+			<p class="p1">奖品总数</p>
+			<p class="p2">
+				<{$gift_total}>
+			</p>
+		</li>-->
+		<li style="width:100%;">
+			<p class="p1">参与人数</p>
+			<p class="p2"><{$info.join_total}></p>
+		</li>
+		<!--<li>
+			<p class="p1">剩余奖品</p>
+			<p class="p2">
+			<{if $info['activity_end_time']<$time}>
+				0
+			<{else}>
+				<{$sy_gift_total}>
+			<{/if}>
+			</p>
+		</li>-->
+	</ul>
+</div>
+<div class="index-active">
+	<div class="index-active-title">
+		<p>——— 活动规则 ———</p>
+	</div>
+	<div class="index-active-text">
+		<{$info.activity_rule}>
+		<!--<p>1、2016年1月11日-2016年1月24日期间，每位客户限抽1次。</p>
+		<p>2、红包使用方法：凭序列号短信到对应体验馆在体验馆人员帮助下下单使用。</p>
+		<p>3、红包奖品发放：抽中红包后，红包序列号将以短信形式发送至手机，请注意查收。</p>-->
+	</div>
+	
+	<div class="index-active-title">
+		<p>——— 奖品说明 ———</p>
+	</div>
+	<div class="index-active-text">
+		<{$info.gift_profile}>
+	</div>
+	<div class="index-active-btn">
+		<!--<img src="/app/topwap/statics/lighticon/img/icon_jpbtn.png" alt="">-->
+	</div>
+	<div class="index-active-footer">
+		<p>技术支持:青岛广电传媒电子商务有限公司</p>
+	</div>
+</div>
+<!--add_2017/10/24_by_wanghaichao_start  分享的-->
+<{include file="topwap/index.html"}>
+<!--add_2017/10/24_by_wanghaichao_end-->
+<script>
+$(".no_start").on('tap',function(){
+	shopex.toast("活动还没有开始!");
+});
+$(".has_end").on('tap',function(){
+	shopex.toast("活动已经结束!");
+});
+</script>

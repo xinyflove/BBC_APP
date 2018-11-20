@@ -1,0 +1,19 @@
+<div class="tableform">
+    <a href="<{$url}>" target="dialog::{title:'创客信息编辑', width:500, height:280}">
+        <span class="btn btn-default btn-sm">创客信息编辑</span>
+    </a>
+    <div class="division">
+        <table width="100%" cellspacing="0" cellpadding="0">
+            <tr>
+                <th><label><{t}>创客姓名：<{/t}></label></th>
+                <td><{$data.name|escape:'html'}></td>
+                <th><label><{t}>手机号：<{/t}></label></th>
+                <td><{$data.mobile}></td>
+            </tr>
+            <tr>
+                <th><label><{t}>店铺名称：<{/t}></label></th>
+                <td><{$data.shop_name}></td>
+            </tr>
+        </table>
+    </div>
+</div>

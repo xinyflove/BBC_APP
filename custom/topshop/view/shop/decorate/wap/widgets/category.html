@@ -1,0 +1,119 @@
+  <!--start whc_三图展示的js_2017/9/12  -->
+  <script>
+    var categoryFormItem = '<div class="slider-item form-item"><div class="form-group"><div class="input-group"><input name="imgsrc"  type="text" class="form-control" readonly placeholder="图片地址"><span class="input-group-addon select-image" data-toggle="modal" data-imgurl="" href="<{url action=topshop_ctl_shop_image@loadImageModal}>" data-target="#gallery_modal">选择图片</span></div></div><div class="form-group"><input type="text" name="imglink" class="form-control" placeholder="图片链接"></div><div class="form-group"><input type="text" name="imgtitle" class="form-control" placeholder="分类名称"></div><div class="form-item-action action-remove"><i class="glyphicon glyphicon-remove"></i></div></div>';
+  </script>
+  <script type="text/html" id="category">
+  <div class="decorate-layout-items" id="<%= wid %>" data-widgets="category">
+		<ul class="m-tvplazaShopIndex-navClassify">
+		
+		<% if(list && list.length > 0){ %>
+          <% for(var i=0; i<list.length; i++){ %>
+			<li>
+				<a href="<%= list[i].imglink %>">
+					<img src="<%= list[i].imgsrc %>" alt="">
+					<span><%= list[i].imgtitle %></span>
+				</a>
+			</li>
+			<% }%>
+			<% }else{%>
+			<li>
+				<a href="">
+					<img src="http://placehold.it/50x50" alt="">
+					<span>内容</span>
+				</a>
+			</li>
+			<li>
+				<a href="">
+					<img src="http://placehold.it/50x50" alt="">
+					<span>内容</span>
+				</a>
+			</li>
+			<li>
+				<a href="">
+					<img src="http://placehold.it/50x50" alt="">
+					<span>内容</span>
+				</a>
+			</li>
+			<li>
+				<a href="">
+					<img src="http://placehold.it/50x50" alt="">
+					<span>内容</span>
+				</a>
+			</li>
+			<li>
+				<a href="">
+					<img src="http://placehold.it/50x50" alt="">
+					<span>内容</span>
+				</a>
+			</li>
+			<li>
+				<a href="">
+					<img src="http://placehold.it/50x50" alt="">
+					<span>内容</span>
+				</a>
+			</li>
+			<li>
+				<a href="">
+					<img src="http://placehold.it/50x50" alt="">
+					<span>内容</span>
+				</a>
+			</li>
+			<li>
+				<a href="">
+					<img src="http://placehold.it/50x50" alt="">
+					<span>内容</span>
+				</a>
+			</li>
+			<% }%>
+		
+		</ul>
+    </div>
+  </script>
+
+  <script type="text/html" id="category_form">
+   
+    <div class="category" data-id="<%= wid %>">
+      <h5>分类展示</h5>
+      <div class="slider-items-list">
+        <% if(list && list.length > 0){ %>
+          <% for(var i=0; i<list.length; i++){ %>
+          <div class="slider-item form-item">
+            <div class="form-group">
+              <div class="input-group">
+                <input name="imgsrc" type="text" readonly class="form-control" value="<%= list[i].imgsrc %>" placeholder="图片地址">
+                <span class="input-group-addon select-image" data-toggle="modal" data-imgurl="<%= list[i].imgurl %>" href="<{url action=topshop_ctl_shop_image@loadImageModal}>" data-target="#gallery_modal">选择图片</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <input type="text" name="imglink" class="form-control" value="<%= list[i].imglink %>" placeholder="图片链接">
+            </div>
+            <div class="form-group">
+              <input type="text" name="imgtitle" class="form-control" value="<%= list[i].imgtitle %>" placeholder="分类名称">
+            </div>
+            <% if(i!=0){ %>
+            <div class="form-item-action action-remove"><i class="glyphicon glyphicon-remove"></i></div>
+            <% } %>
+          </div>
+          <% } %>
+        <% }else{ %>
+          <div class="slider-item form-item">
+            <div class="form-group">
+              <div class="input-group">
+                <input name="imgsrc" type="text" readonly class="form-control" placeholder="图片地址">
+                <span class="input-group-addon select-image" data-toggle="modal" data-imgurl="" href="<{url action=topshop_ctl_shop_image@loadImageModal}>" data-target="#gallery_modal">选择图片</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <input type="text" name="imglink" class="form-control" placeholder="图片链接">
+            </div>
+            <div class="form-group">
+              <input type="text" name="imgtitle" class="form-control" placeholder="分类名称">
+            </div>
+          </div>
+        <% } %>
+      </div>
+      <button class="btn btn-default btn-block action-add">添加</button>
+    </div>
+  </script>
+
+  <!--end whc_三图展示的js_2017/9/12  -->

@@ -1,0 +1,165 @@
+<{include file="topwap/lease/header.html"}>
+	<body style="background-color: #f5f6f8;">
+		<!--m-fmcc-paymentsDetails-top start-->
+		<section class="m-fmcc-paymentsDetails-top">
+			<a href="#">
+				<h3>本期应还款金额(元)</h3>
+				<h2><{$payment.payment_total}></h2>
+			</a>
+		</section>
+		<!--end m-fmcc-paymentsDetails-top-->
+
+		<!--m-fmcc-paymentsDetails-title start-->
+		<section class="m-fmcc-paymentsDetails-title">
+		<{if $ownerInfo.company_name!=''}>
+			<span class="exit" style="padding-left:0">请您在25号之后再查看您的缴费状态</span>
+		<{else}>
+			<{if $payment.overdue_fine}>
+				<span class="exist">您需优先缴纳滞纳金<{$payment.overdue_fine}>元</span>
+				<{else}>
+				<span class="exit" style="padding-left:0">您的信用良好，无滞纳金产生</span>
+			<{/if}>
+		<{/if}>
+		</section>
+		<!--end m-fmcc-paymentsDetails-title-->
+
+		<!--m-fmcc-paymentsDetails-list start-->
+		<section class="m-fmcc-paymentsDetails-list">
+			<ul>
+			<{foreach from=$leaseList item=item key=key}>
+				<{if $item.cur_stage.cur_repayment_total}>
+				<li>
+					<a href="#">
+						<h3><{$item.cart_number}></h3>
+						<div class="hz-cf">
+							<span class="hz-fl">还款总额</span>
+							<span class="hz-fl m">
+								<{if $item.cur_stage.payment_status==1}>0
+								<{else}>
+								<{$item.cur_stage.cur_repayment_total|default:0}>
+								<{/if}>
+							</span>
+						</div>
+						<div class="ck">
+							<label for="c<{$key}>">
+								<input type="checkbox" id="c<{$key}>" name="ck" class="weui-check c" value="<{$item.cur_stage.stages_id}>"checked>
+								<i class="weui-icon-checked"></i>
+							</label>
+						</div>
+					</a>
+				</li>
+				<{/if}>
+				<{/foreach}>
+			</ul>
+		</section>
+		<!--end m-fmcc-paymentsDetails-list-->
+
+		<!--m-fmcc-paymentsDetails-totalCount start-->
+		<section class="m-fmcc-paymentsDetails-totalCount horizontal-view">
+			<div class="allCheck">
+				<label for="All">
+					<input type="checkbox" id="All" name="ck" class="weui-check" checked>
+					<i class="weui-icon-checked"></i>
+				</label>
+			</div>
+			<span>全选</span>
+			<p>合计：<font id="totalMoney">3500.00</font></p>
+			<a href="javascript:void(0);" id="jiaofei">缴费</a>
+		</section>
+		<!--end m-fmcc-paymentsDetails-totalCount-->
+
+		<!--m-fmcc-selectIndex-adsense start-->
+		<section class="m-fmcc-selectIndex-adsense">
+			<!--m-fmcc-selectIndex-adsense-top start-->
+			<div class="m-fmcc-selectIndex-adsense-top hz-cf">
+				<span class="hz-fl" style="padding-left:0;background:none">广电新能源汽车</span>
+				<!--<span class="hz-fr">12:30</span>-->
+			</div>
+			<!--end m-fmcc-selectIndex-adsense-top-->
+			<!--m-fmcc-selectIndex-adsense-content start-->
+			<section class="m-fmcc-selectIndex-adsense-content">
+			<a href="<{url action=topwap_ctl_newshop@index shop_id=32}>">
+				<img src="/app/topwap/statics/cart/img/img01.png" alt="">
+			</a>
+			</section>
+			<!--end m-fmcc-selectIndex-adsense-content-->
+		</section>
+		<!--end m-fmcc-selectIndex-adsense-->
+
+		<!--alert-info start-->
+		<section class="alert-info">请至少选择一个</section>
+		<!--end alert-info-->
+
+		<script>
+
+			// $.showLoading();
+			//全选处理
+			~(function() {
+				var oCheckboxall = $("input[type=checkbox]");
+				var oAll=document.getElementById("All");
+				$("#All").click(function() {
+					if(this.checked == true) {
+						for(var i = 0; i < oCheckboxall.length; i++) {
+							oCheckboxall[i].checked = true;
+							sum("#totalMoney",".c");
+						}
+					} else {
+						for(var i = 0; i < oCheckboxall.length; i++) {
+							oCheckboxall[i].checked = false;
+							$("#totalMoney").html(0);
+						}
+					}
+				});
+
+				$(".ck input").click(function(){
+					if(this.checked==false){
+						sum("#totalMoney",".c");
+						oAll.checked=false;
+					}
+					else if(this.checked==true ){
+						sum("#totalMoney",".c");
+						oAll.checked=true;
+					}
+
+				});
+
+
+			})();
+
+			// 计算金额的方法
+			sum("#totalMoney",".c");
+			function sum(t,ck){
+				var sum=0;//总金额
+				$(ck).each(function(){
+					if($(this).is(":checked")){
+						var otext=parseInt($(this).parent().parent().parent().find(".m").text());
+						sum+=otext;
+					}
+				});
+				$(t).text(sum.toFixed(2));
+			}
+
+			//提交处理
+			~(function(){
+				$("#jiaofei").on('click', function() {
+					var oCheckboxall = $("input[name=ck]:checked");
+					var stages_id='';
+					if($('#totalMoney').html()<=0){
+						$.toast('本期应还款为0元,无需还款','text');
+						return false;
+					}
+					$(oCheckboxall).each(function(index,ele){
+					    if($(ele).attr('id')!='All'){
+                            stages_id=stages_id+'-'+$(ele).val();
+						}
+					});
+					stages_id=stages_id.substring(1);
+					var total=$('#totalMoney').text();
+					var base_url="<{url action=topwap_ctl_lease_paycenter@index}>";
+					var target_url=base_url+'?stages_id='+stages_id;
+					window.location.href=target_url;
+				});
+			})();
+		</script>
+	</body>
+</html>

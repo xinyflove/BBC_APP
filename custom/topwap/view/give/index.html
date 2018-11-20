@@ -1,0 +1,200 @@
+<style>
+/*领取卡券的css样式*/
+.voucher-shareDetail{width: 100%;height: 100%;background: url("/app/topwap/statics/static/img/voucher_orange_bg.png") repeat-y;position: fixed;top: 0;left: 0;background-size: 100% 100%;padding-top: 35px;}
+.voucher-shareDetail-content{width: 92.7%;margin: 0 auto;background-color: #fff;border-radius: 5px;padding: 28px 19px 54px 19px;}
+.shareDetail-content-top img{width: 65px;height: 65px;margin: 0 auto;display: block;}
+.shareDetail-content-top h3{font-size: 15px;color: #000;font-weight: normal;text-align: center;}
+.shareDetail-content-top p{font-size: 15px;color: #000;text-align: center;}
+.shareDetail-content-center{width: 88%;background-color: #fff !important;overflow: hidden;border-radius: 5px;border:1px solid #eee;padding: 12px 0 12px 15px;margin: 45px auto 20px auto;position: relative;}
+.shareDetail-content-center dl dt img{width: 70px;height: 70px;display: block;margin-right: 10px;}
+.icon_right_bian{position: absolute;top: 0;left: 0;display: block;background: url("/app/topwap/statics/static/img/bian.png") repeat-y;background-size: 7px 96px;width: 7px;height: 96px;}
+.shareDetail-content-center dl dd h3{width: 60%;font-weight: normal;font-size: 15px;color: #333;margin-top: -5px;}
+.shareDetail-content-center dl dd p{font-size: 12px;color: #666;}
+.voucher_quan{width: 60px;height: 60px;display: block;position: absolute;top: 30px;right: -10px;z-index:9;}
+.telCode div{width: 88% !important;height: 39px !important;margin: 15px auto 0 auto;}
+.telCode div input.tel{background-color: #eeebee !important;border-radius: 4px !important;text-align: center;height: 39px !important;}
+.telCode .txt_code{width: 55%;height: 39px;background-color: #eeebee;text-align: center;}
+#btnSendCode{width: 43%;height: 39px;background-color: #ff9d0c;color: #fff;font-size: 15px;text-align: center;line-height: 39px;display: block;padding: 0;border:0;outline: none;}
+.receiveContent{width: 88%;height: 39px;margin: 0 auto;}
+.receiveBtn{background-color: #ff9d0c !important;color: #fff !important;font-size: 15px !important;line-height: 39px !important;text-align: center !important;border: 0 !important;outline: none !important;margin: 0 auto;width: 100%;height: 100%;padding: 0 !important;}
+.receiveBtnBtn{background-color: #ff9d0c !important;color: #fff !important;font-size: 15px !important;line-height: 39px !important;text-align: center !important;border: 0 !important;outline: none !important;margin: 0 auto;width: 100%;height: 100%;padding: 0 !important;margin-top:20px}
+.successText{margin-bottom: 20px;}
+.successText p{font-size: 18px;color: #ff9d0c;text-align: center;}
+</style>
+<div class="voucher-shareDetail">
+	<div class="voucher-shareDetail-content">
+		<div class="shareDetail-content-top">
+			<img src="<{$userInfo.headimg_url}>" alt="">
+			<h3><{$userInfo.mobile}></h3>
+			<p>给你分享一张代金券</p>
+		</div>
+		<div class="shareDetail-content-center">
+			<div class="icon_right_bian"></div>
+			<a href="<{url action=topwap_ctl_item_detail@index item_id=$voucher.item_id}>">
+				<dl class="shopex-clearfix">
+					<dt class="shopex-pull-left">
+						<img src="<{$voucher.item.image_default_id}>" alt="">
+					</dt>
+					<dd>
+						<h3 class="shopex-ellipsis-2"><{$voucher.item.title}></h3>
+						<p style="width:200px">店铺：<{$shop.shop_name}></p>
+						<p>有效期至：<{$voucher.end_time}></p>
+					</dd>
+				</dl>
+			</a>
+			<img src="/app/topwap/statics/static/img/voucher_quan.png" class="voucher_quan">
+		</div>
+		<div class="shareDetail-content-formBottom">
+			<{if $voucher.status=='GIVING'}>
+			<form action="" id="FormBottom">
+				<!-- form表单 -->
+				<{if !$is_login}>
+				<div class="telCode">
+					<div><input id="mobile" type="tel" placeholder="请输入手机号" class="tel"></div>
+					<div class="shopex-clearfix">
+						<input id="vcode"type="text" placeholder="请输入验证码" class="shopex-pull-left txt_code">
+						<input type="button" value="发送验证码" id="btnSendCode" class="shopex-pull-right">
+					</div>
+				</div>
+				<{/if}>
+				<!-- 成功提示 -->
+				 <div class="successText givesuccess" style="display:none">
+					<p id="usermobile">恭喜<{$myMobile}></p>
+					<p>领取成功！</p>
+					<div class="receiveContents"><a href="<{url action=topwap_ctl_coupon_voucher@index}>"><input type="button" class="receiveBtnBtn" value="查看您的卡券"></a></div>
+				</div>
+				<input id="user" type="hidden" value="<{$params['user_id']}>">
+				<input id="voucher" type="hidden" value="<{$params['voucher_id']}>">
+				<!-- 提交按钮 : 变为成功提示区块的时候改变value的文字-->
+				<div class="receiveContent"><input type="button" class="receiveBtn" value="立即领取"></div>
+			</form>
+			<{elseif $voucher.status=='GIVEN'}>
+				 <div class="successText">
+					<p>您来晚了一步</p>
+					<p>该卡券已被领取</p>
+					<div class="receiveContent"><a href="<{url action=topwap_ctl_coupon_voucher@index}>"><input type="button" class="receiveBtnBtn" value="查看您的卡券"></a></div>
+				</div>
+			<{elseif $voucher.status=='WAIT_WRITE_OFF'}>
+				 <div class="successText">
+					<p>您来晚了一步</p>
+					<p>该卡券已被撤销分享</p>
+					<div class="receiveContent"><a href="<{url action=topwap_ctl_coupon_voucher@index}>"><input type="button" class="receiveBtnBtn" value="查看您的卡券"></a></div>
+				</div>
+			<{else}>
+				 <div class="successText">
+					<p>您来晚了一步</p>
+					<p>该卡券已不能领取</p>
+					<div class="receiveContent"><a href="<{url action=topwap_ctl_coupon_voucher@index}>"><input type="button" class="receiveBtnBtn" value="查看您的卡券"></a></div>
+				</div>
+			<{/if}>
+		</div>
+	</div>
+</div>
+<script>
+var InterValObj; //timer变量，控制时间
+var count = 60; //间隔函数，1秒执行
+var curCount;//当前剩余秒数
+var code = ""; //验证码
+function sendMessage(mobile) {
+	curCount = count;
+	//设置button效果，开始计时
+	$.ajax({
+		url: '<{url action=topwap_ctl_trustlogin@sendVcode}>',
+		type: 'post',
+		dataType: 'json',
+		data: {
+		  'uname': mobile,
+		  'type':'signup'
+		},
+		success: function (msg){
+			if(msg.success){
+				$("#btnSendCode").attr("disabled", "true");
+				$("#btnSendCode").val( + curCount + "秒再获取");
+				InterValObj = window.setInterval(SetRemainTime, 1000); //启动计时器，1秒执行一次
+			}
+			shopex.toast(msg.message);
+		}
+	});
+}
+//timer处理函数
+function SetRemainTime() {
+	if (curCount == 0) {
+		window.clearInterval(InterValObj);//停止计时器
+		$("#btnSendCode").removeAttr("disabled");//启用按钮
+		$("#btnSendCode").val("重新发送验证码");
+		code = ""; //清除验证码。如果不清除，过时间后，输入收到的验证码依然有效
+	}
+	else {
+		curCount--;
+		$("#btnSendCode").val( + curCount + "秒再获取");
+	}
+}
+
+$("#btnSendCode").on('click',function () {
+	var mobile=$('#mobile').val();
+	if(mobile==''){
+		shopex.toast('请输入手机号码');
+		return false;
+	}
+	sendMessage(mobile);
+});
+
+
+ //如果登录了就不验证手机号
+<{if $is_login}>
+$('.receiveBtn').on('click',function(){
+	var user_id=$('#user').val();
+	var voucher_id=$('#voucher').val();
+	var url="<{url action=topwap_ctl_give@getVoucher}>";
+	$.post(url, {
+	  voucher_id: voucher_id,
+	  user_id:user_id
+	}, function(rs) {
+		if(rs.success){
+			$('.successText').show();
+			$('.telCode').hide();
+			$('.receiveContent').hide();
+			shopex.toast(rs.message);
+			//window.location.reload();
+		}else{
+			shopex.toast(rs.message);
+		}
+		
+	})
+});
+<{else}>   //没登录要把手机号传过去
+$('.receiveBtn').on('click',function(){
+	var user_id=$('#user').val();
+	var voucher_id=$('#voucher').val();
+	var mobile=$('#mobile').val();
+	var vcode=$('#vcode').val();
+	if(mobile==''){
+		shopex.toast('请输入手机号码');
+		return false;
+	}
+	if(vcode==''){
+		shopex.toast('请输入验证码');
+		return false;
+	}
+	var url="<{url action=topwap_ctl_give@getVoucher}>";
+	$.post(url, {
+	  voucher_id: voucher_id,
+	  user_id:user_id,
+	  mobile:mobile,
+	  vcode:vcode
+	}, function(rs) {
+		if(rs.success){
+			$('#usermobile').html(rs.message);
+			$('.givesuccess').show();
+			$('.telCode').hide();
+			$('.receiveContent').hide();
+			shopex.toast('领取成功!');
+			//window.location.reload();
+		}else{
+			shopex.toast(rs.message);
+		}
+	})
+});
+<{/if}>
+
+</script>

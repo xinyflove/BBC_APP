@@ -1,0 +1,166 @@
+<div class="box box-default">
+    <form action="<{url action=topshop_ctl_live_live@save}>" method="post" class="form-horizontal" data-validate-onsuccess="ajaxSubmit"
+        id="form_delivery" role="form">
+        <input type="hidden" name="live_id" value="<{$live_id}>">
+        <div class="box-body">
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">标题：</label>
+                <div class="col-sm-6">
+                    <input name="title" type="text" value="<{$title}>" placeholder="必填" maxlength="20" required class="form-control">
+                </div>
+            </div>
+
+            <!--add_2018/6/15_by_wanghaichao_start-->
+            <div class="form-group commission">
+                <label class="col-sm-2 control-label rate-title">封面图：</label>
+                <div class="col-sm-6">
+                    <div class="pad" style="overflow:hidden;">
+                        <a class="select-image center-block logo_block" data-toggle="modal" href="<{url action=topshop_ctl_shop_image@loadImageModal}>"
+                            data-target="#gallery_modal">
+                            <input type="hidden" name="image_default_id" value="<{$image_default_id}>">
+                            <div class="img-put">
+                                <img src="<{$image_default_id|storager}>">
+                                <i class="glyphicon glyphicon-picture"></i>
+                            </div>
+                        </a>
+                    </div>
+                    <span class="label label-danger rate-desc">请上传750px * 427px的图片</span>
+
+                </div>
+            </div>
+            <!--add_2018/6/15_by_wanghaichao_end-->
+
+            <!-- <div class="form-group commission">
+                <label class="col-sm-2 control-label rate-title">排序：</label>
+                <div class="col-sm-6">
+                    <input class="form-control" type="text" name="sort" value="<{$sort}>">
+                </div>
+                <span class="label label-danger rate-desc"></span>
+            </div> -->
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label rate-title">简介：</label>
+                <div class="col-sm-6">
+                    <textarea class="form-control" name="intro"><{$intro}></textarea>
+                    <!--<input class="form-control" type="text" name="sort" value="<{$sort}>">-->
+                </div>
+                <!--<span class="label label-danger rate-desc">佣金比例请填写小于100的正数,例如填写10,那么分佣比例就为10%</span>-->
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">直播时间：</label>
+                <div class="col-sm-6">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon">
+                            <i class="fa fa-calendar"></i>
+                        </span>
+                        <input type="text" class="form-control pull-right reservation" style="max-width:100%;" name="live_time" value="<{$live_time}>">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">直播地址：</label>
+                <div class="col-sm-6">
+                    <input type="text" name="live_url" value="<{$live_url}>" class="form-control" placeholder="">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">点播地址：</label>
+                <div class="col-sm-6">
+                    <input type="text" name="demand_dir" value="<{$demand_dir}>" class="form-control" placeholder="">
+                </div>
+            </div>
+            <div class="form-group">
+                    <label for="" class="col-sm-2 control-label">状态：</label>
+                    <div class="col-sm-1">
+                        <label  class="form-inline">
+                            <input class="" type="radio" name="status" value="1" <{if $status == 1 || empty($status)}>checked<{/if}>> 显示
+                        </label>
+                    </div>
+                    <div class="col-sm-1"></div>
+                        <label  class="form-inline">
+                            <input class="" type="radio" name="status" value="2" <{if $status == 2}>checked<{/if}>> 隐藏
+                        </label>
+            </div>
+        </div>
+
+        <div class="panel panel-default select-goods-panel">
+            <div class="panel-heading">
+                选择商品
+            </div>
+
+            <div class="panel-body" id="choseitem">
+                <button class="btn btn-md btn-block btn-danger select-goods" data-remote="<{url action=topshop_ctl_selector_item@loadSelectGoodsModal}>" data-is_select_sku=false data-item_id="<{[$item_id]|json_encode}>" data-textcol="title,price" data-target="#goods_modal" data-fetchgoods="<{url action=topshop_ctl_selector_item@formatSelectedGoodsRow}>" data-limit="1">选择商品</button>
+                <div class="selected-goods-list">
+
+                </div>
+            </div>
+        </div>
+
+        <div class="box-footer">
+            <button type="submit" class="btn btn-info">
+                <{t}>保存<{/t}>
+            </button>
+        </div>
+
+    </form>
+</div>
+<script>
+    $('.reservation').daterangepicker({
+        "timePicker": true,
+        "opens": "right",
+        "timePicker24Hour": true,
+        "timePickerIncrement": 1,
+        "locale": {
+            "format": "YYYY/MM/DD HH:mm"
+        }
+    });
+    var all = $('.check-item');
+    $('#check_all').click(function () {
+        if ($(this).prop('checked') == true) {
+            $('.check-this-inline').prop('checked', true);
+            all.prop('checked', true);
+        } else {
+            $('.check-this-inline').prop('checked', false);
+            all.prop('checked', false);
+        }
+    })
+
+    all.click(function () {
+        if (!$(this).hasClass('check-all') && !$(this).hasClass('check-this-inline')) {
+            $('#check_all').prop('checked', false);
+            $(this).parent().parent().find('.check-this-inline').prop('checked', false);
+        } else if ($(this).hasClass('check-this-inline')) {
+            $('#check_all').prop('checked', false);
+        }
+    });
+
+    $('.check-this-inline').click(function () {
+        if ($(this).prop('checked') == true) {
+            $(this).parent().siblings().find('input[type="checkbox"]').prop('checked', true);
+        } else {
+            $(this).parent().siblings().find('input[type="checkbox"]').prop('checked', false);
+        }
+    })
+
+    function ajaxSubmit(e) {
+        var form = e.target;
+        e.preventDefault();
+        $.post(form.action, $(form).serialize(), function (rs) {
+            if (rs.error) {
+                $('#messagebox').message(rs.message);
+                return;
+            }
+            if (rs.success) {
+                $('#messagebox').message(rs.message, 'success');
+            }
+            if (rs.redirect) {
+                location.href = rs.redirect;
+            }
+        });
+    }
+
+</script>

@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>详情</title>
+    <{css src="milier/dist/style.css" app="topwap"}>
+    <{css src="milier/css/index.css?2018060517533" app="topwap"}>
+    <{css src="milier/css/addDetails.css?2018060517533" app="topwap"}>
+</head>
+<style>
+    .text-content img
+    {
+        max-width: 100%;
+        height:auto;
+    }
+    .m-ml-details-banner .banner-container{
+        width: 95%;
+        height: 160px;
+        margin: 0 auto;
+    }
+
+    .m-ml-details-text .text-content{
+        text-align: center;
+    }
+
+    .packUping .text-content{
+        overflow: hidden;
+        height: 100px;
+    }
+    .packUping .details-packUp{
+        display: block;
+    }
+    .text-content p{
+        max-width: 100%;
+        /*text-align:center;*/
+        /*font-size: 12px;*/
+        /*width: 80%;*/
+        /*margin: 0 auto;*/
+        /*margin-bottom:5px;*/
+
+    }
+    .text-content img{
+        max-width: 100%;
+        /*text-align:center;*/
+        /*width: 80%;*/
+
+        /*margin: 0 auto;*/
+        /*margin-bottom: 5px;*/
+    }
+    .details-packUp{
+        width: 100%;
+        height:40px;
+        text-align: center;
+        position: relative;
+        display: none;
+    }
+    .details-packUp img{
+        transform: translate(-50%, -50%) rotate(0deg);
+        width: 25px;
+        height: 20px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+    }
+    /*.banner-container{*/
+        /*overflow: hidden;*/
+    /*}*/
+    /*.m-ml-details-banner .banner-container .swiper-wrapper .swiper-slide a{*/
+        /*display: inline-block;*/
+        /*width: 100%;*/
+        /*height: 100%;*/
+        /*position: relative;*/
+    /*}*/
+    /*.m-ml-details-banner .banner-container .swiper-wrapper .swiper-slide{*/
+        /*overflow: hidden;*/
+    /*}*/
+    /*.m-ml-details-banner .banner-container .swiper-wrapper .swiper-slide img {*/
+        /*width: auto;*/
+        /*height: auto;*/
+        /*max-width: 100%;*/
+        /*max-height: 100%;*/
+        /*margin: auto;*/
+        /*position: absolute;*/
+        /*top: 0;*/
+        /*left: 0;*/
+        /*right: 0;*/
+        /*bottom: 0;*/
+    /*}*/
+
+    .banner-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.9);
+        z-index: 1000;
+        display: none;
+    }
+
+    .banner-wrapper {
+        position: relative;
+        width: 100%;
+        height: 100%;
+    }
+
+    .banner-wrapper img {
+        max-width: 100%;
+        max-height: 80%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        margin: auto;
+    }
+
+    .banner-modal .close-modal {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        width: 25px;
+        height: 25px;
+        z-index: 1001;
+    }
+
+    .banner-modal .close-modal img {
+        width: 25px;
+        height: 25px;
+    }
+
+    .imgWapper{
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.3);
+        z-index: 999;
+        display: none;
+    }
+    .imgWapper .imgBox{
+        width:80% ;
+        height:330px;
+        background: #fff;
+        margin: 100px auto 0;
+        position: relative;
+        border-radius: 4px;
+        display: none;
+    }
+    .imgWapper .imgBox .close{
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        width: 30px;
+        height: 30px;
+        z-index:9;
+    }
+    .imgWapper .imgBox .banner{
+        width: 330px;
+        height: 330px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        margin: auto;
+    }
+</style>
+<body>
+    <div class="imgWapper">
+        <div class="imgBox">
+            <img class="close" src="/app/topwap/statics/images/fuchuang/close.png" alt="">
+            <img class="banner" src="<{$current_agent_shop.qr_code}>" alt="">
+        </div>
+    </div>
+    <div class="m-ml-details">
+        <div class="m-ml-details-banner">
+            <div class="m-ml-details-head">
+                <a href="javascript:history.back(-1)">
+                    <img src="<{resource app='topwap' path='/images/milier/details/icon-back1.png'}>" class="head-icon1"/>
+                </a>
+                <p class="banner-title"><{$current_agent_shop.name}>(<{if $current_agent_shop.type==='HOME'}>总店<{else}>分店<{/if}>)</p>
+            </div>
+            <div class="swiper-container banner-container">
+                <div class="swiper-wrapper">
+                    <{foreach from=$current_agent_shop.carouse_image_list item=image}>
+                    <div class="swiper-slide">
+                        <img src="<{$image|storager}>" alt="">
+                    </div>
+                    <{/foreach}>
+                </div>
+                <div class="swiper-pagination banner-pagination"></div>
+            </div>
+        </div>
+
+        <div class="banner-modal">
+            <div class="swiper-container banner-wrapper">
+                <div class="swiper-wrapper">
+                    <{foreach from=$current_agent_shop.carouse_image_list item=image}>
+                    <div class="swiper-slide">
+                        <img src="<{$image|storager}>" alt="">
+                    </div>
+                    <{/foreach}>
+                </div>
+                <div class="swiper-pagination banner-pagination">
+                </div>
+            </div>
+            <div class="close-modal">
+                <img src="<{resource app='topwap' path='/images/milier/delect1.png'}>" alt="">
+            </div>
+        </div>
+
+        <div class="m-ml-details-address">
+            <div class="address-head">
+                <div class="address-head-left">
+                    <p><{$current_agent_shop.addr}></p>
+                    <span><{$current_agent_shop.addr_desc}></span>
+                </div>
+                <div class="address-head-mid">
+                    <img src="<{resource app='topwap' path='/images/milier/details/icon-threedian.png'}>" alt="">
+                </div>
+                <div class="address-head-right">
+                    <a href="tel:<{$current_agent_shop.fixed_phone}>">
+                        <img src="<{resource app='topwap' path='/images/milier/details/icon-phone.png'}>" alt="">
+                    </a>
+                </div>
+                <div style="clear: both"></div>
+            </div>
+            <{if $agent_shop_list}>
+            <ul class="address-det">
+                <{foreach from=$agent_shop_list item=list}>
+                <li>
+                    <a href="<{url action=topwap_ctl_supplier_agentShopInfo@agentShopDetail}>?shop_id=<{$list.shop_id}>&supplier_id=<{$list.supplier_id}>&agent_shop_id=<{$list.agent_shop_id}>">
+                        <div class="address-det-left">
+                            <div class="address-det-left-title"><img src="<{resource app='topwap' path='/images/milier/details/icon-dizhi.png'}>" alt="">
+                                <p><{$list.addr}></p>
+                            </div>
+                            <span><{$list.addr_desc}></span>
+                        </div>
+                        <div class="address-det-right">
+                            <img src="<{resource app='topwap' path='/images/milier/details/icon-more.png'}>" alt="">
+                        </div>
+                        <div style="clear: both"></div>
+                    </a>
+                </li>
+                <{/foreach}>
+            </ul>
+            <div class="address-more">
+                <img src="<{resource app='topwap' path='/images/milier/details/icon-xia.png'}>" alt="">
+            </div>
+            <{/if}>
+        </div>
+        <{if $all_hold_info}>
+        <div class="m-ml-details-allcoupon">
+            <p><{$all_hold_info.activity_name}></p>
+        </div>
+        <{/if}>
+        <{if $voucher_list}>
+        <div class="m-ml-details-coupon">
+            <div class="swiper-container coupon-container">
+                <div class="swiper-wrapper">
+                    <{foreach from=$voucher_list item=v_list}>
+                    <div class="swiper-slide">
+                        <a href="<{url action=topwap_ctl_item_detail@index item_id=$v_list.item_id}>">
+                            <div class="coupon-slide-left">
+                                <div class="coupon-slide-left-price">
+                                    <p><{$v_list.show_price}><i><{$v_list.show_unit}></i></p>
+                                </div>
+                                <p class="coupon-slide-left-text"><{$v_list.show_title}></p>
+                            </div>
+                            <div class="coupon-slide-right">
+                                <{if $v_list.agent_price == 1}>
+                                <p>立即购买</p>
+                                <{else}>
+                                <p>立即领取</p>
+                                <{/if}>
+                            </div>
+                        </a>
+                    </div>
+                    <{/foreach}>
+                </div>
+            </div>
+        </div>
+        <{/if}>
+        <{if $opration_food['count'] >= 1}>
+        <div class="m-ml-details-rec">
+            <div class="details-public-title">
+                <a href="<{url action=topwap_ctl_supplier_food@foodList agent_shop_id=$current_agent_shop['agent_shop_id']}>">
+                    <p>推荐菜 <img src="<{resource app='topwap' path='/images/milier/details/icon-more.png'}>" alt=""></p>
+                </a>
+            </div>
+            <div class="rec-swiper">
+                <p class="rec-swiper-title"><i></i>商家招牌(<{$opration_food['count']}>)<i></i></p>
+                <div class="swiper-container rec-swiper-container">
+                    <div class="swiper-wrapper">
+                        <{foreach from=$opration_food['data'] item=food_item}>
+                        <div class="swiper-slide">
+                            <a href="">
+                                <div class="swiperEle-slide-img">
+                                    <img src="<{$food_item.food_image|storager}>" alt="">
+                                </div>
+                                <p class="swiperEle-slide-title"><{$food_item.food_name}></p>
+                            </a>
+                        </div>
+                        <{/foreach}>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <{/if}>
+        <{if $opration_person['count'] >= 1}>
+        <div class="m-ml-details-navlist">
+            <div class="m-mili-navlist">
+                <div class="details-public-title">
+                    <a href="<{url action=topwap_ctl_supplier_person@personList agent_shop_id=$current_agent_shop['agent_shop_id']}>">
+                        <p>人员配置 <img src="<{resource app='topwap' path='/images/milier/details/icon-more.png'}>" alt=""></p>
+                    </a>
+                </div>
+                <div class="swiper-container navlist-swiper-container">
+                    <p class="rec-swiper-title"><i></i>商家员工(<{$opration_person['count']}>)<i></i></p>
+                    <ul class="swiper-wrapper">
+                        <{foreach from=$opration_person['data'] item=person_item}>
+                        <li class="swiper-slide">
+                            <img src="<{$person_item.person_image|storager}>" alt="">
+                            <p><{$person_item.person_name}></p>
+                        </li>
+                        <{/foreach}>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <{/if}>
+        <{if $opration_video['count'] >= 1}>
+        <div class="m-ml-details-video">
+            <div class="details-public-title">
+                <p>视频</p>
+            </div>
+            <!--<div class="video video-box">
+
+            </div>-->
+            <div class="swiper-container video-swiper-container">
+                <div class="swiper-wrapper">
+                    <{foreach from=$opration_video['data'] key=key item=video_item}>
+                    <div class="swiper-slide video-box">
+                        <div class="simulation" style="background: url(<{resource app='topwap' path='/images/milier/video_default.png'}>);background-size: 100% 100%;"><img src="<{resource app='topwap' path='/images/milier/play.png'}>" alt=""></div>
+                        <div id="video<{$key}>" class="video" data-src="<{$video_item.video_link}>"></div>
+                    </div>
+                    <{/foreach}>
+                </div>
+                <div class="swiper-pagination video-pagination"></div>
+            </div>
+            <!--<div class="swiper-container video-swiper-container">-->
+                <!--<div class="swiper-wrapper">-->
+                    <!--<div class="swiper-slide video video-box" id="video0">-->
+
+                    <!--</div>-->
+                    <!--<div class="swiper-slide video video-box" id="video1">-->
+
+                    <!--</div>-->
+                <!--</div>-->
+                <!--<div class="swiper-pagination video-pagination"></div>-->
+            <!--</div>-->
+        </div>
+        <{/if}>
+        <{if $shop_profile}>
+        <div class="m-ml-details-text">
+            <div class="details-public-title">
+                <p>店家介绍</p>
+            </div>
+
+            <div class="text-content">
+                <{$shop_profile}>
+            </div>
+            <div class="details-packUp">
+                <img src="<{resource app='topwap' path='/images/milier/details/icon-xia.png'}>" alt="">
+            </div>
+        </div>
+        <{/if}>
+        <{if $shop_comment['data'][0]}>
+        <div class="m-ml-details-comment">
+            <div class="details-public-title">
+                <a href="<{url action=topwap_ctl_supplier_expert@expertCommentList agent_shop_id=$current_agent_shop['agent_shop_id']}>"><p>专家点评(<{$expert_comment_count}>) <img src="<{resource app='topwap' path='/images/milier/details/icon-more.png'}>" alt=""></p></a>
+            </div>
+            <section class="expert-list">
+                <dl class="list-item">
+                    <dt class="avator"><img src="<{$shop_comment['data'][0]['expert_avatar']|storager}>" alt=""></dt>
+                    <dd>
+                                <p class="user"><{$shop_comment['data'][0]['expert_name']}></p>
+                        <p class="score">
+                            <span>打分</span>
+                            <{foreach from=$shop_comment['data'][0]['comment_rank_arr'] item=comment_rank_item}>
+                            <i class="icon"></i>
+                            <{/foreach}>
+                        </p>
+                        <p class="desc"><{$shop_comment['data'][0]['comment_content']}></p>
+                        <p class="date right"><{$shop_comment['data'][0]['created_time']}></p>
+                    </dd>
+                </dl>
+            </section>
+        </div>
+        <{/if}>
+        <div class="m-ml-details-logo">
+            <img src="<{resource app='topwap' path='/images/milier/details/logo.png'}>" />
+        </div>
+        <a class="m-ml-goindex" href="<{url action=topwap_ctl_supplier_index@home shop_id=$current_agent_shop['shop_id']}>">
+            <img src="<{resource app='topwap' path='/images/milier/goIndex.png'}>" alt="">
+        </a>
+        <div class="m-ml-details-btn">
+            <a href="<{url action=topwap_ctl_offlinepay_pay@qrcodeRedict agent_shop_id=$current_agent_shop.agent_shop_id}>">
+                <p>买&nbsp;&nbsp;&nbsp;单</p>
+            </a>
+        </div>
+    </div>
+    <{script app="topwap" src="milier/dist/public.js" }>
+    <{script app="topwap" src="milier/js/details.js?1234" }>
+
+
+    <script src="http://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+    <script>
+        //微信config配置信息注入
+        wx.config({
+            debug: false,
+            appId: "<{$signPackage.appId}>",
+            timestamp: "<{$signPackage.timestamp}>",
+            nonceStr: "<{$signPackage.nonceStr}>",
+            signature: "<{$signPackage.signature}>",
+            jsApiList: [
+                'checkJsApi',
+                'openLocation',
+                'getLocation',
+                'onMenuShareTimeline',
+                'onMenuShareAppMessage',
+            ]
+        });
+
+        wx.checkJsApi({
+            jsApiList: [
+                'getLocation'
+            ],
+            success: function (res) {
+                if (res.checkResult.getLocation == false) {
+                    alert('你的微信版本太低，不支持微信JS接口，请升级到最新的微信版本！');
+                    return;
+                }
+            }
+        });
+
+        wx.ready(function () {
+
+
+
+            //分享到朋友圈
+            wx.onMenuShareTimeline({
+                title: "<{$current_agent_shop.name}>(<{if $current_agent_shop.type==='HOME'}>总店<{else}>分店<{/if}>)", // 分享标题
+                link: '<{$signPackage.url}>', // 分享链接
+                imgUrl: "<{resource app='topwap' path='/images/milier/index/milier_index_share.png'}>", // 分享图标
+                success: function () {
+                    // 用户确认分享后执行的回调函数
+                },
+                cancel: function () {
+                    // 用户取消分享后执行的回调函数
+                }
+            });
+            //分享给朋友
+            wx.onMenuShareAppMessage({
+                title: "<{$current_agent_shop.name}>(<{if $current_agent_shop.type==='HOME'}>总店<{else}>分店<{/if}>)", // 分享标题
+                desc: '米粒儿平台，媒体认证，正品保证，服务保证。', // 分享描述
+                link: '<{$signPackage.url}>', // 分享链接
+                imgUrl: "<{resource app='topwap' path='/images/milier/index/milier_index_share.png'}>", // 分享图标
+                type: '', // 分享类型,music、video或link，不填默认为link
+                dataUrl: '', // 如果type是music或video，则要提供数据链接，默认为空
+                success: function () {
+                    // 用户确认分享后执行的回调函数
+                },
+                cancel: function () {
+                    // 用户取消分享后执行的回调函数
+                }
+            });
+
+        });
+
+        wx.error(function (res) {
+            //alert(res.errMsg);
+        });
+
+        $(".close").on("click",function(){
+            $(".imgBox").hide();
+            $(".imgWapper").hide();
+        });
+
+        function go_to_pay()
+        {
+            $(".imgBox").show();
+            $(".imgWapper").show();
+        }
+    </script>
+</body>
+</html>

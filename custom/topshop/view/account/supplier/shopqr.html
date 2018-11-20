@@ -1,0 +1,110 @@
+<style>
+    #img-show{
+        float: left;
+        width: 300px;
+        height: 450px;
+    }
+    .image-see{
+        position: relative;
+    }
+    #qr-show{
+        float: left;
+        height: 141px;
+        width: 140px;
+        position: absolute;
+        left: 95px;
+        top: 126px;
+    }
+    #yulan{
+        position: absolute;
+        left: 100px;
+        top: 20px;
+    }
+</style>
+<div class="box box-default" style="margin-right:10px">
+    <div class="box-header with-border">
+        <!--<h3 class="box-title"><a href="<{url subdomain=$shop.subdomain action=topc_ctl_shopcenter@index shop_id=$shop.shop_id}>" target="_blank"><{t}><{$shop.shop_id|shopname}><{/t}></a></h3>-->
+        <h3 class="box-title">线下店商户二维码样式设计</h3>
+        <!--<a href="/images/voucher/shaer_bg.rar" target="_blank" class="btn btn-primary" style="float:right;">下载背景图模板</a>-->
+    </div>
+    <div class="box-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label for="" class="col-sm-5 control-label">二维码背景图：</label>
+                    <div class="col-sm-5">
+                        <a class="select-image" data-toggle="modal" href="<{url action=topshop_ctl_shop_image@loadImageModal}>" data-target="#gallery_modal">
+                            <input type="hidden" name="qr_code" value="<{$data.qr_code_bg|storager}>">
+                            <div class="img-put">
+                                <img src="<{if $data.qr_code_bg!='demo_bg'}><{$data.qr_code_bg|storager}><{/if}>" />
+                                <i class="glyphicon glyphicon-picture"></i>
+                            </div>
+                        </a>
+                        <button id="yulan" data-img="/app/topshop/statics/images/qr_default.png" class="btn btn-success" style="margin-bottom: 10px">背景模板下载</button>
+                        <span class="help-block">背景图只支持png格式！提交前清先预览图片！尺寸标准：750*1150px。</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label for="" class="col-sm-2 control-label">预览图：</label>
+                    <div class="col-sm-1">
+                        <button id="tijiao" class="btn btn-success" style="margin-bottom: 10px">图片合成</button>
+                        <button id="xiazai" class="btn btn-success">下载</button>
+                    </div>
+                    <div class="col-sm-4 image-see">
+                        <{if $data.qr_code_bg!='demo_bg'}>
+                        <img id="img-show" src="<{$data.qr_code_bg|storager}>" alt="">
+                        <img id="qr-show" src="<{$data.qr_code|storager}>">
+                        <{else}>
+                        <img id="img-show" src="/app/topshop/statics/images/qr_default.png" alt="">
+                        <img id="qr-show" src="<{$data.qr_code|storager}>">
+                        <{/if}>
+                    </div>
+                    <div class="col-sm-3">
+                        <span class="help-block">生成图大小:</span>
+                        <span class="help-block">宽:</span><input id="img-width" type="text" value="750" dir="rtl"/>px
+                        <span class="help-block">高:</span><input id="img-height" type="text" value="1150" dir="rtl"/>px
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var img = '';
+    var qr = '<{$data.qr_code|storager}>';
+    var agent_shop_id = '<{$data.agent_shop_id}>';
+//    alert(qr);
+    $('#yulan').click(function () {
+       var img = $(this).data('img');
+        window.location.href = '<{url action=topshop_ctl_account_supplier@qrUpload}>'+'?file='+img+'&type=yulan';
+    });
+    $('#xiazai').click(function () {
+        var file = $('#img-show').attr('src');
+        window.location.href = '<{url action=topshop_ctl_account_supplier@qrUpload}>'+'?file='+file;
+    });
+    $('#tijiao').click(function () {
+        if(img == '')
+        {
+            img = $('.select-image input').val();
+        }
+//        $('#img-show').attr('src',img);
+        var width = $('#img-width').val();
+        var height = $('#img-height').val();
+        $.post('<{url action=topshop_ctl_account_supplier@agentShopQrSave}>',{'img':img,'qr':qr,'width':width,'height':height,'agent_shop_id':agent_shop_id},function (data) {
+            if(data.error === true)
+            {
+                alert(data.message);
+            }
+            if(data.success === true)
+            {
+                alert(data.message);
+                window.location.reload();
+            }
+        },'json');
+    });
+</script>

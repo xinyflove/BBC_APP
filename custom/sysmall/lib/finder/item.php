@@ -19,11 +19,14 @@ class sysmall_finder_item {
     public function column_edit(&$colList, $list){
         foreach($list as $k=>$row)
         {
-            $editUrl = '?app=sysmall&ctl=item&act=check&finder_id='.$_GET['_finder']['finder_id'].'&p[0]='.$row['item_id'];
-            $editTar = 'target="dialog::{title:\''.app::get('sysmall')->_('审核').'\', width:400, height:250}"';
-            $html = '<a href="'.$editUrl.'" '.$editTar.'>'.app::get('sysmall')->_('审核').'</a>';
+            if($row['status'] == 'pending')
+            {
+                $editUrl = '?app=sysmall&ctl=item&act=check&finder_id='.$_GET['_finder']['finder_id'].'&p[0]='.$row['item_id'];
+                $editTar = 'target="dialog::{title:\''.app::get('sysmall')->_('审核').'\', width:400, height:250}"';
+                $html = '<a href="'.$editUrl.'" '.$editTar.'>'.app::get('sysmall')->_('审核').'</a>';
 
-            $colList[$k] = $html;
+                $colList[$k] = $html;
+            }
         }
     }
     /*操作列结束*/

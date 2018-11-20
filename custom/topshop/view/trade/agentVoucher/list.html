@@ -1,0 +1,284 @@
+<aside class="control-sidebar control-sidebar-light" style="height: 100%;">
+  <!-- Create the tabs -->
+  <ul class="nav nav-tabs nav-justified control-sidebar-tabs">
+    <li class=""><a href="#">筛选</a></li>
+    <li class=""><a href="#" data-toggle="control-sidebar"><i class="glyphicon glyphicon-remove"></i></a></li>
+  </ul>
+  <!-- Tab panes -->
+  <div class="tab-content">
+    <form action="<{url action=topshop_ctl_trade_agentVoucher@search}>" method="post" role="form" data-validate-onsuccess="ajaxSuccess">
+      <input type="hidden" value="<{$filter.status}>" id="filter_status">
+      <input type="hidden" value="<{$filter.settlement_status}>" id="filter_settlement_status">
+      <div class="box-body">
+        <div class="form-group">
+          <label>时间类型：</label>
+          <select name="time_type" class="form-control time-type-select">
+            <option value="create">下单时间</option>
+            <option value="write">使用时间</option>
+          </select>
+        </div>
+        <!-- Date range -->
+        <div class="form-group">
+          <label>时间:</label>
+          <div class="input-group">
+            <div class="input-group-addon">
+              <i class="fa fa-calendar"></i>
+            </div>
+            <input type="text" name="filter_time" class="form-control pull-right reservation-filter">
+          </div>
+           <!--/.input group -->
+        </div>
+        <!-- /.form group -->
+
+        <!-- text input -->
+        <div class="form-group">
+          <label>订单号：</label>
+          <input type="text" name="sys_tid" class="form-control" placeholder="请输入 ...">
+        </div>
+
+        <di class="form-group">
+          <label>金额类型</label>
+          <select name="agent_price" class="form-control select-reset">
+            <option value=''></option>
+            <option value='off'>无偿劵</option>
+            <option value='on'>有偿劵</option>
+          </select>
+          <input type="hidden" value="<{$filter.agent_price}>" id="filter_agent_price">
+        </di>
+
+        <div class="form-group">
+          <label>卡券类型</label>
+          <select name="agent_type" class="form-control select-reset">
+            <option value=''></option>
+            <option value='CASH_VOCHER'>代金劵</option>
+            <option value='REDUCE'>满减劵</option>
+            <option value='DISCOUNT'>满折劵</option>
+          </select>
+          <input type="hidden" value="<{$filter.gent_type}>" id="filter_agent_type">
+        </div>
+
+        <!-- select -->
+        <div name="status" class="form-group">
+          <label>卡券状态</label>
+          <select name="status" class="form-control select-reset">
+            <{foreach from=$status item=value key=key}>
+            <option value='<{$key|escape:"html"}>'><{$value|escape:"html"}></option>
+            <{/foreach}>
+          </select>
+          <input type="hidden" value="<{$filter.status}>" id="filter_status">
+        </div>
+
+        <!-- text input -->
+        <div class="form-group">
+          <label>卡券名称/关键词：</label>
+          <input type="text" name="keyword" class="form-control" placeholder="请输入 ...">
+        </div>
+        <div class="form-group">
+          <label>供应商：</label>
+          <input type="text" name="supplier" class="form-control" placeholder="请输入 ...">
+        </div>
+      </div>
+
+      <!-- /.box-body -->
+      <div class="box-footer">
+        <button type="button" class="btn btn-default" id="reset-form">重置</button>
+        <button type="submit" class="btn btn-info pull-right">搜索</button>
+      </div>
+      <!-- /.box-footer -->
+    </form>
+  </div>
+</aside>
+
+<div class="nav-tabs-custom" id="tabs">
+  <ul class="nav nav-tabs nav-voucher">
+    <li><a href="<{url action=topshop_ctl_trade_agentVoucher@search}>#tab_0" data-toggle="tab">全部</a></li>
+    <li><a href="<{url action=topshop_ctl_trade_agentVoucher@search}>#tab_1" data-toggle="tab">未使用</a></li>
+    <li><a href="<{url action=topshop_ctl_trade_agentVoucher@search}>#tab_2" data-toggle="tab">已使用</a></li>
+    <li><a href="<{url action=topshop_ctl_trade_agentVoucher@search}>#tab_3" data-toggle="tab">已过期</a></li>
+    <li class="pull-right header export-filter" data-value="" data-app="" data-model="">
+      <div class="btn-group">
+        <a data-href="<{url action=topshop_ctl_exporttrade@exportAgentVoucher}>" class="btn btn-box-tool btn-export" id="export_voucher"><i class="glyphicon glyphicon-open"></i></a>
+        <button data-toggle="control-sidebar" class="btn btn-box-tool">
+          <i class="glyphicon glyphicon-search text-light-blue"></i>
+        </button>
+      </div>
+      <!-- /.btn-group -->
+    </li>
+  </ul>
+  <div class="tab-content">
+    <p class="action-box">
+      <btn class="btn btn-default btn-sm"><input type="checkbox" name="" id="selectAll"> <label for="selectAll">当前页全选</label></btn>
+    </p>
+    <div class="tab-pane" id="tab_0"></div><!-- /.tab-pane -->
+    <div class="tab-pane" id="tab_1"></div><!-- /.tab-pane -->
+    <div class="tab-pane" id="tab_2"></div><!-- /.tab-pane -->
+    <div class="tab-pane" id="tab_3"></div><!-- /.tab-pane -->
+  </div><!-- /.tab-content -->
+</div>
+<!-- /.nav-tabs-custom -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="myModalLabel">更改优惠劵日期</h4>
+      </div>
+      <div class="modal-body">是否修改劵失效日期？</div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+        <button type="button" id="change_e_time" class="btn btn-primary">提交更改</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal -->
+</div>
+<div class="modal fade" id="offlineTradeModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content" style="width: 800px">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="myModalLabel">线下店消费</h4>
+        <div>
+          <p><span class="text-danger">线下店名称:</span><span style="margin-left: 30px" class="text-info" id="offline_data1"> </span></p>
+          <p><span class="text-danger">线下店地址:</span><span style="margin-left: 30px" class="text-info" id="offline_data2"> </span></p>
+          <p><span class="text-danger">所属供应商:</span><span style="margin-left: 30px" class="text-info" id="offline_data3"> </span></p>
+          <p><span class="text-danger">原始价格:</span><span style="margin-left: 30px" class="text-info" id="offline_data4"> </span></p>
+          <p><span class="text-danger">实付金额:</span><span style="margin-left: 30px" class="text-info" id="offline_data5"> </span></p>
+          <p><span class="text-danger">优惠金额:</span><span style="margin-left: 30px" class="text-info" id="offline_data6"> </span></p>
+          <p><span class="text-danger">付款时间:</span><span style="margin-left: 30px" class="text-info" id="offline_data7"> </span></p>
+          <!--<p class="text-info">线下店地址: </p>-->
+          <!--<p class="text-info">所属供应商: </p>-->
+          <!--<p class="text-info">原始价格: </p>-->
+          <!--<p class="text-info">实付金额: </p>-->
+          <!--<p class="text-info">优惠金额: </p>-->
+          <!--<p class="text-info">付款时间: </p>-->
+        </div>
+        <!--<table class="tabl  e" id="offline_trade_table">-->
+        <!--<thead>-->
+        <!--<tr>-->
+        <!--<th>线下店名称</th>-->
+        <!--<th>线下店地址</th>-->
+        <!--<th>所属供应商</th>-->
+        <!--<th>原始价格</th>-->
+        <!--<th>实付金额</th>-->
+        <!--<th>优惠金额</th>-->
+        <!--<th>付款时间</th>-->
+        <!--</tr>-->
+        <!--</thead>-->
+        <!--<tbody>-->
+        <!--<tr>-->
+        <!--<td></td>-->
+        <!--<td></td>-->
+        <!--<td></td>-->
+        <!--<td></td>-->
+        <!--<td></td>-->
+        <!--<td></td>-->
+        <!--<td></td>-->
+        <!--</tr>-->
+        <!--</tbody>-->
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal -->
+</div>
+
+<script>
+    //select all action
+    $('#selectAll').change(function(){
+        $('.data-list input[type=checkbox]').prop('checked', this.checked);
+    });
+    //initial time plugin
+    $('.reservation-filter').daterangepicker({
+        "startDate": "2016/07/01",
+        format: 'YYYY/MM/DD',
+        opens: 'right'
+    });
+    //select write_time to search
+    $('select[name=time_type]').on('change',function(){
+        var time_type=$('select[name=time_type] option:selected').val();
+        if(time_type=='write'){
+            $("form select[name=status]").val(2);
+            $("form select[name=status]").prop('disabled','disabled');
+            $('.nav-voucher li:eq(0)').hide();
+            $('.nav-voucher li:eq(1)').hide();
+            $('.nav-voucher li:eq(3)').hide();
+        }else{
+            $("form select[name=status]").prop('disabled','');
+            $('.nav-voucher li:eq(0)').show();
+            $('.nav-voucher li:eq(1)').show();
+            $('.nav-voucher li:eq(3)').show();
+        }
+    })
+    $('#reset-form').on('click',function(){
+        $("select[name=time_type]").val("create");
+        $("form select[name=status]").prop('disabled','');
+        $('.nav-voucher li:eq(0)').show();
+        $('.nav-voucher li:eq(1)').show();
+        $('.nav-voucher li:eq(3)').show();
+    })
+    $('#tabs a[data-toggle="tab"]').on('show.bs.tab', function (e) {
+        var tabhref = $(this).attr('href');
+        var tab = tabhref.split("#")[1];
+        var status = tab.split("_")[1];
+        $("form select[name=status]").val(status);
+        $('#'+tab).load(tabhref,$('form').serialize());
+        //$('#'+tab).load(tabhref,{'status':status});
+        $('#filter_status').val(status);
+    }).eq($('#filter_status').val()).trigger('click');
+
+    function ajaxSuccess(e) {
+        var form = e.target;
+        $(form).find('button[type=submit]').prop('disabled', false);
+        e.preventDefault();
+        $.post(form.action, $(form).serialize(),function(rs){
+            var status = $(form).find('select[name=status]').val();
+            $('#tabs a[data-toggle="tab"]').eq(status).parent().addClass('active').siblings().removeClass('active');
+            $('#tabs .tab-pane.active').html(rs);
+        });
+    }
+
+    $(document).ready(
+        function() {
+            $(".sidebar .sidebar-menu li a i.glyphicon").eq(1).removeClass("glyphicon-list-alt").addClass("glyphicon-stats");
+        }
+    );
+
+    $('#export_voucher').on('click',function(e){
+        alert(123);
+        e.preventDefault();
+        var url = $(this).attr('data-href');
+        //获取列表选中项
+        var listArr = []
+        var filter = null
+        var list = $('.data-list tbody tr')
+        for (var i = 0; i < list.length; i++) {
+            var checked = $(list[i]).find('input[type="checkbox"]');
+            if($(checked).prop('checked')==true){
+                var listId = $(checked).val();
+                listArr.push(listId);
+            }
+        };
+        var timetype=$('select[name=time_type]').find('option:checked').val()?$('select[name=time_type]').find('option:checked').val():'create';
+        var filter_time=$('input[name=filter_time]').val()?$('input[name=filter_time]').val():'';
+        var sys_tid=$('input[name=sys_tid]').val()?$('input[name=sys_tid]').val():'';
+        var keyword=$('input[name=keyword]').val()?$('input[name=keyword]').val():'';
+        var status=$('select[name=status]').find('option:checked').val()?$('select[name=status]').find('option:checked').val():'';
+//        var voucher_code=$('input[name=voucher_code]').val()?$('input[name=voucher_code]').val():'';
+        var supplier=$('input[name=supplier]').val()?$('input[name=supplier]').val():'';
+        var agent_price=$('select[name=agent_price]').find('option:checked').val()?$('select[name=agent_price]').find('option:checked').val():'';;
+        var agent_type=$('select[name=agent_type]').find('option:checked').val()?$('select[name=agent_type]').find('option:checked').val():'';;
+
+        //导出当前表格选中的内容
+        if( listArr.length > 0 ){
+            filter = '{"voucher_id":['+ listArr + '],"sys_tid":"'+sys_tid+'","time_type":"'+timetype+'","keyword":"'+keyword+'","status":"'+status+'","supplier":"'+supplier+'","filter_time":"'+filter_time+'"}';
+            window.location.href=url+'?params='+filter;
+        }else{
+            filter = '{"sys_tid":"'+sys_tid+'","keyword":"'+keyword+'","time_type":"'+timetype+'","status":"'+status+'","supplier":"'+supplier+'","filter_time":"'+filter_time+'","agent_price":"'+agent_price+'","agent_type":"'+agent_type+'"}';
+            $('.export-filter').attr('data-value',filter);
+        }
+
+        window.location.href=url+'?params='+filter;
+    })
+</script>

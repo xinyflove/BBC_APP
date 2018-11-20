@@ -1,0 +1,39 @@
+<div class="box box-primary clearfix">
+    <table class="table table-hovet">
+        <thead>
+        <tr>
+            <th>选项</th>
+            <th>用户id</th>
+            <th>用户名</th>
+            <th>用户手机号</th>
+            <th>用户邮箱</th>
+        </tr>
+        </thead>
+        <{if $user_list}>
+        <tbody>
+        <{foreach from=$user_list item=item}>
+        <tr>
+            <td><input type="checkbox" name="account_id[]" class="account_checkbox" data-id="<{$item.user_id}>"/></td>
+            <td><{$item.user_id}></td>
+            <td><{$item.login_account}></td>
+            <td><{$item.mobile}></td>
+            <td><{$item.email}></td>
+        </tr>
+        <{/foreach}>
+        </tbody>
+        <{else}>
+        <tbody id="none_cat">
+        <tr class="none-information">
+            <td colspan="6"><p class="help-block text-center">暂无数据</p></td>
+        </tr>
+        </tbody>
+        <{/if}>
+    </table>
+    <div class="pull-right">
+        <{pagers data=$pagers}>
+        <{if $count > 0}>
+        <span class="page-number">共&nbsp;<em class="text-aqua"><{$count}></em>&nbsp;条记录</span>
+        <{/if}>
+    </div>
+</div>
+

@@ -1,0 +1,75 @@
+<div class="tableform">
+    <form id="sysmaker_form" name="sysmaker_form" action="?app=sysmaker&ctl=seller&act=saveSeller"  method="post">
+        <div class="division">
+            <table width="100%" cellspacing="0" cellpadding="0" border="0">
+                <tbody>
+                <tr>
+                    <th><em class="red">用户信息</em></th>
+                    <{input type="hidden" name="seller[seller_id]" value=$sellerInfo.seller_id}>
+                </tr>
+                <tr>
+                    <th><{t}>手机号：<{/t}></th>
+                    <td><{input type="text" vtype="required"  name="seller[mobile]" value=$sellerInfo.mobile}></td>
+                </tr>
+                <tr>
+                    <th><{t}>姓名：<{/t}></th>
+                    <td><{input type="text" vtype="required"  name="seller[name]" value=$sellerInfo.name}></td>
+                </tr>
+                <{if empty($sellerInfo.seller_id)}>
+                <tr>
+                    <th><{t}>用户登录密码：<{/t}></th>
+                    <td><{input type="password" vtype="required"  name="seller[login_password]"}></td>
+                </tr>
+                <tr>
+                    <th><{t}>确认密码：<{/t}></th>
+                    <td><{input type="password" vtype="required"  name="seller[psw_confirm]"}></td>
+                </tr>
+                <{/if}>
+
+                </tbody>
+            </table>
+        </div>
+
+        <table cellspacing="0" cellpadding="0" class="table-action">
+            <tbody>
+            <tr valign="middle">
+                <td>
+                    <{assign var="___c"  value='确定退出?'|t:'sysmaker'}>
+
+                    <{button label="保存并关闭窗口"|t:'sysmaker' class="btn-primary" type="button"  onclick="submitForm(event,2)"}>
+
+                    <{button label="关  闭"|t:'content' class="btn-secondary" type="button" isclosedialogbtn="1"}>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </form>
+</div>
+
+<script>
+    var submitForm = function (event,sign){
+        var _form=$('sysmaker_form');
+        switch (sign){
+            case 1:
+                var target={
+                    onComplete:function(){
+                        location.reload();
+                    }};
+                break;
+            case 2:
+                var target={
+                    onComplete:function(rs){
+                        if(rs&&!!JSON.decode(rs).success){
+                            window.finderGroup['<{$env.get.finder_id}>'].refresh();
+                            _form.getParent('.dialog').retrieve('instance').close();
+                        }
+                    }};
+                break;
+        }
+        _form.store('target',target);
+        if(confirm('是否保存?')) {
+            _form.fireEvent('submit',new Event(event));
+        }
+    };
+
+</script>

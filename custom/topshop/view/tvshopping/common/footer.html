@@ -1,0 +1,13 @@
+<script src="/app/topwap/tvshopping/lib/mescroll/mescroll.min.js"></script>
+
+  <script>
+  // 王衍生-2018/07/06-end
+  $(function(){
+    $("img.imglazyload").lazyload({
+        placeholder: '<{$env.app.topwap.res_url}>/images/lmlazy.png',
+        effect : "fadeIn",
+		container: $("#mescroll"),  // 对某容器中的图片实现效果
+		threshold :500,
+     });
+  });
+  </script>

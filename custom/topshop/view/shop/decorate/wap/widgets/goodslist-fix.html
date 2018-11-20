@@ -1,0 +1,107 @@
+<script type="text/html" id="goods_fix">
+    <div class="decorate-layout-items" id="<%= wid %>" data-widgets="goods_fix">
+      <div class="widgets-goods_fix-like">
+        <div class="section-title">
+          <% if(title != ''){ %>
+          <div class="title-txt"><%= title %></div>
+          <% }else{ %>
+          <div class="title-txt">展示标题</div>
+          <% } %>
+          <% if(list.length > 6){ %>
+          <a href="#"><i class="fa fa-angle-right"></i></a>
+          <% } %>
+        </div>
+        <ul class="pro-list-grid">
+          <% if(list.length > 0){ %>
+          <% for(var i=0; i<list.length; i++){ %>
+            <% if(i<6){ %>
+            <li>
+              <div class="thumb">
+                <div class="thumb-img">
+                  <a href="<%= list[i].goodslink %>"><img src="<%= list[i].imgurl %>" alt=""></a>
+                </div>
+                <div class="caption">
+                  <h1 class="goods-title"><span class="tag"><%= list[i].goodstag %></span><%= list[i].goodstitle %></h1>
+                  <div class="price">
+                    <div class="amount CNY"><%= list[i].price %></div>
+                    <div class="purchased">已有<%= list[i].soldnum %>人购买</div>
+                  </div>
+                </div>
+              </div>
+            </li>
+            <% } %>
+          <% } %>
+          <% }else{ %>
+            <li>
+              <div class="thumb">
+                <div class="thumb-img">
+                  <a href="#"><img src="http://placehold.it/180x180" alt=""></a>
+                </div>
+                <div class="caption">
+                  <h1 class="goods-title"><span class="tag">促销</span>商品标题</h1>
+                  <div class="price">
+                    <div class="amount CNY">¥ 30.00</div>
+                    <div class="purchased">已有5人购买</div>
+                  </div>
+                </div>
+              </div>
+            </li>
+            <li>
+              <div class="thumb">
+                <div class="thumb-img">
+                  <a href="#"><img src="http://placehold.it/180x180" alt=""></a>
+                </div>
+                <div class="caption">
+                  <h1 class="goods-title"><span class="tag">促销</span>商品标题</h1>
+                  <div class="price">
+                    <div class="amount CNY">¥ 30.00</div>
+                    <div class="purchased">已有5人购买</div>
+                  </div>
+                </div>
+              </div>
+            </li>
+          <% } %>
+        </ul>
+      </div>
+    </div>
+  </script><script type="text/html" id="goods_fix_form">
+    <div class="goods_fix" data-id="<%= wid %>">
+      <h5>商品展示(固定)</h5>
+      <div class="form-group">
+        <input type="text" name="title" class="form-control" value="<%= title %>" placeholder="展示区域标题">
+      </div>
+      <div class="form-group">
+        <p class="help-block">已选择商品</p>
+		<span style="color:red">*输入框中可输入数字进行首页商品的展示排序,数字越小越靠前,不能用使用"0"进行排序!最多可选20个!*</span>
+        <div id="selected_goods">
+          <% if(list.length > 0){ %>
+          <table wdith="100%" class="table table-primary table-hover table-goods">
+            <tbody>
+              <% for(var i=0; i<list.length; i++){ %>
+              <tr data-itemid="<%= list[i].item_id %>" data-sort="<%= list[i].sort %>">
+                <td>
+                  <input type="hidden" name="item_id[]" value="<%= list[i].item_id %>">
+                  <div class="goods">
+                    <a href="<%= list[i].goodslink %>" target="_blank">
+                      <img src="<%= list[i].imgurl %>" alt="">
+                      <span><%= list[i].goodstitle %></span>
+                      <span><%= list[i].price %></span>
+                    </a>
+                  </div>
+                </td>
+				<!--add_2017/11/9_by_wanghaichao_start-->
+				  <td><div style="overflow:hidden"><input style="width:30px;padding:0;text-align:center" class="sort_<%= list[i].item_id %> form-control" name="sort" type="number" min='1' value="<%= list[i].sort %>"></div></td>
+				<!--add_2017/11/9_by_wanghaichao_end-->
+                <td><a class="item-del" href="#">删除</a></td>
+              </tr>
+              <% } %>
+            </tbody>
+          </table>
+          <% } %>
+        </div>
+      </div>
+      <div class="form-group">
+        <a class="btn btn-primary form-control select-goods" href="<{url action=topshop_ctl_selector_item@loadSelectGoodsModal limit=16}>" data-item_id="<{$notEndItem}>" data-limit="20" data-textcol="title,price" data-toggle="modal" data-target="#goods_modal" data-insertwhere="#selected_goods" data-fetchgoods="<{url action=topshop_ctl_selector_item@formatSelectedGoodsRow}>">选择商品</a>
+      </div>
+    </div>
+  </script>

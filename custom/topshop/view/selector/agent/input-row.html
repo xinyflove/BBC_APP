@@ -1,0 +1,42 @@
+
+<table wdith="100%" class="table table-primary table-hover table-goods">
+    <tr class='package_input'>
+        <td width="60%">线下店名称</td>
+        <td width="40">操作</td>
+    </tr>
+  <{foreach from=$_input.agentsList item=item key=key}>
+
+  <tr data-itemid="<{$item.agent_shop_id}>" class='package_input'>
+    <td width="60%">
+      <input type="hidden" name="params[agent_id][]" value="<{$item.agent_shop_id}>" />
+      <div class="goods">
+        <a href="" target="_blank">
+            <span><{$item.name}></span>
+        </a>
+      </div>
+    </td>
+    <td width="40"><a class="item-del" href="#">删除</a></td>
+  </tr>
+  <{/foreach}>
+</table>
+
+
+<!-- Modal -->
+
+
+<script>
+  $('.item-del').click(function(e) {
+    e.preventDefault();
+    $(this).parents('tr').remove();
+  });
+  $('.show-sku').click(function(event) {
+    var url =  $(this).data('remote');
+    $('#show_sku_madal .modal-content').load(url);
+  });
+
+  $('#show_sku_madal').on('show.bs.modal',function(event){
+    _this = event.relatedTarget;
+    var thisSku = $($($(_this).parents('tr')).find('input[name="item_sku[]"]')).val();
+    $('#show_sku_madal').data('skuids',thisSku);
+  })
+</script>

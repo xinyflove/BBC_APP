@@ -1,0 +1,113 @@
+<form class="form-horizontal" action="<{url action=topshop_ctl_syscart_syscart@cartAdd}>" method="post" id="login_submit" class="cart-submit-form" data-validate-onsuccess="ajaxSubmit" data-validate-excluded=":disabled, :not(:visible)">
+  <input type="hidden" name="submit" value="true">
+  <input type="hidden" name="cart_id" value="<{$cart.cart_id}>">
+  <div class="panel panel-outter">
+    <div class="panel-heading" style="position:relative">
+        <h4>  <{if $cart_id}>编辑车辆信息
+              <{else}>新增车辆信息<{/if}>
+        </h4>
+		<button style="position:absolute;right:20px;top:10px;border:none;background-color:#00639e;color:#fff;padding:8px 15px;" onclick="history.back()">返回</button>
+    </div>
+    <div class="panel-body">
+      <div class="col-md-11">
+        <h4>新增车辆信息</h4>
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            基本内容
+          </div>
+          <div class="panel-body">
+            <div class="form-group" id="lx_name">
+              <label for="" class="col-sm-2 control-label"><span class="txt-required">*</span>车辆品牌：</label>
+              <div class="col-sm-3">
+                <input type="text" required name="cart_name" maxlength="30" value="<{$cart.cart_name}>" class="form-control">
+              </div>
+            </div>
+
+            <div class="form-group" id="lx_name">
+              <label for="" class="col-sm-2 control-label"><span class="txt-required">*</span>厂牌型号：</label>
+              <div class="col-sm-3">
+                <input type="text" name="type" required maxlength="30" value="<{$cart.type}>" class="form-control">
+              </div>
+            </div>
+
+            <div class="form-group" id="lx_name">
+              <label for="" class="col-sm-2 control-label"><span class="txt-required">*</span>车辆识别代号(车架号)：</label>
+              <div class="col-sm-3">
+                <input type="text" required name="frame_code" maxlength="30" value="<{$cart.frame_code}>" class="form-control">
+              </div>
+            </div>
+
+            <div id="lx_mobile" class="form-group">
+              <label for="" class="col-sm-2 control-label"><span class="txt-required"></span>车牌号：</label>
+              <div class="col-sm-3">
+                <input type="text" name="cart_number" maxlength="30" value="<{$cart.cart_number}>" class="form-control">
+              </div>
+            </div>
+
+            <div id="lx_mobile" class="form-group">
+              <label for="" class="col-sm-2 control-label"><span class="txt-required">*</span>汽车总价：</label>
+              <div class="col-sm-3">
+                <input type="text" required name="price" maxlength="30" value="<{$cart.price}>" class="form-control">
+              </div>
+            </div>
+			
+
+            <div id="lx_mobile" class="form-group">
+              <label for="" class="col-sm-2 control-label"><span class="txt-required"></span>汽车颜色：</label>
+              <div class="col-sm-3">
+                <input type="text" name="color" maxlength="30" value="<{$cart.color}>" class="form-control">
+              </div>
+            </div>
+
+
+            <div id="lx_mobile" class="form-group">
+              <label for="" class="col-sm-2 control-label"><span class="txt-required"></span>备注：</label>
+              <div class="col-sm-3">
+               <textarea name="remarks" maxlength="30" class="form-control"><{$cart.remarks}></textarea>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+	  <div class="col-md-2" style="text-align:center;margin-bottom:60p;">
+		<button type="submit" class="btn btn-primary btn-lg btn-block save-action" style="margin-left:1em;">保存</button>
+	  </div>
+    </div>
+  </div>
+</form>
+
+<{script src="md5.js" app="desktop"}>
+<{script app="toputil" src="jquery-catselect.js"}>
+<script>
+
+$('input:radio[name="item[is_person]"]').change(function(){
+	var is_person=$(this).val();
+	if(is_person==1){
+		$('#lx_name').show();
+		$('#lx_mobile').show();
+		$('#company').hide();
+	}else{
+		$('#lx_name').hide();
+		$('#lx_mobile').hide();
+		$('#company').show();
+	}
+});
+
+function ajaxSubmit (e) {
+  var form = e.target;
+  e.preventDefault();
+  $.post(form.action, $(form).serialize(), function(rs) {
+    if(rs.error) {
+      $('#messagebox').message(rs.message);
+      return;
+    }
+    if(rs.success) {
+      $('#messagebox').message(rs.message, 'success');
+    }
+    if(rs.redirect) {
+      location.href = rs.redirect;
+    }
+  });
+}
+</script>

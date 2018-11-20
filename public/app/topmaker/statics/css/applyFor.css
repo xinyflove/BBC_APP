@@ -1,0 +1,194 @@
+.m-hacker-applyFor {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background: #ff3f73;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+.m-hacker-applyFor .applyFor-content {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  padding-top: 5.5rem;
+  background: url('../images/apply/backi.png') no-repeat top;
+  background-size: 100%;
+}
+.m-hacker-applyFor .applyFor-content .applyFor-content-into {
+  width: 6rem;
+  height: auto;
+  background: #fff;
+  border: 0.05rem solid #fc793d;
+  border-radius: 0.2rem;
+  margin: 0 auto;
+  padding-bottom: 0.3rem;
+}
+.m-hacker-applyFor .applyFor-content .applyFor-content-into .into-title {
+  width: 100%;
+  height: 1.15rem;
+  text-align: center;
+  font-size: 0.36rem;
+  line-height: 1.15rem;
+  color: #ed584d;
+}
+.m-hacker-applyFor .applyFor-content .applyFor-content-into .into-input {
+  display: block;
+  width: 4.32rem;
+  height: 0.65rem;
+  border: 1px solid #fe7a37;
+  background: #ffebd2;
+  border-radius: 0.65rem;
+  margin: 0 auto;
+  margin-bottom: 0.2rem;
+  font-size: 0.28rem;
+  color: #f8835d;
+  padding-left: 0.42rem;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.m-hacker-applyFor .applyFor-content .applyFor-content-into .into-input-btn {
+  display: inline-block;
+  position: absolute;
+  right: 1rem;
+  height: 100%;
+  top: 0;
+  line-height: 0.67rem;
+  font-size: 0.28rem;
+  color: #ee574e;
+}
+.m-hacker-applyFor .applyFor-content .applyFor-content-into .into-input-wait {
+  display: none;
+  position: absolute;
+  right: 1rem;
+  height: 100%;
+  top: 0;
+  line-height: 0.67rem;
+  font-size: 0.28rem;
+  color: #ee574e;
+}
+.m-hacker-applyFor .applyFor-content .applyFor-content-into input::-webkit-input-placeholder,
+.m-hacker-applyFor .applyFor-content .applyFor-content-into textarea::-webkit-input-placeholder {
+  color: #f8835d;
+}
+.m-hacker-applyFor .applyFor-content .applyFor-content-into input:-moz-placeholder,
+.m-hacker-applyFor .applyFor-content .applyFor-content-into textarea:-moz-placeholder {
+  color: #f8835d;
+}
+.m-hacker-applyFor .applyFor-content .applyFor-content-into input::-moz-placeholder,
+.m-hacker-applyFor .applyFor-content .applyFor-content-into textarea::-moz-placeholder {
+  color: #f8835d;
+}
+.m-hacker-applyFor .applyFor-content .applyFor-content-into input:-ms-input-placeholder,
+.m-hacker-applyFor .applyFor-content .applyFor-content-into textarea:-ms-input-placeholder {
+  color: #f8835d;
+}
+.m-hacker-applyFor .applyFor-content .applyFor-content-into .lose-img {
+  width: 100%;
+  height: auto;
+  padding: 0.45rem 0;
+}
+.m-hacker-applyFor .applyFor-content .applyFor-content-into .lose-img img {
+  width: 1.4rem;
+  height: 1.34rem;
+  margin: 0 auto;
+}
+.m-hacker-applyFor .applyFor-content .applyFor-content-into .lose-result {
+  width: 100%;
+  height: auto;
+  text-align: center;
+  color: #ed584d;
+  font-size: 0.32rem;
+}
+.m-hacker-applyFor .applyFor-content .applyFor-content-into .lose-text {
+  width: 100%;
+  height: auto;
+  text-align: center;
+  color: #999;
+  font-size: 0.24rem;
+  margin-top: 0.4rem;
+  padding-bottom: 0.5rem;
+}
+.m-hacker-applyFor .applyFor-content .applyFor-content-btn {
+  width: 100%;
+  height: auto;
+  margin-top: 0.3rem;
+}
+.m-hacker-applyFor .applyFor-content .applyFor-content-btn p {
+  width: 4.32rem;
+  height: 0.83rem;
+  margin: 0 auto;
+  text-align: center;
+  line-height: 0.83rem;
+  border-radius: 0.83rem;
+  font-size: 0.28rem;
+  color: #fffeff;
+  background: #f8825c;
+}
+.m-hacker-applyFor .applyFor-content .into-proress {
+  width: 100%;
+  height: auto;
+  padding-left: 0.2rem;
+  position: relative;
+  margin: 0.7rem 0;
+}
+.m-hacker-applyFor .applyFor-content .into-proress:after {
+  clear: both;
+  content: '';
+  display: block;
+  width: 0;
+  height: 0;
+  visibility: hidden;
+}
+.m-hacker-applyFor .applyFor-content .into-proress .into-proress-li {
+  float: left;
+  width: 1.88rem;
+}
+.m-hacker-applyFor .applyFor-content .into-proress .into-proress-li img {
+  width: 0.68rem;
+  height: 0.62rem;
+  margin: 0 auto;
+}
+.m-hacker-applyFor .applyFor-content .into-proress .into-proress-li .li1 {
+  display: none;
+}
+.m-hacker-applyFor .applyFor-content .into-proress .into-proress-li .li2 {
+  display: block;
+}
+.m-hacker-applyFor .applyFor-content .into-proress .into-proress-li p {
+  width: 100%;
+  height: auto;
+  text-align: center;
+  font-size: 0.28rem;
+  color: #999;
+  margin-top: 0.7rem;
+}
+.m-hacker-applyFor .applyFor-content .into-proress .active p {
+  color: #ed584d;
+}
+.m-hacker-applyFor .applyFor-content .into-proress .active .li1 {
+  display: block;
+}
+.m-hacker-applyFor .applyFor-content .into-proress .active .li2 {
+  display: none;
+}
+.m-hacker-applyFor .applyFor-content .into-proress .into-proress-warn1 {
+  width: 1.24rem;
+  height: 0.05rem;
+  background: #ccc;
+  position: absolute;
+  top: 0.25rem;
+  left: 1.44rem;
+}
+.m-hacker-applyFor .applyFor-content .into-proress .into-proress-warn2 {
+  width: 1.25rem;
+  height: 0.05rem;
+  background: #ccc;
+  position: absolute;
+  top: 0.25rem;
+  left: 3.31rem;
+}
+.m-hacker-applyFor .applyFor-content .into-proress .warn-active {
+  background: #ffa7a0;
+}

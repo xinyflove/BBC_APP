@@ -1,0 +1,66 @@
+
+<div class="box box-primary">
+    <form action="<{url action=topshop_ctl_supplier_decorate@save}>" method="post" class="form-horizontal clearfix" data-validate-onsuccess="ajaxSubmit" role="form">
+        <input type="hidden" name="widget[widget_id]" value="<{$widget.widget_id}>">
+        <input type="hidden" name="widget[widget_type]" value="<{$widget.widget_type}>">
+        <input type="hidden" name="widget[page_type]" value="<{$widget.page_type}>">
+
+        <div class="box-body">
+            <div class="form-group">
+                <label class="col-sm-3 control-label">挂件名称：</label>
+                <div class="col-sm-3">
+                    <input type="text" name="widget[widget_name]" value="<{$widget.widget_name}>" class="form-control" placeholder="" required maxlength="90">
+                </div>
+            </div>
+
+            <{include file=$widget_config_path}>
+
+            <!--排序-->
+            <div class="form-group" style="display: none;">
+                <label class="col-sm-3 control-label">排序：</label>
+                <div class="col-sm-2">
+                    <input type="number" min="0" name="widget[order_sort]" value="<{$widget.order_sort}>" class="form-control">
+                    <span class="help-block">数字越小越靠前。</span>
+                </div>
+            </div>
+
+            <!--是否启用-->
+            <div class="form-group">
+                <label class="col-sm-3 control-label">是否启用：</label>
+                <div class="col-sm-3">
+                    <label  class="form-inline">
+                        <input class="" type="radio" name="widget[disabled]" value="0" <{if $widget.disabled != 1}>checked<{/if}>> 是
+                    </label>
+                    <label  class="form-inline">
+                        <input class="" type="radio" name="widget[disabled]" value="1" <{if $widget.disabled == 1}>checked<{/if}>> 否
+                    </label>
+                </div>
+            </div>
+
+            <div class="box-footer">
+                <button type="submit" class="btn btn-primary"><{t}>保存<{/t}></button>
+                &nbsp;
+                <a href="<{url action=topshop_ctl_supplier_decorate@index}>" class="btn btn-default">取消</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    function ajaxSubmit (e) {
+        var form = e.target;
+        e.preventDefault();
+        $.post(form.action, $(form).serialize(), function(rs) {
+            if(rs.error) {
+                $('#messagebox').message(rs.message);
+                return;
+            }
+            if(rs.success) {
+                $('#messagebox').message(rs.message, 'success');
+            }
+            if(rs.redirect) {
+                location.href = rs.redirect;
+            }
+        });
+    }
+</script>

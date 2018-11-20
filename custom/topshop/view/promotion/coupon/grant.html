@@ -1,0 +1,99 @@
+<form action="<{url action=topshop_ctl_promotion_coupon@grant_coupon_code}>" method="post" class="form-horizontal clearfix" data-validate-onsuccess="ajaxSubmit" role="form">
+  <div class="panel panel-default">
+    <div class="panel-heading">指定发放优惠券</div>
+    <div class="panel-body">
+      <div class="form-group">
+        <label for="" class="col-sm-2 control-label">
+          <{t}>优惠券ID
+          <{/t}>：</label>
+        <div class="col-sm-4">
+          <input type="text" name="coupon_id" required value="<{$coupon_id}>" class="form-control" placeholder="优惠券id,多个用逗号隔开" maxlength="50" required>
+        </div>
+      </div>
+
+    </div>
+  </div>
+    <!--modify_2018-09-03_by_xinyufeng_start-->
+  <div class="panel panel-default select-users-panel">
+    <div class="panel-heading">
+      选择用户
+    </div>
+    <div class="panel-body">
+      <div  class="col-sm-10 radio">
+        <label class="form-inline">
+          <input type="radio" name="is_all_user" value='1' checked>
+          全部用户
+        </label>
+        <label class="form-inline">
+          <input type="radio" name="is_all_user" value='0'>
+          部分用户
+        </label>
+      </div>
+    </div>
+    <div class="panel-body" id="userChoseList" style="display: none;">
+      <button class="btn btn-md btn-block btn-danger select-users" data-remote="<{url action=topshop_ctl_selector_users@loadSelectUsersModal}>"  data-user_id="<{$notEndItem}>" data-target="#users_modal" data-fetchusers="<{url action=topshop_ctl_selector_users@formatSelectedUsersRow}>">选择用户</button>
+      <div class="selected-users-list">
+
+      </div>
+    </div>
+  </div>
+    <!--modify_2018-09-03_by_xinyufeng_end-->
+
+  <div class="row">
+    <div class="col-md-4">
+
+    </div>
+    <div class="col-md-2">
+      <button type="submit" class="btn btn-primary btn-lg btn-block action-save">保存</button>
+    </div>
+    <div class="col-md-2">
+      <a href="<{url action="topshop_ctl_promotion_coupon@list_coupon"}>"><button type="button" class="btn btn-default btn-lg btn-block action-cancel">取消</button></a>
+    </div>
+    <div class="col-md-4">
+
+    </div>
+  </div>
+</form>
+<script>
+    $('.reservation').daterangepicker({
+        "timePicker": true,
+        "opens": "right",
+        "timePicker24Hour": true,
+        "timePickerIncrement": 1,
+        "locale": {
+            "format": "YYYY/MM/DD HH:mm"
+        }
+    });
+
+    function ajaxSubmit (e) {
+        var form = e.target;
+        console.log(form);
+        e.preventDefault();
+        $.post(form.action, $(form).serialize(), function(rs) {
+            if(rs.error) {
+                $('#messagebox').message(rs.message);
+                return;
+            }
+            if(rs.success) {
+                $('#messagebox').message(rs.message, 'success');
+            }
+            if(rs.redirect) {
+                location.href = rs.redirect;
+            }
+        });
+    }
+
+    /*add_2018-09-03_by_xinyufeng_start*/
+    $('input[name="is_all_user"]').click(function () {
+        var val = $(this).val();
+        if(val == 1)
+        {
+            $('#userChoseList').hide();
+        }
+        else
+        {
+            $('#userChoseList').show();
+        }
+    });
+    /*add_2018-09-03_by_xinyufeng_end*/
+</script>

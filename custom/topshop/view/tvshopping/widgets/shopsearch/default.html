@@ -1,0 +1,13 @@
+<!--顶部搜索-->
+<div class="m-lm-index-header">
+	<div class="header-logo">
+		<img src="<{$setting.logo_pic|storager:t}>" alt="">
+	</div>
+	<div class="header-search">
+		<img src="/app/topwap/tvshopping/images/search_icon.png" alt="">
+            <form action="<{url action=topwap_ctl_shop_list@index shop_id=$datas['shop_id']}>" method="post" id="goods_search">
+				<input type="text" name="search_keywords" placeholder="<{$datas['searchword']}>" style="width:100%">
+				<!--<input type="search" name="search_keywords" class="header-search shopex-input-clear" value="<{$search_keywords}>"  placeholder="搜索店铺内商品">-->
+            </form>
+	</div>
+</div>

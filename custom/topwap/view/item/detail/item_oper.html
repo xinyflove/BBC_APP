@@ -1,0 +1,52 @@
+<{*<{if $is_bank=='NO_BANK'}>
+<div class="op-item goods-op-incart" style="border-right:1px solid #eee">
+    <a href="<{url action=topwap_ctl_member_bindbank@index next_page=$next_page}>" class="cart-relative">
+        <!---<i class="bbc-icon bbc-icon-cart-empty cart-relative"></i>-->
+        <span>绑卡享优惠</span>
+    </a>
+</div>
+<{/if}>*}>
+
+<!-- <div class="op-item op-btn bbc-btn-disabled goods-op-nostock">缺货</div> -->
+<{if $item.valid && $item.realStore > 0  && $item.sell_time<$now_time}>
+    <{if !$item.sell_time_end || $item.sell_time_end>$now_time}>
+
+        <!-- update start whc判断用户银行卡权限- -->
+        <{if $is_bank!='NO_BANK'}>
+            <{if $nologin!=1}>
+                <{if !$seller_id && $item['is_ticket']!=1}>
+                <div class="op-item op-btn goods-op-cart"><a href="<{url action=topwap_ctl_cart@addCart}>" class="action-addtocart"  rel="_request">加入购物车</a></div>
+                <{/if}>
+                <div class="op-item op-btn goods-op-buy"><a href="<{url action=topwap_ctl_passport@goLogin next_page=$next_page}>">立即购买</a></div>
+            <{else}>
+                <{if !$seller_id && $item['is_ticket']!=1}>
+                <div class="op-item op-btn goods-op-cart"><a href="<{url action=topwap_ctl_cart@addCart}>" class="action-addtocart"  rel="_request">加入购物车</a></div>
+                <{/if}>
+                <div class="op-item op-btn goods-op-buy"><a href="javascript:void(0);" class="action-fastbuy">立即购买</a></div>
+            <{/if}>
+        <{else}>
+            <{if $nologin!=1}>
+                <{if !$seller_id && $item['is_ticket']!=1}>
+                <div class="op-item op-btn goods-op-cart"><a href="<{url action=topwap_ctl_passport@goLogin next_page=$next_page}>" class="action-addtocart"  rel="_request">加入购物车</a></div>
+                <{/if}>
+                <div class="op-item op-btn goods-op-buy"><a href="<{url action=topwap_ctl_passport@goLogin next_page=$next_page}>">立即购买</a></div>
+            <{else}>
+                <{if $item.only_bank==1}>
+                    <{if !$seller_id && $item['is_ticket']!=1}>
+                    <div class="op-item op-btn goods-op-cart"><a href="#" class="bindbank"  rel="_request">加入购物车</a></div>
+                    <{/if}>
+                    <div class="op-item op-btn goods-op-buy"><a href="#" class="bindbank">立即购买</a></div>
+                <{else}>
+                    <{if !$seller_id && $item['is_ticket']!=1}>
+                    <div class="op-item op-btn goods-op-cart"><a href="<{url action=topwap_ctl_cart@addCart}>" class="action-addtocart"  rel="_request">加入购物车</a></div>
+                    <{/if}>
+                    <div class="op-item op-btn goods-op-buy"><a href="javascript:void(0);" class="action-fastbuy">立即购买</a></div>
+                <{/if}>
+            <{/if}>
+        <{/if}>
+        <!-- end whc判断用户银行卡权限--- -->
+
+    <{else}>
+        <div class="op-item op-btn goods-op-buy bbc-btn-disabled" style="width:14rem">暂不销售</div>
+    <{/if}>
+<{/if}>

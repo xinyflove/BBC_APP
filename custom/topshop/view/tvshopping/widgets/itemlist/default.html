@@ -1,0 +1,128 @@
+
+<!--热门推荐-->
+<div class="m-lm-index-hotRec">
+	<div class="m-lm-index-publicTitle">
+		<img src="<{$datas['title_pic']|storager}>" alt="" class="publicTitle-img">
+	</div>
+	<ul class="hotRec-list item_lists" id="dataList">
+		<{foreach from=$datas['item'] item=item}>
+		<li class="m-lm-index-swiperList4">
+			<a href="<{url action=topwap_ctl_item_detail@index item_id=$item.item_id}>">
+				<div class="swiperList-img">
+					<img class="imglazyload item-itemimage" data-original="<{$item['image_default_id']|storager:t}>" alt="">
+				</div>
+				<div class="swiperList-text">
+					<p><{$item['title']}></p>
+				</div>
+				<div class="swiperList-price">
+					<p><{$item['price']|cur}></p>
+				</div>
+			</a>
+		</li>
+		<{/foreach}>
+	</ul>
+	<!--<ul class="hotRec-list item_lists" id="">
+	</ul>-->
+</div>
+<script>
+
+var hotRec = (function () {
+	function bindEvent() {
+		//上拉加载，使用的是mescroll插件
+		var mescroll = new MeScroll("mescroll", {
+			down: {
+				auto: false,
+				isLock: true
+			},
+			up: {
+				page: { size: 10 },//每次加载1条数据,模拟loadFull
+				auto: true,
+				loadFull: {
+					use: false, //列表数据过少,不足以滑动触发上拉加载,是否自动加载下一页,直到满屏或者无更多数据为止;默认false,因为可通过调高page.size避免这个情况
+					delay: 500 //延时执行的毫秒数; 延时是为了保证列表数据或占位的图片都已初始化完成,且下拉刷新上拉加载中区域动画已执行完毕;
+				},
+				noMoreSize: 1,
+				//clearEmptyId: "dataList", //1.下拉刷新时会自动先清空此列表,再加入数据; 2.无任何数据时会在此列表自动提示空
+				callback: getListData,//上拉回调,此处可简写; 相当于 callback: function (page) { getListData(page); }
+				htmlNodata: '<p class="upwarp-nodata">-- 我是有底线的 --</p>'
+			}
+		});
+		function getListData(page) {
+			console.log("page.num==" + page.num);
+			getListDataFromNet(page.num, page.size, function (data) {
+				mescroll.endSuccess(data.length);
+				setListdom(data);
+				console.log(data)
+			}, function () {
+				mescroll.endErr();
+			})
+		}
+		function setListdom(data) {
+			console.log(data)
+			var str = '';
+			for (var i = 0; i < data.length; i++) {
+				 str += '<li class="m-lm-index-swiperList4">'
+					+'<a href="'+data[i].url+'">'
+			+'<div class="swiperList-img">'
+				+'<img src="'+ data[i].image_default_id+'" alt="">'
+			+'</div>'
+			+'<div class="swiperList-text">'
+				+'<p>'+data[i].title+'</p>'
+			+'</div>'
+			+'<div class="swiperList-price">'
+				+'<p>'+data[i].price+'</p>'
+			+'</div>'
+		+'</a>'
+	+'</li>'
+			}
+			$('#dataList').append(str);
+		}
+		function getListDataFromNet(pageNum, pageSize, successCB, errorCB) {
+			var item_ids="<{$datas.item_id_no}>";
+			var shop_id="<{$datas.shop_id}>";
+			setTimeout(function () {
+				$.ajax({
+					type: "post",
+					url: "<{url action=topwap_ctl_tvshopping@ajaxGetGoodsList}>",
+					data:{
+						'pages':pageNum,
+						'item_ids':item_ids,
+						'shop_id':shop_id
+					},
+					dataType: 'json',
+					success: function (res) {
+						var listData = res.list;
+						console.log(res);
+						//if (res != '') {
+						//	for (var i = 0; i < pageNum * pageSize; i++) {
+						//		if (i == res.list.length)  break;
+						//		listData.push(res.list[i]);
+						//	}
+						//}
+						successCB(listData);
+						//console.log(listData)
+						//控制图片宽高
+						var w = $('.hotRec-list').find('.swiperList-img img').width();
+						$('.hotRec-list').find('.swiperList-img img').css('height', w + 'px');
+					},
+					error: errorCB
+				});
+			}, 500)
+		}
+	};
+	function init() {
+		bindEvent();
+	};
+	return {
+		init: init
+	}
+})();
+$(function () {
+	hotRec.init();
+});
+
+$(function(){
+	var itemWidth = $('.item-itemimage').width();
+	$('.item-itemimage').css({'height':itemWidth});
+});
+</script>

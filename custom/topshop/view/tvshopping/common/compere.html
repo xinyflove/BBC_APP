@@ -1,0 +1,25 @@
+<div class="groom-person">
+	<div class="person-left">
+		<img src="<{$datas['data']['compere']['avatar']|storager:t}>" alt="">
+	</div>
+	<div class="person-right">
+		<h2>每日星主播：<{$datas['data']['compere']['compere_name']}></h2>
+		<p><{$datas['data']['compere']['describe']}></p>
+	</div>
+</div>
+<div class="groom-swiper">
+	<div class="swiper-container swiper-container2">
+		<div class="swiper-wrapper">
+			<{foreach from=$datas['data']['item'] item=item}>
+			<div class="swiper-slide">
+				<a href="<{url action=topwap_ctl_item_detail@index item_id=$item.item_id}>">
+					<img src="<{$item['image_default_id']|storager:t}>" alt="">
+					<h2><{$item['title']}></h2>
+					<p><{$item['price']|cur}></p>
+				</a>
+			</div>
+			<{/foreach}>
+		</div>
+	</div>
+	<div class="swiper-huan"  data-page="<{$datas.page}>">换一换</div>
+</div>

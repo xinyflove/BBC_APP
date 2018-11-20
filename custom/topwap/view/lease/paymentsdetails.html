@@ -1,0 +1,31 @@
+<{include file="topwap/lease/header.html"}>
+	<body style="background-color: #f5f6f8;">
+		
+		<!--m-fmcc-paymentsDetails-top start-->
+		<section class="m-fmcc-paymentsDetails-top">
+			<a href="#">
+				<h3>还款总额(元)</h3>
+				<h2><{$total.lease_total}></h2>
+			</a>
+		</section>
+		<!--end m-fmcc-paymentsDetails-top-->
+		
+		<!--m-fmcc-paymentsDetails-list start-->
+		<section class="m-fmcc-paymentsDetails-list">
+		<{foreach from=$leaseList item=item}>
+			<ul>
+				<li>
+					<a href="<{url action=topwap_ctl_lease_default@repaymentplan lease_id=$item.lease_id}>">
+						<h3><{$item.cart_number}></h3>
+						<div class="hz-cf">
+							<span class="hz-fl">还款总额</span>
+							<span class="hz-fr"><{$item.lease_total}></span>
+						</div>
+					</a>
+				</li>
+				<{/foreach}>
+			</ul>
+		</section>
+		<!--end m-fmcc-paymentsDetails-list-->
+	</body>
+</html>

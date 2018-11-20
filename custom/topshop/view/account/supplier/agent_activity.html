@@ -1,0 +1,145 @@
+<div class="panel panel-default">
+    <form action="<{url action=topshop_ctl_account_supplier@agentActivitySave}>" method="post" class="form-horizontal"
+          data-validate-onsuccess="ajaxSubmit" id="form_delivery" role="form">
+        <input type="hidden" name="agent_activity_id" value="<{$data.agent_activity_id}>">
+        <input type="hidden" name="agent_shop_id" value="<{$agent_shop_id}>">
+        <div class="panel-body">
+            <div class="form-group">
+                <label class="col-sm-2 control-label">活动名称：</label>
+                <div class="col-sm-4">
+                    <input type="text" name="activity_name" value="<{$data.activity_name}>" class="form-control"
+                           placeholder="线下店名称" required>
+                    <span class="help-block">活动说明: 各个活动时间不能重合</span>
+                </div>
+            </div>
+            <hr/>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">活动类型：</label>
+                <div class="col-sm-4">
+                    <select name="activity_type" class="input-sm" required>
+                        <option value="ALL_DISCOUNT"
+                        <{if $data.activity_type == 'ALL_DISCOUNT'}>selected<{/if}>>全场打折</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">优惠状态：</label>
+                <div class="col-sm-4">
+                    <{if $data.activity_type == 'ALL_DISCOUNT'}>
+                    <input name='activity_value' type="number" value="<{$data.activity_value}>" placeholder="优惠数值"
+                           required class="form-control">
+                    <span class="help-block">全场打折活动:单位(折)</span>
+                    <{else}>
+                    <input name='activity_value' type="text" value="" placeholder="优惠数值"
+                           required class="form-control">
+                    <span class="help-block">全场打折活动:单位(折)</span>
+                    <{/if}>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">最大折扣金额：</label>
+                <div class="col-sm-4">
+                    <{if $data.value_max}>
+                    <input name='value_max' type="number" value="<{$data.value_max}>" placeholder="优惠数值"
+                           required class="form-control">
+                    <span class="help-block">折扣最多能抵扣的金额  单位:元</span>
+                    <{else}>
+                    <input name='value_max' type="number" value="" placeholder="最大折扣金额"
+                           required class="form-control">
+                    <span class="help-block">折扣最多能抵扣的金额  单位:元</span>
+                    <{/if}>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">最低消费金额：</label>
+                <div class="col-sm-4">
+                    <{if $data.value_min}>
+                    <input name='value_min' type="number" value="<{$data.value_min}>" placeholder="优惠数值"
+                           required class="form-control">
+                    <span class="help-block">折扣最多能抵扣的金额  单位:元</span>
+                    <{else}>
+                    <input name='value_min' type="number" value="" placeholder="最低消费金额"
+                           required class="form-control">
+                    <span class="help-block">折扣最多能抵扣的金额  单位:元</span>
+                    <{/if}>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">活动时间：</label>
+                <div class="col-sm-4">
+                    <div class="input-group">
+                        <div class="input-group-addon">
+                            <i class="fa fa-calendar"></i>
+                        </div>
+                        <input type="text" name="activity_time" class="form-control pull-right reservation">
+                    </div>
+                    <!--<div class="input-daterange" data-toggle="datepicker">-->
+                        <!--<input type="date" name="start_time" value="<{$data.start_time}>">-->
+                        <!--<span class="add-on">to</span>-->
+                        <!--<input type="date" name="end_time" value="<{$data.end_time}>">-->
+                    <!--</div>-->
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">活动状态：</label>
+                <div class="col-sm-4">
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="disabled" value="0" <{if $data.disabled == 0 || !isset($data['disabled'])}>checked<{/if}>>
+                            启用
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="disabled" value="1" <{if $data.disabled == 1}>checked<{/if}>>
+                            禁用
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>
+
+<div class="modal-footer text-center">
+    <button type="submit" class="btn btn-primary btn-flat"><{t}>保存<{/t}></button>
+</div>
+
+</form>
+</div>
+
+<script>
+    var start = '<{$data.start_time}>';
+    var end = '<{$data.end_time}>';
+    $('.reservation').daterangepicker({
+        format: 'YYYY/MM/DD HH:mm',
+        timePicker : true,
+        opens: 'right'
+    }, function(start, end, label) {
+        beginTimeStore = start;
+        endTimeStore = end;
+        if(!this.startDate){
+            this.element.val('');
+        }else{
+            this.element.val(this.startDate.format(this.locale.format) + this.locale.separator + this.endDate.format(this.locale.format));
+        }
+    });
+    $('.reservation').val('<{$data.start_time}>-<{$data.end_time}>');
+    function ajaxSubmit(e) {
+        var form = e.target;
+        e.preventDefault();
+        $.post(form.action, $(form).serialize(), function (rs) {
+            if (rs.error) {
+                $('#messagebox').message(rs.message);
+                return;
+            }
+            if (rs.success) {
+                $('#messagebox').message(rs.message, 'success');
+            }
+            if (rs.redirect) {
+                location.href = rs.redirect;
+            }
+        });
+    }
+
+
+</script>

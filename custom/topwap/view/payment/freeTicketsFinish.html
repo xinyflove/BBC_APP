@@ -1,0 +1,90 @@
+<style>
+    header .header-left{color:#666666 !important;}
+    .shop_name_length{display:block;max-width:100%;}
+</style>
+<head>
+    <{css src="newtv.css" app="topwap"}>
+    <link href="<{resource app="topwap" path="/stylesheets/pay_success.css"}>" rel="stylesheet">
+</head>
+<header class="page-header">
+    <a href="<{url action=topwap_ctl_member_agentvocher@index}>">
+        <i class="header-left icon-func bbc-icon bbc-icon-back shopex-action-back"></i>
+    </a>
+	<div class="header-title">抢券成功</div>
+</header>
+<div class="shopex-content m-tvplazaNew-paySuccess-content">
+    <div class="m-tvplazaNew-paySuccess-banner">
+        <img src="<{resource app='topwap' path='/images/icon_pay_success.png'}>" alt="">
+        <h3>恭喜您抢购成功</h3>
+        <p>赶快去线下店使用吧</p>
+        <div class="link-block-a">
+            <a href="<{url action=topwap_ctl_member_agentvocher@index}>" class="order_repay">查看优惠券</a>
+        </div>
+    </div>
+
+    <!-- index-content-Lovely 猜你喜欢-->
+    <section class="index-content-Lovely">
+        <!-- index-content-title -->
+        <section class="index-content-title">
+            <h3>
+                <span>猜你喜欢</span>
+            </h3>
+        </section>
+        <section class="Lovely-Lists">
+            <ul class="shopex-clearfix">
+                <{foreach from=$item_list item=list}>
+                <li>
+                    <a href="<{url action=topwap_ctl_item_detail@index item_id=$list.item_id}>" class="shopex-block">
+                        <div class="LovelyBox">
+                            <{if $list.image_default_id}>
+                            <img data-lazyload="<{$list.image_default_id|storager:'m'}>" alt="">
+                            <{else}>
+                            <img data-lazyload="<{$image_default_id.M.default_image|storager}>" alt="">
+                            <{/if}>
+                        </div>
+                        <h3 class="shopex-ellipsis"><{$list.title}></h3>
+                        <span class="shopex-ellipsis shop_name_length"><i class="<{$list.mold_class}>"></i><{$list.shop_name}></span>
+                        <p><{$list.price|cur}></p>
+                    </a>
+                </li>
+                <{/foreach}>
+            </ul>
+        </section>
+    </section>
+</div>
+<script>
+    function pushHistory() {
+        var state = {
+            title: "title",
+            url: "#"
+        };
+        if(state.url){
+            window.history.pushState(state, "title", "#");
+        }
+    }
+
+    $(function() {
+
+        pushHistory();
+        var bool=false;
+        setTimeout(function(){
+            bool=true;
+        },1500);
+        window.addEventListener("popstate", function(e) {
+            if(bool)
+            {
+                //alert("我监听到了浏览器的返回按钮事件啦");//根据自己的需求实现自己的功能
+                location.href = "<{$back_url}>";
+            }
+            pushHistory();
+
+        }, false);
+    });
+
+    /*图片延迟加载*/
+    shopex(document).imageLazyload({
+        placeholder: '<{$env.app.topwap.res_url}>/images/lazy.png',
+        force:false,
+        diff:400
+    });
+</script>

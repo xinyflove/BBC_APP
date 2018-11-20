@@ -1,0 +1,135 @@
+<!--add_20170914_by_gurundong_start 热卖-->
+<script>
+    var hotsellFormItem = '<div class="hotsell-item form-item"><div class="form-group"><div class="input-group"><input name="imgsrc"  type="text" class="form-control" readonly placeholder="图片地址"><span class="input-group-addon select-image" data-toggle="modal" data-imgurl="" href="<{url action=topshop_ctl_shop_image@loadImageModal}>" data-target="#gallery_modal">选择图片</span></div></div><div class="form-group"><input type="text" name="imglink" class="form-control" placeholder="图片链接"></div><div class="form-item-action action-remove"><i class="glyphicon glyphicon-remove"></i></div></div>';
+</script>
+<style>
+	.hotsell-box li{
+		float: left;
+		width: 35%;
+	}
+	.img-block{
+		width: 320px;
+		height: auto;
+	}
+	/*.swiper-slide{*/
+	/*width: 50%;*/
+	/*float: left;*/
+	/*}*/
+</style>
+
+
+
+
+<script type="text/html" id="hotsell">
+	<div class="decorate-layout-items" id="<%= wid %>" data-widgets="hotsell">
+		<div class="widgets-goods-like">
+			<% if(imgsrc!=""){ %>
+			<div class="img-block"><a href="<%= imglink %>"><img src="<%= imgsrc %>"></a></div>
+			<% }else{ %>
+			<div class="img-block"><a href="<%= imglink %>"><img src="http://placehold.it/320x60"></a></div>
+			<% } %>
+			<ul class="pro-list-grid">
+				<% if(list.length > 0){ %>
+				<div class="swiper-container hotsell-box">
+					<div class="swiper-wrapper">
+						<% for(var i=0; i<list.length; i++){ %>
+						<li class="swiper-slide">
+							<div class="thumb">
+								<div class="thumb-img">
+									<a href="<%= list[i].goodslink %>"><img src="<%= list[i].imgurl %>" alt=""></a>
+								</div>
+								<div class="caption">
+									<h1 class="goods-title"><span class="tag"><%= list[i].goodstag %></span><%= list[i].goodstitle %></h1>
+									<div class="price">
+										<div class="amount CNY">￥<%= list[i].price %></div>
+									</div>
+								</div>
+							</div>
+						</li>
+						<% } %>
+						<% }else{ %>
+						<li class="swiper-slide">
+							<div class="thumb">
+								<div class="thumb-img">
+									<a href="#"><img src="http://placehold.it/180x180" alt=""></a>
+								</div>
+								<div class="caption">
+									<h1 class="goods-title"><span class="tag">热卖</span>商品标题</h1>
+									<div class="price">
+										<div class="amount CNY">¥ 30.00</div>
+										<div class="purchased">已有5人购买</div>
+									</div>
+								</div>
+							</div>
+						</li>
+						<li class="swiper-slide">
+							<div class="thumb">
+								<div class="thumb-img">
+									<a href="#"><img src="http://placehold.it/180x180" alt=""></a>
+								</div>
+								<div class="caption">
+									<h1 class="goods-title"><span class="tag">热卖</span>商品标题</h1>
+									<div class="price">
+										<div class="amount CNY">¥ 30.00</div>
+										<div class="purchased">已有5人购买</div>
+									</div>
+								</div>
+							</div>
+						</li>
+						<% } %>
+					</div>
+				</div>
+			</ul>
+		</div>
+	</div>
+</script>
+
+
+
+
+<script type="text/html" id="hotsell_form">
+	<div class="hotsell" data-id="<%= wid %>">
+		<form class="oneimg" data-id="<%= wid %>">
+			<h5>热卖顶部banner</h5>
+			<div class="form-group">
+				<div class="input-group">
+					<input name="imgsrc" type="text" readonly class="form-control" value="<%= imgsrc %>" placeholder="图片地址">
+					<span class="input-group-addon select-image" data-imgurl="<%= imgurl %>" data-toggle="modal" href="<{url action=topshop_ctl_shop_image@loadImageModal}>" data-target="#gallery_modal">选择图片</span>
+				</div>
+			</div>
+			<div class="form-group">
+				<input type="text" name="imglink" class="form-control" value="<%= imglink %>" placeholder="图片链接">
+			</div>
+		</form>
+		<div class="form-group">
+			<p class="help-block">已选择商品</p>
+			<div id="selected_goods">
+				<% if(list.length > 0){ %>
+				<table wdith="100%" class="table table-primary table-hover table-goods">
+					<tbody>
+					<% for(var i=0; i<list.length; i++){ %>
+					<tr data-itemid="<%= list[i].item_id %>">
+						<td>
+							<input type="hidden" name="item_id[]" value="<%= list[i].item_id %>">
+							<div class="goods">
+								<a href="<%= list[i].goodslink %>" target="_blank">
+									<img src="<%= list[i].imgurl %>" alt="">
+									<span><%= list[i].goodstitle %></span>
+									<span><%= list[i].price %></span>
+								</a>
+							</div>
+						</td>
+						<td><a class="item-del" href="#">删除</a></td>
+					</tr>
+					<% } %>
+					</tbody>
+				</table>
+				<% } %>
+			</div>
+		</div>
+		<div class="form-group">
+			<a class="btn btn-primary form-control select-goods" href="<{url action=topshop_ctl_selector_item@loadSelectGoodsModal limit=16}>" data-item_id="<{$notEndItem}>" data-limit="50" data-textcol="title,price" data-toggle="modal" data-target="#goods_modal" data-insertwhere="#selected_goods" data-fetchgoods="<{url action=topshop_ctl_selector_item@formatSelectedGoodsRow}>">选择商品</a>
+		</div>
+	</div>
+</script>
+<!--add_20170918_by_gurundong_end-->

@@ -1,0 +1,128 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>人员配置</title>
+    <{css src="milier/dist/style.css" app="topwap"}>
+    <{css src="milier/css/person_config.css?201806041105" app="topwap"}>
+</head>
+<body>
+<div class="m-mili-person">
+    <header>
+        <a href="javascript:history.back(-1)"><img src="<{resource app='topwap' path='/images/milier/left_align_03.png'}>" alt=""></a>
+        <div>人员配置</div>
+    </header>
+    <section>
+        <div class="person-title">优秀员工 (<span><{$data.count}></span>)</div>
+        <div id="mescroll" class="mescroll">
+            <div class="person-list" id="dataList">
+
+            </div>
+        </div>
+    </section>
+</div>
+
+<{script app="topwap" src="milier/dist/public.js" }>
+</body>
+<script>
+    var mescroll = new MeScroll('mescroll', {
+        down: {
+            offset: 40,
+        },
+        up: {
+            offset: 40,
+            loadFull: {
+                use: true,
+                delay: 500
+            },
+            page:{
+                num : 0 ,
+                size : 10
+            },
+            clearEmptyId: "dataList",
+            callback: upCallback
+        }
+    })
+    // data 渲染的数据 appDomid 填充的盒子
+    function setDom(data, appDomid){
+        for(var i in data){
+            var str = `<dt><img src="${data[i].person_image}" alt=""></dt>
+                        <dd>
+                            <p class="post">${data[i].person_name}</p>`
+            if(data[i].position_name) {
+                str += `<p class="name">${data[i].position_name?data[i].position_name:''}</p>`
+            }
+            str += `<p class="concept">${data[i].person_description?data[i].person_description:''}</p>
+                    <a class="more"><img src="<{resource app='topwap' path='/images/milier/details/icon-xia.png'}>" /></a>
+                </dd>`;
+            var Dl = document.createElement('dl');
+            Dl.innerHTML = str;
+            Dl.setAttribute('class', 'list-item');
+            document.getElementById(appDomid).appendChild(Dl);
+            var parentDom = document.getElementsByClassName('list-item')[i];
+            var textHeight = parentDom.getElementsByClassName('concept')[0].offsetHeight;
+            if(textHeight > 44){
+                parentDom.getElementsByClassName('more')[0].style.display = 'block';
+                parentDom.getElementsByClassName('concept')[0].classList.add('active');
+            }
+        }
+    }
+
+    function getData(curpage, pagesize, successcb, errorcb){
+        $.ajax({
+            url: '<{url action=topwap_ctl_supplier_person@ajaxPersonList}>',
+            type: 'get',
+            dataType: 'json',
+            async: true,
+            data: {
+                agent_shop_id:<{$agent_shop_id}>,
+                curpage:curpage,
+                page: pagesize
+            },
+            success: function(res) {
+                var dataArr = [];
+                if(res.success === true){
+                    if(res.message.data){
+                        dataArr = res.message.data;
+                        successcb(dataArr);
+//                             console.log(res.message.hasmore);
+//                             mescroll.endSuccess(dataArr.length, res.message.hasmore);
+//                            if(!res.message.hasmore){
+//                                mescroll.endSuccess(dataArr.length, res.message.hasmore);
+//                            }
+                    }
+                }else{
+                    errorcb()
+                }
+            },
+            error: function (err) {
+                errorcb();
+            }
+        })
+    }
+
+    function upCallback(page) {
+        // var pageIndex = page.num+14;
+        // page.num = pageIndex;
+        // console.log(page);
+        getData(page.num, page.size, function(data){
+            mescroll.endSuccess(data.length);
+            setDom(data, 'dataList');
+            $('.more').on('click', function() {
+                if($(this).siblings('.concept').hasClass('active')){
+                    $(this).addClass('shou');
+                    $(this).siblings('.concept').removeClass('active');
+                }else{
+                    $(this).removeClass('shou');
+                    $(this).siblings('.concept').addClass('active');
+                }
+
+            })
+        }, function(){
+            mescroll.endErr();
+        })
+    }
+</script>
+</html>

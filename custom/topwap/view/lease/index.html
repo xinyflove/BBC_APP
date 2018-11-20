@@ -1,0 +1,125 @@
+<{include file="topwap/lease/header.html"}>
+	<body style="background-color: #f5f6f8;">
+		<!--<div style="width:100%;height:100%;background-color:rgba(0,0,0,0.5);position:fixed;z-index:9999;left:0;right:0;bottom:0;top:0;color:#fff;text-align:center;padding-top:500px">已 停 租</div>-->
+		<!--m-fmcc-selectIndex-header start-->
+		<section class="m-fmcc-selectIndex-header">
+			<!--sumInfo start-->
+			<div class="m-fmcc-selectIndex-header-sumInfo">
+				<h3><{$ownerInfo.company_name}></h3>
+				<a href="<{url action=topwap_ctl_lease_default@paymentscurrent}>" class="currentM">本期待还款金额(元)</a>
+				<a href="<{url action=topwap_ctl_lease_default@paymentscurrent}>" class="M"><{$payment.payment_total|default:请刷新再试}></a>
+				<i class="icon_right"></i>
+				<!--<a href="#" class="helpCon">
+					<i class="icon_help"></i>
+				</a>-->
+			</div>
+			<!--end sumInfo-->
+			<!--recharge start-->
+			<a href="<{url action=topwap_ctl_lease_default@paymentscurrent}>" class="m-fmcc-selectIndex-header-recharge horizontal-view">
+			<{if $ownerInfo.company_name!=''}>
+				<span><em id="ymoney">请您在25号之后再查看您的缴费状态</span>
+			<{else}>
+				<span><em id="ymoney">滞纳金</em><font><{$payment.overdue_fine|default:0}></font>元</span>
+			<{/if}>
+				<span id="changetype">缴费</span>
+				<span></span>
+			</a>
+			<!--end recharge-->
+		</section>
+		<!--end m-fmcc-selectIndex-header-->
+		<!--m-fmcc-selectIndex-tabInfo start-->
+		<section class="m-fmcc-selectIndex-tabInfo" style="font-style:normal">
+			<ul class="hd horizontal-view">
+				<li class="on">车辆信息</li>
+				<li>还款信息</li>
+			</ul>
+			<div class="bd">
+				<div class="item" style="display: block;margin:0">
+					<{foreach from=$leaseList item=item}>
+					<a href="<{url action=topwap_ctl_lease_default@details lease_id=$item.lease_id}>" class="carDetails">
+						<div class="top horizontal-view">
+							<img src="/app/topwap/statics/cart/img/carlogo.png" class="logo" />
+							<span><{$item.cart_number}></span>
+							<span>查询车辆信息详情</span>
+							<span class="icon_arrowright"></span>
+						</div>
+						<div class="bottom">
+							<{if empty($item.cur_stage)}>
+							<p>还款日期：本月无需还款</p>
+							<p>剩余还款金额：<{$item.lease_total}>元</p>
+							<{else}>
+							<p>还款日期：本月<{$item.repayment_date}>日</p>
+							<p>本月分期金额：<{$item.lease_each}>元</p>
+							<p>本月抵扣金额：<{$item.cur_stage.deductible_amount}>元</p>
+							<p>本月应还金额：<{$item.cur_stage.cur_repayment_total}>元</p>
+							<p>本月还款状态：
+								<{if $item.cur_stage.payment_status ==1}>已经全部还清
+								<{elseif $item.cur_stage.payment_status ==2}>尚未还款
+								<{elseif $item.cur_stage.payment_status ==3}>尚未还款
+								<{elseif $item.cur_stage.payment_status ==4}>停租
+								<{/if}>
+							</p>
+							<p>剩余还款金额：<{$item.lease_balance}>元</p>
+							<{/if}>
+						</div>
+					</a>
+					<{/foreach}>
+				</div>
+				<div class="item" style="">
+					<ul class="repaymentInfo">
+						<li class="horizontal-view">
+							<a href="<{url action=topwap_ctl_lease_default@paymentsdetails}>">
+								<img src="/app/topwap/statics/cart/img/money_bag.png" class="money_bag" />
+								<h3>还款总额</h3>
+								<span><{$total.lease_total}>元</span>
+								<i></i>
+							</a>
+						</li>
+						<li class="horizontal-view">
+							<a href="<{url action=topwap_ctl_lease_default@paymentsdetails}>">
+								<img src="/app/topwap/statics/cart/img/refund.png" class="refund" />
+								<h3>剩余还款金额</h3>
+								<span><{$total.plan_lease_banlance}>元</span>
+								<i></i>
+							</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</section>
+		<!--end m-fmcc-selectIndex-tabInfo-->
+		<!--m-fmcc-selectIndex-adsense start-->
+		<section class="m-fmcc-selectIndex-adsense">
+			<!--m-fmcc-selectIndex-adsense-top start-->
+			<div class="m-fmcc-selectIndex-adsense-top hz-cf">
+				<span class="hz-fl" style="padding-left:0;background:none">广电新能源汽车</span>
+				<!--<span class="hz-fr">12:30</span>-->
+			</div>
+			<!--end m-fmcc-selectIndex-adsense-top-->
+			<!--m-fmcc-selectIndex-adsense-content start-->
+			<section class="m-fmcc-selectIndex-adsense-content">
+			<a href="<{url action=topwap_ctl_newshop@index shop_id=32}>">
+				<img src="/app/topwap/statics/cart/img/img01.png" alt="">
+			</a>
+			</section>
+			<!--end m-fmcc-selectIndex-adsense-content-->
+		</section>
+		<!--end m-fmcc-selectIndex-adsense-->
+
+		<script> 
+		//$.showLoading(); 
+		
+			$(function() {
+
+				$(".m-fmcc-selectIndex-tabInfo .hd li").click(function() {
+					//处理选项卡
+					var _index = $(this).index();
+					$(this).addClass("on").siblings().removeClass("on");
+					$(".item").eq(_index).show().siblings(".item").hide();
+
+				});
+
+			});
+		</script>
+</body>
+</html>

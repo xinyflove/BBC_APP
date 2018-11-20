@@ -1,0 +1,144 @@
+<!--add_20171026_by_fanglongji_start-->
+<style>
+  .logo_block{display:inline-block;margin-right:10px;}
+  .logo_name{font-size:13px;width: 100%;}
+</style>
+<!--add_20171026_by_fanglongji_start-->
+<form  action="<{url action=topshop_ctl_shop_setting@saveSetting}>" method="post" data-validate-onsuccess="ajaxSubmit" role="form">
+  <div class="box box-default">
+    <div class="box-header with-border">
+      <h3 class="box-title"><a href="<{url subdomain=$shop.subdomain action=topc_ctl_shopcenter@index shop_id=$shop.shop_id}>" target="_blank"><{t}><{$shop.shop_id|shopname}><{/t}></a></h3>
+    </div>
+    <div class="box-body">
+      <{if $shop.shop_id}><input type="hidden" name="shop_id" value="<{$shop.shop_id}>"><{/if}>
+      <div class="row">
+        <div class="col-md-4">
+          <div class="form-group text-center">
+            <div class="pad">
+              <!--modify_20171026_by_fanglongji_start
+               <a class="select-image center-block" data-toggle="modal" href="<{url action=topshop_ctl_shop_image@loadImageModal}>" data-target="#gallery_modal">
+               -->
+              <a class="select-image center-block logo_block" data-toggle="modal" href="<{url action=topshop_ctl_shop_image@loadImageModal}>" data-target="#gallery_modal">
+              <!--modify_20171026_by_fanglongji_end-->
+                <input type="hidden" name="shop_logo" value="<{$shop.shop_logo}>">
+                <div class="img-put">
+                  <img src="<{$shop.shop_logo|storager}>">
+                  <i class="glyphicon glyphicon-picture"></i>
+                </div>
+                <!--add_20171026_by_fanglongji_start-->
+                <span class="logo_name">店铺logo</span>
+                <!--add_20171026_by_fanglongji_end-->
+              </a>
+              <!--modify_20171026_by_fanglongji_start
+              <a class="select-image center-block" data-toggle="modal" href="<{url action=topshop_ctl_shop_image@loadImageModal}>" data-target="#gallery_modal">
+               -->
+              <a class="select-image center-block logo_block" data-toggle="modal" href="<{url action=topshop_ctl_shop_image@loadImageModal}>" data-target="#gallery_modal">
+              <!--modify_20171026_by_fanglongji_end-->
+                <input type="hidden" name="mold_log" value="<{$shop.mold_log}>">
+                <div class="img-put">
+                  <img src="<{$shop.mold_log|storager}>">
+                  <i class="glyphicon glyphicon-picture"></i>
+                </div>
+                <!--add_20171026_by_fanglongji_start-->
+                <span class="logo_name">频道logo</span>
+                <!--add_20171026_by_fanglongji_end-->
+              </a>
+            </div>
+            <span class="help-block"><small>点击上传/修改</small></span>
+            <span class="help-block"><small>尺寸标准：290*84或者290*290 px</small></span>
+          </div>
+          <!--add_20171109_by_xinyufeng_start-->
+          <div class="form-group text-center">
+            <div class="pad">
+              <a class="select-image center-block logo_block" data-toggle="modal" href="<{url action=topshop_ctl_shop_image@loadImageModal}>" data-target="#gallery_modal">
+                <input type="hidden" name="shop_brand_image" value="<{$shop.shop_brand_image}>">
+                <div class="img-put">
+                  <img src="<{$shop.shop_brand_image|storager}>">
+                  <i class="glyphicon glyphicon-picture"></i>
+                </div>
+                <span class="logo_name">招牌图片</span>
+              </a>
+            </div>
+            <span class="help-block"><small>点击上传/修改</small></span>
+            <span class="help-block"><small>尺寸标准：380*120 px</small></span>
+          </div>
+          <!--add_20171109_by_xinyufeng_end-->
+        </div>
+        <div class="col-md-8">
+          <div class="form-group">
+            <label><{t}>店铺描述<{/t}>：</label>
+            <textarea class="form-control" name="shop_descript"><{$shop.shop_descript}></textarea>
+          </div>
+          <{if $im_plugin == 'toputil_im_plugin_qq'}>
+          <div class="form-group">
+            <label class="col-sm-2 control-label"><{t}>QQ<{/t}>：</label>
+            <div class="col-sm-8">
+              <label class="control-label">
+                <input type=text name='qq' value=<{$shop.qq}> > <a target="_blank" class="block" href="http://shang.qq.com/v3/widget.html">初次使用需要激活QQ推广</a>
+              </label>
+            </div>
+          </div>
+          <{/if}>
+          <{if $im_plugin == 'toputil_im_plugin_wangwang'}>
+          <div class="form-group">
+            <label><{t}>旺旺<{/t}>：</label>
+            <input type="text" name="wangwang" class="form-control" value="<{$shop.wangwang}>" >
+          </div>
+          <{/if}>
+
+          <div class="form-group">
+            <label><{t}>主持人佣金<{/t}>：</label>
+            <input type="text" name="maker_rate" class="form-control" value="<{$shop.maker_rate}>" >
+            <span class="help-block"><small>请填写小于100的正数,此处是比例</small></span>
+          </div>
+          <!--add_20171109_by_xinyufeng_start-->
+          <div class="form-group">
+            <label><{t}>显示库存方式<{/t}>：</label>
+            <input type="radio" name="show_stock_way" value="1" <{if $shop.show_stock_way == 1}>checked<{/if}>>
+            剩余n件
+            <input type="radio" name="show_stock_way" value="2" <{if $shop.show_stock_way == 2}>checked<{/if}>>
+            销量n件
+          </div>
+          <!--add_20171109_by_xinyufeng_end-->
+		  
+          <!--add_2018/11/13_by_wanghaichao_start-->
+          <div class="form-group">
+            <label><{t}>手机端首页背景颜色<{/t}>：</label>
+            <input type="color" name="bg_color" value="<{$shop.bg_color?$shop.bg_color:'#ffffff'}>">
+          </div>
+          <!--add_2018/11/13_by_wanghaichao_end-->
+
+        </div>
+      </div>
+    </div>
+    <div class="box-footer">
+      <button type="submit" class="btn btn-primary">保存</button>
+    </div>
+  </div>
+</form>
+
+<script>
+  function ajaxSubmit (e) {
+    var form = e.target;
+    e.preventDefault();
+    $.post(form.action, $(form).serialize(), function(rs) {
+      if(rs.error) {
+        $('#messagebox').message(rs.message);
+        return;
+      }
+      if(rs.success) {
+        $('#messagebox').message(rs.message, 'success');
+      }
+      if(rs.redirect) {
+        setTimeout(function(){location.href=rs.redirect;}, 800);
+      }
+    });
+  }
+</script>
+<script>
+  $(document).ready(
+    function() {
+      $(".sidebar .sidebar-menu li a i.glyphicon").eq(1).removeClass("glyphicon-list-alt").addClass("glyphicon-cog");
+    }
+  );
+</script>

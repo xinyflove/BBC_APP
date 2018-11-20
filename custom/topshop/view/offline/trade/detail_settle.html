@@ -1,0 +1,39 @@
+
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>结算流水号</th>
+        <th>付款订单号</th>
+        <th>供应商</th>
+        <th>线下店</th>
+        <th>实付金额</th>
+        <th>手续费</th>
+        <th>宣传基金比例</th>
+        <th>线下店收入</th>
+        <th>宣传基金金额</th>
+        <th>状态</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td><{$settleinfo.offline_settle_id}></td>
+        <td><{$settleinfo.offline_tid}></td>
+        <td><{$supplier.supplier_name}>(<{$supplier.company_name}>)</td>
+        <td><{$store.name}></td>
+        <td><{$settleinfo.payment|cur}></td>
+        <td><{$settleinfo.service_charge|cur}></td>
+        <td><{$settleinfo.commission_rate|decimals}>%</td>
+        <td><{$settleinfo.supplier_fee|cur}></td>
+        <td><{$settleinfo.shop_fee|cur}></td>
+        <td>
+            <{if $settleinfo.settle_status == 'SETTLING'}>
+            未入账
+            <{elseif $settleinfo.settle_status == 'SETTLE_FINISH'}>
+            已入账
+            <{else}>
+            状态异常
+            <{/if}>
+        </td>
+    </tr>
+    </tbody>
+</table>

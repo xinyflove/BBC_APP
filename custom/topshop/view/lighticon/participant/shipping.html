@@ -1,0 +1,46 @@
+<div class="box box-default">
+  <form  action="<{url action=topshop_ctl_lighticon_participant@shippingSave}>" method="post" class="form-horizontal" data-validate-onsuccess="ajaxSubmit" id="form_delivery" role="form">
+    <input type="hidden" name="activity_id" value="<{$activity_id}>">
+    <input type="hidden" name="participant_id" value="<{$participant_id}>">
+    <div class="box-body">
+
+      <div class="form-group">
+        <label class="col-sm-2 control-label" >物流公司：</label>
+        <div class="col-sm-3">
+          <input type="text" name="logistics_company" value="" class="form-control" placeholder="最少4个字符 不能纯数字" required maxlength="50" data-validate-length-min="1">
+        </div>
+      </div>
+
+      <!--活动浏览量基数-->
+      <div class="form-group">
+        <label class="col-sm-2 control-label">物流单号：</label>
+        <div class="col-sm-3">
+            <input type="text" required name="logistics_number" value="" class="form-control">
+        </div>
+      </div>
+    </div>
+
+    <div class="box-footer">
+      <button type="submit" class="btn btn-primary"><{t}>保存<{/t}></button>
+    </div>
+
+  </form>
+</div>
+<script>
+  function ajaxSubmit (e) {
+    var form = e.target;
+    e.preventDefault();
+    $.post(form.action, $(form).serialize(), function(rs) {
+      if(rs.error) {
+        $('#messagebox').message(rs.message);
+        return;
+      }
+      if(rs.success) {
+        $('#messagebox').message(rs.message, 'success');
+      }
+      if(rs.redirect) {
+        location.href = rs.redirect;
+      }
+    });
+  }
+</script>

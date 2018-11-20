@@ -1,0 +1,23 @@
+<desktop>
+
+    <permissions>
+        <permission id="sysMaker" display='true' parent="0" workground='sysmall.workground.mall'>创客</permission>
+        <permission id="sysMaker_seller_lists" display='true' parent="sysMaker" workground='sysmall.workground.mall'>用户列表</permission>
+        <permission id="sysMaker_seller_update" display='true' parent='sysMaker' workground='sysmall.workground.mall'>修改创客信息</permission>
+        <permission id="sysMaker_pwd_update" display='true' parent='sysMaker' workground='sysmall.workground.mall'>修改创客密码</permission>
+        <permission id="sysMaker_trustlogincfg" display='true' parent='0' workground='sysmall.workground.mall"'>信任登录配置</permission>
+    </permissions>
+
+    <workground name="广电优选" id="sysmall.workground.mall" controller="setting" action="index" order='200'>
+        <menugroup name="创客">
+            <menu controller='seller' action='lists' permission='sysMaker_seller_lists' display='true' order='50'>用户列表</menu>
+            <menu controller='seller' action='editPage' permission='sysMaker_seller_update' display='false' order='50'>编辑创客信息</menu>
+            <menu controller='seller' action='saveSeller' permission='sysMaker_seller_update' display='false' order='50'>保存创客信息</menu>
+            <menu controller='seller' action='savePwd' permission='sysMaker_pwd_update' display='false' order='50'>保存创客密码</menu>
+        </menugroup>
+        <menugroup name="信任登录管理">
+            <menu controller='trustlogincfg' action='index' permission='sysMaker_trustlogincfg' display='true' order='60'>信任登录配置</menu>
+        </menugroup>
+    </workground>
+
+</desktop>

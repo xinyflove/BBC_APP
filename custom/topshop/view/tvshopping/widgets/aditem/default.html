@@ -1,0 +1,65 @@
+<!--热卖单品-->
+<div class="m-lm-index-hot">
+	<div class="m-lm-index-publicTitle">
+		<img src="<{$datas['title_pic']|storager:t}>" alt="" class="publicTitle-img">
+		<div class="publicTitle-more">
+			<a href="<{$datas['morelink']}>">
+				<p>更多<img src="/app/topwap/tvshopping/images/more_icon.png" alt=""></p>
+			</a>
+		</div>
+	</div>
+	<{if $datas['ad_pic']}>
+	<div class="hot-banner">
+		<img class="imglazyload" data-original="<{$datas['ad_pic']|storager}>" alt="" src="<{$env.app.topwap.res_url}>/images/lmlazy750_316.png">
+	</div>
+	<{/if}>
+	<div class="swiper-container hot-container">
+		<div class="swiper-wrapper">
+			<{foreach from=$datas['item'] item=item}>
+			<div class="swiper-slide m-lm-index-swiperList3">
+				<a href="<{url action=topwap_ctl_item_detail@index item_id=$item.item_id}>">
+					<div class="swiperList-img">
+						<img class="imglazyload" data-original="<{$item['image_default_id']|storager:t}>" alt="">
+						<!--<div class="swiper-lazy-preloader"></div>-->
+					</div>
+					<div class="swiperList-text">
+						<p><{$item['title']}></p>
+					</div>
+					<div class="swiperList-price">
+						<p><{$item['price']|cur}></p>
+					</div>
+				</a>
+			</div>
+			<{/foreach}>
+		</div>
+	</div>
+</div>
+<script>
+var hot = (function () {
+	function bindEvent() {
+		//商品轮播
+		var hot_D = new Swiper('.hot-container', {
+			slidesPerView: 'auto',
+			///lazy: {
+			//	loadPrevNext: true,
+			//},
+			watchSlidesVisibility: true,
+		});
+	};
+	function init() {
+		bindEvent()
+	};
+	return {
+		init: init
+	}
+})();
+$(function () {
+	hot.init();
+});
+
+//$(function(){
+	//var hotWidth = $('.hot-banner img').width();
+//	var hotHight=hotWidth*0.31;
+//	$('.hot-banner img').css({'height':hotHight});
+//});
+</script>

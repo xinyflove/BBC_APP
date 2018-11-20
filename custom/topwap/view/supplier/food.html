@@ -1,0 +1,187 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>推荐菜</title>
+    <{css src="min/style.min.css" app="topwap"}>
+    <{css src="milier/dist/style.css" app="topwap"}>
+    <{css src="milier/css/recommend.css?201806041105" app="topwap"}>
+</head>
+
+<body>
+    <div class="m-mili-recommend">
+        <header class="recommend-header">
+            <a href="javascript:history.back(-1)">
+                <img src="<{resource app='topwap' path='/images/milier/left_align_03.png'}>" alt="">
+            </a>
+            <div>推荐菜</div>
+            <!-- <a href="####" class="recommend">我来推荐</a> -->
+        </header>
+        <section>
+            <div class="recommend-title">
+                <div>网友推荐 (<span><{$data.count}></span>)</div>
+                <!-- <div class="search"><img src="../img/search_03.png" /></div> -->
+            </div>
+            <div id="mescroll" class="mescroll">
+                <div class="recommend-list" id="dataList">
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <{script src="min/core.min.js" app="topwap"}>
+    <{script app="topwap" src="milier/dist/public.js" }>
+</body>
+<script>
+    $(function () {
+
+        var mescroll = new MeScroll('mescroll', {
+            down: {
+                offset: 40,
+            },
+            up: {
+                offset: 40,
+                loadFull: {
+                    use: true,
+                    delay: 500
+                },
+                page:{
+                    num : 0 ,
+                    size : 10
+                },
+                clearEmptyId: "dataList",
+                callback: upCallback
+            }
+        })
+        // data 渲染的数据 appDomid 填充的盒子
+        function setDom(data, appDomid){
+            for(var i in data){
+                var str = `<dt><img src = "${data[i].food_image}" alt="">`;
+
+                if(data[i].food_label){
+                    str += `<div class="label">${data[i].food_label}</div>`;
+                }
+                str += `</dt><dd><p class="title">${data[i].food_name}</p>`;
+
+                if(data[i].food_price != 0){
+                    str += `<p class="price">￥${data[i].food_price}</p>`;
+                }
+
+                if(data[i].food_description){
+                    str += `<p class="concept">${data[i].food_description}</p>`;
+                }
+
+                str += `<a class="more"><img src="<{resource app='topwap' path='/images/milier/details/icon-xia.png'}>" /></a>
+                        <div data-agent-opration-food-id="${data[i].agent_opration_food_id}" class="likes">${data[i].click_default+data[i].click_num}</div>
+                    </dd>`
+                var Dl = document.createElement('dl');
+                Dl.setAttribute('class', 'list-item');
+                Dl.innerHTML = str;
+                document.getElementById(appDomid).appendChild(Dl);
+                var parentDom = document.getElementsByClassName('list-item')[i];
+                if(parentDom.getElementsByClassName('concept').length > 0){
+                    var textHeight = parentDom.getElementsByClassName('concept')[0].offsetHeight;
+                    if(textHeight > 44){
+                        parentDom.getElementsByClassName('more')[0].style.display = 'block';
+                        parentDom.getElementsByClassName('concept')[0].classList.add('active');
+                    }
+                }
+
+            }
+        }
+
+
+        function getData(curpage, pagesize, successcb, errorcb){
+            $.ajax({
+                url: '<{url action=topwap_ctl_supplier_food@ajaxFoodList}>',
+                type: 'get',
+                dataType: 'json',
+                async: false,
+                data: {
+                    agent_shop_id:<{$agent_shop_id}>,
+                    curpage:curpage,
+                    page: pagesize
+                },
+                success: function(res) {
+                    var dataArr = [];
+                    if(res.success === true){
+                        if(res.message.data){
+                            dataArr = res.message.data;
+                            successcb(dataArr);
+//                             console.log(res.message.hasmore);
+//                             mescroll.endSuccess(dataArr.length, res.message.hasmore);
+//                            if(!res.message.hasmore){
+//                                mescroll.endSuccess(dataArr.length, res.message.hasmore);
+//                            }
+                        }
+                    }else{
+                        errorcb()
+                    }
+                },
+                error: function (err) {
+                    errorcb();
+                }
+            })
+        }
+
+        function upCallback(page) {
+            getData(page.num, page.size, function(data){
+                mescroll.endSuccess(data.length);
+                setDom(data, 'dataList');
+                $('.more').on('click', function() {
+                    if($(this).siblings('.concept').hasClass('active')){
+                        $(this).addClass('shou');
+                        $(this).siblings('.concept').removeClass('active');
+                    }else{
+                        $(this).removeClass('shou');
+                        $(this).siblings('.concept').addClass('active');
+                    }
+
+                })
+            }, function(){
+                mescroll.endErr();
+            })
+
+        }
+
+        $('.m-mili-recommend').on('click', '.likes', function(){
+            agent_opration_food_id = $(this).attr('data-agent-opration-food-id');
+            t = $(this);
+            num = t.text();
+            $.ajax({
+                url: '<{url action=topwap_ctl_supplier_food@ajaxClick}>',
+                type: 'post',
+                dataType: 'json',
+                async: true,
+                data: {
+                    'agent_opration_food_id':agent_opration_food_id,
+                    'agent_shop_id':<{$agent_shop_id}>,
+                },
+                success: function(data) {
+                    console.log(data);
+                    if(data.error === true)
+                    {
+                        location.href = data.redirect;
+                        return false;
+                    }
+                    if(data.res === false)
+                    {
+                        shopex.alert(data.error_message);
+                    }else{
+                        num++;
+                        t.text(num);
+                        shopex.alert(data.message);
+                    }
+                },
+                error: function (err) {
+
+                }
+            });
+        });
+
+    })
+</script>
+</html>

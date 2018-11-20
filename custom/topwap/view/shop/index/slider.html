@@ -1,0 +1,34 @@
+<div class="shopex-slider-group shopex-slider-loop">
+  <!-- 额外增加的一个节点(循环轮播：第一个节点是最后一张轮播) -->
+    <div class="shopex-slider-item shopex-slider-item-duplicate">
+        <a href="<{$widgetDetail.slider_last_image.imglink}>">
+            <img class="slider-image" src="<{$widgetDetail.slider_last_image.imgurl|storager:'m'}>">
+        </a>
+    </div>
+    
+    <{foreach from=$widgetDetail.params item=item}>
+    <div class="shopex-slider-item shopex-slider-item-duplicate">
+        <a href="<{$item.imglink}>">
+            <img class="slider-image" src="<{$item.imgurl|storager:'m'}>">
+        </a>
+    </div>
+    <{/foreach}>
+
+    <div class="shopex-slider-item shopex-slider-item-duplicate">
+        <a href="<{$widgetDetail.slider_first_image.imglink}>">
+            <img class="slider-image" src="<{$widgetDetail.slider_first_image.imgurl|storager:'m'}>">
+        </a>
+    </div>
+</div>
+<div class="shopex-slider-indicator">
+    <{foreach from=$widgetDetail.params item=item name=slidername}>
+    <div class="shopex-indicator <{if $env.foreach.slidername.first}>shopex-active<{/if}>"></div>
+    <{/foreach}>
+</div>
+<script>
+$(function(){
+	var sliderItemWidth = $('.slider-image').width();
+	var sliderItemHeight = sliderItemWidth*0.35;
+	$('.slider-image').css({'height':sliderItemHeight});
+});
+</script>

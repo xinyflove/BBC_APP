@@ -1,0 +1,55 @@
+<form id="sellerCheckForm" class="tableform" action="?app=sysmaker&ctl=seller&act=checkSave" method="POST">
+
+    <input type="hidden" name="seller[seller_id]" value="<{$accountInfo.seller_id}>">
+    <div class="division">
+        <table width="100%" border="0" cellpadding="0" cellspacing="0">
+            <tr>
+                <th><{t}>商品审核:<{/t}></th>
+                <td style="padding-top: 7px;">
+                    <input type="radio" value="success" name='seller[status]' id="status_success" <{if $accountInfo.status != 'refuse'}>checked="checked"<{/if}> />
+                    <label for="status_success"><{t}>通过<{/t}></label>
+                    <input  type="radio" value="refuse" name='seller[status]' id="status_refuse" <{if $accountInfo.status == 'refuse'}>checked="checked"<{/if}> />
+                    <label for="status_refuse"><{t}>驳回<{/t}></label>
+                </td>
+            </tr>
+            <tr class="reason" <{if $accountInfo.status != 'refuse'}>style="display: none;"<{/if}>>
+                <th><{t}>不通过原因：<{/t}></th>
+                <td><{input type="textarea" vtype="" name="seller[reason]"}></td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="table-action">
+        <{button label="保存"|t:'sysmaker' type="submit" class="btn-primary"}>
+    </div>
+
+</form>
+<script>
+    $('sellerCheckForm').store('target',{
+        onComplete:function(rs){
+            if(!rs) return;
+            rs = JSON.decode(rs);
+            if(rs.success){
+                if(window.finderGroup) window.finderGroup['<{$env.get.finder_id}>'].refresh();
+                if($('sellerCheckForm').getParent('.dialog')){
+                    var Dlg = $('sellerCheckForm').getParent('.dialog').retrieve('instance');
+                    if(Dlg.update){
+                        Dlg.update.retrieve('instance').initContent();
+                    }
+                    Dlg.close();
+                }
+            }
+        }
+    });
+
+    $$("[name='seller[status]']").addEvent('click', function (e) {
+        if(this.value == 'refuse')
+        {
+            $$('.reason').show();
+        }
+        else
+        {
+            $$('.reason').hide();
+        }
+    });
+</script>

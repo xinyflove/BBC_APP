@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>添加银行卡</title>
+		<link rel="stylesheet" type="text/css" href="<{$pathtopm}>/static/css/bank.css"/>
+		<link rel="stylesheet" href="<{$pathtopm}>/static/fonts/iconfont.css">
+		<link rel="stylesheet" href="<{$pathtopm}>/static/css/dialog.css">
+		<!--<script src="js/ydui.flexible.js" type="text/javascript" charset="utf-8"></script>-->
+	</head>
+	<body>
+		<div class="bankcard">
+			<div class="bankcard-header">
+				<a href="" onclick="history.back()"><i class="iconfont icon-zuo-"></i></a>
+				<p>添加银行卡</p>
+			</div>
+			<input id="next_page" type="hidden" name="next_page" value="<{$next_page}>">
+			<div class="addcard-contant">
+				<p class="p1">请绑定持卡人本人银行卡</p>
+				<div class="addcard-input">
+					<div class="input1">
+						<p>持卡人</p>
+						<input name="name" type="text" value="" placeholder="请输入持卡人姓名" id="peplo">
+					</div>
+					<div class="input1">
+						<p>卡类型</p>
+						<select id="card_type">
+							<option value="">请选择</option>
+							<{foreach from=$bank_info item=item}>
+							<option value="<{$item.bank_id}>"><{$item.bank_name}></option>
+							<{/foreach}>
+						</select>
+					</div>
+					<div class="input1 border">
+						<p>卡号</p>
+						<input type="text" value="" placeholder="请输入16位卡号" id="number">
+					</div>
+				</div>
+				<div class="button">
+					<input type="button" value="绑 定" class="btn">
+				</div>
+			</div>
+		</div>
+	</body>
+	<script src="<{$pathtopm}>/static/js/jquery-2.1.4.js"></script>
+	<script src="<{$pathtopm}>/static/js/dialog.js"></script>
+	<script>
+		!function (win,$) {
+			var dialog = win.YDUI.dialog;
+			$('.btn').on('click',function(){
+				var peplo = $('#peplo');
+				var number = $('#number');
+				//var reg = /^([1-9]{1})(\d{14}|\d{18})$/;
+				var bank_id=$('#card_type').val();
+				var link=$('#next_page').val();
+				// console.log(number.val())
+				if(bank_id==''){
+					dialog.toast('请选择卡类型', 'none', 1000);
+				}else if(peplo.val() == ''){//没有图标的
+					dialog.toast('请输入持卡人姓名', 'none', 1000);
+				}else if(number.val() == ''){//以下是有图标的
+					 dialog.toast('没有输入银行卡号哟', 'error', 1000);
+				}else{
+					//执行ajax
+					$.ajax({
+						type:"POST",
+						url:"<{url action=topwap_ctl_member_bindbank@bind}>",
+						data:{card_number:number.val(),bank_id:bank_id,name:peplo.val()},
+						dataType:"json",
+						success:function(e){
+							if(e.success){
+								dialog.toast('绑定成功', 'success', 1000);
+								window.location.href=link;
+							}else{								
+								dialog.toast(e.message, 'error', 1000);
+							}
+						}
+					});
+				}
+			});
+		}(window,jQuery);
+	</script>
+</html>

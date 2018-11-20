@@ -1,0 +1,37 @@
+<{include file="topwap/content/content_header.html"}>
+<!--modify_20171026_by_fanglongji_start
+<section class="container section-white">
+  <section class="content-padded border-bottom">
+    <h3>《<{$info.title}>》</h3>
+    <p class="font-gray-40 content-left fontS content-vertical-padded theme-border-bottom content-bottom-padded "><{$info.modified|cdate:'FDATE_STIME'}></p>
+    <div class="fontS font-gray-20 single-img">
+    <{$info.content}>
+    </div>
+  </section>
+</section>
+ -->
+<div class="m-head-details">
+  <div class="m-head-details-title">
+    <{if $info.new_label}><i class="t-redian"><{$info.new_label}></i><{/if}>
+    <p class="t-timu"><{$info.title}></p>
+    <p class="t-time"><{$info.modified|cdate:'FDATE_STIME'}></p>
+  </div>
+  <div class="m-head-details-text">
+    <p><{$info.content}></p>
+  </div>
+</div>
+<!--modify_20171026_by_fanglongji_end-->
+
+<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+<{script src="share.js" app="topwap"}>
+<script>
+//微信分享
+  var title = "<{$info.title}>";
+  $(function(){
+    wxShare({
+      title: title,
+      desc: '',
+      link: location.href,
+    });
+  });
+</script>

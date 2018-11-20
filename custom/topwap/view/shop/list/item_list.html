@@ -1,0 +1,80 @@
+<style>
+  .pro-list-grid li{
+    height: 310px;
+    display:table-cell
+  }
+
+  .thumb-img .right_logo img{
+    width: 3.0rem !important;
+    height: 3.0rem !important;
+    position: absolute;
+    left: 0.3rem;
+    top: 0.0rem;
+  }
+
+</style>
+<{if $items}>
+  <{foreach from=$items item=item}>
+  <li data-link="<{url action=topwap_ctl_item_detail@index item_id=$item.item_id}>">
+    <div class="thumbnail">
+      <div class="thumb-img">
+        <{if $item.image_default_id}>
+        <a href="#"><img src="<{$item.image_default_id|storager:'m'}>" alt=""></a>
+        <{else}>
+        <a href="#"><img src="<{$image_default_id.M.default_image|storager}>" alt=""></a>
+        <{/if}>
+
+        <{if ($item.store-$item.freez) < 1 }>
+        <!-- 已售罄 -->
+        <div class="soldout">
+          <img src="<{$sell_out_img|storager}>" alt="">
+        </div>
+        <{/if}>
+
+        <{if $item.right_logo}>
+        <!-- 角标 -->
+        <div class="right_logo">
+          <img src="<{$item.right_logo|storager}>" alt="">
+        </div>
+        <{/if}>
+
+      </div>
+      <div class="caption">
+        <h1 class="goods-title">
+          <{if $item.activity.activity_tag}>
+          <span class="tag"><{$item.activity.activity_tag}></span>
+          <{/if}>
+          <{$item.title}>
+        </h1>
+        <span class="shopex-ellipsis"><i class="<{$item.mold_class}>"></i><{$item.shop_id|shopname}></span>
+        <div class="price">
+          <div class="amount"><{$item.price|cur}></div>
+          <!--delete_start_gurundong_20171013-->
+          <!--<div class="purchased"><{t}>已有<{/t}><{$item.paid_quantity}><{t}>人购买<{/t}></div>-->
+          <!--delete_end_gurundong_20171013-->
+          <!--add_start_gurundong_20171013-->
+          <!--modify_20171013_by_xinyufeng_start-->
+          <{if $shop_setting.show_stock_way ==1}>
+          <div class="purchased"><{t}>剩余<{/t}><{$item.real_store}><{t}>件<{/t}></div>
+          <{elseif $shop_setting.show_stock_way ==2}>
+          <div class="purchased"><{t}>销量<{/t}><{$item.paid_quantity}><{t}>件<{/t}></div>
+          <{else}>
+          <div class="purchased"></div>
+          <{/if}>
+          <!--modify_20171013_by_xinyufeng_end-->
+          <!--add_end_gurundong_20171013-->
+        </div>
+        <{if $item.promotion}>
+        <div class="tags-group">
+          <{foreach from=$item.promotion item=promotionRow}>
+          <{if $promotionRow.tag}>
+            <a href="<{url }>" class="tag tag-outline"><{$promotionRow.tag}></a>
+          <{/if}>
+          <{/foreach}>
+        </div>
+        <{/if}>
+      </div>
+    </div>
+  </li>
+  <{/foreach}>
+<{/if}>

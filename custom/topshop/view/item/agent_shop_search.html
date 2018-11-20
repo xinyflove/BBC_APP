@@ -1,0 +1,32 @@
+<table class="table table-hover">
+	<thead>
+		<tr>
+			<th>线下店名称</th>
+			<th>线下店类型</th>
+			<th>联系人</th>
+			<th>电话</th>
+			<th>地址</th>
+			<th>选择</th>
+		</tr>
+	</thead>
+	<{if $data}>
+	<tbody>
+		<{foreach from=$data.data item=item}>
+		<tr>
+			<td class="agent_shop_name"><{$item.name}></td>
+			<td><{$item.type}></td>
+			<td><{$item.link_name}></td>
+			<td><{$item.mobile}></td>
+			<td><{$item.addr|cut:60}></td>
+			<td><input type="checkbox" name="agent_shop_check" value="<{$item.agent_shop_id}>"/></td>
+		</tr>
+		<{/foreach}>
+	</tbody>
+	<{else}>
+	<tbody id="none_cat">
+		<tr class="none-information">
+			<td colspan="6"><p class="help-block text-center">暂无数据</p></td>
+		</tr>
+	</tbody>
+	<{/if}>
+</table>

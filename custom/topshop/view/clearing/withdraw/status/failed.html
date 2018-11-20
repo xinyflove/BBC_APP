@@ -1,0 +1,20 @@
+<div class="panel-heading">
+    <div class="text-center">
+        <ul class="step-bar">
+            <li class="on">
+                <div class="state">已提交，待审核</div>
+                <div class="time"><{$trade.created_time|cdate}></div>
+                <i class="glyphicon glyphicon-chevron-right"></i>
+            </li>
+            <li class="on">
+                <div class="state">审核已通过</div>
+                <!--<div class="time"><{$trade.pay_time|cdate}></div>-->
+                <i class="glyphicon glyphicon-chevron-right"></i>
+            </li>
+            <li class="on">
+                <div class="state">提现失败</div>
+                <!--<div class="time"><{$trade.end_time|cdate}></div>-->
+            </li>
+        </ul>
+    </div>
+</div>

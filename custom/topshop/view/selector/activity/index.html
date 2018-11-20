@@ -1,0 +1,41 @@
+<div class="panel-heading">
+  <div class="clearfix">
+    <div class="pull-left">
+      <h2 class="panel-title">选择线下店活动</h2>
+    </div>
+    <div class="pull-right">
+      <button id="choose_goods" type="button" class="btn btn-primary btn-sm">确定</button>
+      <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">取消</button>
+    </div>
+  </div>
+</div>
+<div class="panel-body">
+  <div class="goods-condition clearfix">
+
+   <!-- <div id="goods_category" class="goods-category filter-option">
+      <span class="filter-name">分类</span> <i class="fa fa-sort-desc"></i>
+      <div class="filters-list">
+        <div class="arrow"></div>
+        <ul>
+          <{foreach from=$agent_cat_arr key=key item=catlist}>
+          <li data-val="<{$key}>" >
+            <span><{$catlist}> </span>
+          </li>
+          <{/foreach}>
+        </ul>
+      </div>
+    </div>-->
+
+<!--    <div class="goods-search"><input type="text" name="agent_name" value="" id="goods-search-key" class="form-control input-sm goods-search-key" placeholder="线下店名称"></div>-->
+      线下店名称：<input type="text" name="item_brand" value="">
+      活动名称：<input type="text" name="item_title" value="">
+    <button id="search_goods" type="button" style="" class="btn btn-warning btn-sm" data-remote="<{url action=topshop_ctl_selector_activity@searchActivity limit=$limit}>">搜索</button>
+    <button id="check_all" type="button" class="btn btn-info btn-sm">全选当前页</button>
+    &nbsp; <a id="uncheck_all" href="#">清空当前页</a>
+    &nbsp; <a id="clear_filter" href="#">清空筛选条件</a>
+  </div>
+  <div class="row goods-list">
+    <div id="goods_list">
+    </div>
+  </div>
+</div>

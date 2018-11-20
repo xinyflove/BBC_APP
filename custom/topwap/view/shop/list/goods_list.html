@@ -1,0 +1,51 @@
+<!--add_20170930_by_xinyufeng_start 售罄样式-->
+<style>
+  .widgets-goods-like .pro-list-grid .thumbnail .soldout img {
+    width: 6rem !important;
+    height: 6rem !important;
+    position: absolute;
+    bottom: 6.4rem;
+    right: 0.1rem;
+  }
+</style>
+<!--add_20170930_by_xinyufeng_end-->
+  <{foreach from=$itemsList.list item=item}>
+  <li>
+    <div class="thumbnail" style="position: relative;">
+      <div class="thumb-img">
+        <a href="<{url action=topwap_ctl_item_detail@index item_id=$item.item_id}>">
+			<{if $item.right_logo}>
+            <img style="position:absolute;left:0.3rem;top:0;width:2rem;height:2rem;" src="<{$item.right_logo}>" alt="">
+			<{/if}>
+          <{if $item.image_default_id}>
+          <img src="<{$item.image_default_id|storager:'m'}>" alt="">
+          <{else}>
+          <img src="<{$defaultImageId.M.default_image|storager}>" alt="">
+          <{/if}>
+        </a>
+      </div>
+      <div class="caption">
+        <h1 class="goods-title"><{if $item.activity}><span class="tag"><{$item.activity.activity_tag}></span><{/if}><{$item.title}></h1>
+        <div class="price">
+          <div class="amount"><{$item.price|cur}></div>
+          <{if $shop_setting.show_stock_way ==1}>
+          <div class="purchased">剩余<{$item.store-$item.freez}>件</div>
+          <{elseif $shop_setting.show_stock_way ==2}>
+          <div class="purchased">销量<{$item.paid_quantity}>件</div>
+          <{else}>
+          <div class="purchased"></div>
+          <{/if}>
+        </div>
+      </div>
+
+      <!--add_20170930_by_xinyufeng_start 售罄图片-->
+      <{if ($item.store-$item.freez) < 1 }>
+      <!-- 已售罄 -->
+      <div class="soldout">
+        <img src="<{$sell_out_img|storager}>" alt="">
+      </div>
+      <{/if}>
+      <!--add_20170930_by_xinyufeng_end-->
+    </div>
+  </li>
+  <{/foreach}>

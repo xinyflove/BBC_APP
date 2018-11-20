@@ -1,0 +1,49 @@
+<div class="tab-content no-padding">
+    <table class="table table-hover table-goods">
+        <thead>
+        <tr>
+            <th>领取人</th>
+            <th>行为描述</th>
+            <th>金额</th>
+            <th>备注</th>
+            <th>领取时间</th>
+        </tr>
+        </thead>
+        <{if $cashLogList}>
+        <tbody>
+        <{foreach from=$cashLogList item=aitem}>
+        <tr>
+            <td>
+                <{$aitem.user_name}>
+            </td>
+            <td>
+                <{$aitem.behavior}>
+            </td>
+            <td>
+                <{$aitem.lijin}>
+            </td>
+            <td>
+                <{$aitem.remark}>
+            </td>
+            <td>
+                <{$aitem.modified_time|cdate:FDATE_STIME}>
+            </td>
+        </tr>
+        <{/foreach}>
+        </tbody>
+        <{else}>
+        <tbody>
+        <tr>
+            <td algin="center" colspan="6">
+                <p class="help-block text-center">暂无数据</p>
+            </td>
+        </tr>
+        </tbody>
+        <{/if}>
+    </table>
+
+    <{pagers data=$pagers}>
+    <{if $total > 0 }>
+    <span class="page-number">共&nbsp;<em class="text-aqua"><{$total}></em>&nbsp;条记录</span>
+    <{/if}>
+</div>

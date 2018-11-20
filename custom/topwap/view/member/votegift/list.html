@@ -1,0 +1,208 @@
+<style>
+  .m-915EatQD-PrizeTab-content {
+    width: 100%;
+    overflow: hidden;
+  }
+  .m-915EatQD-PrizeTab-content .hd {
+    width: 100%;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    background-color: #fff;
+  }
+  .m-915EatQD-PrizeTab-content .hd li {
+    float: left;
+    width: 33.3%;
+    font-size: 15px;
+    color: #999;
+    cursor: pointer;
+  }
+  .m-915EatQD-PrizeTab-content .hd li.active {
+    color: #fbd301;
+    border-bottom: 1px solid #fbd301;
+  }
+  .m-915EatQD-PrizeTab-content .bd {
+    display: none;
+  }
+  .m-915EatQD-PrizeTab-content .bd .activeBg {
+    background: url("/app/topwap/statics/images/img_jiangpin_active.png") no-repeat;
+    color: #f9e4ad;
+  }
+  .m-915EatQD-PrizeTab-content .bd .activeBg .profile{
+    color: #f9e4ad !important;
+    width: 81%;
+    float: right;
+    text-align: right;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+  .m-915EatQD-PrizeTab-content .bd .grayBg {
+    background: url("/app/topwap/statics/images/img_jiangpin.png") no-repeat;
+    color: #999;
+  }
+  .m-915EatQD-PrizeTab-content .bd .icon_ygq {
+    background: url("/app/topwap/statics/images/icon_ygq.png") no-repeat;
+    background-size: 78.5px 78.5px;
+    display: block;
+    position: absolute;
+    width: 78.5px;
+    height: 78.5px;
+    right: 20px;
+    top: 50%;
+    margin-top: -39.25px;
+  }
+  .m-915EatQD-PrizeTab-content .bd .icon_ysy {
+    background: url("/app/topwap/statics/images/icon_ysy.png") no-repeat;
+    background-size: 78.5px 78.5px;
+    display: block;
+    position: absolute;
+    width: 78.5px;
+    height: 78.5px;
+    right: 20px;
+    top: 50%;
+    margin-top: -39.25px;
+  }
+  .m-915EatQD-PrizeTab-content .bd .prize {
+    width: 100%;
+    height: 128px;
+    background-size: 100% 128px;
+    margin: 10px auto 0 auto;
+    padding: 20px 15px 0 0;
+    position: relative;
+    text-align: right;
+  }
+  .m-915EatQD-PrizeTab-content .bd .prize h3{
+    font-weight: normal;
+  }
+
+  .cd-popup {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 620px;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    visibility: hidden;
+    -webkit-transition: opacity 0.3s 0s, visibility 0s 0.3s;
+    -moz-transition: opacity 0.3s 0s, visibility 0s 0.3s;
+    transition: opacity 0.3s 0s, visibility 0s 0.3s;
+    z-index: 9999999;
+  }
+
+  .cd-popup.is-visible1,
+  .cd-popup.is-visible1 {
+    opacity: 1;
+    visibility: visible;
+    -webkit-transition: opacity 0.3s 0s, visibility 0s 0s;
+    -moz-transition: opacity 0.3s 0s, visibility 0s 0s;
+    transition: opacity 0.3s 0s, visibility 0s 0s;
+  }
+
+  .cd-popup-container {
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    -webkit-transform: translateY(-60px);
+    -moz-transform: translateY(-60px);
+    -ms-transform: translateY(-60px);
+    -o-transform: translateY(-60px);
+    transform: translateY(-60px);
+    -webkit-backface-visibility: hidden;
+    -webkit-transition-property: -webkit-transform;
+    -moz-transition-property: -moz-transform;
+    transition-property: transform;
+    -webkit-transition-duration: 0.3s;
+    -moz-transition-duration: 0.3s;
+    -ms-transition-duration: 0.3s;
+    -o-transition-duration: 0.3s;
+    transition-duration: 0.3s;
+    overflow: hidden;
+    position: relative;
+    top: 50%;
+    left: 50%;
+  }
+
+  .is-visible1 .cd-popup-container1 {
+    -webkit-transform: translateY(0);
+    -moz-transform: translateY(0);
+    -ms-transform: translateY(0);
+    -o-transform: translateY(0);
+    transform: translateY(0);
+  }
+
+  .cd-popup-container1 {
+    width: 297px;
+    height: 212px;
+    background-color: #fff;
+    border-radius: 6px;
+    margin-top:-106px;
+    margin-left: -148.5px;
+  }
+  .cd-popup-container1 img{
+    width: 100px !important;
+    height: 100px !important;
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+  }
+  .section-container{
+    padding:0;
+  }
+  .coupons-list li{
+    background-color: #efeff4;
+  }
+  .coupons-list li:before,.coupons-list li:after{
+    background: transparent;
+  }
+  .gift-use{
+    border: 0;
+    background-color: #f9e4ad;
+    display: block;
+    position: absolute;
+    right: 13px;
+    bottom: 12px;
+  }
+</style>
+<{foreach from=$data item=item}>
+<li>
+  <div class="section-container coupon-item">
+  <div class="section-init">
+      <div class="m-915EatQD-PrizeTab-content coupon-item-rule">
+        <div class="bd" style="display: block">
+          <div class="prize activeBg ewm" data-img="<{$item.qr_code}>">
+            <h3><{$item.gift_name}></h3>
+            <div style="clear: both">
+              <div class="profile"><{$item.gift_profile}></div>
+              <div class="profile">使用日期：<{$item.start_time|cdate:'FDATE'}> - <{$item.end_time|cdate:'FDATE'}></div>
+            </div>
+            <button class="gift-use">立即使用</button>
+          </div>
+        </div>
+      </div>
+  </div>
+  </div>
+  <{if $item.is_valid == 1}>
+  </a>
+  <{/if}>
+</li>
+<{/foreach}>
+<script src="/app/topwap/statics/vote/js/jquery-1.11.3.min.js"></script>
+<script>
+    //打开窗口
+    $('.gift-use').on('touchstart', function(event) {
+            var voucher_img = $(this).parent().attr('data-img');
+            $('#code_ewm').attr('src',voucher_img);
+            event.preventDefault();
+            $('.cd-popup').addClass('is-visible1');
+        });
+    //关闭窗口
+    $('.cd-popup').on('touchstart', function(event) {
+        if($(event.target).is('.cd-popup-close1') || $(event.target).is('.cd-popup')) {
+            event.preventDefault();
+            $(this).removeClass('is-visible1');
+        }
+    });
+</script>

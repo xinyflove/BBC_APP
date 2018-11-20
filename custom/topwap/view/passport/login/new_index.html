@@ -1,0 +1,256 @@
+<!-- <{*update 王衍生 20170924*}> -->
+<style>
+    header .header-left {
+        color: #c0c0c0;
+    }
+
+    .shopex-input-group{
+      background-color: #efeff4;
+      width:90%;
+      margin: 0 auto;
+    }
+
+    .shopex-input-row{
+      border-bottom: 0px;
+    }
+
+    .shopex-input-row label {
+      display: block;
+      width: 4.0rem;
+      padding: 0rem;
+      font-family: "Helvetica Neue", Helvetica, sans-serif;
+      padding-top: 0.8rem;
+    }
+
+    .form-container .form-inline .form-inline-unadaptive {
+        width: 30%;
+        padding-right: 0rem;
+    }
+
+    .send_vcode{
+      /* height: 100%;
+      line-height: 50px;
+      color: #333333;
+      font-size: 12px;
+      padding-left: 1.0rem; */
+      padding: 0.4rem;
+      text-align: center;
+      width: 100%;
+
+    }
+
+    .bbc-btn-warning {
+        background: #ff9d0c;
+        border-color: #ff9d0c;
+        margin: 0;
+    }
+  </style>
+  <div class="body-padding">
+    <header class="page-header">
+      <i class="header-left icon-func bbc-icon bbc-icon-back shopex-action-back"></i>
+      <div class="header-title bind_title">登录-注册</div>
+    </header>
+    <div class="content-padded content-center" style="margin-top: 5rem;">
+        <div class="trust-login-avatar"><img src="<{$wap_logo|storager}>" alt=""></div>
+        <div><{$wap_name}></div>
+    </div>
+    <section>
+        <section class="login">
+            <form class="mvode_form login_acount_form form-container" action="<{url action=topwap_ctl_passport@doLogin}>" method="post" style="display: none">
+                <input type="hidden" name="login_type" value="mcode">
+                <input type="hidden" name="mcode_type" value="login">
+                <section class="shopex-input-group" >
+                    <div class="shopex-input-row">
+                        <label>手机号：</label>
+                        <input type="text" class="shopex-input-clear" name="account" placeholder="请输入手机号" required data-caution="请输入手机号">
+                    </div>
+
+                    <!-- add start 王衍生 20170923 -->
+                    <div class="shopex-input-row">
+                        <div class="form-inline">
+                            <div class="shopex-input-row form-inline-adaptive">
+                                <label>验证码：</label>
+                                <input type="text" name="mcode" class="shopex-input-clear" placeholder="请输入短信验证码">
+                            </div>
+                            <div class="form-inline-unadaptive">
+                                <p class="shopex-btn shopex-btn-outlined send_vcode">发送验证码</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="shopex-input-group">
+                        <a class="login_type_switch mcode" style="display: block; float: right; color: #999; margin-top: 0.5rem;">使用账号密码登录</a>
+                </section>
+
+                <section class="content-horizontal-padded form-op-section">
+                    <button type="button" class="submit_button shopex-btn shopex-btn-block shopex-btn-warning bbc-btn-warning" id="login_acount_submit">立即登录</button>
+                </section>
+            </form>
+
+            <form class="password_form login_acount_form form-container" action="<{url action=topwap_ctl_passport@doLogin}>" method="post">
+                <input type="hidden" name="login_type" value="password">
+                <section class="shopex-input-group">
+                    <div class="shopex-input-row">
+                        <label>账号：</label>
+                        <input type="text" class="shopex-input-clear" name="account" placeholder="请输入帐号" required data-caution="请输入帐号">
+                    </div>
+
+                    <div class="shopex-input-row">
+                        <label>密码：</label>
+                        <input type="password" class="shopex-input-password" name="password" placeholder="请输入密码" required data-caution="请输入密码">
+                    </div>
+                </section>
+
+                <section class="shopex-input-group">
+                        <a class="" style="display: block; float: left; color: #999; margin-top: 0.5rem;
+                        " href="<{url action=topwap_ctl_passport@goFindPwd}>">忘记密码</a>
+                        <a class="login_type_switch password" style="display: block;float: right; color: #999;margin-top: 0.5rem;">使用手机验证码登录</a>
+                </section>
+
+                <section class="content-horizontal-padded form-op-section">
+                    <button type="button" class="submit_button shopex-btn shopex-btn-block shopex-btn-warning bbc-btn-warning" id="login_acount_submit">立即登录</button>
+                </section>
+            </form>
+        </section>
+
+        <section class="register" style="display: none">
+            <form class="register_acount_form form-container" action="<{url action=topwap_ctl_passport@doRegister}>" method="post">
+                <input type="hidden" name="mcode_type" value="signup">
+                <section class="shopex-input-group">
+                <{if $env.conf.sysconf.user.account.register.multipletype}>
+                <div class="shopex-input-row">
+                    <label>手机号：</label>
+                    <input type="text" class="shopex-input-clear" name="pam_account[login_name]" placeholder="请输入手机号" required data-caution="请输入手机号">
+                </div>
+                <{else}>
+                <div class="shopex-input-row">
+                    <label>手机号：</label>
+                    <input type="text" class="shopex-input-clear" name="pam_account[login_name]" placeholder="请输入手机号" maxlength="11" minlenght="11" required data-caution="请输入手机号">
+                </div>
+                <{/if}>
+
+                <div class="shopex-input-row">
+                    <div class="form-inline">
+                        <div class="shopex-input-row form-inline-adaptive">
+                            <label>验证码：</label>
+                            <input type="text" name="mcode" class="shopex-input-clear" placeholder="请输入短信验证码">
+                        </div>
+                        <div class="form-inline-unadaptive">
+                            <p class="shopex-btn shopex-btn-outlined send_vcode">发送验证码</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="shopex-input-row" style="">
+                    <label>密码：</label>
+                    <input type="password" class="shopex-input-password" name="pam_account[login_password]" placeholder="请输入新密码，6~20位" required minlength="6" maxlength="20" data-caution="请填写密码，6-20个字符&&输入不正确，最少6个字符&&输入不正确，最多20个字符">
+                </div>
+                <div class="shopex-input-row" style="display: none;">
+                    <label>确认密码：</label>
+                    <input type="password" class="shopex-input-password" name="pam_account[psw_confirm]" maxlength="20" placeholder="再次填写密码" required data-equalto="pam_account[login_password]" data-caution="密码与确认密码不相符，请重新填写">
+                </div>
+
+
+
+                <!-- <div class="shopex-input-row">
+                        <div class="shopex-checkbox bbc-checkbox shop-checkbox">
+                          <label></label>
+                          <input name="license" value="1" type="checkbox" checked >
+                        </div>
+                        <div class="box-item-flex1 fontS font-gray-20">我已阅读并同意<a class="font-orange" href="<{url action=topwap_ctl_passport@registerLicense}>">《会员注册协议》</a></div>
+                </div> -->
+                </section>
+
+                <section class="content-horizontal-padded form-op-section">
+                    <button type="button" class="submit_button shopex-btn shopex-btn-block shopex-btn-warning bbc-btn-warning" id="register_acount_button">立即注册</button>
+                </section>
+            </form>
+        </section>
+
+        <section class="action-bar content-horizontal-padded" style="position:static;background:none">
+            <button type="button" class="register_login login shopex-btn shopex-btn-block box-item-flex1" onclick="return false;">注册新账户</button>
+            <button style="display: none" type="button" class="register_login register shopex-btn shopex-btn-block box-item-flex1" onclick="return false;">登录已有账户</button>
+        </section>
+
+    </section>
+  </div>
+  <script>
+
+// 登录 注册切换
+  $('.register_login').on('tap', function() {
+    if($(this).hasClass('register')){
+        $('.register').hide();
+        $('.login').show();
+    }else{
+        $('.login').hide();
+        $('.register').show();
+    }
+  });
+// 登录方式切换
+  $('.login_type_switch').on('tap', function() {
+
+    if($(this).hasClass('mcode')){
+        $('.mvode_form').hide();
+        $('.password_form').show();
+    }else{
+        $('.password_form').hide();
+        $('.mvode_form').show();
+    }
+  });
+
+  $('.submit_button').on('tap', function() {
+    var form = $(this).closest("form");
+    $.post(form.attr('action'), form.serialize(), function(rs) {
+
+      if (rs.error) {
+        shopex.alert(rs.message);
+      }
+
+      if (rs.redirect) {
+        if (rs.redirect == 'vcode_is_show') {
+          $('#bind_vdode').show();
+          return false;
+        } else {
+          location.href = rs.redirect;
+        }
+      }
+    })
+  });
+
+  // add start 王衍生 20170923
+  $('.send_vcode').on('click', function(e) {
+    var current_form = $(this).parents("form");
+    if(current_form.hasClass('register_acount_form')){
+      var uname = current_form.find("input[name='pam_account[login_name]']").val();
+    }else{
+      var uname = current_form.find('input[name=account]').val();
+    }
+    var type = current_form.find('input[name=mcode_type]').val();
+    if($(this).hasClass('disabled')) return false;
+    sendVerify(this, 'uname='+uname+'&type=' + type);
+  });
+  // 发送验证码
+  function sendVerify(el, data) {
+    var url = "<{url action=topwap_ctl_passport@sendVcode}>";
+    var textCont = $(el);
+    $(el).addClass('disabled');
+    textCont.html('<i>0</i>');
+    var cd = new countdown(textCont.find('i'), {
+      start: 120,
+      secondOnly: true,
+      callback: function(e) {
+        $(el).removeClass('disabled');
+        textCont.html('重发验证码');
+      }
+    });
+    $.post(url, data, function(rs) {
+      if(rs.error) {
+        cd.stop();
+        shopex.alert(rs.message);
+        $(el).removeClass('disabled');
+        textCont.html('重发验证码');
+      }
+    });
+  }
+  </script>

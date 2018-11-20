@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="/app/topshop/mall/statics/lib/common/public.css">
+    <link rel="stylesheet" href="/app/topshop/mall/statics/lib/swiper2/idangerous.swiper.css">
+    <link rel="stylesheet" href="/app/topshop/mall/statics/css/styleSheet.css">
+    <link rel="stylesheet" href="/app/topshop/mall/statics/lib/layui/css/layui.css">
+    <title>广电优选详情</title>
+    <!--[if lte IE 8]>
+    <link rel="stylesheet" href="css/ie-public.css">
+    <script>
+        alert("请使用高版本浏览器或者谷歌浏览器体验最佳效果")
+    </script>
+    <![endif]-->
+</head>
+
+<body>
+<div id="header">
+    <{include file="topshop/mall/header.html"}>
+    <!-- 导航 -->
+    <div class="m-details-nav">
+        <div class="nav">
+            <{foreach from=$breadcrumb item=crumb name=bread}>
+            <{if $crumb.url}>
+            <{if $env.foreach.bread.last}>
+            <div class="nav-item">
+                <span style="font-size: 12px;"><{$crumb.title}></span>
+            </div>
+            <{else}>
+            <div class="nav-item">
+                <!--<a href="<{$crumb.url}>"><{$crumb.title}></a>-->
+                <span style="font-size: 12px;"><{$crumb.title}></span>
+            </div>
+            <{/if}>
+            <{else}>
+            <div class="nav-item">
+                <span style="font-size: 12px;"><{$crumb.title}></span>
+            </div>
+            <{/if}>
+            <{if $env.foreach.bread.last}><{else}><div class="nav-sep">></div><{/if}>
+            <{/foreach}>
+        </div>
+    </div>
+    <!--  -->
+    <div class="m-details-content">
+        <!--相册开始-->
+        <div class="content-banner">
+            <!-- 大产品图轮播 -->
+            <div class="swiper-container content-banner-top">
+                <div class="swiper-wrapper">
+                    <{if !$item.list_image}>
+                    <div class="swiper-slide">
+                        <div class="mark"></div>
+                        <div class="content-banner-init"></div>
+                        <img src="<{$image_default_id.S.default_image|storager:l}>" alt="">
+                    </div>
+                    <{else}>
+                    <{foreach from=$item.list_image item=image_id}>
+                    <{if $image_id == $item.image_default_id}>
+                    <div class="swiper-slide">
+                        <div class="mark"></div>
+                        <div class="content-banner-init"></div>
+                        <img src="<{$image_id|storager:l}>" alt="">
+                    </div>
+                    <{else}>
+                    <div class="swiper-slide">
+                        <div class="mark"></div>
+                        <div class="content-banner-init"></div>
+                        <img src="<{$image_id|storager:l}>" alt="">
+                    </div>
+                    <{/if}>
+                    <{/foreach}>
+                    <{/if}>
+                </div>
+            </div>
+
+            <div class="content-bigBanner">
+                <div>
+                    <img src="" alt="">
+                </div>
+            </div>
+            <!-- 小产品图轮播 -->
+            <div class="content-banner-bottom">
+                <div class="bottom-btnLeft">
+                    <img src="/app/topshop/mall/statics/images/details/icon_left.png" alt="">
+                </div>
+                <div class="bottom-list">
+                    <ul>
+                        <{if !$item.list_image}>
+                        <li class="active">
+                            <img src="<{$image_default_id.S.default_image|storager:t}>" alt="">
+                        </li>
+                        <{else}>
+                        <{foreach from=$item.list_image item=image_id}>
+                        <{if $image_id == $item.image_default_id}>
+                        <li class="active">
+                            <img src="<{$image_id|storager:t}>" alt="">
+                        </li>
+                        <{else}>
+                        <li>
+                            <img src="<{$image_id|storager:t}>" alt="">
+                        </li>
+                        <{/if}>
+                        <{/foreach}>
+                        <{/if}>
+                    </ul>
+                </div>
+                <div class="bottom-btnRight">
+                    <img src="/app/topshop/mall/statics/images/details/icon_right.png" alt="">
+                </div>
+            </div>
+        </div>
+        <!--相册结束-->
+        <div class="content-right">
+            <div class="content-right-title">
+                <p><{$item.title}></p>
+                <span>
+                    <{$item.sub_title}>
+                    <a href="javascript:;" data-href="<{url action=topshop_ctl_mall_shop@index shop_id=$item.shop_id}>">【进店逛逛】</a>
+                </span>
+            </div>
+            <div class="content-right-price">
+                <div class="p1">
+                    <p>供货价</p> <span><{$item.supply_price|cur}></span>
+                </div>
+                <div class="p2">
+                    <p>指导售价</p> <span><{$item.price|cur}></span>
+                </div>
+                <div class="p3">
+                    <p>毛利率</p> <span><{$item.profit}>%</span>
+                </div>
+            </div>
+            <div class="content-right-type">
+                <div class="type-reper">
+                    <p>库存</p>
+                    <span><{$item.realStore}> <{$item.unit}></span>
+                </div>
+                <span style="display: none;">销量：<{$item.paid_quantity|default:'0'}></span>
+                <{if $item.spec_desc}>
+                <div class="type-spec">
+                    <{foreach from=$item.spec_desc item=spec key=spec_id}>
+                    <p><{$item.spec.specName.$spec_id}>：</p>
+                    <div>
+                        <{foreach from=$spec item=spec_value key=spec_value_id }>
+                        <span data-type='<{$spec_value_id}>'><{$spec_value.spec_value}></span>
+                        <{/foreach}>
+                    </div>
+                    <{/foreach}>
+                </div>
+                <{/if}>
+            </div>
+            <{if $isOwn}>
+            <div class="content-right-out1">
+                <p>本店铺商品</p>
+            </div>
+            <{elseif $isHas}>
+            <div class="content-right-out1">
+                <p>已优选</p>
+            </div>
+            <{elseif !$item.realStore}>
+            <div class="content-right-out1">
+                <p>已售罄</p>
+            </div>
+            <{else}>
+            <div class="content-right-add" data-id="<{$item.item_id}>">
+                <img src="/app/topshop/mall/statics/images/details/icon_add.png" alt="" class="icon">
+                <p>优选上架</p>
+            </div>
+            <{/if}>
+        </div>
+    </div>
+    <div class="details-introduce">
+        <div class="introduce-hotList">
+            <div class="hotList-top">
+                <p>热销排行</p>
+            </div>
+            <ul class="hontList-ul">
+                <{foreach from=$hotList item=hitem}>
+                <li class="<{if $hitem.shop_id == $login_shop.shop_id}>active-shop<{elseif in_array($hitem.item_id, $initItemsId)}>active-opt<{elseif $hitem.sell_out <= 0}>active-over<{else}><{/if}>" id="itemId<{$hitem.item_id}>">
+                    <div class="img">
+                        <a href="<{url action=topshop_ctl_mall_detail@index item_id=$hitem.item_id}>">
+                            <img src="<{$hitem.image_default_id|storager:t}>" alt="">
+                        </a>
+                    </div>
+                    <div class="title">
+                        <p><{$hitem.title}></p>
+                    </div>
+                    <div class="price">
+                        <div class="price-left">
+                            <p class="p1">供货价：<i><{$hitem.supply_price|cur}></i></p>
+                            <p class="p2">指导售价：<{$hitem.price|cur}></p>
+                        </div>
+                        <{if $hitem.shop_id == $login_shop.shop_id}>
+                        <{elseif in_array($hitem.item_id, $initItemsId)}>
+                        <{elseif $hitem.sell_out <= 0}>
+                        <{else}>
+                        <div class="price-right" data-id="<{$hitem.item_id}>">
+                            <img src="/app/topshop/mall/statics/images/details/icon_add.png" alt="">
+                        </div>
+                        <{/if}>
+                    </div>
+                    <div class="lilv">
+                        <p><{$hitem.profit}>%</p>
+                        <span>毛利率</span>
+                    </div>
+                    <img src="/app/topshop/mall/statics/images/details/floridian.png" alt="" class="over warn">
+                    <img src="/app/topshop/mall/statics/images/details/opt.png" alt="" class="opt warn">
+                    <img src="/app/topshop/mall/statics/images/details/shop.png" alt="" class="shop warn">
+                </li>
+                <{/foreach}>
+            </ul>
+        </div>
+        <div class="introduce-text">
+            <div class="text-top">
+                <ul>
+                    <li class="active">商品详情</li>
+                    <!--<li>商品详情</li>-->
+                </ul>
+            </div>
+            <div class="text-all">
+                <div class="text-all-top">
+                    <ul>
+                        <li>商品编号：<{$item.bn}></li>
+                        <li>上架时间：<{$item.list_time|cdate:'FDATE'}></li>
+                        <li>商品毛重：<{$item.weight}>kg</li>
+                        <{foreach from=$item.natureProps item=row}>
+                        <li><{$row.prop_name}>：<{$row.prop_value}></li>
+                        <{/foreach}>
+                    </ul>
+                </div>
+                <div class="text-all-bottom">
+                    <div class="bottom-title">产品信息</div>
+                    <div class="bottom-news">
+                        <{$item.pc_desc|stripslashes}>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <{include file="topshop/mall/footer.html"}>
+    
+</div>
+
+
+    <script src="/app/topshop/mall/statics/lib/jquery/jquery-1.11.3.min.js"></script>
+    <script src="/app/topshop/mall/statics/lib/swiper2/idangerous.swiper.js"></script>
+    <script src="/app/topshop/mall/statics/lib/jquery/jquery.fly.js"></script>
+    <script src="/app/topshop/mall/statics/lib/layui/layui.all.js"></script>
+<script>
+    var details = {
+        init: function () {
+            this.bindEvent();
+            this.swiperB();
+        },
+        bindEvent: function () {
+            //返回顶部
+            $('.totop').click(function () {
+                $('html,body').animate({
+                    scrollTop: 0
+                }, 300)
+            });
+            //滚动top按钮显示消失
+            $('body').scroll(function () {
+                if ($('body').scrollTop() > window.screen.availHeight) {
+                    $('.totop').fadeIn();
+                } else {
+                    $('.totop').fadeOut();
+                }
+            });
+            //添加购物车效果
+            var flyer = null
+            var e = null
+            var offset_tar = null
+            function fly(id) {
+                flyer.animate({
+                    bottom: '60px'
+                });
+                setTimeout(function () {
+                    flyer.fly({
+                        start: {
+                            left: e.clientX,
+                            top: e.clientY - 70
+                        },
+                        end: {
+                            left: offset_tar.left,
+                            top: offset_tar.top,
+                            width: 0,
+                            height: 0
+                        },
+                        onEnd: function () {
+                            flyer.remove();
+                        }
+                    });
+                    pullItem(id);
+                    //$('#scrollTop .shopcart i').text(Number($('#scrollTop .shopcart i').text()) + 1);
+                }, 300)
+            }
+            $('.content-right-add').click(function (event) {
+                var _this = this;
+                offset_tar = $('#scrollTop').position();
+                e = event;
+                flyer = $('.content-banner-top').find('.swiper-slide').eq(0).find('img').clone().css({ "width": '50px', "height": "50px", 'position': "absolute", "bottom": 0 });
+                $('.content-right-add .icon').after(flyer);
+                
+                var id = $(_this).data('id');
+                fly(id);
+            });
+            $('.price-right').click(function (event) {
+                var _this = this;
+
+                if ($(this).parent().parent().hasClass('active-over')||$(this).parent().parent().hasClass('active-opt')||$(this).parent().parent().hasClass('active-shop')) {
+                    console.log(0);
+                    return
+                } else {
+                    offset_tar = $('#scrollTop').position();
+                    e = event;
+                    flyer = $(this).parent().parent().find('.img img').clone().css({ "width": '38px', "height": "38px", 'position': "absolute", "bottom": 0, "right": 10 });
+                    $(this).after(flyer);
+
+                    var id = $(_this).data('id');
+                    fly(id);
+                }
+            });
+            //商品详情选项卡
+            // $('.introduce-text .text-top ul li').click(function(){
+            //     $(this).addClass('active').siblings().removeClass('active');
+            // });
+        },
+        swiperB: function () {
+            var numR = 0;
+            var listNum = Math.ceil($('.bottom-list ul li').length / 5);
+            var swiper1 = new Swiper('.content-banner-top', {
+                slidesPerView: 1,
+                onTouchEnd: function (swiper) {
+                    $('.bottom-list ul li').eq(swiper1.activeIndex).addClass('active').siblings().removeClass('active');
+                    if (swiper1.activeIndex + 1 <= 5) {
+                        $('.bottom-list ul').animate({
+                            left: 0
+                        }, 300);
+                    } else if (swiper1.activeIndex + 1 > 5) {
+                        $('.bottom-list ul').animate({
+                            left: -345 * Math.floor(swiper1.activeIndex / 5)
+                        }, 300);
+                    }
+                }
+            });
+            //小商品图右移
+            $('.bottom-btnRight').click(function () {
+                numR = numR - 345;
+                //console.log(numR)
+                if ($('.bottom-list ul li').length <= 5) {
+                    numR = 0;
+                } else if (numR <= -345 * listNum) {
+                    numR = numR + 345 * listNum;
+                }
+                $('.bottom-list ul').animate({
+                    left: numR + 'px'
+                }, 300);
+            });
+            //小商品图左移
+            $('.bottom-btnLeft').click(function () {
+                numR = numR + 345;
+                //console.log(numR)
+                if ($('.bottom-list ul li').length <= 5) {
+                    numR = 0;
+                } else if (numR >= 0) {
+                    numR = 0;
+                }
+                $('.bottom-list ul').animate({
+                    left: numR + 'px'
+                }, 300);
+            });
+            //小商品图hover效果
+            $('.bottom-list ul li').mouseover(function () {
+                $(this).addClass('active').siblings().removeClass('active');
+                swiper1.swipeTo($(this).index(), 1000, false);
+            });
+            //放大镜效果
+            $('.content-banner-top .swiper-wrapper .swiper-slide .mark').mouseover(function (e) {
+                //console.log(1)
+                $(this).parent().find('.content-banner-init').css('display', 'block');
+                $('.content-bigBanner').css('display', 'block');
+                $('.content-bigBanner img').attr('src', $(this).parent().find('img').attr('src'));
+            });
+            $('.content-banner-top .swiper-wrapper .swiper-slide .mark').mouseout(function (e) {
+                $(this).parent().find('.content-banner-init').css('display', 'none');
+                $('.content-bigBanner').css('display', 'none');
+            });
+            $('.content-banner-top .swiper-wrapper .swiper-slide .mark').mousemove(function (e) {
+                //console.log(2)
+                var l = e.offsetX - 60;
+                var t = e.offsetY - 60;
+                if (l < 0) {
+                    l = 0;
+                }
+                if (l > $(this).width() - $('.content-banner-init').width()) {
+                    l = $(this).width() - $('.content-banner-init').width();
+                }
+                if (t < 0) {
+                    t = 0;
+                }
+                if (t > $(this).height() - $('.content-banner-init').height()) {
+                    t = $(this).height() - $('.content-banner-init').height();
+                }
+                var scaleX = l / ($(this).width() - $('.content-banner-init').width());
+                var scaleY = t / ($(this).height() - $('.content-banner-init').height());
+
+                $('.content-bigBanner img').css({
+                    "left": scaleX * ($('.content-bigBanner').width() - $('.content-bigBanner img').width()) + "px",
+                    "top": scaleY * ($('.content-bigBanner').height() - $('.content-bigBanner img').height()) + "px"
+                })
+                $(this).parent().find('.content-banner-init').css({
+                    "left": l + "px",
+                    "top": t + "px"
+                })
+
+            });
+
+
+        }
+    }
+    // $(function () {
+    //     details.init();
+    // });
+    window.onload = function () {
+        details.init();
+    }
+</script>
+<script>
+    function pullItem(id) {
+        if(id == '' || id == 0) {
+            layer.msg('请选择要拉取的商品');
+            return;
+        }
+
+        $.post('<{url action=topshop_ctl_mall_item@pullItem}>', 'item_id='+id, function(rs){
+            layer.msg(rs.message);
+            if(rs.error) {
+                return;
+            }
+            if(rs.success) {
+                $('#scrollTop .shopcart i').text(Number($('#scrollTop .shopcart i').text()) + 1);
+                setTimeout(function(){window.location.reload();}, 800);
+            }
+        });
+    }
+</script>
+</body>
+
+</html>

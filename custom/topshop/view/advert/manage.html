@@ -1,0 +1,75 @@
+<div class="panel panel-default">
+    <form  action="" method="post" class="form-horizontal" data-validate-onsuccess="ajaxSubmit" id="form_delivery" role="form">
+        <input type="hidden" name="advert_id" value="<{$advert_info.advert_id}>">
+        <div class="panel-body">
+            <div class="form-group">
+                <label for="" class="col-sm-2 control-label">开启：</label>
+                <div class="col-sm-2" id="">
+                    <label><input type="radio" name="is_open" value="on" <{if $advert_info.is_open == 'on'}>checked<{/if}>>是</label>
+                    <label><input type="radio" name="is_open" value="off"  <{if $advert_info.is_open == 'off' || !$advert_info.advert_id}>checked<{/if}>>否</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="" class="col-sm-2 control-label"><span class="txt-required">*</span>支付完成页banner：</label>
+                <div class="col-sm-5">
+                    <a class="select-image" data-toggle="modal" href="<{url action=topshop_ctl_shop_image@loadImageModal}>" data-target="#gallery_modal">
+                        <input type="hidden" name="pay_finish_banner" require value="<{$advert_info.pay_finish_banner}>">
+                        <div class="img-put">
+                            <img src="<{$advert_info.pay_finish_banner|storager}>" />
+                            <i class="glyphicon glyphicon-picture"></i>
+                        </div>
+                    </a>
+                    <span class="help-block">尺寸标准：750*200 px。</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label" ><span class="txt-required">*</span>支付完成页banner链接：</label>
+                <div class="col-sm-4">
+                    <input type="text" name="pay_finish_banner_url" require  value="<{$advert_info.pay_finish_banner_url}>" class="form-control" placeholder="支付完成页banner链接">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="" class="col-sm-2 control-label"><span class="txt-required">*</span>浮窗banner：</label>
+                <div class="col-sm-5">
+                    <a class="select-image" style="" data-toggle="modal"  href="<{url action=topshop_ctl_shop_image@loadImageModal}>" data-target="#gallery_modal">
+                        <input type="hidden" name="float_banner" require value="<{$advert_info.float_banner}>">
+                        <div class="img-put">
+                            <img src="<{$advert_info.float_banner|storager}>" />
+                            <i class="glyphicon glyphicon-picture"></i>
+                        </div>
+                    </a>
+                    <span class="help-block">尺寸标准：750*200 px。</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label" ><span class="txt-required">*</span>浮窗banner链接：</label>
+                <div class="col-sm-4">
+                    <input  name='float_banner_url' type='text' require value="<{$advert_info.float_banner_url}>" placeholder="浮窗banner链接" class="form-control" >
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer text-center">
+            <button type="submit" class="btn btn-primary btn-flat"><{t}>保存<{/t}></button>
+        </div>
+
+    </form>
+</div>
+<script>
+    function ajaxSubmit (e) {
+        var form = e.target;
+        e.preventDefault();
+        $.post("<{url action=topshop_ctl_advert@save}>", $(form).serialize(), function(rs) {
+            if(rs.error) {
+                $('#messagebox').message(rs.message);
+                return;
+            }
+            if(rs.success) {
+                $('#messagebox').message(rs.message, 'success');
+                location.reload();
+            }
+        });
+    }
+
+</script>

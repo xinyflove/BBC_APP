@@ -1,0 +1,47 @@
+<{if $list}>
+<ul class="list">
+    <{foreach from=$list item=item key=key}>
+    <li>
+        <a href="<{url action=topshop_ctl_mall_detail@index item_id=$item.item_id}>" data-id="<{$item.item_id}>">
+            <div class="goods-img">
+                <img width="200" height="200" class="lazy" data-src="<{$item.image_default_id|storager:t}>" alt="">
+            </div>
+            <p class="goods-title"><{$item.title}></p>
+        </a>
+        <{if $item.sell_out <= 0}>
+        <div class="floridian"><img src="/app/topshop/mall/statics/images/list/floridian.png" alt=""></div>
+        <{/if}>
+        <div class="goods-shop"><{$item.shop_name}></div>
+        <div class="goods-trade">
+            <span>供货价：</span>
+            <i>¥<{$item.supply_price}></i>
+        </div>
+        <div class="goods-price">
+            <span>指导售价：</span>
+            <i>¥<{$item.price}></i>
+        </div>
+        <{if $item.shop_id == $shop_id}>
+        <div class="chosebtn oversale">本店铺商品</div>
+        <{elseif $item.sell_out <= 0}>
+        <div class="chosebtn oversale">已售罄</div>
+        <{elseif in_array($item.item_id, $initItemsId)}>
+        <div class="chosebtn oversale">已优选</div>
+        <{else}>
+        <div class="chosebtn" data-id="<{$item.item_id}>">优选上架</div>
+        <{/if}>
+
+        <div class="jiaobiao">
+            <p><{$item.profit}>%</p>
+            <span>毛利率</span>
+        </div>
+    </li>
+    <{/foreach}>
+</ul>
+<{else}>
+<!-- 没有数据显示 -->
+<div class="pc-list-empty" style="">
+    <div><img src="/app/topshop/mall/statics/images/list/nodata.png" alt=""></div>
+    <p>未搜索到相关商品</p>
+</div>
+<!-- end -->
+<{/if}>

@@ -1,0 +1,85 @@
+<div class="box box-primary clearfix">
+    <table class="table table-hovet table_container">
+        <thead>
+            <tr>
+                <th>选项</th>
+                <th>ID</th>
+                <th>状态</th>
+                <th>名称</th>
+                <th>规则</th>
+                <th>领取时间</th>
+                <th>使用时间</th>
+                <th>使用情况</th>
+            </tr>
+        </thead>
+        <{if $coupons_list}>
+            <tbody>
+                <{foreach from=$coupons_list item=item}>
+                    <tr>
+                        <td><input type="checkbox" name="account_id[]" class="account_checkbox" data-id="<{$item.coupon_id}>"/></td>
+                        <td>
+                            <{$item.coupon_id}>
+                        </td>
+                        <td>
+                            <{if $item.coupon_status=='non-reviewed'}><span class="label label-primary">未审核</span> <{/if}>
+                            <{if $item.coupon_status=='pending'}><span class="label label-primary">待审核</span> <{/if}>
+                            <{if $item.coupon_status=='refuse'}><button type="button" class="btn btn-none" data-toggle="tooltip" data-placement="bottom" title="<{$item.reason}>"><span class="label label-default">审核拒绝</span></button> <{/if}>
+                            <{if $item.coupon_status=='agree'}>
+                                <{if $now < $item.cansend_start_time}><span class="label label-primary">待领取</span> <{/if}>
+                                <{if $now < $item.cansend_end_time && $now >$item.cansend_start_time}><span class="label label-success">可领取</span> <{/if}>
+                                <{if ($item.max_gen_quantity<=$item.send_couponcode_quantity) && ($now < $item.canuse_end_time) && ($now > $item.canuse_start_time) }><span class="label label-default">已领完</span> <{/if}>
+                                <{if $now > $item.cansend_end_time}><span class="label label-default">结束领取</span> <{/if}>
+
+                                <{if $now < $item.canuse_start_time}><span class="label label-primary">待生效</span> <{/if}>
+                                <{if ($now < $item.canuse_end_time) && ($now > $item.canuse_start_time)}><span class="label label-success">生效中</span> <{/if}>
+                                <{if $now > $item.canuse_end_time}><span class="label label-default">已失效</span> <{/if}>
+                            <{/if}>
+                            <{if $item.coupon_status=='cancel'}><span class="label label-default">已取消</span> <{/if}>
+                        </td>
+                        <td>
+                            <{$item.coupon_name}>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-none" data-toggle="tooltip" data-placement="bottom" title="<{$item.coupon_desc}>">
+                                满 <{$item.limit_money}> 减 <{$item.deduct_money}> 元 <br />
+                                总生成总数：<{$item.max_gen_quantity}> <br />
+                                用户可领数：<{$item.userlimit_quantity}> <br />
+                            </button>
+                        </td>
+                        <td>
+                                <{$item.cansend_start_time|cdate:'FDATE_STIME'}>
+                                <br />&nbsp;~&nbsp;<br />
+                                <{$item.cansend_end_time|cdate:'FDATE_STIME'}>
+                            </td>
+                            <td>
+                                <{$item.canuse_start_time|cdate:'FDATE_STIME'}>
+                                <br />&nbsp;~&nbsp;<br />
+                                <{$item.canuse_end_time|cdate:'FDATE_STIME'}>
+                            </td>
+                            <td>
+                                已领取总数：<{$item.send_couponcode_quantity}> <br />
+                                已使用总数：<{$item.use_couponcode_quantity}> <br />
+                            </td>
+                    </tr>
+                    <{/foreach}>
+            </tbody>
+            <{else}>
+                <tbody id="none_cat">
+                    <tr class="none-information">
+                        <td colspan="6">
+                            <p class="help-block text-center">暂无数据</p>
+                        </td>
+                    </tr>
+                </tbody>
+                <{/if}>
+    </table>
+    <div class="pull-right">
+        <{pagers data=$pagers}>
+            <{if $total> 0}>
+                <span class="page-number">共&nbsp;
+                    <em class="text-aqua">
+                        <{$total}>
+                    </em>&nbsp;条记录</span>
+                <{/if}>
+    </div>
+</div>

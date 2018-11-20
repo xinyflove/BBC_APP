@@ -1,0 +1,57 @@
+<{include file="topwap/lease/header.html"}>
+
+<body style="background-color: #f5f6f8;">
+
+    <!--m-fmcc-recharge-entry start-->
+    <section class="m-fmcc-recharge-entry">
+        <input type="text" placeholder="" value="￥<{$payment_total}>" readonly="" style="color: #333;">
+    </section>
+    <!--end m-fmcc-recharge-entry-->
+    <!--m-fmcc-recharge-payType start-->
+    <section class="m-fmcc-recharge-payType">
+        <ul>
+            <li class="retainbb">
+                <label for="s11" class="horizontal-view">
+                    <i class="icon icon_pay"></i>
+                    <span>支付宝支付</span>
+                    <div>
+                        <input type="radio" id="s11" name="ck" class="weui-check" value="1" checked>
+                        <i class="weui-icon-checked"></i>
+                    </div>
+               </label>
+            </li>
+            <li class="retainbb ">
+                <label for="s12" class="horizontal-view">
+                    <i class="icon icon_weixin"></i>
+                    <span>微信支付</span>
+                     <div>
+                        <input type="radio" id="s12" name="ck" class="weui-check" value="2">
+                        <i class="weui-icon-checked"></i>
+                    </div>
+               </label>
+            </li>
+        </ul>
+    </section>
+    <!--end m-fmcc-recharge-payType-->
+    <!--m-fmcc-recharge-details start-->
+    <section class="m-fmcc-recharge-details">
+        <!--<a href="rechargeDetails.html" class="rechargeDetailsLink">充值明细</a>-->
+        <a id="next-step" class="nextStep">下一步</a>
+    </section>
+    <!--end m-fmcc-recharge-details-->
+
+    <script src="/app/topwap/statics/cart/js/fontSize.js"></script>
+    <script type="text/javascript">
+
+            $('#next-step').on('click',function(){
+                var payment=$('input[name=ck]:checked').val();
+                var stages_id="<{$stages_id}>";
+                var owner_id="<{$owner_info.owner_id}>";
+                var total="<{$payment_total}>";
+                var target_url="<{url action=topwap_ctl_lease_default@rechargelist}>"+'?stages_id='+stages_id+"&owner_id="+owner_id+"&total="+total+"&payment="+payment;
+                window.location.href=target_url;
+            })
+
+    </script>
+</body>
+</html>

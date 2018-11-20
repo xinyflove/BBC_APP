@@ -1,0 +1,105 @@
+<{include file="topwap/actlighticon/header.html" }>
+<div class="lighten-wapper">
+    <div class="lighten-top">
+        <a href="<{url action=topwap_ctl_actlighticon_lighticon@index activity_id=$activity_id}>" style="display:block;"><img src="/app/topwap/statics/lighticon/img/icon_jpDetail.png" class="lighten-jpDetail"/></a>
+        <a href="<{url action=topwap_ctl_actlighticon_lighticon@index activity_id=$activity_id}>" style="display:block;"><p class="lighten-activerule">活动细则 &gt;</p></a>
+    </div>
+    <div class="lighten-list">
+        <ul>
+            <li><img src="/app/topwap/statics/lighticon/img/icon_fm964.png"/></li>
+            <{foreach from=$operandList['data'] item=item}>
+            <{if $item.is_light === true}>
+                <li class="lighten-list-active" data-id="<{$item.operand_id}>">
+                    <img class="lighten-list-active1" src="/app/topwap/statics/lighticon/img/red_circle.png"/>
+                    <img class="lighten-list-active2" src="<{$item.figureurl|storager}>"/>
+                    <img class="lighten-list-active3" src="/app/topwap/statics/lighticon/img/active_square.png"/>
+                    <p><{$item.title}></p>
+                </li>
+            <{else}>
+                <li class="lighten-list-no" data-id="<{$item.operand_id}>">
+                    <img class="lighten-list-no1" src="/app/topwap/statics/lighticon/img/gray_circle.png"/>
+                    <img class="lighten-list-no2" src="/app/topwap/statics/lighticon/img/gray_headImg.png"/>
+                    <img class="lighten-list-no3" src="/app/topwap/statics/lighticon/img/gray_square.png"/>
+                    <p><{$item.title}></p>
+                </li>
+            <{/if}>
+            <{/foreach}>
+
+        </ul>
+
+    </div>
+    <{if $join.join=='HAS_JOIN'}>
+    <img id="share" src="/app/topwap/statics/lighticon/img/icon_Ta_help.png" class="lighten-btn" />
+    <{else}>
+    <a href="<{url action=topwap_ctl_actlighticon_lighticon@index activity_id=$activity_id}>"><img src="/app/topwap/statics/lighticon/img/icon_toghter.png" class="lighten-btn" /></a>
+    <{/if}>
+    <p class="lighten-share">分享给朋友，让Ta帮忙点亮头像吧</p>
+    <div class="lighten-footer">
+        <p>技术支持:青岛广电传媒电子商务有限公司</p>
+    </div>
+</div>
+
+
+<div id="share_img"style="position:fixed;z-index:99999999999999;top:0;bottom:0;left:0;right:0;background:rgba(0,0,0,0.5);display:none">
+    <img src="/app/topwap/statics/static/img/share.png" style="width:100%;">
+</div>
+
+
+<!--add_2017/10/24_by_wanghaichao_start  分享的-->
+<{include file="topwap/index.html"}>
+<!--add_2017/10/24_by_wanghaichao_end-->
+
+<script src="/app/topwap/statics/lighticon/js/dialog.js"></script>
+<script type="text/javascript">
+    var height = $("body").height()-$(".lighten-top").height()-$(".lighten-footer").height()
+    $(".lighten-list").css("height",height)
+    $(".lighten-list-active").on("click",function(){
+        $.dialog.model('请点击灰色头像~');
+    });
+    $(".lighten-list-no").on("click",function(){
+        var th = $(this);
+        var operand = $(this).data('id');
+        var url = "<{url action=topwap_ctl_actlighticon_lighticon@lightUpDo}>";
+        var participant_id = <{$participant_id}>;
+        var shop_id = <{$shop_id}>;
+        var activity_id = <{$activity_id}>;
+        var openid = "<{$openid}>";
+        $.post(url,{'operand_id':operand,'participant_id':participant_id,'shop_id':shop_id,'activity_id':activity_id,'openid':openid},function (data) {
+            if(data.success === true)
+            {
+                $.dialog.BagDialog({
+                    mask: true,
+                    width: 312,
+                    height: 373,
+                    ImgSrc: "/app/topwap/statics/lighticon/img/alert_bg1.png",
+                    isImgTypeSmile:true
+                });
+                $(th).empty();
+                $(th).attr("class","lighten-list-active");
+                $(th).append('<img class="lighten-list-active1" src="/app/topwap/statics/lighticon/img/red_circle.png"/>' +
+                    '<img class="lighten-list-active2" src="'+data.message.data.figureurl+'"/>' +
+                    '<img class="lighten-list-active3" src="/app/topwap/statics/lighticon/img/active_square.png"/><p>'+data.message.data.title+'</p>')
+            }
+            //每个用户只能为一个发起者点亮一次异常、限制活动结束就不能点亮异常
+            else if(data.exception === true){
+                $.dialog.model(data.message);
+            }
+            else
+            {
+                $.dialog.model(data.message.msg);
+                $(th).empty();
+                $(th).attr("class","lighten-list-active");
+                $(th).append('<img class="lighten-list-active1" src="/app/topwap/statics/lighticon/img/red_circle.png"/>' +
+                    '<img class="lighten-list-active2" src="'+data.message.data.figureurl+'"/>' +
+                    '<img class="lighten-list-active3" src="/app/topwap/statics/lighticon/img/active_square.png"/><p>'+data.message.data.title+'</p>')
+            }
+            console.log(data);
+        },'json');
+    })
+    $('#share').click(function() {
+        $('#share_img').show();
+    });
+    $('#share_img').click(function(){
+        $(this).hide();
+    });
+</script>

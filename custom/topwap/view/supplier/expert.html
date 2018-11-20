@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">    
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>专家点评</title>
+    <{css src="milier/dist/style.css" app="topwap"}>
+    <{css src="milier/css/expert.css?201806041105" app="topwap"}>
+</head>
+<body>
+    <div class="m-mili-expert">
+        <header>
+            <a href="javascript:history.back(-1)">
+                <img src="<{resource app='topwap' path='/images/milier/left_align_03.png'}>" alt="">
+            </a>
+            <div>专家点评</div>
+        </header>
+        <section class="expert-list mescroll" id="mescroll">
+            <div id="dataList">
+                <!--<dl class="list-item">-->
+                    <!--<dt class="avator"><img src="<{resource app='topwap' path='/images/milier/img2.png'}>" alt=""></dt>-->
+                    <!--<dd>-->
+                        <!--<p class="user">美评专家</p>-->
+                        <!--<p class="score">-->
+                            <!--<span>打分</span>-->
+                            <!--<i class="icon"></i>-->
+                            <!--<i class="icon"></i>-->
+                            <!--<i class="icon"></i>-->
+                            <!--<i class="icon"></i>-->
+                            <!--<i class="icon"></i>-->
+                        <!--</p>-->
+                        <!--<p class="desc active">目前主推小火锅和馄饨，小火锅一人份，有辣和不辣的两种，需要提前一天预定。食材很新鲜，一不辣的两种，需要提前一天预定。食材很新鲜，一人份不辣的两种，需要提前一天预定。食材很新鲜，一人份人份吃到饱，搭配的小食也很Q，芝士年糕，</p>-->
+                        <!--<a class="more"><img src="<{resource app='topwap' path='/images/milier/icon-xia.png'}>" /></a>-->
+                        <!--<p class="date bottom">3月5号</p>-->
+                    <!--</dd>-->
+                <!--</dl>-->
+            </div>
+        </section>
+    </div>
+    <{script app="topwap" src="milier/dist/public.js" }>
+</body>
+<script>
+    $(function () {
+        var mescroll = new MeScroll('mescroll', {
+            down: {
+                offset: 40,
+            },
+            up: {
+                offset: 40,
+                loadFull: {
+                    use: true,
+                    delay: 500
+                },
+                page:{
+                    num : 0 ,
+                    size : 10
+                },
+                clearEmptyId: "dataList",
+                callback: upCallback
+            }
+        })
+        // data 渲染的数据 appDomid 填充的盒子
+        function setDom(data, appDomid){
+            for(var i in data){
+                var str = `<dt class="avator"><img src="${data[i].expert_avatar}" alt=""></dt>
+                        <dd>
+                            <p class="user">${data[i].expert_name}</p>
+                            <p class="score">
+                                <span>打分</span>`;
+                for(var j=0;j<data[i].comment_rank;j++)
+                {
+                    str += '<i class="icon"></i>';
+                }
+                str += `</p>
+                            <p class="desc">${data[i].comment_content}</p>
+                            <a class="more"><img src="<{resource app='topwap' path='/images/milier/details/icon-xia.png'}>" /></a>
+                            <p class="date bottom">${data[i].created_time}</p>
+                        </dd>`;
+                var Dl = document.createElement('dl');
+                Dl.setAttribute('class', 'list-item');
+                Dl.innerHTML = str;
+                document.getElementById(appDomid).appendChild(Dl);
+                var parentDom = document.getElementsByClassName('list-item')[i];
+                var textHeight = parentDom.getElementsByClassName('desc')[0].offsetHeight;
+                if(textHeight >= 54){
+                    parentDom.getElementsByClassName('more')[0].style.display = 'block';
+                    parentDom.getElementsByClassName('desc')[0].classList.add('active');
+                }
+            }
+        }
+
+        function getData(curpage, pagesize, successcb, errorcb){
+            $.ajax({
+                url: '<{url action=topwap_ctl_supplier_expert@ajaxCommentList}>',
+                type: 'get',
+                dataType: 'json',
+                async: true,
+                data: {
+                    agent_shop_id:<{$agent_shop_id}>,
+                    curpage:curpage,
+                    page: pagesize
+                },
+                success: function(res) {
+                    var dataArr = [];
+                     if(res.success === true){
+                         if(res.message.data){
+                             dataArr = res.message.data;
+                             successcb(dataArr);
+//                             mescroll.endSuccess(dataArr.length, res.message.hasmore);
+//                             if(!res.message.hasmore){
+//                                 alert(1);
+//                                  mescroll.endSuccess(dataArr.length);
+//                              }
+                         }
+                     }else{
+                         errorcb()
+                     }
+                },
+                error: function (err) {
+                    errorcb();
+                }
+            })
+        }
+
+        // function getData(curpage, pagesize, successcb, errorcb){
+        //     $.ajax({
+        //         url: 'http://test.hisunflower.com/mobile/index.php?act=service_goods&op=goods_list',
+        //         type: 'get',
+        //         dataType: 'json',
+        //         async: true,
+        //         data: {
+        //             gc_id: '53',
+        //             curpage:curpage,
+        //             page: pagesize
+        //         },
+        //         success: function(res) {
+        //             console.log(res);
+        //             var dataArr = [];
+        //             if(res.code == 200){
+        //                 if(res.datas.goods_list){
+        //                     dataArr = res.datas.goods_list;
+        //                     successcb(dataArr);
+        //                     console.log(res.hasmore);
+        //                     if(!res.hasmore){
+        //                         mescroll.endSuccess(dataArr.length, res.hasmore);
+        //                     }
+        //                 }
+        //             }else{
+        //                 errorcb()
+        //             }
+        //         },
+        //         error: function (err) {
+        //             errorcb();
+        //          }
+        //     })
+        // }
+
+        function upCallback(page) {
+            // var pageIndex = page.num+14;
+            // page.num = pageIndex;
+            // console.log(page);
+            getData(page.num, page.size, function(data){
+                mescroll.endSuccess(data.length);
+                setDom(data, 'dataList');
+                $('.more').on('click', function() {
+                    if($(this).siblings('.desc').hasClass('active')){
+                        $(this).addClass('shou');
+                        $(this).siblings('.desc').removeClass('active');
+                    }else{
+                        $(this).removeClass('shou');
+                        $(this).siblings('.desc').addClass('active');
+                    }
+
+                })
+            }, function(){
+                mescroll.endErr();
+            })
+        }
+    })
+</script>
+</html>

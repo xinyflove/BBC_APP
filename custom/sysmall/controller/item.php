@@ -91,6 +91,16 @@ class sysmall_ctl_item extends desktop_controller{
         $objMallDataItem = kernel::single('sysmall_data_item');
         $res = $objMallDataItem->update($postdata, $msg);
 
+        // 由于原始商品更新数据,提示代售商品更新数据
+        if($postdata['status'] == 'onsale')
+        {
+            $sellData = array('init_is_change' => 1);
+            $sellFilter = array(
+                'init_item_id' => $postdata['item_id'],
+            );
+            app::get('sysitem')->model('item')->update($sellData, $sellFilter);
+        }
+
         $this->end($res, $msg);
     }
 

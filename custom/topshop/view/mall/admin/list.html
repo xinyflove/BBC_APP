@@ -1,0 +1,324 @@
+<!--搜索框开始-->
+<aside class="control-sidebar control-sidebar-light" style="height: 100%;">
+    <!-- Create the tabs -->
+    <ul class="nav nav-tabs nav-justified control-sidebar-tabs">
+        <li class=""><a href="#">筛选</a></li>
+        <li class=""><a href="#" data-toggle="control-sidebar"><i class="glyphicon glyphicon-remove"></i></a></li>
+    </ul>
+    <!-- Tab panes -->
+    <div class="tab-content">
+        <form action="<{url action=topshop_ctl_mall_admin_list@index}>" method="get" id="search-form">
+            <div class="box-body">
+                <!-- text input -->
+                <div class="form-group">
+                    <label>商品名称：</label>
+                    <input type="text" name="title" class="form-control" <{if $filter['title']}> value="<{$filter['title']|escape:"html"}>" <{/if}> placeholder="请输入 ...">
+                </div>
+            </div>
+            <!-- /.box-body -->
+            <div class="box-footer">
+                <button id="reset-form" type="button" class="btn btn-default">重置</button>
+                <button type="submit" class="btn btn-info pull-right">搜索</button>
+            </div>
+            <!-- /.box-footer -->
+        </form>
+    </div>
+</aside>
+<!--搜索框结束-->
+<!--主内容区开始-->
+<div class="row">
+    <div class="col-xs-12 col-sm-12">
+        <div class="nav-tabs-custom" id="tabs">
+            <!--标签导航开始-->
+            <ul class="nav nav-tabs">
+                <li role="presentation" class="<{if !$filter['status'] }>active<{/if}>">
+                    <a href="<{url action=topshop_ctl_mall_admin_list@index}>">全部</a>
+                </li>
+                <li role="presentation" class="<{if $filter['status']=='onsale'}>active<{/if}>">
+                    <a href="<{url action=topshop_ctl_mall_admin_list@index status=onsale}>">上架中</a>
+                </li>
+                <li role="presentation" class="<{if $filter['status']=='instock'}>active<{/if}>">
+                    <a href="<{url action=topshop_ctl_mall_admin_list@index status=instock}>">仓库中</a>
+                </li>
+                <li class="pull-right header">
+                    <div class="btn-group">
+                        <button data-toggle="control-sidebar" class="btn btn-default">
+                            <div class="text-light-blue">
+                                <i class="fa fa-search"></i>
+                                搜索
+                            </div>
+                        </button>
+                    </div>
+                </li>
+            </ul>
+            <!--标签导航结束-->
+            <div class="tab-content no-padding clearfix" id="data_node">
+                <!--头部操作选项开始-->
+                <div class="mailbox-controls">
+                    <!-- Check all button -->
+                    <button type="button" id="selectAll" class="btn btn-default btn-sm checkbox-toggle"><i class="fa fa-square-o"></i>
+                    </button>
+                    <div class="btn-group">
+                        <button type="button" id="action-remove" class="btn btn-default btn-sm" data-toggle="tooltip" ><i class="fa fa-trash-o"></i>删除</button>
+                        <button type="button" id="action-onsale" class="btn btn-default btn-sm" data-toggle="tooltip" ><i class="fa fa-cloud-upload"></i>上架</button>
+                        <button type="button" id="action-instock" class="btn btn-default btn-sm" data-toggle="tooltip" ><i class="fa fa-cloud-download"></i>下架</button>
+                    </div>
+                </div>
+                <!--头部操作选项结束-->
+                <!--商品列表开始-->
+                <table class="table table-striped">
+                    <tbody>
+                    <tr>
+                        <th class="col-checkbox"></th>
+                        <th class="col-name">商品</th>
+                        <th>供货店铺</th>
+                        <th>二维码</th>
+                        <th>库存</th>
+                        <th>状态</th>
+                        <th>时间</th>
+                        <th>店铺分类</th>
+                        <th class="text-center">操作</th>
+                    </tr>
+                    <{if $list}>
+
+                    <{foreach from=$list item=item}>
+                    <tr>
+                        <td>
+                            <label class="checkbox-inline">
+                                <input type="checkbox" name=item_ids value=<{$item.item_id}>>&nbsp;
+                            </label>
+                        </td>
+                        <td>
+                            <div class="goods">
+                                <!--进入商品详情页链接-->
+                                <a href="<{url action=topc_ctl_item@index item_id=$item.item_id}>" target="_blank">
+                                    <img src="<{$item.image_default_id|default:$image_default_id.S.default_image|storager:t}>" alt="">
+                                    <{$item.title}>
+                                </a>
+                                <br>
+                                销售价：<span class="text-orange"><{$item.price|cur}></span><br>
+                                供货价：<span class="text-orange"><{$item.cost_price|cur}></span><br>
+                                毛利率：<span class="text-orange"><{$item.profit}>%</span>
+                            </div>
+                            <{if $item.is_virtual}>
+                            <div>
+                                <span class="badge bg-warning">虚拟商品</span>
+                            </div>
+                            <{/if}>
+                            <a class="btn btn-xs btn-success" href="<{url action=topwap_ctl_item_detail@index item_id=$item.item_id}>" target="_blank">手机预览</a>
+                            <a class="btn btn-xs btn-success" href="<{url action=topc_ctl_item@index item_id=$item.item_id}>" target="_blank">pc预览</a>
+                            <a class="btn btn-xs btn-success" href="<{url action=topshop_ctl_item@qrDown item_id=$item.item_id}>">二维码下载</a>
+                        </td>
+                        <td>
+                            <p><{$item.shop_name}></p>
+                            <{if $item.init_is_change == 1}>
+                            <p class="text-danger">原始商品有数据有变化,请
+                                <a class="action-update" href="javascript:;" data-id="<{$item.item_id}>">更新</a>
+                            </p>
+                            <{/if}>
+                            <{if $item.deleted == 1}>
+                            <p class="text-danger">商品在广电优选已下架</p>
+                            <{/if}>
+                        </td>
+                        <td>
+                            <img src="<{$item.qr_code}>" id="item_qr_img" alt="">
+                        </td>
+                        <td>
+                            <{$item.store}>
+                        </td>
+                        <td>
+                            <{if $item.approve_status == "instock"}>
+                            <i class="text-danger">未上架</i>
+                            <{elseif $item.approve_status}>
+                            <i class="text-success">已上架</i>
+                            <{/if}>
+                            <br/><{if !$item.nospec}><i class="text-danger">[多规格]</i><{/if}>
+                        </td>
+                        <td>
+                            <{if $item.list_time}>
+                            <{$item.list_time|cdate:FDATE_STIME}>(发布)<br/>
+                            <{/if}>
+                            <{if $item.modified_time}>
+                            <{$item.modified_time|cdate:FDATE_STIME}>(修改)<br/>
+                            <{/if}>
+                            <{if $item.created_time}>
+                            <{$item.created_time|cdate:FDATE_STIME}>(拉取)
+                            <{/if}>
+                        </td>
+                        <td>
+                            <{$item.shop_cat_name}>
+                            <br>
+                            <!--修改分类按钮-->
+                            <a href="<{url action=topshop_ctl_mall_admin_update@index op=shop_cat item_id=$item.item_id shop_cat_id=$item.shop_cat_id response=html}>" data-toggle="modal" data-target="#updatePage"> [修改分类]</a>
+                        </td>
+
+                        <td class="text-center">
+                            <{if $item.init_is_change == 1}>
+                            <a href="javascript:;" onclick="$('#messagebox').message('原始商品有数据有变化,请更新');">编辑</a>
+                            <{else}>
+                            <a href="<{url action=topshop_ctl_mall_admin_item@edit item_id=$item.item_id}>">编辑</a>
+                            <{/if}>
+                            <a href="javascript:void(0);" class="text-remove" data-id="<{$item.item_id}>">删除</a>
+                        </td>
+                    </tr>
+                    <{/foreach}>
+                    <{else}>
+                    <tr>
+                        <td algin="center" colspan="9">
+                            <p class="help-block text-center">暂无数据</p>
+                        </td>
+                    </tr>
+                    <{/if}>
+                    </tbody>
+                </table>
+                <div class="pull-right">
+                    <{pagers data=$pagers}>
+                    <{if $count > 0 }>
+                    <span class="page-number">共&nbsp;<em class="text-aqua"><{$count}></em>&nbsp;条记录</span>
+                    <{/if}>
+                </div>
+                <!--商品列表结束-->
+            </div>
+            <!-- /.tab-content -->
+        </div>
+        <!-- /.nav-tabs-custom -->
+    </div>
+</div>
+<!--主内容区结束-->
+<!--商品修改弹出框开始-->
+<div class="modal fade" id="updatePage" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        </div>
+    </div>
+</div>
+<!--商品修改弹出框结束-->
+<script type="text/javascript">
+    /*重置按钮*/
+    $('#reset-form').on('click',function(){
+        $('input:visible').val('');
+        $('.select-reset').val(-1);
+    });
+
+    /*处理商品修改弹出框JS*/
+    $('#updatePage').on('hide.bs.modal', function (e) {
+        $(this).removeData('bs.modal');
+    });
+
+    /*更新代售商品按钮JS*/
+    $('.action-update').click(function(){
+        var item_id=$(this).attr('data-id');
+        $.post('<{url action=topshop_ctl_mall_item@updateItem}>', 'item_id='+item_id, function(rs){
+            if(rs.error) {
+                $('#messagebox').message(rs.message);
+                return;
+            }
+            if(rs.success) {
+                $('#messagebox').message(rs.message, 'success');
+                setTimeout(function(){location.reload();}, 800);
+            }
+        });
+    });
+
+    /*全选按钮JS*/
+    $('#selectAll').click(function(){
+        var clicks = $(this).data('clicks');
+        if (clicks) {
+            //Uncheck all checkboxes
+            $('#data_node input[type=checkbox]').prop('checked', false);
+            $(".fa", this).removeClass("fa-check-square-o").addClass('fa-square-o');
+        } else {
+            //Check all checkboxes
+            $('#data_node input[type=checkbox]').prop('checked', true);
+            $(".fa", this).removeClass("fa-square-o").addClass('fa-check-square-o');
+        }
+        $(this).data("clicks", !clicks);
+    });
+
+    /*上架操作*/
+    $('#action-onsale').on('click',function(){
+        var status = '<{$status}>';
+        if($("#data_node input[name='item_ids']:checked").length <= 0) {
+            $('#messagebox').message("请选择要上架的商品！");
+            return;
+        }
+        $($("#data_node input[name='item_ids']:checked")).each(function(){
+            $.post('<{url action=topshop_ctl_item@setItemStatus}>', 'type=tosale&item_id='+$(this).val()+'&return_to_url=<{$return_to_url}>', function(rs){
+                if(rs.error) {
+                    $('#messagebox').message(rs.message);
+                    return;
+                }
+                if(rs.success) {
+                    $('#messagebox').message(rs.message, 'success');
+                    var href = rs.redirect;
+                    if(status != '') href += '?status='+status;
+                    setTimeout(function(){location.href = href;}, 800);
+                }
+            });
+        });
+    });
+
+    /*下架操作*/
+    $('#action-instock').on('click',function(){
+        var status = '<{$status}>';
+        if($("#data_node input[name='item_ids']:checked").length <= 0) {
+            $('#messagebox').message("请选择要下架的商品！");
+            return;
+        }
+        $($("#data_node input[name='item_ids']:checked")).each(function(){
+            $.post('<{url action=topshop_ctl_item@setItemStatus}>', 'type=tostock&item_id='+$(this).val()+'&return_to_url=<{$return_to_url}>', function(rs){
+                if(rs.error) {
+                    $('#messagebox').message(rs.message);
+                    return;
+                }
+                if(rs.success) {
+                    $('#messagebox').message(rs.message, 'success');
+                    var href = rs.redirect;
+                    if(status != '') href += '?status='+status;
+                    setTimeout(function(){location.href = href;}, 800);
+                }
+            });
+        });
+    });
+
+    /*批量删除商品操作*/
+    $('#action-remove').on('click',function(){
+        var _this = $(this);
+        var itemIds = new Array();
+        if($("#data_node input[name='item_ids']:checked").length <= 0) {
+            $('#messagebox').message("请选择要删除的商品！");
+            return;
+        }
+        Modal.confirm({msg: '确定删除该商品？'}).on(function(e) {
+            if(e==true) {
+                $($("#data_node input[name='item_ids']:checked")).each(function(){
+                    delItemById($(this).val());
+                });
+            }
+        });
+    });
+
+    /*单个删除商品操作*/
+    $('.text-remove').on('click', function(){
+        var _this = $(this);
+        Modal.confirm({msg: "确定删除该商品？"}).on(function(e) {
+            if(e==true) {
+                delItemById(_this.attr('data-id'));
+            }
+        });
+    });
+
+    /*删除商品*/
+    function delItemById(gid) {
+        $.post('<{url action=topshop_ctl_item@deleteItem}>', 'item_id='+gid, function(rs){
+            if(rs.error) {
+                $('#messagebox').message(rs.message);
+                return;
+            }
+            if(rs.success) {
+                $('#messagebox').message(rs.message, 'success');
+                setTimeout(function(){location.reload();}, 800);
+            }
+        });
+    }
+</script>

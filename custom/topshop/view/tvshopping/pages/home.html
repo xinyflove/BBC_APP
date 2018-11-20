@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <{include file='topshop/tvshopping/common/header.html'}>
+    <link rel="stylesheet" href="/app/topwap/tvshopping/css/swiper.min.css?1532055472">
+    <link rel="stylesheet" href="/app/topwap/tvshopping/css/index.css?1532055472">
+	<link rel="stylesheet" href="/app/topwap/tvshopping/css/qtvLive.css">
+    <script src="/app/topwap/tvshopping/js/swiper.min.js?1532055472"></script>
+    <script src="/app/topwap/statics/scripts/min/core.min.js?1532055472"></script>
+</head>
+<body>
+<div class="shopex-off-canvas-backdrop" style="position: fixed;top: 0;right: 0;left: 0;bottom: 0;background: rgba(0,0,0,0.5);z-index: 12;display:none"></div>
+<aside id="offCanvasSide" class="shopex-off-canvas-right goods-list-filters" style="visibility:visible;transform:translate3d(248px, 0px, 0px);position:fixed;right:0;z-index:999;">
+ <{include file="topwap/shop/index/shop_cat.html"}>
+</aside>
+<div class="m-lm-index mescroll m-lm-qtvLive" id="mescroll" style="background: #f5f5f5;">
+	<{$widget_html}>
+</div>
+<{include file='topshop/tvshopping/common/footer.html'}>
+<footer class="navigation" style="z-index:999999999999">
+  <ul class="nav-group">
+	<li class="active"><a href="#"><i class="bbc-icon iconfont icon-shouye"></i><span>首页</span></a></li>
+	<li class="catshow"><a href="#" ><i class="bbc-icon iconfont icon-fenlei"></i><span>分类</span></a></li>
+	<!--modify_20170925_by_xinyufeng_start 显示购物车数量-->
+	<!--<li class="active"><a href="http://lbbc.com/wap/cart.html"><i class="bbc-icon bbc-icon-cart"></i><span>购物车</span></a></li>-->
+	<li style="position:relative">
+	  <a href="<{url action=topwap_ctl_cart@index}>">
+		<i class="bbc-icon iconfont icon-gouwuche"></i>
+		<span>购物车</span>
+	  </a>
+	  <{if $cartCount}>
+	  <i class="cart-number" id="carNumber" style="position: absolute;top: -4px;width: 16px;height: 16px;border-radius: 50%;background-color: #ffac20;color: #ffffff;font-size: 12px;line-height: 16px;right:28px;"><{$cartCount}></i>
+	  <{/if}>
+	</li>
+	<!--modify_20170925_by_xinyufeng_end-->
+	<li>
+	  <a href="<{url action=topwap_ctl_member@index}>">
+		<i class="bbc-icon iconfont icon-wode"></i>
+		<span>我的</span>
+	  </a>
+	</li>
+  </ul>
+</footer>
+<{include file="topwap/index.html"}>
+<script>
+	var r=1;
+	$('.catshow').click(function(){
+		if(r==1){
+			$('.shopex-off-canvas-backdrop').show();
+			$('#offCanvasSide').css({'visibility':'visible','transform':'translate3d(0px, 0px, 0px)'});
+			r=2;
+		}else{
+			r=1;
+			$('.shopex-off-canvas-backdrop').hide();
+			$('#offCanvasSide').css({'visibility':'visible','transform':'translate3d(248px, 0px, 0px)'});
+		}
+	});
+	$('.shopex-off-canvas-backdrop').click(function(){
+		$('.shopex-off-canvas-backdrop').hide();
+		$('#offCanvasSide').css({'visibility':'visible','transform':'translate3d(248px, 0px, 0px)'});	
+	});
+</script>
+</body>
+</html>

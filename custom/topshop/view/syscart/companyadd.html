@@ -1,0 +1,115 @@
+<form class="form-horizontal" action="<{url action=topshop_ctl_syscart_syscart@companyAdd}>" method="post" role="form" id="specification" data-validate-onsuccess="ajaxSubmit" data-validate-excluded=":disabled, :not(:visible)">
+  <{*<input type="hidden" name="rsftockens" value="<{$rsf|gettocken}>">*}>
+  <input type="hidden" name="company_id" value="<{$company.company_id}>">
+  <input type="hidden" name="return_to_url" value="<{$return_to_url}>">
+  <div class="panel panel-outter">
+    <div class="panel-heading" style="position:relative">
+        <h4>  <{if $company_id}>编辑公司信息
+              <{else}>新增公司信息<{/if}>
+        </h4>
+		<button style="position:absolute;right:20px;top:10px;border:none;background-color:#00639e;color:#fff;padding:8px 15px;" onclick="history.back()">返回</button>
+    </div>
+    <div class="panel-body">
+      <div class="col-md-11">
+        <h4>  <{if $company_id}>编辑公司信息
+              <{else}>新增公司信息<{/if}></h4>
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            基本内容
+          </div>
+          <div class="panel-body">
+            <div class="form-group" id="lx_name">
+              <label for="" class="col-sm-2 control-label"><span class="txt-required">*</span>公司名：</label>
+              <div class="col-sm-3">
+                <input type="text" required name="company_name" maxlength="30" value="<{$company.company_name}>" class="form-control">
+              </div>
+            </div>
+
+            <div class="form-group" id="lx_name">
+              <label for="" class="col-sm-2 control-label"><span class="txt-required">*</span>联系人姓名：</label>
+              <div class="col-sm-3">
+                <input type="text" required name="company_contact" maxlength="30" value="<{$company.company_contact}>" class="form-control">
+              </div>
+            </div>
+
+            <div id="lx_mobile" class="form-group">
+              <label for="" class="col-sm-2 control-label"><span class="txt-required">*</span>联系人手机号：</label>
+              <div class="col-sm-3">
+                <input type="text" required name="mobile" maxlength="30" value="<{$company.mobile}>" class="form-control">
+              </div>
+            </div>
+
+            <div id="lx_mobile" class="form-group">
+              <label for="" class="col-sm-2 control-label"><span class="txt-required">*</span>联系人身份证号：</label>
+              <div class="col-sm-3">
+                <input type="text" required name="number" maxlength="30" value="<{$company.number}>" class="form-control">
+              </div>
+            </div>
+
+            <div id="lx_mobile" class="form-group">
+              <label for="" class="col-sm-2 control-label"><span class="txt-required">*</span>公司地址：</label>
+              <div class="col-sm-3">
+                <input type="text" required name="company_address" maxlength="30" value="<{$company.company_address}>" class="form-control">
+              </div>
+            </div>
+
+            <div id="lx_mobile" class="form-group">
+              <label for="" class="col-sm-2 control-label"><span class="txt-required"></span>企业统一社会信用代码：</label>
+              <div class="col-sm-3">
+                <input type="text" name="credit_code" maxlength="30" value="<{$company.credit_code}>" class="form-control">
+              </div>
+            </div>
+
+
+            <div id="lx_mobile" class="form-group">
+              <label for="" class="col-sm-2 control-label">备注：</label>
+              <div class="col-sm-3">
+                <textarea class="form-control"  name="remarks" ><{$company.remarks}></textarea>
+              </div>
+            </div>
+
+
+          </div>
+        </div>
+      </div>
+	  <div class="col-md-2" style="text-align:center;margin-bottom:60p;">
+		<button type="submit" class="btn btn-primary btn-lg btn-block save-action" style="margin-left:1em;">保存</button>
+	  </div>
+    </div>
+  </div>
+</form>
+
+<{script src="md5.js" app="desktop"}>
+<{script app="toputil" src="jquery-catselect.js"}>
+<script>
+
+$('input:radio[name="item[is_person]"]').change(function(){
+	var is_person=$(this).val();
+	if(is_person==1){
+		$('#lx_name').show();
+		$('#lx_mobile').show();
+		$('#company').hide();
+	}else{
+		$('#lx_name').hide();
+		$('#lx_mobile').hide();
+		$('#company').show();
+	}
+});
+
+function ajaxSubmit (e) {
+  var form = e.target;
+  e.preventDefault();
+  $.post(form.action, $(form).serialize(), function(rs) {
+    if(rs.error) {
+      $('#messagebox').message(rs.message);
+      return;
+    }
+    if(rs.success) {
+      $('#messagebox').message(rs.message, 'success');
+    }
+    if(rs.redirect) {
+      location.href = rs.redirect;
+    }
+  });
+}
+</script>

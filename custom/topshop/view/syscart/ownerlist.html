@@ -1,0 +1,231 @@
+<section class="content-header">
+	<h1>车主管理<small></small></h1>
+	<ol class="breadcrumb breadcrumb-primary"></ol>
+	</section>
+	  <!--<div class="info"><span>营销方式说明：</span>店铺级的促销方式，同一订单内，【特定】商品售价满【特定】金额【特定】会员可享受【特定】的金额优惠，比如：满500减50；该促销方式最多可同时设置5条满减区间规则；该促销方式支持上不封顶配置，自动根据设置计算优惠金额；该促销方式与优惠券不互斥，与其他互斥。</div>-->
+<p style="margin-top:10px;">
+	<a class="btn btn-default text-blue act-addcat" href="<{url action=topshop_ctl_syscart_syscart@ownerAdd}>">
+		<i class="glyphicon glyphicon-plus"></i>
+		添加车主信息
+	</a>
+</p>
+<div class="report">
+  <div class="box box-primary">
+    <div class="box-body clearfix">
+      <div class="report-filter bg-info report-filter-large">
+		<div class="pull-left">
+          <!--<span>账期时间</span>
+        <div class="date-picker" id="start">
+            <div class="input-group input-group-sm">
+              <div class="input-group-addon">
+                <i class="fa fa-calendar"></i>
+              </div>
+              <input type="text" class="form-control pull-right reservation" name="timearea" id="timearea" value="<{$timearea|escape:"html"}>">
+            </div>
+        </div>-->
+        <span>公司名称</span>
+        <div class="date-picker" id="start">
+            <div class="input-group input-group-sm">
+              <!--<div class="input-group-addon">
+                <i class="fa fa-calendar"></i>
+              </div>-->
+              <input type="text" class="form-control pull-right " name="company_name" id="company_name" value="">
+            </div>
+        </div>
+        <span>车主姓名</span>
+        <div class="date-picker" id="start">
+            <div class="input-group input-group-sm">
+              <!--<div class="input-group-addon">
+                <i class="fa fa-calendar"></i>
+              </div>-->
+              <input type="text" class="form-control pull-right " name="owner_name" id="owner_name" value="">
+            </div>
+        </div>
+        <span>手机号</span>
+        <div class="date-picker" id="start">
+            <div class="input-group input-group-sm">
+              <!--<div class="input-group-addon">
+                <i class="fa fa-calendar"></i>
+              </div>-->
+              <input type="text" class="form-control pull-right " name="mobile" id="mobile" value="">
+            </div>
+        </div>
+        <!--<span>身份证号</span>
+        <div class="date-picker" id="start">
+            <div class="input-group input-group-sm">
+              <!--<div class="input-group-addon">
+                <i class="fa fa-calendar"></i>
+              </div>-->
+              <!--<input type="text" class="form-control pull-right " name="number" id="number" value="">
+            </div>
+        </div>-->
+        <a href="javascript:void(0);" id="settle_search" class="btn btn-warning btn-sm">检索</a>
+        </div>
+      	<!--<div class="pull-right">
+      		<a href="<{url action=topshop_ctl_export@export}>" data-app="sysclearing" data-model="settlement" class="export-filter-btn export-filter-settlement btn btn-default">结算导出</a>
+      	</div>-->
+      </div>
+      <table class="table table-primary table-bordered text-center table-valign-middle">
+        <thead>
+          <tr>
+            <td>序号</td>
+            <td>车主姓名</td>
+            <td>公司/个人</td>
+            <td>单位信息</td>
+            <td>手机号</td>
+            <td>身份证号</td>
+            <td>住址</td>
+            <td>备注</td>
+            <td>押金操作</td>
+			<!--<td>租车操作</td>-->
+			<td>管理</td>
+          </tr>
+        </thead>
+        <tbody>
+          <{foreach from=$ownerlist item=item}>
+          <tr>
+            <!---<td>
+              <div><{$item.account_start_time|cdate:'FDATE'}></div>
+              <div>~</div>
+              <div><{$item.account_end_time|cdate:'FDATE'}></div>
+            </td>-->
+			<td>
+				<{$item.owner_id}>
+			</td>
+			<td>
+				<{$item.owner_name}>
+			</td>
+			<td>
+				<{$item.company_name?'公司':'个人'}>
+			</td>
+            <td>
+              <{$item.company_name?$item.company_name:'无'}>
+            </td>
+            <td>
+              <{$item.mobile}>
+            </td>
+            <td>
+              <{$item.number}>
+            </td>
+            <td>
+              <{$item.address}>
+            </td>
+            <td>
+              <{$item.remarks}>
+            </td>
+            <!--<td>
+              <{$item.settlement_time|cdate:'FDATE'}>
+            </td>-->
+            <!--<td>
+              <{$item.settlement_status|json2value:'{"1":"未结算","2":"已结算"}'}>
+            </td>-->
+            <td>
+              <!--<div>
+                <input type="hidden" name="settlement_no"  value="<{$item.settlement_no}>">
+                <a href="<{url action=topshop_ctl_export@export app=sysclearing model=settlement_detail}>" data-value="<{$item.timearea}>" data-toggle="modal" data-target="#exportDialog" class="export-filter-btn" >账单下载</a>
+              </div>-->
+              <div>
+				<a href="<{url action=topshop_ctl_syscart_syscart@depositAdd owner_id=$item.owner_id}>">押金缴纳</a>
+				<a href="<{url action=topshop_ctl_syscart_syscart@depositlist owner_id=$item.owner_id}>">押金明细</a>
+              </div>
+            </td>
+			<!--<td>
+                <a href="<{url action=topshop_ctl_syscart_syscart@leaseAdd owner_id=$item.owner_id}>">要租车</a>
+                <a href="<{url action=topshop_ctl_syscart_syscart@leaselist mobile=$item.mobile}>">已租车</a>
+			</td>-->
+			<td>
+			<{if $item.company_id}>
+                <a href="<{url action=topshop_ctl_syscart_syscart@companyAdd company_id=$item.company_id }>" class="edit-btn" >编辑</a>
+			<{else}>
+				<a href="<{url action=topshop_ctl_syscart_syscart@ownerAdd owner_id=$item.owner_id}>">修改</a>
+			<{/if}>
+				<a class="text-remove" href="javascript:;" data-id="<{$item.owner_id}>">删除</a>
+			</td>
+          </tr>
+          <{/foreach}>
+        </tbody>
+      </table>
+      <div class="text-right">
+        <{pagers data=$pagers}>
+        <{if $count > 0}>
+        <span class="page-number">共&nbsp;<em class="text-aqua"><{$count}></em>&nbsp;条记录</span>
+        <{/if}>
+      </div>
+    </div>
+  </div>
+</div>
+<span class="export-filter" data-value="">
+
+<script>
+$('.report input[type=radio]:checked').trigger('change');
+$('.reservation').daterangepicker({
+  format: 'YYYY/MM/DD',
+  opens: 'right'
+});
+
+$("#settle_search").click(function() {
+	var mobile=$('#mobile').val();
+	var owner_name=$('#owner_name').val();
+	var number=$('#number').val();
+	var company_name=$('#company_name').val();
+	window.location.href="<{url action=topshop_ctl_syscart_syscart@ownerlist}>?mobile="+mobile+"&owner_name="+owner_name+"&company_name="+company_name;
+});
+
+
+$(document).ready(
+  function() {
+    $(".sidebar .sidebar-menu li a i.glyphicon").eq(1).removeClass("glyphicon-list-alt").addClass("glyphicon-cloud");
+  }
+);
+
+$('.export-filter-btn').click(function (e) {
+
+    e.preventDefault();
+    var url = $(this).attr('href');
+    var app = $(this).data('app');
+    var model = $(this).data('model');
+
+    $('#exportDialog').modal({remote: url}).attr('data-app',app).attr('data-model',model);
+
+    var type = $(this).hasClass('export-filter-settlement');
+    if( type ) {
+      var timearea = $('#timearea').val();
+      var settlement_type = $('#settlement_type').val();
+      var filter = '{"timearea":"'+timearea+'","settlement_status":"'+settlement_type+'"}';
+    }else{
+      var val = $(this).attr('data-value');
+      var filter = '{"timearea":"'+val+'"}';
+    }
+    $('.export-filter').attr('data-value',filter);
+});
+
+
+
+//删除车主
+
+$('.text-remove').on('click', function(){
+  var _this = $(this);
+  Modal.confirm({msg: "确定删除该车主？"}).on(function(e) {
+	if(e==true) {
+	  delItemById(_this.attr('data-id'));
+	}
+  });
+});
+
+//删除车主
+function delItemById(cid) {
+  $.post('<{url action=topshop_ctl_syscart_syscart@deleteOwner}>', 'owner_id='+cid, function(rs){
+	if(rs.error) {
+	  $('#messagebox').message(rs.message);
+	  return;
+	}
+	if(rs.success) {
+	  $('#messagebox').message(rs.message, 'success');
+	  setTimeout(function(){location.reload();}, 800);
+	}
+  });
+}
+
+
+
+</script>

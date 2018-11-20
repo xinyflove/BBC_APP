@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>登录提示</title>
+    <link rel="stylesheet" href="/app/topshop/mall/statics/lib/layui/css/layui.css">
+</head>
+<body>
+<script src="/app/topshop/mall/statics/lib/jquery/jquery-3.3.0.min.js"></script>
+<script src="/app/topshop/mall/statics/lib/layui/layui.all.js"></script>
+<script>
+    var error = '<{$error}>';
+    var msg = '<{$msg}>';
+    var url = '<{$url}>';
+
+    $(function(){
+        var icon = error == 0 ? 1 : 2;
+
+        layer.msg(msg, {
+            icon: icon,
+            time: 3000 //2秒关闭（如果不配置，默认是3秒）
+        }, function(){
+            //do something
+            location.href = url;
+        });
+    });
+
+</script>
+</body>
+</html>

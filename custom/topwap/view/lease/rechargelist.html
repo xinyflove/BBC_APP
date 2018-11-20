@@ -1,0 +1,36 @@
+<{include file="topwap/lease/header.html"}>
+<body>
+    
+    <!--m-fmcc-rechargeDetails-List start-->
+    <section class="m-fmcc-rechargeDetails-List">
+        <ul id="List">
+            
+        </ul>
+    </section>
+    <!--end m-fmcc-rechargeDetails-List-->
+    <script>
+        ~(function(){
+            // 0.准备数据
+            var data=[
+                {"status":"充值成功","date":"2016-05-18 11:54:06","money":"2000","type":"支付宝充值"},
+                {"status":"充值成功","date":"2016-05-18 11:54:06","money":"3000","type":"支付宝充值"}
+            ];
+            // 1.获取元素
+            var oList=document.getElementById("List");
+            // 2.字符串绑定
+            var str="";
+            for(var i=0;i<data.length;i++){
+                var cur=data[i];
+                str+='<li class="retainbb">';
+                str+='<h3>'+cur["status"]+'</h3>';
+                str+='<a href="#" class="date">'+cur["date"]+'</a>';
+                str+='<font>'+cur["money"]+'</font>';
+                str+='<a href="#" class="type">'+cur["type"]+'</a>';
+                str+='</li>';
+            }
+            // 3.追加到页面中
+            oList.innerHTML+=str;
+        })();
+    </script>
+</body>
+</html>

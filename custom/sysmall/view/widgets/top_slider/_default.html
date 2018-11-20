@@ -1,0 +1,121 @@
+<{if $widget.params.item_info}>
+<div class="inner-container">
+    <div class="inner clearfix">
+        <div class="inner-category-right">
+            <div class="swiper-recommend-banner">
+                <div class="swiper-banner">
+                    <div class="swiper-container inner-swiper">
+                        <div class="swiper-wrapper">
+                            <{foreach from=$widget.params.pic item=item_pic key=key_pic}>
+                            <div class="swiper-slide">
+                                <a href="<{$item_pic.url}>" title="<{$item_pic.linkinfo}>">
+                                    <img data-src="<{$item_pic.link|storager:l}>">
+                                </a>
+                            </div>
+                            <{/foreach}>
+
+                        </div>
+                        <div class="pagination inner-pagination"></div>
+                    </div>
+                    <a class="arrow-icon arrow-left" href="javascript:void(0)"></a>
+                    <a class="arrow-icon arrow-right" href="javascript:void(0)"></a>
+                </div>
+                <ul class="recommend-one-banner">
+
+                    <{foreach from=$widget.params.item_info.column item=item_column key=key_column}>
+                    <li>
+                        <div class="thumb">
+                            <a href="<{url action=topshop_ctl_mall_detail@index item_id=$item_column.item_id}>" class="thumb-a">
+                                <img data-src="<{$item_column.image_default_id|storager:m}>">
+                                <div class="discount">
+                                    <div class="num"><{$item_column.profit}>%</div>
+                                    <div>毛利率</div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="des">
+                            <div class="title">
+                                <a href="<{url action=topshop_ctl_mall_detail@index item_id=$item_column.item_id}>"><{$item_column.title}></a>
+                            </div>
+                            <div class="channel"><{$item_column.shop_name}></div>
+                            <div class="now-price">供货价：
+                                <i>¥<{$item_column.supply_price}></i>
+                            </div>
+                            <div class="before-price">指导售价：
+                                <i>¥<{$item_column.price}></i>
+                            </div>
+
+                            <{if $item_column.shop_id == $login_shop.shop_id}>
+                            <div class="oversale">本店铺商品</div>
+                            <{elseif $item_column.sell_out <= 0}>
+                            <div class="oversale">已售罄</div>
+                            <{elseif in_array($item_column.item_id, $initItemsId)}>
+                            <div class="oversale">已优选</div>
+                            <{else}>
+                            <div class="putaway-recommend" data-id="<{$item_column.item_id}>">
+                                <i></i>优选上架
+                            </div>
+                            <{/if}>
+                        </div>
+
+                        <{if $item_column.shop_id == $login_shop.shop_id}>
+                        <img src="/app/topshop/mall/statics/images/details/shop.png" alt="" class="recommend-oversale">
+                        <{elseif $item_column.sell_out <= 0}>
+                        <img src="/app/topshop/mall/statics/images/details/floridian.png" alt="" class="recommend-oversale">
+                        <{elseif in_array($item_column.item_id, $initItemsId)}>
+                        <img src="/app/topshop/mall/statics/images/details/opt.png" alt="" class="recommend-oversale">
+                        <{/if}>
+                    </li>
+                    <{/foreach}>
+
+                </ul>
+            </div>
+            <ul class="recommend-one-banner recommend-banner ">
+                <{foreach from=$widget.params.item_info.row item=item_row key=key_row}>
+                <li>
+                    <div class="thumb">
+                        <a href="<{url action=topshop_ctl_mall_detail@index item_id=$item_row.item_id}>">
+                            <img data-src="<{$item_row.image_default_id|storager:m}>">
+                        </a>
+                        <div class="discount">
+                            <div class="num"><{$item_row.profit}>%</div>
+                            <div>毛利率</div>
+                        </div>
+                    </div>
+
+                    <div class="des">
+                        <div class="channel"><{$item_row.shop_name}></div>
+                        <div class="now-price">供货价：
+                            <i>¥<{$item_row.supply_price}></i>
+                        </div>
+                        <div class="before-price">指导售价：
+                            <i>¥<{$item_row.price}></i>
+                        </div>
+
+                        <{if $item_row.shop_id != $login_shop.shop_id && $item_row.sell_out > 0 && !in_array($item_row.item_id, $initItemsId)}>
+                        <div class="putaway-new" data-id="<{$item_row.item_id}>">
+                            <i></i>
+                        </div>
+                        <{/if}>
+                    </div>
+
+                    <{if $item_row.shop_id == $login_shop.shop_id || $item_row.sell_out <= 0 || in_array($item_row.item_id, $initItemsId)}>
+                    <!--<div class="price-right">
+                        <img src="/app/topshop/mall/statics/images/details/icon_add.png" alt="">
+                    </div>-->
+                    <{/if}>
+
+                    <{if $item_row.shop_id == $login_shop.shop_id}>
+                    <img src="/app/topshop/mall/statics/images/details/shop.png" alt="" class="over warn">
+                    <{elseif $item_row.sell_out <= 0}>
+                    <img src="/app/topshop/mall/statics/images/details/floridian.png" alt="" class="over warn">
+                    <{elseif in_array($item_row.item_id, $initItemsId)}>
+                    <img src="/app/topshop/mall/statics/images/details/opt.png" alt="" class="over warn">
+                    <{/if}>
+                </li>
+                <{/foreach}>
+            </ul>
+        </div>
+    </div>
+</div>
+<{/if}>

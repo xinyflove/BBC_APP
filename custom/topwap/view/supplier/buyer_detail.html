@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="apple-mobile-web-app-capable" content="yes"> 
+	<title><{$buyer_row.groom_title}></title>
+	<{css src="milier/dist/style.css" app="topwap"}>
+	<{css src="milier/css/ms_content.css" app="topwap"}>
+</head>
+<body>
+<div class="m-ml-content">
+	<div class="content-buy">
+		<div class="avator">
+			<a href="javascript:history.back(-1)">
+				<img src="<{resource app='topwap' path='/images/milier/details/icon-back1.png'}>" class="head-icon1"/>
+			</a>
+			<span><{$buyer_row.groom_title}></span>
+		</div>
+		<{if $buyer_row.groom_buy_url}>
+		<a href="<{$buyer_row.groom_buy_url}>">
+			<div class="buy">购买</div>
+		</a>
+		<{/if}>
+	</div>
+	<div class="content-fwb">
+		<img src="<{$buyer_row.groom_image|storager:'m'}>" alt="">
+		<p><{$buyer_row.groom_content}></p>
+	</div>
+</div>
+</body>
+<{script app="topwap" src="milier/dist/public.js" }>
+</html>

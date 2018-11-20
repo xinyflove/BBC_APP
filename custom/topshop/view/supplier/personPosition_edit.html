@@ -1,0 +1,53 @@
+<div class="box box-default">
+    <{if empty($data['person_position_id'])}>
+        <form  action="<{url action=topshop_ctl_supplier_personPosition@store}>" method="post" class="form-horizontal clearfix" data-validate-onsuccess="ajaxSubmit" role="form">
+    <{else}>
+        <form  action="<{url action=topshop_ctl_supplier_personPosition@update}>" method="post" class="form-horizontal clearfix" data-validate-onsuccess="ajaxSubmit" role="form">
+        <input type='hidden' name='person_position_id' value="<{$data.person_position_id}>">
+    <{/if}>
+            <div class="box-body">
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">职位名称：</label>
+                    <div class="col-sm-3">
+                        <input type="text" name="position_name" value="<{$data.position_name}>" class="form-control" placeholder="" required maxlength="50">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">职位简介：</label>
+                    <div class="col-sm-3">
+                        <textarea name="position_profile" class="form-control" placeholder=""><{$data.position_profile}></textarea>
+                    </div>
+                </div>
+                <!--<div class="form-group">-->
+                    <!--<label class="col-sm-3 control-label">排序：</label>-->
+                    <!--<div class="col-sm-3">-->
+                        <!--<input type="number" name="order_sort" value="<{$data.order_sort}>" class="form-control" placeholder="0" >-->
+                    <!--</div>-->
+                <!--</div>-->
+            </div>
+
+            <div class="box-footer">
+                <button type="submit" class="btn btn-primary"><{t}>保存<{/t}></button>
+                &nbsp;
+                <a href="<{url action=topshop_ctl_supplier_personPosition@index}>" class="btn btn-default">取消</a>
+            </div>
+        </form>
+</div>
+<script>
+    function ajaxSubmit (e) {
+        var form = e.target;
+        e.preventDefault();
+        $.post(form.action, $(form).serialize(), function(rs) {
+            if(rs.error) {
+                $('#messagebox').message(rs.message);
+                return;
+            }
+            if(rs.success) {
+                $('#messagebox').message(rs.message, 'success');
+            }
+            if(rs.redirect) {
+                location.href = rs.redirect;
+            }
+        });
+    }
+</script>

@@ -1,0 +1,97 @@
+<{include file="topwap/lease/header.html"}>
+<style>
+.weui-dialog {max-width:9rem;width:7rem}
+.weui-dialog__bd {font-size:0.4rem;width:7rem}
+</style>
+<body style="background-color: #f5f6f8;">
+
+    <!--m-fmcc-recharge-entry start-->
+    <section class="m-fmcc-recharge-entry">
+        <input type="text" placeholder="" value="￥<{$payment_total}>" readonly="" style="color: #333;">
+    </section>
+    <!--end m-fmcc-recharge-entry-->
+    <!--m-fmcc-recharge-payType start-->
+    <section class="m-fmcc-recharge-payType">   
+	<form action="<{url action=topwap_ctl_lease_paycenter@dopayment}>" method="post" target="_self" id="payform">
+	  <input id="payment_id" type="hidden" name="payment_id" value="<{$stages_id}>">
+      <input id="openid" type="hidden" name="openid" value="<{$openid}>">
+      <input id="money" type="hidden" name="money" value="<{$payment_total}>">
+      <input id="tids" type="hidden" name="tids" value="<{$tids}>">
+        <ul>
+          <{foreach from=$payments item=item name="payments"}>
+            <li class="retainbb">
+                <label for="<{$item.app_id}>" class="horizontal-view">
+                    <i class="icon icon_weixin"></i>
+                    <span><{$item.app_display_name}></span>
+                    <div>
+                        <input type="radio"  name="pay_app_id" id="<{$item.app_id}>"  class="weui-check" value="<{$item.app_id}>">
+                        <i class="weui-icon-checked"></i>
+                    </div>
+               </label>
+            </li>
+          <{/foreach}>
+          <!--<li class="retainbb ">
+                <label for="s12" class="horizontal-view">
+                    <i class="icon icon_weixin"></i>
+                    <span>微信支付</span>
+                     <div>
+                        <input type="radio" id="s12" name="ck" class="weui-check" value="2">
+                        <i class="weui-icon-checked"></i>
+                    </div>
+               </label>
+            </li>-->
+        </ul>
+    </section>
+    <!--end m-fmcc-recharge-payType-->
+    <!--m-fmcc-recharge-details start-->
+    <section class="m-fmcc-recharge-details">
+        <!--<a href="rechargeDetails.html" class="rechargeDetailsLink">充值明细</a>-->
+        <a style="border:none;display:block" id="next-step" class="nextStep">确认支付</a>
+		<!--<button style="border:none;display:block" type="submit" class="nextStep">确认支付</button>-->
+    </section>
+    <!--end m-fmcc-recharge-details-->
+
+    <script src="/app/topwap/statics/cart/js/fontSize.js"></script>
+    <script type="text/javascript">
+		//$('#next-step').on('click',function(){
+		//	var payment_id=$('#payment_id').val();
+		//	var openid=$('#openid').val();
+		//	var money=$('#money').val();
+		//	var tids=$('#tids').val();
+		//	var pay_app_id=$('input:radio:checked').val();
+		//	$.ajax({
+		//		url:"<{url action=topwap_ctl_lease_paycenter@dopayment}>",
+		//		type:"post",
+		//		data:{payment_id:payment_id,openid:openid,money:money,tids:tids,pay_app_id:pay_app_id},
+		//		dataType:'json',
+		//		success:function(e){
+					
+		////		}
+		//	});
+	//	});
+			/*$('#next-step').on('click',function(){
+                var payment=$('input[name=ck]:checked').val();
+                var stages_id="<{$stages_id}>";
+                var owner_id="<{$owner_info.owner_id}>";
+                var total="<{$payment_total}>";
+                var target_url="<{url action=topwap_ctl_lease_default@rechargelist}>"+'?stages_id='+stages_id+"&owner_id="+owner_id+"&total="+total+"&payment="+payment;
+                window.location.href=target_url;
+            })*/
+		$('#next-step').click(function(){
+			var cart_number='';
+			<{foreach from=$cart_number item=item}>
+			cart_number+="<div><{$item.cart_number}></div>";
+			<{/foreach}>
+			 $.confirm({
+			   title: '请确认您的车牌号',
+			   text: cart_number,
+			   onOK: function () {
+				$('#payform').submit();
+			   },
+			   onCancel: function () {
+			   }
+			 }); 
+		});
+    </script>
+</body>
+</html>

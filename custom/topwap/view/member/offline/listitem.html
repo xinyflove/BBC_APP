@@ -1,0 +1,44 @@
+<{foreach from=$vouchers item=voucher}>
+<div class="m-voucher-body">
+	<!-- bottom circle position -->
+	<div class="circle_bottom_left"></div>
+	<div class="circle_bottom_right"></div>
+	<!-- top content -->
+	<div class="m-voucher-top">
+		<!-- figure -->
+		<dl class="shopex-clearfix">
+			<a href="javascript:void(0);" data-href="<{url action=topwap_ctl_item_detail@index item_id=$voucher.item_id}>">
+				<dt class="shopex-pull-left">
+					<img src="<{$voucher.item_image|storager}>" alt="">
+				</dt>
+			</a>
+			<dd>
+				<h3 class="shopex-ellipsis-2"><{$voucher.title}></h3>
+				<p><{$voucher.max_desc}>&nbsp;&nbsp;&nbsp;&nbsp;<{$voucher.min_desc}></p>
+				<p>每次消费最多使用：<{if $voucher.agent_use_limit}><{$voucher.agent_use_limit}><{else}>无限制<{/if}></p>
+				<p>有效期至：<{$voucher.end_time|date_format:'%Y-%m-%d'}></p>
+				<{if $voucher.status=='WAIT'}>
+				<{elseif $voucher.status=='COMPLETE'}>
+				<!--已使用-->
+				<img src="/app/topwap/statics/static/img/voucher_ysy.png" alt="" class="voucher_ysy">
+				<{elseif $voucher.status=='REFUNDED'}>
+				<!--已退款-->
+				<img src="/app/topwap/statics/static/img/voucher_ytk.png" alt="" class="voucher_ytk">
+				<{elseif $voucher.status == 'HAS_OVERDUE'}>
+				<!--已过期-->
+				<img src="/app/topwap/statics/static/img/voucher_ygq.png" alt="" class="voucher_ygq">
+				<{/if}>
+			</dd>
+		</dl>
+	</div>
+	<!-- bottom content -->
+	<div class="m-voucher-bottom shopex-clearfix">
+		<span class="shopex-pull-left" id="go_to_use">
+			<{if $qrcode_url && $voucher.status=='WAIT'}>
+			<a class="shopex-btn shopex-btn-warning shopex-btn-yellow bbc-btn-sm" href="javascript:void(0);" data-href="<{$qrcode_url}>"><{t}>去使用<{/t}></a>
+			<{/if}>
+		</span>
+		<span class="shopex-pull-right"><{$voucher.agent_shop_name}></span>
+	</div>
+</div>
+<{/foreach}>

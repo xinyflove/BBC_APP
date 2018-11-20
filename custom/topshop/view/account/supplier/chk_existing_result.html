@@ -1,0 +1,51 @@
+<div class="box box-primary">
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th>供应商名称</th>
+            <th>公司名称</th>
+            <th>地址</th>
+            <th>来源</th>
+        </tr>
+        </thead>
+        <{if $data}>
+        <tbody>
+        <{foreach from=$data item=item}>
+        <tr>
+            <td><{$item.supplier_name}></td>
+            <td><{$item.company_name}></td>
+            <td title="<{$item.addr}>"><{$item.addr|cut:60}></td>
+            <td>
+                <{if $item.is_audit == 'PASS'}>审核通过
+                <{elseif $item.is_audit == 'PENDING'}>待审核
+                <{else}>状态异常
+                <{/if}>
+            </td>
+            <td>
+                <{if $item.shop_id==$shopid}>当前店铺
+                <{else}>其他店铺
+                <{/if}>
+            </td>
+        </tr>
+        <{/foreach}>
+        </tbody>
+        <{else}>
+        <tbody id="none_cat">
+        <tr class="none-information">
+            <td colspan="6"><p class="help-block text-center">暂无数据</p></td>
+        </tr>
+        </tbody>
+        <{/if}>
+    </table>
+    <div class="col-md-12 text-center">
+        <a class="btn btn-danger btn-md next-step" href="<{url action=topshop_ctl_account_supplier@index}>"><i class="fa fa-chevron-left"></i>&nbsp;&nbsp;&nbsp;供应商已存在，不再添加</a>
+        <a class="btn btn-info btn-md next-step" href="<{url action=topshop_ctl_account_supplier@edit}>">未找到供应商，去创建&nbsp;&nbsp;&nbsp;<i class="fa fa-chevron-right"></i></a>
+    </div>
+</div>
+
+<script>
+    $('#modifyAccountShopPwd').on('show.bs.modal', function (event) {
+        var supplier_id = $(event.relatedTarget).attr("data-supplier-id");
+        $(".supplier-id").val(supplier_id);
+    })
+</script>

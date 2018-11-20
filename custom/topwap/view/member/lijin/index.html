@@ -1,0 +1,82 @@
+
+<{css app="topwap" src="benefit/lib/ago/style.min.css"}>
+<{css app="topwap" src="benefit/lib/ago/newtv.min.css"}>
+<{css app="topwap" src="benefit/lib/public.min.css"}>
+<{css app="topwap" src="benefit/lib/mescroll/mescroll.min.css"}>
+<{css app="topwap" src="benefit/css/member.min.css"}>
+<{css app="topwap" src="benefit/css/cashgift.min.css"}>
+
+<div class="m-lm-cashgift mescroll" id="mescroll">
+        <header class="nav-sticky">
+            <a href="javascript: history.go(-1);"></a>
+            <h1>我的礼金</h1>
+        </header>
+        <div class="cash-wrap">
+            <div class="cash">
+                <span>可用礼金</span>
+                <p class="cash-num"><{$userlijin.lijin}></p>
+            </div>
+        </div>
+        <ul id="datalist" class="cash-list">
+        </ul>
+    </div>
+    <{script app="topwap" src="benefit/lib/mescroll/mescroll.min.js"}>
+	<script>
+		var myMescroll = new MeScroll('mescroll', {
+			down: {
+				use: false
+			},
+			up: {
+				auto: true,
+				isBounce: false,
+				callback: upCallback
+			}
+		})
+
+		function upCallback(page) {
+			console.log('上拉加载');
+			getData(page.num, page.size, function(data) {
+				setDom(data);
+				myMescroll.endSuccess(data.length);
+			}, function() {
+
+			})
+		}
+
+		function setDom(data) {
+			var domArr = [];
+            if(data.html){
+				domArr.push(data.html);
+            }
+			// }
+			console.log(domArr);
+			  $('#datalist').append(domArr.join(''));
+		}
+
+		function getData(currpage, pagesize, successCb, errorCb) {
+			$.ajax({
+				url: '<{url action="topwap_ctl_member_lijin@ajaxLijin"}>',
+				method: 'GET',
+				dataType: 'json',
+				data: {
+					pages: currpage,
+					pagesize: pagesize
+				},
+				success: function(res) {
+                    if(res.error) {
+                        shopex.alert(rs.message);
+                        if(rs.redirect) {
+                            setTimeout(function() {
+                                window.location.href = rs.redirect;
+                            }, 1500);
+                        }
+                    }
+					console.log(res.message);
+					successCb(res.message);
+				},
+				error: function(err) {
+					errorCb();
+				}
+			})
+		}
+	</script>

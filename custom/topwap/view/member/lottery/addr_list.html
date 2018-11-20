@@ -1,0 +1,108 @@
+<style>
+  /*add_20170928_by_gurundong_start*/
+  header .txt-func,.receiver-info i,.receiver-info .default-sign,input[type="checkbox"]:checked.input-action:before{
+    color:#f0ad4e;
+  }
+  header .header-left{
+    color:#989898 !important;
+  }
+  .add_addr .header-right{
+    width: 100%;
+    height: auto;
+    display: block !important;
+    background-color: rgb(255,157,12);
+    position: fixed;
+    bottom:0px;
+    margin:auto;
+    left:0;
+    right:0;
+    color: white;
+    text-align:center;
+  }
+  .shopex-table-view{
+    margin-bottom: 30px;
+  }
+header .header-right{display:inline !important}
+  /*add_20170928_by_gurundong_end*/
+</style>
+<header class="page-header add_addr">
+  <a href="<{url action=topwap_ctl_member_lottery@prizeList}>">
+    <i class="header-left icon-func bbc-icon bbc-icon-back"></i>
+  </a>
+  <div class="header-title"><{t}>收货地址（右滑编辑）<{/t}></div>
+  <a class="header-right txt-func" href="<{url action=topwap_ctl_member_address@newAddress}>"><{t}>+新增地址<{/t}></a>
+</header>
+<section class="container">
+<{if $userAddrList}>
+  <ul class="section-white shopex-table-view receiver-add-list">
+    <{foreach from=$userAddrList item=addr}>
+    <li class="shopex-table-view-cell" data-id="<{$addr.addr_id}>">
+      <div class="shopex-slider-right shopex-disabled">
+        <a class="shopex-btn shopex-btn-grey" href="<{url action=topwap_ctl_member_address@setDefault}>" data-action='确认设为默认吗？'><{t}>设为默认<{/t}></a>
+        <a class="shopex-btn shopex-btn-yellow" href="<{url action=topwap_ctl_member_address@updateAddr}>" data-action="edit"><{t}>编辑<{/t}></a>
+        <a class="shopex-btn shopex-btn-red" href="<{url action=topwap_ctl_member_address@removeAddr}>" data-action='确认删除该地址吗？'><{t}>删除<{/t}></a>
+      </div>
+      <a href="<{url action=topwap_ctl_member_lottery@prizeList result_id=$result_id}>" class="shopex-slider-handle">
+        <div class="receiver-info <{if $addr.def_addr}>default-active<{/if}>">
+          <div class="receiver-info-item">
+            <div class="receiver-user">
+              <div class="receiver-name"><{t}><{$addr.name}><{/t}></div>
+              <div class="receiver-phone"><{$addr.mobile}></div>
+            </div>
+            <div class="add-detail"><{t}><{$addr.area}> <{$addr.addr}><{/t}></div>
+          </div>
+          <div class="default-sign"><{t}>默认<{/t}></div>
+        </div>
+      </a>
+    </li>
+    <{/foreach}>
+  </ul>
+  <{else}>
+  <{include file='topwap/empty/address.html'}>
+  <{/if}>
+</section>
+
+<script>
+  var REFERRER = "<{url action=topwap_ctl_member_lottery@addrList result_id=$result_id}>";
+
+  $('.receiver-add-list').on('tap', 'a', function(e){
+    e.detail.gesture.preventDefault();
+    var url = $(this).attr('href');
+    var _tid = $(this).parents('li').data('id');
+    var act = $(this).data('action');
+    var ajax = $(this).data('ajax');
+    var mode = '<{$mode}>';
+    if(act){
+      if(act === 'edit') {
+        location.href = url + '?addr_id=' + _tid+'&mode=' + mode;
+      }
+      else {
+        shopex.confirm(act,function(e){
+          if(e.index === 1) {
+            formAction(url, {'mode': mode,'addr_id': _tid, 'next_page': REFERRER});
+          }
+        });
+      }
+    }
+    else {
+      location.href = url + 'mode=' + mode + '&addr_id=' + _tid;
+    }
+  });
+
+  function formAction(url, data){
+    $.ajax({
+      url: url,
+      type: 'post',
+      dataType: 'json',
+      data: data,
+      success: function(rs){
+        if(rs.success){
+          location.href = rs.redirect;
+        }
+        if(rs.error){
+          shopex.alert(rs.message);
+        }
+      }
+    })
+  }
+</script>

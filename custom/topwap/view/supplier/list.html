@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>列表</title>
+
+    <{css src="milier/dist/style.css" app="topwap"}>
+    <{css src="milier/css/list.min.css?201806051509" app="topwap"}>
+    <style>
+        .m-mili-list .m-ml-index-fliter .nav-sticky{
+            z-index: 9999;/*需设置zIndex,避免在悬停时,可能会被列表数据遮住*/
+            position: -webkit-sticky;
+            position: sticky;
+            top: 0;/*相对mescroll的div悬停的位置*/
+        }
+    </style>
+</head>
+<body>
+    <div class="m-mili-list">
+        <div class="list-header">
+            <a href="javascript:history.go(-1);"  class="header-back"><img src="<{resource app='topwap' path='/images/milier/details/icon-back1.png'}>" alt=""></a>
+            <div class="header-title" data-type="<{$agentcat}>">列表</div>
+            <div class=""></div>
+        </div>
+        <div class="m-ml-index-fliter mescroll" id="mescroll">
+            <ul class="index-fliter-top" id="navWarp">
+                <{foreach from=$tag_data key=key item=tag_item}>
+                <li>
+                    <select name="" id="<{$key}>" class="index-fliter-top-select">
+                        <{foreach from=$tag_item['subtype'] key=subkey  item=sub_tag_item}>
+                        <option data-type="<{$subkey}>" value="<{$subkey}>"><{$sub_tag_item}></option>
+                        <{/foreach}>
+                    </select>
+                </li>
+                <{/foreach}>
+            </ul>
+            <ul class="index-fliter-list" id="dataList">
+
+            </ul>
+        </div>
+    </div>
+</body>
+<{script app="topwap" src="milier/dist/public.js" }>
+<script>
+    $(function () {
+        var categoryId = $('.header-title').attr('data-type');
+        var pdType = "<{$agentcat}>";
+        var shop_id = "<{$shop_id}>";
+        console.log(pdType.split(','))
+        $('.index-fliter-top li').eq(0).find('select').val(pdType.split(',')[0])
+        var mescroll = new MeScroll('mescroll', {
+            down: {
+                offset: 40
+            },
+            up: {
+                offset: 40,
+                loadFull: {
+                    use: true,
+                    delay: 500
+                },
+                clearEmptyId: "dataList",
+                callback: upCallback
+            }
+        })
+        if (mescroll.os.ios) {
+            $('#navWarp').addClass("nav-sticky")
+        } else {
+            $('.m-ml-index-fliter').css('padding-top', '90px');
+        }
+        // data 渲染的数据 appDomid 填充的盒子
+        function setDom(data, appDomid){
+            for(var i in data){
+                var str='<a href="<{url action=topwap_ctl_supplier_agentShopInfo@agentShopDetail}>?shop_id='+data[i].shop_id+'&supplier_id='+data[i].supplier_id+'&agent_shop_id='+data[i].agent_shop_id+'">';
+                if(data[i].top > 1){
+                    str += '<div class="list-top">置顶</div>';
+                }
+                str+='<div class="list-leftImg">'
+                str+='<img src="'+data[i].agent_img_src+'" alt=""/>'
+                str+='</div>'
+                str+='<div class="list-rightText">'
+                str+='<h4 class="list-rightText-title">'+data[i].name+'</h4>'
+                str+='<div class="list-rightText-grade">'
+                str+='<div class="list-rightText-grade-icon">'
+                for(var j = 0;j<data[i].length;j++){
+                    str+='<img src="/app/topwap/statics/milier/img/index/icon-start.png" alt="">'
+                }
+                str+='</div>'
+                if(data[i].shop_consumption!=null){
+                    str+='<p class="list-rightText-grade-num">￥'+data[i].shop_consumption+'/人</p>'
+                }else{
+                    str+='<p class="list-rightText-grade-num">￥'+100+'/人</p>'
+                }
+                str+='</div>'
+                //str+='</div><p class="list-rightText-grade-num">￥'+data[i].shop_consumption+'/人</p></div>'
+                str+='<div class="list-rightText-address">'
+                if(data[i].agent_category_name!=null){
+                    str+='<p>'+data[i].agent_category_name+'</p>'
+                }else{
+                    str+='<p>'+'全部美食'+'</p>'
+                }
+
+                str+='<p>'+data[i].district_info+'</p>'
+
+
+                if(data[i].distance){
+                    str+='<p>'+data[i].distance+'</p>'
+                }else{
+                    str+='<p>'+''+'</p>'
+                }
+                str+='</div><div class="list-rightText-shop">'
+                if(data[i].agentShopActivityData!=""){
+                    str+='<p class="shop-quan"><i>券</i>'
+                    for(var x = 0;x<data[i].agentShopActivityData.length;x++){
+                        str+='<span>'+data[i].agentShopActivityData[x].title+'</span>'
+                    }
+                    str+='</p>'
+                }
+                //str+='<p class="shop-tuan"><i>团</i>118元 午饭双人套餐午饭双人套餐午饭双人套餐</p>'
+                str+='</div></div></a>'
+                var Dl = document.createElement('li');
+                // Dl.setAttribute('class', 'list-item');
+                Dl.innerHTML = str;
+                document.getElementById(appDomid).appendChild(Dl);
+            }
+        }
+
+        function getData(curpage, pagesize, successcb, errorcb){
+            console.log(pdType)
+            $.ajax({
+                url: '<{url action=topwap_ctl_supplier_index@getAjaxAgentCatData}>',
+                type: 'get',
+                dataType: 'json',
+                async: true,
+                data: {
+                    pdType:pdType,
+                    curpage:curpage,
+                    shop_id: shop_id
+                },
+                success: function(res) {
+                    console.log(res);
+                    /*var dataArr = [];
+                    if(res.code == 200){
+                        if(res.datas.goods_list){
+                            dataArr = res.datas.goods_list;
+                            successcb(dataArr);
+                            console.log(res.hasmore);
+                            if(!res.hasmore){
+                                mescroll.endSuccess(dataArr.length, res.hasmore);
+                            }
+                        }
+                    }else{
+                        errorcb()
+                    }*/
+                    var dataArr = [];
+                    if(res.data){
+                        dataArr = res.data;
+//                        console.log(dataArr)
+                        successcb(dataArr);
+                    }
+                },
+                error: function (err) {
+                    errorcb();
+                }
+            })
+        }
+
+        function upCallback(page) {
+            // var pageIndex = page.num+14;
+            // page.num = pageIndex;
+            // console.log(page);
+            getData(page.num, page.size, function(data){
+                mescroll.endSuccess(data.length);
+                setDom(data, 'dataList');
+            }, function(){
+                mescroll.endErr();
+            })
+        }
+
+        $(".index-fliter-top-select").on("change", function() {
+            var arr = [];
+            var len = $(".index-fliter-top-select").length;
+            for (var i = 0; i < len; i++) {
+                arr.push($(".index-fliter-top-select").eq(i).find("option:selected").attr("data-type"))
+            }
+            pdType = arr.join(',');
+
+            //重置列表数据
+            mescroll.resetUpScroll();
+        })
+    })
+</script>
+<script>
+
+</script>
+</html>

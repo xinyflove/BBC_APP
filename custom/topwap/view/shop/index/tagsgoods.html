@@ -1,0 +1,152 @@
+<style>
+  .pro-list-gtrid {
+    padding: 0.2rem;
+  }
+  .pro-list-gtrid:after {
+    content: "\0020";
+    display: block;
+    visibility: hidden;
+    clear: both;
+  }
+  .pro-list-gtrid li {
+    float: left;
+    width: 100%;
+    padding: 0.2rem;
+    border-radius: 0.3rem;
+    height: 6.5rem;
+  }
+  .pro-list-gtrid li .thumbnail {
+    display: block;
+    height: 100%;
+  }
+  .pro-list-gtrid li .thumbnail .thumb-img {
+    float: left;
+    height: 100%;
+    width: 30%;
+    display: -webkit-box;
+    position: relative;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+    /*width: auto;*/
+    background: #f8f8f8;
+    border-top-left-radius: 0.4rem;
+    border-top-right-radius: 0.4rem;
+  }
+  .pro-list-gtrid li .thumbnail .thumb-img:after {
+    display: block;
+    padding-top: 100%;
+    content: '';
+  }
+  .pro-list-gtrid li .thumbnail .thumb-img a, .pro-list-grid li .thumbnail .thumb-img .imgcover {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+  }
+  .pro-list-gtrid li .thumbnail .thumb-img img {
+    display: block;
+    height: 100%;
+    width: 100%;
+  }
+  .pro-list-gtrid li .thumbnail .thumb-img img {
+    border-top-left-radius: 0.4rem;
+    border-top-right-radius: 0.4rem;
+  }
+  .pro-list-gtrid li .thumbnail .caption {
+    float: left;
+    height: 100%;
+    width: 70%;
+    /*height: 6.3rem;*/
+    padding: 0.2rem 0.4rem;
+    background: #fff;
+    border-bottom-left-radius: 0.3rem;
+    border-bottom-right-radius: 0.3rem;
+    overflow: hidden;
+  }
+
+  .pro-list-gtrid li .thumbnail .caption .price {
+    display: -webkit-box;
+    -webkit-box-align: center;
+    margin-top: 1.5rem;
+  }
+
+  .widgets-tagsgoods .section-title {
+      -webkit-box-flex: 2;
+      /*max-width: 70%;*/
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      /*align-content: center;*/
+  }
+
+  .widgets-tagsgoods .soldout img{
+    width: 3.0rem !important;
+    height: 3.0rem !important;
+    position: absolute;
+    bottom: 0.3rem;
+    right: 0.3rem;
+  }
+
+  .widgets-tagsgoods .right_logo img{
+    width: 2.0rem !important;
+    height: 2.0rem !important;
+    position: absolute;
+    left: 0.3rem;
+    top: 0.0rem;
+  }
+</style>
+<section class="widgets-tagsgoods section-white" <{if $shopdata.bg_color}>style="background:<{$shopdata.bg_color}>"<{/if}>>
+
+  <div class="section-title">
+    <div class="tag-txt"><img src="<{$widgetDetail.params.iconimgurl|storager}>" style="width:20px;margin-right:10px;display:inline;vertical-align:middle;"><{$widgetDetail.params.title}></div>
+  </div>
+  <ul class="pro-list-gtrid">
+    <{foreach from=$widgetDetail.showitems.list item=item}>
+    <li>
+      <div class="thumbnail">
+        <div class="thumb-img">
+          <a href="<{url action=topwap_ctl_item_detail@index item_id=$item.item_id}>">
+            <{if $item.image_default_id}>
+            <img  class="imglazyload" data-original="<{$item.image_default_id|storager:'m'}>" alt="">
+            <{else}>
+            <img  class="imglazyload" data-original="<{$defaultImageId.M.default_image|storager:'m'}>" alt="">
+            <{/if}>
+
+            <!-- start add 王衍生 售磬标识 -->
+            <{if ($item.store-$item.freez) < 1 }>
+              <!-- 已售罄 -->
+              <div class="soldout">
+                <img  class="imglazyload" data-original="<{$sell_out_img|storager:t}>" alt="">
+              </div>
+            <{/if}>
+
+            <{if $item.right_logo}>
+            <!-- 角标 -->
+            <div class="right_logo">
+              <img  class="imglazyload" data-original="<{$item.right_logo|storager:t}>" alt="">
+            </div>
+            <{/if}>
+            <!-- end add 王衍生 售磬标识 -->
+
+          </a>
+        </div>
+        <div class="caption">
+          <h1 class="goods-title"><{if $item.activity}><span class="tag"><{$item.activity.activity_tag}></span><{/if}><{$item.title}></h1>
+          <div class="price">
+            <div class="amount"><{$item.price|cur}></div>
+            <div class="purchased">已有<{$item.paid_quantity|default:0}>人购买</div>
+          </div>
+        </div>
+      </div>
+    </li>
+    <{/foreach}>
+  </ul>
+  <!-- <{*<div class="section-title">
+    <div class="more-link">
+      <a href="<{url action=topwap_ctl_newshop@shopItemList shop_id=$shopId item_id=$widgetDetail.itemIds}>">查看更多</a>
+      <i class="bbc-icon bbc-icon-forward"></i>
+    </div>
+  </div>*}> -->
+
+</section>

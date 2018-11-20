@@ -1,0 +1,34 @@
+<div class="modal fade" tabindex="-1" role="dialog" id="supplierDialog">
+	<div class="modal-dialog modal-lg supplier-modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">
+					<span aria-hidden="true">&times;</span><span class="sr-only">关闭</span>
+				</button>
+				<h4 class="modal-title">选择供应商</h4>
+			</div>
+			<div class="modal-body">
+				<div class="brand-select">
+					<div class="col-md-12">
+						<div class="input-group">
+							<span class="input-group-addon" id="supplier-ser"
+								style="cursor: pointer;"> <i class="icon icon-search-a"></i>
+							</span> <input type="search" name="search_supplier" id="search_supplier"
+								class="form-control" placeholder="供应商名称">
+						</div>
+						<div class="modal-footer">
+							<button type="button" id="supplier-save" class="btn btn-primary">保存</button>
+							<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+						</div>
+						<div class="list-group list-supplier">
+							
+						</div>
+					</div>
+					<div class="cat-select-foot supplier-foot">
+						<b>当前选择：</b><span><{$item.supplier_name}></span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

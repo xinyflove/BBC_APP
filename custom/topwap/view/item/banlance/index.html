@@ -1,0 +1,218 @@
+<{css app="topwap" src="see_more.css"}>
+<body class="no-fix">
+<div class="shopex-bar shopex-bar-nav">
+    <header class="home-header">
+        <i class="icon-func bbc-icon bbc-icon-back shopex-action-back"></i>
+        <div class="header-title"><{t}>余额专场<{/t}></div>
+    </header>
+</div>
+<section class="container no-header">
+    <div id="pullrefresh" class="shopex-scroll-wrapper">
+        <{if $items}>
+        <div class="shopex-scroll more_see_scroll">
+            <div class="page-banner activity-banner">
+                <div class="imgcover">
+                    <img src="<{if $detail_pic}><{$detail_pic|storager}><{else}>/themes/mobilemall/images/m-tvplaza-index-yebanner.png<{/if}>" alt="">
+                </div>
+            </div>
+            <div class="section-white goods-filters ">
+                <div class="goods-filters-item newactive" data-order="">
+                    <{t}>综合
+                    <{/t}>
+                </div>
+                <div class="goods-filters-item" data-order="paid_quantity">
+                    <{t}>销量
+                    <{/t}>
+                </div>
+                <div class="goods-filters-item" data-order="price">
+                    <{t}>价格
+                    <{/t}> <i class="goods-filters-order order-asc"></i></div>
+                <div class="goods-filters-item" data-order="modified_time">
+                    <{t}>最新
+                    <{/t}>
+                </div>
+                <div id="show_style" class="goods-show-style"><i class="bbc-icon bbc-icon-thumb"></i></div>
+            </div>
+            <ul class="shopex-table-view pro-list-grid goods-list">
+                <{include file="topwap/item/banlance/item_list.html" }>
+            </ul>
+        </div>
+        <{else}>
+        <{include file="topwap/empty/item.html" }>
+        <{/if}>
+    </div>
+</section>
+<!-- off-canvas backdrop -->
+<div class="shopex-off-canvas-backdrop"></div>
+</body>
+<!--add_2017/11/10_by_wanghaichao_start  分享的-->
+<{include file="topwap/index.html"}>
+<!--add_2017/11/10_by_wanghaichao_end-->
+<script>
+    shopex.init({
+        swipeBack: false,
+    });
+    var flag = localStorage.getItem('list_type');
+    if (flag && flag == 'gallery') {
+        $('#show_style .bbc-icon').addClass('bbc-icon-thumb').removeClass('bbc-icon-gallery');
+        $('.goods-list').addClass('pro-list-grid').removeClass('pro-list-normal');
+    } else if (flag && flag == 'thumb') {
+        $('#show_style .bbc-icon').addClass('bbc-icon-gallery').removeClass('bbc-icon-thumb');
+        $('.goods-list').addClass('pro-list-normal').removeClass('pro-list-grid');
+    }
+
+    $('#show_style').on('tap', function() {
+        if ($(this).find('.bbc-icon').hasClass('bbc-icon-gallery')) {
+            $(this).find('.bbc-icon').removeClass('bbc-icon-gallery').addClass('bbc-icon-thumb');
+            $('.goods-list').addClass('pro-list-grid').removeClass('pro-list-normal');
+            shopex('#pullrefresh').pullRefresh().scrollTo(0, 0);
+            localStorage.setItem('list_type', 'gallery');
+        } else if ($(this).find('.bbc-icon').hasClass('bbc-icon-thumb')) {
+            $(this).find('.bbc-icon').removeClass('bbc-icon-thumb').addClass('bbc-icon-gallery');
+            $('.goods-list').addClass('pro-list-normal').removeClass('pro-list-grid');
+            shopex('#pullrefresh').pullRefresh().scrollTo(0, 0);
+            localStorage.setItem('list_type', 'thumb');
+        }
+    });
+
+    var count = 1;
+    var totalpage = "<{$pagers.total}>";
+    var listwrapper = $('.goods-list');
+    var order;
+    var catFlag = "<{$catFlag}>";
+    $('.goods-filters-item').on('tap', function() {
+        $(this).addClass('newactive').siblings().removeClass('newactive');
+        order = $(this).data('order');
+        var filterItem = $(this).find('.goods-filters-order')
+        if (filterItem && $(this).hasClass('newactive') && filterItem.hasClass('order-desc')) {
+            filterItem.removeClass('order-desc').addClass('order-asc');
+            order = order ? order + ' ' + 'desc' : '';
+        } else if (filterItem && $(this).hasClass('newactive') && filterItem.hasClass('order-asc')) {
+            filterItem.removeClass('order-asc').addClass('order-desc');
+            order = order ? order + ' ' + 'asc' : '';
+        }
+
+        count = 1;
+        var param = {
+            'pages': count,
+            'orderBy': order
+        }
+        var reqdata = $.extend(activeFilter, param);
+        getList(reqdata, function(rs) {
+            listwrapper.html(rs);
+            shopex('#pullrefresh').pullRefresh().scrollTo(0, 0);
+            shopex('#pullrefresh').pullRefresh().enablePullupToRefresh();
+        });
+    });
+
+    shopex.init({
+        swipeBack: false,
+        pullRefresh: {
+            container: '#pullrefresh',
+            down: {
+                callback: pulldownRefresh
+            },
+            up: {
+                contentrefresh: '正在加载...',
+                callback: pullupRefresh
+            }
+        },
+        swipe: true,
+        dobluetap: true,
+        longtap: true
+    });
+
+    var activeFilter = JSON.parse('<{$activeFilter|json_encode}>');
+
+    /**
+     * 下拉刷新具体业务实现
+     */
+    function pulldownRefresh() {
+        setTimeout(function() {
+            count = 1;
+            var param = {
+                'pages': count,
+                'orderBy': order
+            }
+            var reqdata = $.extend(activeFilter, param);
+            getList(reqdata, function(rs) {
+                if (rs.indexOf('nodata-wrapper') > 0) {
+                    if (!hasnodata) {
+                        listwrapper.html('');
+                        $('#pullrefresh').append(rs);
+                    }
+                } else {
+                    listwrapper.html(rs);
+                }
+                shopex('#pullrefresh').pullRefresh().endPulldownToRefresh()
+                // shopex('#offCanvasContentScroll').pullRefresh().enablePullupToRefresh(); //refresh completed
+            });
+        }, 1000);
+    }
+    /**
+     * 上拉加载具体业务实现
+     */
+    function pullupRefresh() {
+        setTimeout(function() {
+            shopex('#pullrefresh').pullRefresh().endPullupToRefresh((++count > totalpage)); //参数为true代表没有更多数据了。
+            var param = {
+                'pages': count,
+                'orderBy': order
+            }
+            var reqdata = $.extend(activeFilter, param);
+            getList(reqdata, function(rs) {
+                if (rs.indexOf('nodata-wrapper') > 0) {
+                    if (!hasnodata) {
+                        listwrapper.html('');
+                        $('#pullrefresh').append(rs);
+                    }
+                } else {
+                    listwrapper.append(rs);
+                }
+            });
+        }, 1000);
+    }
+
+    function getList(param, callback) {
+        hasnodata = $('#pullrefresh').find('.nodata-wrapper').length > 0 ? true : false;
+        $.ajax({
+            url: '<{url action=topwap_ctl_item_banlance@ajaxGetItemList}>',
+            type: 'get',
+            dataType: 'html',
+            data: param,
+            success: callback
+        });
+    };
+
+    $('.shopex-table-view').on('tap', 'li', function() {
+        var link = $(this).data('link');
+        location.href = link;
+    });
+
+    $("#pullrefresh").on('swipeup', function() {
+        $('.shopex-inner-wrap').addClass('inhide');
+
+    }).on('swipedown', function() {
+        $('.shopex-inner-wrap').removeClass('inhide');
+    });
+
+    $('.filters-options').on('tap', '.action-all', function(){
+        $(this).toggleClass('shopex-icon-arrowdown').toggleClass('shopex-icon-arrowup');
+        if($(this).hasClass('shopex-icon-arrowdown')) {
+            $(this).parents('.filters-options').css('height', '5rem');
+        } else {
+            $(this).parents('.filters-options').css('height', 'auto');
+        }
+    });
+
+    (function initChooseOptions(){
+        $('.filters-options').each(function(){
+            var filters = [];
+            $(this).find('span.checked').each(function(){
+                filters.push($(this).text());
+            });
+            $(this).find('.options-choose').html(filters.join(';'));
+        });
+    }());
+</script>
+

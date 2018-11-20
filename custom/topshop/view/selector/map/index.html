@@ -1,0 +1,161 @@
+<div class="panel-heading">
+  <div class="clearfix">
+    <div class="pull-left">
+      <h2 class="panel-title">选择坐标</h2>
+    </div>
+    <div class="pull-right">
+      <button id="choose_map" type="button" class="btn btn-primary btn-sm">确定</button>
+      <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">取消</button>
+    </div>
+  </div>
+</div>
+<div class="panel-body">
+  <div class="goods-condition clearfix">
+    <div class="goods-search"><input type="text" name="X_coordinate" value="" id="X_coordinate" class="form-control input-sm X_coordinate" placeholder="经度"></div>
+    <div class="goods-search"><input type="text" name="Y_coordinate" value="" id="Y_coordinate" class="form-control input-sm X_coordinate" placeholder="纬度"></div>
+    <div class="goods-search" style="width:400px;"><input type="text" name="drag_address" value="" id="drag_address" class="form-control input-sm drag_address" placeholder="具体地址"></div>
+  </div>
+  <div class="row map_container">
+    <div id="map_container" style="width:890px; height:430px">
+    </div>
+  </div>
+</div>
+<script>
+    var area_json = <{$area_json}>;
+</script>
+<script>
+  var lat = $('#lat').val();
+  var lon = $('#lon').val();
+  var marker;
+  var infoWindow;
+  var center;
+  if(lat != '' && lon != '' && !isNaN(lat) && !isNaN(lon))
+  {
+      center = [lon, lat];
+  }
+  else
+  {
+      center = [120.415084, 36.087802];
+  }
+  var map = new AMap.Map('map_container', {
+      zoom: 16,
+      scrollWheel: false,
+      center: center,
+  });
+
+  function markerSet(map, location)
+  {
+      marker.setMap(map);
+      infoWindow.setMap(map);
+      marker.setPosition(location);
+      infoWindow.setPosition(location);
+  }
+
+  function getDistrict(adcode)
+  {
+      var district = "";
+      for(var i in area_json)
+      {
+          var pro_children = area_json[i].children;
+          for(var y in pro_children)
+          {
+              var city_children = pro_children[y].children;
+              if(city_children == undefined)
+              {
+                  if(pro_children[y].id == adcode)
+                  {
+                      district = area_json[i].id + '/' + pro_children[y].id;
+                      break;
+                  }
+              }
+              for(var p in city_children)
+              {
+                  if(city_children[p].id == adcode)
+                  {
+                      district = area_json[i].id + '/' + pro_children[y].id + '/' + city_children[p].id;
+                      break;
+                  }
+              }
+          }
+      }
+      return district;
+  }
+
+  AMapUI.loadUI(['misc/PositionPicker'], function(PositionPicker) {
+      var positionPicker = new PositionPicker({
+          mode: 'dragMap',
+          map: map
+      });
+
+      positionPicker.on('success', function(positionResult) {
+          var adcode = positionResult.regeocode.addressComponent.adcode;
+          var district = getDistrict(adcode);
+          $('#district').val(district).trigger('input');
+          $('#X_coordinate').val(positionResult.position.lng);
+          $('#Y_coordinate').val(positionResult.position.lat);
+          $('#drag_address').val(positionResult.address);
+          $('#lon').val(positionResult.position.lng).trigger('input');
+          $('#lat').val(positionResult.position.lat).trigger('input');
+          $('#spec_address').val(positionResult.address).trigger('input');
+          markerSet(map, positionResult.location);
+      });
+      positionPicker.on('fail', function(positionResult) {
+          $('#X_coordinate').val('');
+          $('#Y_coordinate').val('');
+          $('#spec_address').val('');
+          $('#lon').val('');
+          $('#lat').val('');
+          $('#spec_address').val('');
+      });
+
+      positionPicker.start();
+      map.panBy(0, 1);
+      map.addControl(new AMap.ToolBar({
+          liteStyle: true
+      }));
+
+  });
+
+  AMapUI.loadUI(['misc/PoiPicker'], function(PoiPicker) {
+
+      var poiPicker = new PoiPicker({
+          //city:'北京',
+          input: 'drag_address'
+      });
+
+      //初始化poiPicker
+      poiPickerReady(poiPicker);
+  });
+
+  function poiPickerReady(poiPicker) {
+
+      window.poiPicker = poiPicker;
+
+      marker = new AMap.Marker();
+
+      infoWindow = new AMap.InfoWindow({
+          offset: new AMap.Pixel(0, -100)
+      });
+
+      //选取了某个POI
+      poiPicker.on('poiPicked', function(poiResult) {
+
+          var source = poiResult.source,
+              poi = poiResult.item,
+              info = {
+                  source: source,
+                  id: poi.id,
+                  name: poi.name,
+                  location: poi.location.toString(),
+                  address: poi.address
+              };
+
+          markerSet(map, poi.location);
+          map.setCenter(marker.getPosition());
+      });
+
+      poiPicker.onCityReady(function() {
+          poiPicker.suggest('美食');
+      });
+  }
+</script>

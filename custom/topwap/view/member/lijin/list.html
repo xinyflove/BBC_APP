@@ -1,0 +1,10 @@
+
+<{foreach from=$lijindata item=lijin}>
+    <li>
+        <div class="item">
+            <p class="name"><{$lijin.behavior}></p>
+            <p class="time"><{$lijin.modified_time|cdate}></p>
+        </div>
+        <div class="num <{if $lijin.behavior_type == 'obtain'}>add<{elseif $lijin.behavior_type == 'consume'}>sub<{/if}>"><{if $lijin.behavior_type == 'obtain'}>+<{elseif $lijin.behavior_type == 'consume'}>-<{/if}><{$lijin.lijin|decimals}></div>
+    </li>
+<{/foreach}>

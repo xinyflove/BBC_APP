@@ -1,0 +1,81 @@
+<style>
+.shopex-pull-bottom-pocket {display:none}
+.nodata-icon {width:8rem;height:8rem}
+.title {background: #fff;line-height: 50px;padding-left: 15px;font-family:'微软雅黑';color:#666}
+</style>
+<div class="nodata-wrapper">
+	<div class="nodata-layout" style="top:140px">
+	  <div class="nodata-icon" style="background:none"><!--<i class="bbc-icon bbc-icon-goods-nodata"></i>--><img style="width:100%" src="<{$image_default_id['S']['default_image']}>"></div>
+	  <div class="nodata-tip">抱歉没有找到相关商品</div>
+	  <div class="nodata-tip" style="font-size:18px;font-weight:bold;color:#333">去下面逛逛</div>
+	  <!--<div class="nodata-guide"><a class="shopex-linkto shopex-btn shopex-btn-warning" href="<{url action=topwap_ctl_default@index}>">去首页</a></div>-->
+	</div>
+</div>
+<!--add_2017/10/30_by_wanghaichao_start-->
+<{if !$items}>
+<div class="shopex-scroll" style="margin-top:200px;padding-bottom:190px">
+<div class="title" style="text-align:center">为你推荐</div>
+<div style="height:8px;background-color:#efeff4"></div>
+	<ul class="shopex-table-view pro-list-grid goods-list">
+	  <{foreach from=$recommend item=item}>
+	  <li data-link="<{url action=topwap_ctl_item_detail@index item_id=$item.item_id}>">
+		<div class="thumbnail">
+		  <div class="thumb-img">
+			<{if $item.image_default_id}>
+			  <a href="#"><img src="<{$item.image_default_id|storager:'m'}>" alt=""></a>
+			<{else}>
+			  <a href="#"><img src="<{$image_default_id.M.default_image|storager}>" alt=""></a>
+			<{/if}>
+			<{if ($item.store-$item.freez) < 1 }>
+			<!-- 已售罄 -->
+			<div class="soldout">
+			  <img src="<{$sell_out_img|storager}>" alt="">
+			</div>
+			<{/if}>
+			<{if $item.right_logo}>
+			<!-- 角标 -->
+			<div class="right_logo">
+			  <img src="<{$item.right_logo|storager}>" alt="">
+			</div>
+			<{/if}>
+	
+		  </div>
+		  <div class="caption">
+			<h1 class="goods-title">
+			  <{if $item.activity.activity_tag}>
+			  <span class="tag"><{$item.activity.activity_tag}></span>
+			  <{/if}>
+			  <{$item.title}>
+			</h1>
+
+			<span class="shopex-ellipsis"><i class="<{$item.mold_class}>"></i><{$item.shop_id|shopname}></span>
+			<div class="price">
+			  <div class="amount"><{$item.price|cur}></div>
+			  <!--delete_start_gurundong_20171013-->
+			  <!--<div class="purchased"><{t}>已有<{/t}><{$item.paid_quantity}><{t}>人购买<{/t}></div>-->
+			  <!--delete_end_gurundong_20171013-->
+			  <!--add_start_gurundong_20171013-->
+			  <!--<div class="purchased"><{t}>已有<{/t}><{$item.paid_quantity}><{t}>人购买<{/t}></div>-->
+			  <!--add_end_gurundong_20171013-->
+			</div>
+			<{if $item.promotion || $item.gift}>
+			<div class="tags-group">
+			  <{foreach from=$item.promotion item=promotionRow}>
+			  <{if $promotionRow.tag}>
+				<a href="" class="tag tag-outline"><{$promotionRow.tag}></a>
+			  <{/if}>
+			  <{/foreach}>
+			  <{if $item.gift}>
+				<a href="" class="tag tag-outline">赠品</a>
+			  <{/if}>
+			</div>
+			<{/if}>
+		  </div>
+		</div>
+	  </li>
+	  <{/foreach}>
+	</ul>
+</div>
+</div>
+<{/if}>
+<!--add_2017/10/30_by_wanghaichao_end-->

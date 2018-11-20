@@ -1,0 +1,57 @@
+<!--add_start_gurundong_2017/11/1-->
+<style>
+    header .header-left,header .header-right{
+        color: #989898 !important;
+    }
+</style>
+<!--end_start_gurundong_2017/11/1-->
+<header class="page-header">
+	<i
+		class="header-left icon-func bbc-icon bbc-icon-back shopex-action-back"></i>
+	<div class="header-title"><{$title}></div>
+</header>
+<section class="container">
+    <!--modify_20171106_by_fanglongji_start-->
+    <{foreach from=$logis item=logi}>
+    <{if $logis}>
+    <!--modify_20171106_by_fanglongji_end-->
+	<section class="section-white section-container order-detail-info">
+		<i class="bbc-icon bbc-icon-logistics-gap"></i>
+		<div class="detail-info-txt">
+			<p>承运公司：<{$logi.logi_name}></p>
+			<p>运单编号：<{$logi.logi_no}></p>
+            <!--add_20171109_by_fanglongji_start-->
+            <p>发货详情：</p>
+            <{if(logi.detail)}>
+            <{foreach from=$logi.detail item=detail}>
+            <p style="font-size:13px;">名称：<{$detail.sku_title}>；数量：<{$detail.number}></p>
+            <{/foreach}>
+            <{/if}>
+            <!--add_20171109_by_fanglongji_end-->
+        </div>
+  </section>
+  <{if $trackFlag == 'true'}>
+  <!--modify_20171106_by_fanglongji_start-->
+  <{if $logi.track.tracker}>
+  <!--modify_20171106_by_fanglongji_end-->
+  <section class="section-white">
+    <div class="section-title">
+      <div class="title-txt">物流信息</div>
+    </div>
+    <ul class=" shopex-table-view order-logistics-view">
+      <{foreach from=$logi.track.tracker item=tracker}>
+      <li class="shopex-table-view-cell">
+        <div class="logistics-info"><{$tracker.AcceptStation}></div>
+        <div class="logistics-time"><{$tracker.AcceptTime}></div>
+        <div class="view-cell-dot"></div>
+      </li> <{/foreach}>
+    </ul>
+
+  </section>
+  <{/if}>
+  <{/if}>
+    <!--add_20171103_by_fanglongji_start-->
+    <{/if}>
+    <{/foreach}>
+  <!--add_20171103_by_fanglongji_end-->
+</section>

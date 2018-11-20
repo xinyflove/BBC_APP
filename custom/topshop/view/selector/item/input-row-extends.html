@@ -1,0 +1,7 @@
+<{if $extends_row.type=='money_input'}>
+<input type='number' class='<{$extends_row.class}>' name='<{$extends_row.item_name}>[<{$item.item_id}>][<{$extends_row.name}>]' value='<{if $item.extendsData[$extends_row.name]}><{$item.extendsData[$extends_row.name]}><{else}><{$item["price"]}><{/if}>' >
+<{elseif 1}>
+<input type='number' class='package_count_input' name='pagecount[<{$item.item_id}>][count]'  value='<{if $item.extendsData[$extends_row.name]}><{$item.extendsData[$extends_row.name]}><{else}><{$item["datavalue"]["count"]}><{/if}>' >
+<{else}>
+<input type='number' class='package_count_input' name='pagecount[<{$item.item_id}>][count]'  value='<{if $item.extendsData[$extends_row.name]}><{$item.extendsData[$extends_row.name]}><{else}><{$item["datavalue"]["count"]}><{/if}>' >
+<{/if}>

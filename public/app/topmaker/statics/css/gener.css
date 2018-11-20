@@ -1,0 +1,79 @@
+.m-hacker-gener {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background: #ffd050;
+  position: relative;
+}
+.m-hacker-gener .gener-content {
+  width: 5.52rem;
+  height: 8.1rem;
+  position: absolute;
+  background: #f7f7f7;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+.m-hacker-gener .gener-content .gener-content-out {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+.m-hacker-gener .gener-content .gener-content-out .content-head {
+  width: 100%;
+  height: auto;
+  position: absolute;
+  top: -0.6rem;
+  left: 0;
+}
+.m-hacker-gener .gener-content .gener-content-out .content-head div {
+  width: 100%;
+  height: 1.2rem;
+  margin-bottom: 0.2rem;
+}
+.m-hacker-gener .gener-content .gener-content-out .content-head div img {
+  width: 1.2rem;
+  height: 1.2rem;
+  margin: 0 auto;
+  border-radius: 50%;
+}
+.m-hacker-gener .gener-content .gener-content-out .content-head p {
+  width: 100%;
+  text-align: center;
+  font-size: 0.32rem;
+  color: #333;
+}
+.m-hacker-gener .gener-content .gener-content-out .content-erweima {
+  width: 100%;
+  height: auto;
+  padding-top: 1.7rem;
+}
+.m-hacker-gener .gener-content .gener-content-out .content-erweima img {
+  width: 3.4rem;
+  height: 3.4rem;
+  margin: 0 auto;
+}
+.m-hacker-gener .gener-content .gener-content-out .content-text {
+  width: 100%;
+  height: auto;
+  color: #999;
+  font-size: 0.24rem;
+  letter-spacing: 1px;
+  text-align: center;
+  margin: 0.6rem 0;
+}
+.m-hacker-gener .gener-content .gener-content-out .content-btn {
+  width: 100%;
+  height: auto;
+}
+.m-hacker-gener .gener-content .gener-content-out .content-btn p {
+  width: 2.7rem;
+  height: 0.8rem;
+  border-radius: 0.8rem;
+  margin: 0 auto;
+  text-align: center;
+  line-height: 0.8rem;
+  color: #ffd050;
+  font-size: 0.32rem;
+  background: #ff7c1c;
+}

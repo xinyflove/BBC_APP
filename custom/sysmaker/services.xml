@@ -1,0 +1,9 @@
+<services>
+    <service id="desktop_finder.sysmaker_mdl_account">
+        <class>sysmaker_finder_account</class>
+    </service>
+
+    <service id="desktop_finder.sysmaker_mdl_trustlogin_cfg">
+        <class>sysmaker_finder_trustlogin_cfg</class>
+    </service>
+</services>

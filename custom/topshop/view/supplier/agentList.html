@@ -1,0 +1,225 @@
+<{css app="topshop" src="bootstrap-switch.min.css"}>
+<{css app="topshop" src="bootstrap-editable.css"}>
+<aside class="control-sidebar control-sidebar-light" style="height: 100%;">
+    <!-- Create the tabs -->
+    <ul class="nav nav-tabs nav-justified control-sidebar-tabs">
+        <li class=""><a href="#">筛选</a></li>
+        <li class=""><a href="#" data-toggle="control-sidebar"><i class="glyphicon glyphicon-remove"></i></a></li>
+    </ul>
+    <!-- Tab panes -->
+    <div class="tab-content">
+        <form action="<{url action=topshop_ctl_supplier_list@agentShopSearch}>" method="get" id="search-form">
+            <!--<input type="hidden" value="<{$supplier_id}>" name="supplier_id" id="supplier_id">-->
+            <div class="box-body">
+                <!-- text input -->
+                <div class="form-group">
+                    <label>线下店名称：</label>
+                    <input type="text" id="name" name="name" class="form-control" <{if $search_keywords.name}> value="<{$search_keywords.name|escape:"html"}>" <{/if}> placeholder="请输入 ...">
+                </div>
+            </div>
+            <!-- /.box-body -->
+            <div class="box-footer">
+                <button id="reset" type="button" class="btn btn-default">重置</button>
+                <button type="submit" class="btn btn-info pull-right">搜索</button>
+            </div>
+            <!-- /.box-footer -->
+        </form>
+    </div>
+</aside>
+
+<div class="box box-primary">
+
+    <li class="pull-right header">
+        <div class="btn-group">
+            <button data-toggle="control-sidebar" class="btn btn-default">
+                <div class="text-light-blue">
+                    <i class="fa fa-search"></i>
+                    搜索
+                </div>
+            </button>
+        </div>
+    </li>
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th>所属代理商</th>
+            <th>线下店名称</th>
+            <th>线下店类型</th>
+            <th>联系人</th>
+            <th>电话</th>
+            <th>地址</th>
+            <th>置顶</th>
+            <th>排序</th>
+            <th>配置</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <{foreach from=$data.data item=item}>
+        <tr>
+            <td><{$item.supplier_name}></td>
+            <td><{$item.name}></td>
+            <td><{$item.type}></td>
+            <td><{$item.linkman}></td>
+            <!--<td><{$rolesName.{$item.role_id}}></td>-->
+            <td><{$item.mobile}></td>
+            <td style="width: 150px;"><{$item.addr}></td>
+            <td>
+                <div class="switch top-switch" data-agent-shop-id="<{$item.agent_shop_id}>">
+                    <input type="checkbox" data-size="mini" class="btn btn-default" data-animate="true" data-on-label="开启" data-off-label="关闭" <{if $item['top']>0}>checked<{/if}> name="my-checkbox"/>
+                </div>
+            </td>
+            <td>
+                <a href="#" class="order_sort" data-pk="<{$item.agent_shop_id}>" data-url="<{url action=topshop_ctl_supplier_list@order_sort}>" data-type="text" data-title="编辑排序"><{$item.order_sort}></a>
+            </td>
+            <td>
+                <a href="<{url action=topshop_ctl_supplier_oprationFood@index agent_shop_id=$item.agent_shop_id}>">推荐菜管理</a><br>
+                <a href="<{url action=topshop_ctl_supplier_oprationPerson@index agent_shop_id=$item.agent_shop_id}>">人员配置管理</a><br>
+                <a href="<{url action=topshop_ctl_supplier_oprationVideo@index agent_shop_id=$item.agent_shop_id}>">视频管理</a><br>
+                <a href="<{url action=topshop_ctl_supplier_expert_expertComment@index agent_shop_id=$item.agent_shop_id}>">专家评论管理</a><br>
+                <a href="<{url action=topshop_ctl_supplier_list@agentProfile agent_shop_id=$item.agent_shop_id}>">店铺简介</a><br>
+            </td>
+            <!--<td><{$item.service_email}></td>-->
+            <!--td><{if $item.disabled}>否<{else}>是<{/if}></td-->
+            <td>
+                <a href="<{url action=topshop_ctl_account_supplier@agentShop agent_shop_id=$item.agent_shop_id}>">编辑</a>&nbsp;<br>
+                <a href="<{url action=topshop_ctl_account_supplier@agentActivityList agent_shop_id=$item.agent_shop_id}>">活动管理</a>&nbsp;<br>
+                <a href="<{url action=topshop_ctl_account_supplier@agentShopQr agent_shop_id=$item.agent_shop_id}>">二维码</a>&nbsp;<br>
+                <a href="#" data-agent-shop-id="<{$item.agent_shop_id}>" data-toggle="modal" data-target="#modifyAccountShopPwd">修改密码</a>&nbsp;&nbsp;<br>
+                <a href="<{url action=topshop_ctl_account_supplier@agentShopDel agent_shop_id=$item.agent_shop_id}>" class="remove text-danger" >删除</a>
+            </td>
+        </tr>
+        <{/foreach}>
+        </tbody>
+    </table>
+    <div class="text-right">
+        <{pagers data=$pagers}>
+        <{if $pagers.total > 0 }>
+        <span class="page-number">共&nbsp;<em class="text-aqua"><{$total}></em>&nbsp;条记录</span>
+        <{/if}>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="modifyAccountShopPwd" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">修改线下店帐号密码</h4>
+            </div>
+            <form  action="<{url action=topshop_ctl_account_supplier@modifyPwdAgentShop}>" method="post" class="form-horizontal" data-validate-onsuccess="ajaxSubmit" id="form_delivery" role="form">
+                <div class="modal-body">
+                    <input type="hidden" class='agent-shop-id' name="agent_shop_id" value="">
+                    <input type="hidden" value="<{$supplier_id}>" name="supplier_id" id="supplier_id">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label" >重置密码：</label>
+                        <div class="col-sm-6">
+                            <input type="password" name="login_password" class="form-control" placeholder="6-20个字符,不能纯数字,字母" required maxlength="20" data-validate-length-min="6" pattern="^(?!\d+$|[a-zA-Z]+$)[^\u4e00-\u9fa5]*$" data-validate-regexp-message="不能纯数字、字母">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label" >确认密码：</label>
+                        <div class="col-sm-6">
+                            <input  name='psw_confirm' type='password' placeholder="确认重置密码" maxlength="20" required data-validate-equalto-field="login_password" data-validate-equalto-message="两次密码输入不一致" class="form-control" >
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="submit" class="btn btn-primary">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<{script app="topshop" src="bootstrap-switch.min.js"}>
+<{script app="topshop" src="bootstrap-editable.min.js"}>
+<script>
+    $(function(){
+        $("[name='my-checkbox']").bootstrapSwitch();
+        $("[name='my-checkbox']").on('switchChange.bootstrapSwitch',function(event,state){
+            var agent_shop_id = $(this).parents('.top-switch').data('agent-shop-id');
+            var url = '<{url action=topshop_ctl_supplier_list@top}>';
+            $.post(url,{'agent_shop_id':agent_shop_id,'state':state},function (data) {
+                if(data.success === true)
+                {
+//                            dialog.alert(data.message);
+//                            swal({
+//                                title: data.message,
+//                                timer: 1000,
+//                                showConfirmButton: false
+//                            });
+                }
+                else {
+                    alert(data.message);
+                }
+            },'json');
+        });
+        $('.order_sort').editable({
+            success: function(response, newValue) {
+                if (response.error == true)
+                {
+                    return response.message;
+                }
+                window.location.reload();
+            },
+            error: function(response, newValue) {
+                if(response.status === 500) {
+                    return '服务器错误';
+                } else {
+                    return response.responseText;
+                }
+            }
+        });
+    });
+    $('#reset').click(function () {
+        $('#name').val('');
+    });
+
+    $('#modifyAccountShopPwd').on('show.bs.modal', function (event) {
+        var agent_shop_id = $(event.relatedTarget).attr("data-agent-shop-id");
+        $(".agent-shop-id").val(agent_shop_id);
+    })
+
+    $('.remove').on('click', function(e) {
+        var _this = $(this);
+        e.preventDefault();
+        Modal.confirm({msg: "确定删除该账号吗？"}).on(function(e) {
+            if(e==true) {
+                var href = _this.attr('href');
+                $.get(href, function(rs) {
+                    if(rs.error) {
+                        $('#messagebox').message(rs.message);
+                        return;
+                    }else{
+                        $('#messagebox').message(rs.message, 'success');
+                    }
+
+                    if(rs.redirect) {
+                        setTimeout(function(){location.href=rs.redirect;}, 800);
+                    }
+
+                });
+            }
+        });
+    });
+
+    function ajaxSubmit (e) {
+        var form = e.target;
+        e.preventDefault();
+        $.post(form.action, $(form).serialize(), function(rs) {
+            if(rs.error) {
+                $('#messagebox').message(rs.message);
+                return;
+            }
+            if(rs.success) {
+                $('#messagebox').message(rs.message, 'success');
+            }
+            if(rs.redirect) {
+                location.href = rs.redirect;
+            }
+        });
+    }
+
+</script>

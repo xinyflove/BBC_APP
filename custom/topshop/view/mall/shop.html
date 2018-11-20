@@ -1,0 +1,19 @@
+店铺首页
+<table class="tableform">
+    <{foreach from=$list item=item key=key}>
+    <tr>
+        <th><{$key}></th>
+        <td><{$item.item_id}></td>
+        <td><{$item.title}></td>
+        <td><{$item.price}></td>
+        <td><{$item.supply_price}></td>
+        <td><{$item.profit}></td>
+        <td><img width="64" height="64" src="<{$item.image_default_id|storager:t}>"></td>
+        <td><{if in_array($item.item_id, $initItemsId)}>已拉取<{else}>拉取<{/if}></td>
+    </tr>
+    <{/foreach}>
+</table>
+<{pagers data=$pagers}>
+<{if $count > 0}>
+<span class="page-number">共&nbsp;<em class="text-aqua"><{$count}></em>&nbsp;条记录</span>
+<{/if}>

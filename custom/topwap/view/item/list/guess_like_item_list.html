@@ -1,0 +1,22 @@
+<{foreach from=$items item=item}>
+<li>
+  <a href="<{url action=topwap_ctl_item_detail@index item_id=$item.item_id}>" class="shopex-block">
+    <div class="LovelyBox">
+      <{if $item.image_default_id}>
+      <img src="<{$item.image_default_id|storager:'s'}>" alt="">
+      <{else}>
+      <img src="<{$image_default_id.M.default_image|storager}>" alt="">
+      <{/if}>
+    </div>
+    <h3 class="shopex-ellipsis"><{$item.title}></h3>
+    <span class="shopex-ellipsis"><i class="<{$item.mold_class}>"></i><{$item.shop_name}></span>
+    <p>
+      <{if $item.activity.activity_price}>
+      <{$item.activity.activity_price|cur}>
+      <{else}>
+      <{$item.price|cur}>
+      <{/if}>
+    </p>
+  </a>
+</li>
+<{/foreach}>

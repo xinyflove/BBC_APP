@@ -1,0 +1,68 @@
+
+<div class="box box-primary">
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th>点亮图标</th>
+            <th>图标名称</th>
+            <th>点亮人openid</th>
+            <th>点亮时间</th>
+        </tr>
+        </thead>
+        <{if $lightlogList}>
+        <tbody>
+        <{foreach from=$lightlogList item=item}>
+        <tr class="">
+            <td>
+                <img src="<{$item.operand.figureurl|storager:T}>" alt="" style="width: 56px;height: 56px;">
+            </td>
+            <td><{$item.operand.title}></td>
+            <td>
+                <{$item.openid}>
+            </td>
+            <td>
+                <{$item.create_time|cdate:'FDATE_STIME'}>
+            </td>
+        </tr>
+        <{/foreach}>
+        </tbody>
+        <{else}>
+        <tbody>
+        <tr>
+            <td algin="center" colspan="7">
+                <p class="help-block text-center">暂无数据</p>
+            </td>
+        </tr>
+        </tbody>
+        <{/if}>
+    </table>
+</div>
+<div class="text-right">
+    <{pagers data=$pagers}>
+    <{if $total > 0}>
+    <span class="page-number">共&nbsp;<em class="text-aqua"><{$total}></em>&nbsp;条记录</span>
+    <{/if}>
+</div>
+<script>
+    $(function () {
+
+        $('.action-delete-lightlog').on('click',function(){
+            var url = $(this).attr('data-delete-url');
+            Modal.confirm({msg: '确定删除此条赠品吗？'}).on(function(e) {
+                if(e==true) {
+                    $.post(url,'',function(rs){
+                        if(rs.success) {
+                            $('#messagebox').message(rs.message, 'success');
+                            setTimeout(function(){location.reload();}, 500);
+                        }
+                        if(rs.error) {
+                            $('#messagebox').message(rs.message);
+                            return;
+                        }
+                    });
+                }
+            });
+        });
+
+    })
+</script>

@@ -1,0 +1,34 @@
+<{if $items}>
+  <{foreach from=$items item=item}>
+  <li data-link="<{url action=topwap_ctl_item_detail@index item_id=$item.item_id}>">
+    <img class="listbanner" src="<{$item.livehot_img|storager}>" alt="" />
+    <img class="headimg" src="<{$item.shop_logo}>"/>
+    <h3><img class="logoimg" src="<{$item.mold_log}>"/><{$item.shop_name}></h3>
+    <p class="info"><{$item.title}></p>
+    <p class="price">
+      <{if $item.activity.activity_price}>
+      <{$item.activity.activity_price|cur}>
+      <{else}>
+      <{$item.price|cur}>
+      <{/if}>
+      <i class="<{$item.mold_class}>"></i>
+    </p>
+    <{if $item.promotion || $item.gift}>
+    <div class="tags-group">
+      <{foreach from=$item.promotion item=promotionRow}>
+      <{if $promotionRow.tag}>
+      <span class="tag-a"><{$promotionRow.tag}></span>
+      <{/if}>
+      <{/foreach}>
+      <{if $item.gift}>
+      <span class="tag-a">赠品</span>
+      <{/if}>
+    </div>
+    <{/if}>
+    <a href="<{url action=topwap_ctl_item_detail@index item_id=$item.item_id}>">立即购买</a>
+  </li>
+  <{/foreach}>
+<script>
+    shopex('body').on('tap', 'a', function () { document.location.href = this.href; });
+</script>
+<{/if}>

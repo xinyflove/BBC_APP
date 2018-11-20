@@ -1,0 +1,22 @@
+<app>
+    <name>创客中心系统</name>
+    <type>service</type>
+    <description>提供创客基本功能</description>
+
+    <author>
+        <name>广电开发(PHP Team)</name>
+        <email></email>
+        <url></url>
+    </author>
+	
+	<parent_model_class>dbeav_model</parent_model_class>
+
+    <version>0.1</version>
+    <license>shopex license</license>
+    
+    <depends>
+        <app>desktop</app>
+		<app>pam</app>
+    </depends>
+	
+</app>

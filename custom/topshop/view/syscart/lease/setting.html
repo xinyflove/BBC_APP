@@ -1,0 +1,104 @@
+<style>
+.table-primary{border:none}
+</style>
+<form class="form-horizontal" action="<{url action=topshop_ctl_syscart_lease@savesetting}>" method="post" role="form" id="specification" data-validate-onsuccess="ajaxSubmit" data-validate-excluded=":disabled, :not(:visible)">
+  <input type="hidden" name="submit" value="true">
+  <input type="hidden" name="setting_id" value="<{$setting.setting_id}>">
+  <div class="panel panel-outter">
+    <div class="panel-heading" style="position:relative">
+      <h4>滞纳金设置</h4>
+		<button style="position:absolute;right:20px;top:10px;border:none;background-color:#00639e;color:#fff;padding:8px 15px;" onclick="history.back()">返回</button>
+    </div>
+    <div class="panel-body">
+      <div class="col-md-11">
+        <h4>押金缴纳</h4>
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            基本内容
+          </div>
+          <div class="panel-body">
+
+		  <!--------公司--------->
+            <div class="form-group" id="lx_name">
+              <label for="" class="col-sm-2 control-label"><span class="txt-required">*</span>是否启用滞纳金：</label>
+              <div class="col-sm-3">
+				<label style="margin-right:20px;cursor:pointer">
+					<input class="check-open" required type="radio" name="is_open" value="1" <{if $setting.is_open==1}> checked<{/if}>>启用
+				</label>
+				<label style="cursor:pointer">
+					<input class="check-open" required type="radio" name="is_open" value="2"  <{if $setting.is_open!=1}> checked<{/if}>>禁用
+				</label>
+              </div>
+            </div>
+
+		<!------车辆总价------>
+            <div class="form-group" id="proportion" <{if $setting.is_open!=1}>style="display:none"<{/if}>>
+              <label for="" class="col-sm-2 control-label"><span class="txt-required">*</span>滞纳金比例：</label>
+              <div class="col-sm-3">
+                <input type="text" required name="proportion" maxlength="30" value="<{$setting.proportion}>" class="form-control">
+              </div>
+			 <p>注意:例如比例为20%,这里只填写20</p>
+            </div>
+
+            <div id="lx_mobile" class="form-group">
+              <label for="" class="col-sm-2 control-label">备注：</label>
+              <div class="col-sm-3">
+                <textarea class="form-control"  name="remarks" ><{$setting.remarks}></textarea>
+              </div>
+            </div>
+
+
+          </div>
+        </div>
+      </div>
+	  <div class="col-md-2" style="text-align:center;margin-bottom:60p;">
+		<button type="submit" class="btn btn-primary btn-lg btn-block save-action" style="margin-left:1em;">保存</button>
+	  </div>
+    </div>
+  </div>
+</form>
+
+<{script src="md5.js" app="desktop"}>
+<{script app="toputil" src="jquery-catselect.js"}>
+<script>
+
+$('input:radio[name="lease[is_person]"]').change(function(){
+	var is_person=$(this).val();
+	if(is_person==1){
+		$('#lx_name').show();
+		$('#lx_mobile').show();
+		$('#company').hide();
+	}else{
+		$('#lx_name').hide();
+		$('#lx_mobile').hide();
+		$('#company').show();
+	}
+});
+
+function ajaxSubmit (e) {
+  var form = e.target;
+  e.preventDefault();
+  $.post(form.action, $(form).serialize(), function(rs) {
+    if(rs.error) {
+      $('#messagebox').message(rs.message);
+      return;
+    }
+    if(rs.success) {
+      $('#messagebox').message(rs.message, 'success');
+    }
+    if(rs.redirect) {
+      location.href = rs.redirect;
+    }
+  });
+}
+
+$('.check-open').on('click',function(e){
+	var status=$(this).val();
+	if(status==1){
+		$("#proportion").show();
+	}else{
+		$('#proportion').hide();
+	}
+});
+
+</script>

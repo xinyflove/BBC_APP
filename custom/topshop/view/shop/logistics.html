@@ -1,0 +1,12 @@
+<div class="form-group has-error">
+  物流公司：
+  <select name="corp_id" class="form-control inline" style="width:175px;margin-left:-5px;">
+    <{foreach from=$dlycorp key=key item=dlyList}>
+    <option value="<{$dlyList.corp_id}>" <{if $dlyList.corp_code == $corp_code}>selected<{/if}> ><{$dlyList.corp_name}></option>
+    <{/foreach}>
+  </select>
+</div>
+<div class="form-group has-error">
+  配送单号：<input type="text" name="logi_no" class="form-control inline" style='width:175px' maxlength="20" value='<{$logi_no}>'>
+</div>
+<input type='hidden' name='delivery_id' value='<{$delivery_id}>' >

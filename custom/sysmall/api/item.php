@@ -1,5 +1,5 @@
 <?php
-/* 
+/*
 * 获取选货商城里面的商品列表
 * author by wanghaichao
 * date 2018/6/19
@@ -100,11 +100,11 @@ class sysmall_api_item{
             $sqlWhere[]='a.created_time < '.$params['create_time_end'];
             unset($params['create_time_end']);
         }
-		
+
 		if($params['min_price']){
 			$sqlWhere[]="b.price>='".$params['min_price']."'";
 		}
-		
+
 		if($params['max_price']){
 			$sqlWhere[]="b.price<='".$params['max_price']."'";
 		}
@@ -132,8 +132,11 @@ class sysmall_api_item{
 		}
 		//$params['shop_id']=3;
 		if($params['shop_id']){
-			$builderWhere="(b.shop_id ='{$params['shop_id']}' and ".$builderWhere.") or (".$builderWhere." and a.status='onsale' and a.deleted=0)";
+			$builderWhere="(b.shop_id ='{$params['shop_id']}' and (b.init_shop_id='' or b.init_shop_id=0) and ".$builderWhere.") or (".$builderWhere." and a.status='onsale' and a.deleted=0)";
+		}else{
+			$builderWhere=$builderWhere." and a.status='onsale' and a.deleted=0";
 		}
+
 		//echo "<pre>";print_r($builderWhere);die();
         //记录总数
         $countBuilder = db::connection()->createQueryBuilder();
@@ -160,6 +163,7 @@ class sysmall_api_item{
             ->leftjoin('b', 'sysmall_item', 'a', 'b.item_id = a.item_id')
 			->leftjoin('b','sysitem_item_store','c','c.item_id = b.item_id')
 			->leftjoin('b','sysitem_item_status','d','d.item_id=b.item_id')
+			->leftjoin('b','sysshop_shop','e','e.shop_id=b.shop_id')
             ->setFirstResult($offset)
             ->setMaxResults($limit)
             //->orderBy('a.'.$orderByPhrase[0],$orderByPhrase[1])

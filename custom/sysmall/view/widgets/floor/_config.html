@@ -1,0 +1,151 @@
+<h2 class="head-title">楼层分类</h2>
+<div class="tableform cate_item_floor">
+    <div class="widgetconfig">
+        <table width="100%" cellpadding="0" cellspacing="0">
+            <tbody>
+            <tr>
+                <th>
+                    <{t app='sysmall' }>楼层分类名称：
+                    <{/t}>
+                </th>
+                <td>
+                    <input type="text" name="floorname" value="<{$setting.floorname}>">
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    <{t app='sysmall' }>楼层顶部广告图：
+                    <{/t}>
+                </th>
+                <td>
+                    <input name='topimg' class="imgsrc" id="topimg" value="<{$setting.topimg}>">
+                    <input type=button value="<{t app='desktop'}>上传图片<{/t}>" class="uploadbtn" onclick="addPic('topimg')">
+                    <span>(建议图片尺寸：1190px*130px)</span>
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    <{t app='sysmall' }>楼层左上标题图：
+                    <{/t}>
+                </th>
+                <td>
+                    <input name='leftimg1' class="imgsrc" id="leftimg1" value="<{$setting.leftimg1}>">
+                    <input type=button value="<{t app='desktop'}>上传图片<{/t}>" class="uploadbtn" onclick="addPic('leftimg1')">
+                    <span>(建议图片尺寸：230px422px)</span>
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    <{t app='sysmall' }>楼层左下标题图：
+                    <{/t}>
+                </th>
+                <td>
+                    <input name='leftimg2' class="imgsrc" id="leftimg2" value="<{$setting.leftimg2}>">
+                    <input type=button value="<{t app='desktop'}>上传图片<{/t}>" class="uploadbtn" onclick="addPic('leftimg2')">
+                    <span>(建议图片尺寸：230px422px)</span>
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    <{t app='sysmall' }>楼层顶部广告图链接：
+                    <{/t}>
+                </th>
+                <td>
+                    <input type="text" name="link0" value="<{$setting.link0}>">
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    <{t app='sysmall' }>楼层左上标题图链接：
+                    <{/t}>
+                </th>
+                <td>
+                    <input type="text" name="link1" value="<{$setting.link1}>">
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    <{t app='sysmall' }>楼层左下标题图链接：
+                    <{/t}>
+                </th>
+                <td>
+                    <input type="text" name="link2" value="<{$setting.link2}>">
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    <{t app='sysmall' }>MORE 更多商品链接：
+                    <{/t}>
+                </th>
+                <td>
+                    <input type="text" name="link3" value="<{$setting.link3}>">
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    <{t app='sysmall' }>商品选择方式：
+                    <{/t}>
+                </th>
+                <td>
+                    <input type="radio" name='select_item_type' <{if $setting.select_item_type == '1' || $setting.select_item_type == ''}>checked<{/if}> id="" value="1">自动选择
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <input type="radio" name='select_item_type' <{$setting.select_item_type == '2' ? 'checked' : '' }> id="seleceitem" value="2">手动选择
+                </td>
+            </tr>
+
+            <tr class="order_tr" style="<{if $setting.select_item_type == '2'}>display: none;<{/if}>">
+                <th>
+                    <{t app='sysmall' }>商品排序方式：
+                    <{/t}>
+                </th>
+                <td>
+                    <input type="radio" name='order' <{if $setting.order == '1' || $setting.order == ''}>checked<{/if}> value="1">上新时间降序
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <!--<input type="radio" name='order' <{if $setting.order == '2'}>checked<{/if}> value="2">销量降序-->
+                </td>
+            </tr>
+
+            <tr class="item_tr" style="<{if $setting.select_item_type == '1' || $setting.select_item_type == ''}>display: none;<{/if}>">
+                <th>
+                    <{t app='sysmall' }>选择商品：
+                    <{/t}>
+                </th>
+                <td>
+                    <{input type="object" value=$setting.item object="item" app="sysmall" filter="status=onsale" name="item" obj_filter="" select="checkbox"
+                    vtype="" multiple="true" textcol="title" }>
+                </td>
+            </tr>
+
+
+
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+    function addPic(icon) {
+        var goto_url = encodeURIComponent(
+            '<{url route="shopadmin" app="image" ctl="admin_manage" act="image_broswer" type="big"}>');
+        var url = '<{url route="shopadmin" app="desktop" act="alertpages" goto=""}>' + goto_url;
+        Ex_Loader('modedialog', function () {
+            return new imgDialog(url, {
+                onCallback: function (image_id, image_src) {
+                    $(icon).value = image_src;
+                }
+            });
+        });
+    }
+
+    $$('.cate_item_floor input[name=select_item_type]').addEvent('change',function(){
+        var radio  = this;
+        if(this.value == '1'){
+            $$(".item_tr").hide();
+            $$(".order_tr").show();
+        }else{
+            $$(".item_tr").show();
+            $$(".order_tr").hide();
+        }
+    });
+
+
+</script>

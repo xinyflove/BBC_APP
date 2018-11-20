@@ -1,0 +1,128 @@
+<!--add_20170930_by_xinyufeng_start 售罄样式-->
+<style>
+  .widgets-goods-like .pro-list-grid .thumbnail .soldout img {
+    width: 6rem !important;
+    height: 6rem !important;
+    position: absolute;
+    bottom: 6.4rem;
+    right: 0.1rem;
+  }
+  .pro-list-grid li .thumbnail .caption{
+	height:auto;
+	padding:0.2rem 0.4rem 0.4rem 0.2rem;
+  }
+</style>
+
+<!--add_20170930_by_xinyufeng_end-->
+
+<div class="section-title" <{if $shopdata.bg_color}>style="background:<{$shopdata.bg_color}>"<{/if}>>
+  <div class="title-txt" style="text-align: center;"><{$widgetDetail.params.title}></div>
+</div>
+<ul class="pro-list-grid item_lists" <{if $shopdata.bg_color}>style="background:<{$shopdata.bg_color}>"<{/if}>>
+  <{foreach from=$widgetDetail.showitems.list item=item}>
+  <li>
+    <div class="thumbnail" style="position: relative;">
+      <div class="thumb-img item-itemimage">
+        <a class="shopex-linkto" href="<{url action=topwap_ctl_item_detail@index item_id=$item.item_id}>">
+			<{if $item.right_logo}>
+            <img style="position:absolute;left:0.3rem;top:0;width:2rem;height:2rem;"  class="imglazyload itemlistimage" data-original="<{$item.right_logo|storager:t}>" alt="">
+			<{/if}>
+          <{if $item.image_default_id}>
+          <img  class="imglazyload itemlistimage" data-original="<{$item.image_default_id|storager:'t'}>" alt="">
+          <{else}>
+          <img  class="imglazyload" data-original="<{$defaultImageId.M.default_image|storager:'t'}>" alt="">
+          <{/if}>
+        </a>
+      </div>
+      <div class="caption">
+        <h1 class="goods-title"><{if $item.activity}><!--<span class="tag"><{$item.activity.activity_tag}></span>--><{/if}><{$item.title}></h1>
+        <div class="price">
+          <div class="amount"><{$item.price|cur}></div>
+		  <!--modify_20171013_by_xinyufeng_start-->
+		  <{if $shopdata.show_stock_way ==1}>
+          <div class="purchased">剩余<{$item.real_store}>件</div>
+		  <{elseif $shopdata.show_stock_way ==2}>
+		  <div class="purchased">销量<{$item.paid_quantity}>件</div>
+		  <{else}>
+		  <div class="purchased"></div>
+		  <{/if}>
+		  <!--modify_20171013_by_xinyufeng_end-->
+        </div>
+      </div>
+
+      <!--add_20170930_by_xinyufeng_start 售罄图片-->
+      <{if ($item.store-$item.freez) < 1 }>
+      <!-- 已售罄 -->
+      <div class="soldout">
+        <img  class="imglazyload" data-original="<{$sell_out_img|storager:t}>" alt="">
+      </div>
+      <{/if}>
+      <!--add_20170930_by_xinyufeng_end-->
+    </div>
+  </li>
+  <{/foreach}>
+</ul>
+<div class="section-title" <{if $shopdata.bg_color}>style="background:<{$shopdata.bg_color}>"<{/if}>>
+  <div class="more-link">
+    <!--del_20171009_by_fanglongji_start
+    <a href="<{url action=topwap_ctl_newshop@shopItemList shop_id=$shopId item_id=$widgetDetail.itemIds}>">查看更多</a>
+    <i class="bbc-icon bbc-icon-forward"></i>
+    del_20171009_by_fanglongji_end-->
+  </div>
+</div>
+<!--add_2017/11/2_by_wanghaichao_start-->
+<!----实现上拉加载----->
+<script>
+$(function()
+{
+	/*解决shopex中使用上拉加载和下拉刷新后a链接不跳转的问题*/
+	//shopex('body').on('tap', 'a', function () { document.location.href = this.href; });
+	var count = 0;
+	var totalpage = "<{$widgetDetail.totalPage}>";
+	var listwrapper = document.body.querySelector('.item_lists');
+	shopex.init({
+		pullRefresh: {
+			container: '#offCanvasContentScroll',
+			up: {
+				contentrefresh: '正在加载...',
+				auto:false,
+				callback: pullupRefresh
+			}
+		}
+	});
+	/**
+	 * 上拉加载具体业务实现
+	 */
+	function pullupRefresh() {
+		setTimeout(function() {
+			shopex('#offCanvasContentScroll').pullRefresh().endPullupToRefresh((++count > totalpage)); //参数为true代表没有更多数据了。
+			if(!(count > totalpage)){
+				getList(count, function(rs) {
+					$(listwrapper).append(rs);
+				});
+			}
+		}, 1000);
+	}
+
+	function getList(count,callback){
+		var item_ids="<{$widgetDetail.itemIds}>";
+		var shop_id="<{$shopId}>";
+		$.ajax({
+			url: '<{url action=topwap_ctl_newshop@ajaxGetGoodsList}>',
+			type: 'get',
+			dataType: 'html',
+			data: {
+				'pages': count,
+				'item_ids':item_ids,
+				'shop_id':shop_id
+			},
+			success: callback
+		});
+	}
+});
+$(function(){
+	var itemWidth = $('.item-itemimage').width();
+	$('.itemlistimage').css({'height':itemWidth});
+});
+</script>
+<!--add_2017/11/2_by_wanghaichao_end-->

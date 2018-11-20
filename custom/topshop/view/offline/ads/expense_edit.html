@@ -1,0 +1,125 @@
+<form class="form-horizontal" action="<{url action=topshop_ctl_offline_ads@saveExpense}>" method="post" role="form" id="specification" data-validate-onsuccess="ajaxSubmit" data-validate-excluded=":disabled, :not(:visible)">
+    <input type="hidden" name="expense[ads_expense_id]" value="<{$expense.ads_expense_id}>" />
+
+    <div class="panel panel-outter">
+        <div class="panel-heading">
+            <h4>编辑宣传基金使用记录</h4>
+        </div>
+        <div class="panel-body">
+            <div class="form-group">
+                <label class="col-md-2 control-label"><{t}>供应商选择<{/t}>：</label>
+                <div class="col-sm-4">
+                    <select class="form-control" name="expense[supplier_id]" id="supplier-list" <{if $expense.ads_expense_id}>disabled<{/if}>>
+                        <option value="0">请选择</option>
+                        <{foreach from=$supplier item=item}>
+                        <option value="<{$item.supplier_id}>" <{if $item.supplier_id == $supplier_id}>selected<{/if}>><{$item.company_name}></option>
+                        <{/foreach}>
+                    </select>
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                <label class="col-md-2 control-label"><{t}>宣传基金累计额度<{/t}>：</label>
+                <div class="col-sm-4">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon"><i class="fa fa-money"></i></span>
+                        <input type="text" id="total_ads_fee" class="form-control" name="" value="<{$total_adds_fee}>" disabled>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-2 control-label"><{t}>宣传基金已用额度<{/t}>：</label>
+                <div class="col-sm-4">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon"><i class="fa fa-money"></i></span>
+                        <input type="text" id="used_ads_fee" class="form-control" name="" value="<{$total_expense}>" disabled>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-2 control-label"><{t}>宣传基金剩余额度<{/t}>：</label>
+                <div class="col-sm-4">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon"><i class="fa fa-money"></i></span>
+                        <input type="text" id="availiable_fee" class="form-control" value="<{$avaliabe_record_fee}>" disabled>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-2 control-label"><{t}>线下合同编号<{/t}>：</label>
+                <div class="col-sm-4">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon"><i class="fa fa-money"></i></span>
+                        <input type="text" id="contract_no" class="form-control" name="expense[contract_no]" value="<{$expense.contract_no}>">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-2 control-label"><{t}>使用金额<{/t}>：</label>
+                <div class="col-sm-4">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon"><i class="fa fa-money"></i></span>
+                        <input type="text" id="expense_amount" class="form-control" name="expense[expense_amount]" value="<{$expense.expense_amount}>">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-2 control-label"><{t}>使用说明<{/t}>：</label>
+                <div class="col-sm-4">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon"><i class="fa fa-pencil-square"></i></span>
+                        <textarea class="form-control" name="expense[comment]" ><{$expense.comment}></textarea>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="form-group">
+            <label class="col-md-2 control-label"></label>
+            <div class="col-sm-2">
+                <button type="submit" class="btn btn-primary btn-md save-action">保存</button>
+                <a href="<{url action=topshop_ctl_offline_ads@expense}>" class="btn btn-warning btn-md">取消</a>
+            </div>
+        </div>
+    </div>
+    </div>
+</form>
+
+<script>
+    $(document).ready(function(){
+        if($('#supplier-list').val() != 0)
+        {
+            $('#supplier-list').change();
+        }
+    })
+
+    function ajaxSubmit (e) {
+        var form = e.target;
+        e.preventDefault();
+        $.post(form.action, $(form).serialize(), function(rs) {
+            $(form).find('button[type=submit]').prop('disabled', false);
+            if(rs.error) {
+                $('#messagebox').message(rs.message, 'error');
+                return;
+            }
+            else if(rs.success) {
+                $('#messagebox').message(rs.message, 'success');
+            }
+            if(rs.redirect) {
+                location.href = rs.redirect;
+            }
+        });
+    }
+
+    $('#supplier-list').on('change',function(){
+        var supplier_id=$('#supplier-list option:selected').val();
+        $.post("<{url action=topshop_ctl_offline_ads@getAvailableAdsFee}>",{supplier_id:supplier_id},function(re){
+            if(re.succ){
+                $('#total_ads_fee').val(re.message.total);
+                $('#availiable_fee').val(re.message.ava);
+                $('#used_ads_fee').val(re.message.use);
+            }
+        });
+    })
+</script>

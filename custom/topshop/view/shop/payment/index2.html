@@ -1,0 +1,570 @@
+<{if $mer_collection == 'off'}>
+<div class="panel panel-default">
+  <p class="help-block text-center">您现在还没有开通配置此功能的权限，请联系平台管理员进行开通！</p>
+</div>
+<{else}>
+  <div class="box box-primary">
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>支付名称</th>
+          <th>状态</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+            <td>微信公众号支付(子商户版)</td>
+            <td><{if $payment['wxservicepayapi']['open']==1}><span class='label label-success'>已启用</span><{else}><span class='label label-danger'>未启用</span><{/if}></td>
+            <td>
+              <a href="#" data-seller-id="" data-toggle="modal" data-target="#wxservicepayapi">配置</a>&nbsp;&nbsp;
+            </td>
+        </tr>
+
+        <tr>
+            <td>银联商务扫码-微信(子商户版)</td>
+            <td><{if $payment['umspay']['open']==1}><span class='label label-success'>已启用</span><{else}><span class='label label-danger'>未启用</span><{/if}></td>
+            <td>
+              <a href="#" data-seller-id="" data-toggle="modal" data-target="#umspay">配置</a>&nbsp;&nbsp;
+            </td>
+        </tr>
+
+        <tr>
+            <td>银联商务扫码-支付宝(子商户版)</td>
+            <td><{if $payment['umsalipay']['open']==1}><span class='label label-success'>已启用</span><{else}><span class='label label-danger'>未启用</span><{/if}></td>
+            <td>
+              <a href="#" data-seller-id="" data-toggle="modal" data-target="#umsalipay">配置</a>&nbsp;&nbsp;
+            </td>
+        </tr>
+
+        <tr>
+            <td>银联商务公众号(子商户版)</td>
+            <td><{if $payment['umspaypub']['open']==1}><span class='label label-success'>已启用</span><{else}><span class='label label-danger'>未启用</span><{/if}></td>
+            <td>
+              <a href="#" data-seller-id="" data-toggle="modal" data-target="#umspaypub">配置</a>&nbsp;&nbsp;
+            </td>
+        </tr>
+
+        <tr>
+            <td>PC端银联商务银行卡(子商户版)</td>
+            <td><{if $payment['upacp']['open']==1}><span class='label label-success'>已启用</span><{else}><span class='label label-danger'>未启用</span><{/if}></td>
+            <td>
+              <a href="#" data-seller-id="" data-toggle="modal" data-target="#upacp">配置</a>&nbsp;&nbsp;
+            </td>
+        </tr>
+
+        <tr>
+            <td>WAP端银联商务银行卡(子商户版)</td>
+            <td><{if $payment['wapupacp']['open']==1}><span class='label label-success'>已启用</span><{else}><span class='label label-danger'>未启用</span><{/if}></td>
+            <td>
+              <a href="#" data-seller-id="" data-toggle="modal" data-target="#wapupacp">配置</a>&nbsp;&nbsp;
+            </td>
+        </tr>
+
+        <tr>
+            <td>PC端原生支付宝扫码</td>
+            <td><{if $payment['alipayservice']['open']==1}><span class='label label-success'>已启用</span><{else}><span class='label label-danger'>未启用</span><{/if}></td>
+            <td>
+              <a href="#" data-seller-id="" data-toggle="modal" data-target="#alipayservice">配置</a>&nbsp;&nbsp;
+            </td>
+        </tr>
+
+        <tr>
+            <td>微信H5支付(子商户版)</td>
+            <td><{if $payment['wxserviceh5pay']['open']==1}><span class='label label-success'>已启用</span><{else}><span class='label label-danger'>未启用</span><{/if}></td>
+            <td>
+              <a href="#" data-seller-id="" data-toggle="modal" data-target="#wxserviceh5pay">配置</a>&nbsp;&nbsp;
+            </td>
+        </tr>
+
+        <tr>
+            <td>微信小程序支付(子商户版)</td>
+            <td><{if $payment['miniservicepayapi']['open']==1}><span class='label label-success'>已启用</span><{else}><span class='label label-danger'>未启用</span><{/if}></td>
+            <td>
+                <a href="#" data-seller-id="" data-toggle="modal" data-target="#miniservicepayapi">配置</a>&nbsp;&nbsp;
+            </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <!-- 微信公众号支付(子商户版) Modal -->
+  <div class="modal fade" id="wxservicepayapi" tabindex="-1" role="dialog" aria-labelledby="wxservicepayapi">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">微信公众号支付(子商户版)</h4>
+          </div>
+          <form  action="<{url action=topshop_ctl_shop_payment@savePayment}>" method="post" class="form-horizontal" data-validate-onsuccess="ajaxSubmit" id="form_delivery" role="form">
+            <div class="modal-body">
+              <!-- <input type="hidden" class='seller-id' name="seller_id" value=""> -->
+              <div class="form-group">
+                <label class="col-sm-4 control-label" >子商户号(Mch_Id)：</label>
+                <div class="col-sm-6">
+                      <input type="text" name="payment[wxservicepayapi][sub_mchid]" class="form-control" value="<{$payment['wxservicepayapi']['sub_mchid']}>"/>
+                  </div>
+              </div>
+
+              <div class="form-group">
+                <label class="col-sm-4 control-label" >是否启用：</label>
+                <div class="col-sm-6">
+                      <div class="checkbox">
+                              <label>
+                                  <input type="checkbox" class="js-switch" name="payment[wxservicepayapi][open]"  value="1" <{if $payment['wxservicepayapi']['open']==1}> checked <{/if}> /> 启用
+                              </label>
+                      </div>
+                </div>
+              </div>
+
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+              <button type="submit" class="btn btn-primary">保存</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  <!-- 银联商务扫码-微信(子商户版) Modal -->
+  <div class="modal fade" id="umspay" tabindex="-1" role="dialog" aria-labelledby="umspay">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myModalLabel">银联商务扫码-微信(子商户版)</h4>
+        </div>
+        <form  action="<{url action=topshop_ctl_shop_payment@savePayment}>" method="post" class="form-horizontal" data-validate-onsuccess="ajaxSubmit" id="form_delivery" role="form">
+          <div class="modal-body">
+
+            <div class="form-group">
+              <label class="col-sm-4 control-label" >子商户号(Mch_Id)：</label>
+              <div class="col-sm-6">
+                    <input type="text" name="payment[umspay][sub_mchid]" class="form-control" value="<{$payment['umspay']['sub_mchid']}>"/>
+                </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-sm-4 control-label" >终端号（TId）：</label>
+              <div class="col-sm-6">
+                    <input type="text" name="payment[umspay][sub_tid]" class="form-control" value="<{$payment['umspay']['sub_tid']}>"/>
+                </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-sm-4 control-label" >是否启用：</label>
+              <div class="col-sm-6">
+                    <div class="checkbox">
+                            <label>
+                                <input type="checkbox" class="js-switch" name="payment[umspay][open]"  value="1" <{if $payment['umspay']['open']==1}> checked <{/if}> /> 启用
+                            </label>
+                    </div>
+              </div>
+            </div>
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            <button type="submit" class="btn btn-primary">保存</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <!-- 银联商务扫码-支付宝(子商户版) Modal -->
+  <div class="modal fade" id="umsalipay" tabindex="-1" role="dialog" aria-labelledby="umsalipay">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myModalLabel">银联商务扫码-支付宝(子商户版)</h4>
+        </div>
+        <form  action="<{url action=topshop_ctl_shop_payment@savePayment}>" method="post" class="form-horizontal" data-validate-onsuccess="ajaxSubmit" id="form_delivery" role="form">
+          <div class="modal-body">
+
+            <div class="form-group">
+              <label class="col-sm-4 control-label" >子商户号(Mch_Id)：</label>
+              <div class="col-sm-6">
+                    <input type="text" name="payment[umsalipay][sub_mchid]" class="form-control" value="<{$payment['umsalipay']['sub_mchid']}>"/>
+                </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-sm-4 control-label" >终端号（TId）：</label>
+              <div class="col-sm-6">
+                    <input type="text" name="payment[umsalipay][sub_tid]" class="form-control" value="<{$payment['umsalipay']['sub_tid']}>"/>
+                </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-sm-4 control-label" >是否启用：</label>
+              <div class="col-sm-6">
+                    <div class="checkbox">
+                            <label>
+                                <input type="checkbox" class="js-switch" name="payment[umsalipay][open]"  value="1" <{if $payment['umsalipay']['open']==1}> checked <{/if}> /> 启用
+                            </label>
+                    </div>
+              </div>
+            </div>
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            <button type="submit" class="btn btn-primary">保存</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <!-- 银联商务公众号(子商户版) Modal -->
+  <div class="modal fade" id="umspaypub" tabindex="-1" role="dialog" aria-labelledby="umspaypub">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myModalLabel">银联商务公众号(子商户版)</h4>
+        </div>
+        <form  action="<{url action=topshop_ctl_shop_payment@savePayment}>" method="post" class="form-horizontal" data-validate-onsuccess="ajaxSubmit" id="form_delivery" role="form">
+          <div class="modal-body">
+
+            <div class="form-group">
+              <label class="col-sm-4 control-label" >子商户号(Mch_Id)：</label>
+              <div class="col-sm-6">
+                    <input type="text" name="payment[umspaypub][sub_mchid]" class="form-control" value="<{$payment['umspaypub']['sub_mchid']}>"/>
+                </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-sm-4 control-label" >终端号（TId）：</label>
+              <div class="col-sm-6">
+                    <input type="text" name="payment[umspaypub][sub_tid]" class="form-control" value="<{$payment['umspaypub']['sub_tid']}>"/>
+                </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-sm-4 control-label" >是否启用：</label>
+              <div class="col-sm-6">
+                    <div class="checkbox">
+                            <label>
+                                <input type="checkbox" class="js-switch" name="payment[umspaypub][open]"  value="1" <{if $payment['umspaypub']['open']==1}> checked <{/if}> /> 启用
+                            </label>
+                    </div>
+              </div>
+            </div>
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            <button type="submit" class="btn btn-primary">保存</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <!-- PC端银联商务银行卡(子商户版) Modal -->
+  <div class="modal fade" id="upacp" tabindex="-1" role="dialog" aria-labelledby="upacp">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myModalLabel">PC端银联商务银行卡(子商户版)</h4>
+        </div>
+        <form  action="<{url action=topshop_ctl_shop_payment@savePayment}>" method="post" class="form-horizontal" data-validate-onsuccess="ajaxSubmit" id="form_delivery" role="form">
+          <div class="modal-body">
+
+            <div class="form-group">
+              <label class="col-sm-4 control-label" >子商户号(Mch_Id)：</label>
+              <div class="col-sm-6">
+                    <input type="text" name="payment[upacp][sub_mchid]" class="form-control" value="<{$payment['upacp']['sub_mchid']}>"/>
+                </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-sm-4 control-label" >证书密码(PASSWORD)：</label>
+              <div class="col-sm-6">
+                    <input type="text" name="payment[upacp][pfx_pass]" class="form-control" value="<{$payment['upacp']['pfx_pass']}>"/>
+                </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-sm-4 control-label" >证书文件：</label>
+              <div class="col-sm-6">
+                <!-- <span class="logo_name">证书文件</span> -->
+                <div class="file-container" style="display:inline-block;position:relative;overflow: hidden;vertical-align:middle">
+                    <button class="btn btn-success fileinput-button" type="button">上传</button>
+                    <input type="file" accept=".pem,.p12,.pfx,.cer" data-name="upacp_sub_pfx_file" onchange="ajaxUpload(this)" style="position:absolute;top:0;left:0;font-size:34px; opacity:0">
+                </div>
+                <span id="filename">
+                  <{if $payment['upacp']['pfx']}>已上传：<{else}>未上传<{/if}>
+                  <input type="text" class="upacp_sub_pfx_file" style="position:absolute;top:5px;left:130px;vertical-align: middle;border:none;outline:medium;" readonly="true" name="payment[upacp][pfx]" value="<{$payment['upacp']['pfx']}>" />
+                </span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-sm-4 control-label" >是否启用：</label>
+              <div class="col-sm-6">
+                    <div class="checkbox">
+                            <label>
+                                <input type="checkbox" class="js-switch" name="payment[upacp][open]"  value="1" <{if $payment['upacp']['open']==1}> checked <{/if}> /> 启用
+                            </label>
+                    </div>
+              </div>
+            </div>
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            <button type="submit" class="btn btn-primary">保存</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <!-- WAP端银联商务银行卡(子商户版) Modal -->
+  <div class="modal fade" id="wapupacp" tabindex="-1" role="dialog" aria-labelledby="wapupacp">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myModalLabel">WAP端银联商务银行卡(子商户版)</h4>
+        </div>
+        <form  action="<{url action=topshop_ctl_shop_payment@savePayment}>" method="post" class="form-horizontal" data-validate-onsuccess="ajaxSubmit" id="form_delivery" role="form">
+          <div class="modal-body">
+
+            <div class="form-group">
+              <label class="col-sm-4 control-label" >子商户号(Mch_Id)：</label>
+              <div class="col-sm-6">
+                    <input type="text" name="payment[wapupacp][sub_mchid]" class="form-control" value="<{$payment['wapupacp']['sub_mchid']}>"/>
+                </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-sm-4 control-label" >证书密码(PASSWORD)：</label>
+              <div class="col-sm-6">
+                    <input type="text" name="payment[wapupacp][pfx_pass]" class="form-control" value="<{$payment['wapupacp']['pfx_pass']}>"/>
+                </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-sm-4 control-label" >证书文件：</label>
+              <div class="col-sm-6">
+                  <div class="file-container" style="display:inline-block;position:relative;overflow: hidden;vertical-align:middle">
+                      <button class="btn btn-success fileinput-button" type="button">上传</button>
+                      <input type="file" accept=".pem,.p12,.pfx,.cer" data-name="wapupacp_sub_pfx_file" onchange="ajaxUpload(this)" style="position:absolute;top:0;left:0;font-size:34px; opacity:0">
+                  </div>
+                  <span id="filename">
+                    <{if $payment['wapupacp']['pfx']}>已上传：<{else}>未上传<{/if}>
+                    <input type="text" class="wapupacp_sub_pfx_file" style="position:absolute;top:5px;left:130px;vertical-align: middle;border:none;outline:medium;" readonly="true" name="payment[wapupacp][pfx]" value="<{$payment['wapupacp']['pfx']}>" />
+                  </span>
+
+                        <!-- <input type="file" accept=".pem,.p12,.pfx,.cer" data-name="wapupacp_sub_pfx_file" class="btn btn-default" onchange="ajaxUpload(this)"/>
+
+                        <input type="text" readonly="true" name="payment[wapupacp][pfx]" value="<{$payment['wapupacp']['pfx']}>" /> -->
+
+                        <!-- <span class="logo_name">证书文件</span> -->
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-sm-4 control-label" >是否启用：</label>
+              <div class="col-sm-6">
+                    <div class="checkbox">
+                            <label>
+                                <input type="checkbox" class="js-switch" name="payment[wapupacp][open]"  value="1" <{if $payment['wapupacp']['open']==1}> checked <{/if}> /> 启用
+                            </label>
+                    </div>
+              </div>
+            </div>
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            <button type="submit" class="btn btn-primary">保存</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <!-- PC端原生支付宝扫码 Modal -->
+  <div class="modal fade" id="alipayservice" tabindex="-1" role="dialog" aria-labelledby="alipayservice">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myModalLabel">PC端原生支付宝扫码</h4>
+        </div>
+        <form  action="<{url action=topshop_ctl_shop_payment@savePayment}>" method="post" class="form-horizontal" data-validate-onsuccess="ajaxSubmit" id="form_delivery" role="form">
+          <div class="modal-body">
+            <!-- <input type="hidden" class='seller-id' name="seller_id" value=""> -->
+            <div class="form-group">
+              <label class="col-sm-4 control-label" >子商户号(Mch_Id)：</label>
+              <div class="col-sm-6">
+                    <input type="text" name="payment[alipayservice][sub_mchid]" class="form-control" value="<{$payment['alipayservice']['sub_mchid']}>"/>
+                </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-sm-4 control-label" >是否启用：</label>
+              <div class="col-sm-6">
+                    <div class="checkbox">
+                            <label>
+                                <input type="checkbox" class="js-switch" name="payment[alipayservice][open]"  value="1" <{if $payment['alipayservice']['open']==1}> checked <{/if}> /> 启用
+                            </label>
+                    </div>
+              </div>
+            </div>
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            <button type="submit" class="btn btn-primary">保存</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <!-- 微信H5支付(子商户版) Modal -->
+  <div class="modal fade" id="wxserviceh5pay" tabindex="-1" role="dialog" aria-labelledby="wxserviceh5pay">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myModalLabel">微信H5支付(子商户版)</h4>
+        </div>
+        <form  action="<{url action=topshop_ctl_shop_payment@savePayment}>" method="post" class="form-horizontal" data-validate-onsuccess="ajaxSubmit" id="form_delivery" role="form">
+          <div class="modal-body">
+            <!-- <input type="hidden" class='seller-id' name="seller_id" value=""> -->
+            <div class="form-group">
+              <label class="col-sm-4 control-label" >子商户号(Mch_Id)：</label>
+              <div class="col-sm-6">
+                    <input type="text" name="payment[wxserviceh5pay][sub_mchid]" class="form-control" value="<{$payment['wxserviceh5pay']['sub_mchid']}>"/>
+                </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-sm-4 control-label" >是否启用：</label>
+              <div class="col-sm-6">
+                    <div class="checkbox">
+                            <label>
+                                <input type="checkbox" class="js-switch" name="payment[wxserviceh5pay][open]"  value="1" <{if $payment['wxserviceh5pay']['open']==1}> checked <{/if}> /> 启用
+                            </label>
+                    </div>
+              </div>
+            </div>
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            <button type="submit" class="btn btn-primary">保存</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <!-- 微信小程序支付(子商户版) Modal -->
+  <div class="modal fade" id="miniservicepayapi" tabindex="-1" role="dialog" aria-labelledby="miniservicepayapi">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">微信小程序支付(子商户版)</h4>
+            </div>
+            <form  action="<{url action=topshop_ctl_shop_payment@savePayment}>" method="post" class="form-horizontal" data-validate-onsuccess="ajaxSubmit" id="form_delivery" role="form">
+                <div class="modal-body">
+                    <!-- <input type="hidden" class='seller-id' name="seller_id" value=""> -->
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label" >子商户号(Mch_Id)：</label>
+                        <div class="col-sm-6">
+                            <input type="text" name="payment[miniservicepayapi][sub_mchid]" class="form-control" value="<{$payment['miniservicepayapi']['sub_mchid']}>"/>
+                        </div>
+                    </div>
+                    <div class="form-group" >
+                        <label class="col-sm-4 control-label" >AppId（AppId）：</label>
+                        <div class="col-sm-6">
+                            <input type="text" name="payment[miniservicepayapi][sub_appid]" class="form-control" value="<{$payment['miniservicepayapi']['sub_appid']}>"/>
+                        </div>
+                    </div>
+                    <div class="form-group" >
+                        <label class="col-sm-4 control-label" >App密码（AppSecrect）：</label>
+                        <div class="col-sm-6">
+                            <input type="text" name="payment[miniservicepayapi][sub_appsecret]" class="form-control" value="<{$payment['miniservicepayapi']['sub_appsecret']}>"/>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label" >是否启用：</label>
+                        <div class="col-sm-6">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" class="js-switch" name="payment[miniservicepayapi][open]"  value="1" <{if $payment['miniservicepayapi']['open']==1}> checked <{/if}> /> 启用
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="submit" class="btn btn-primary">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+  <script>
+
+    $('#modifyAccountShopPwd').on('show.bs.modal', function (event) {
+      var seller_id = $(event.relatedTarget).attr("data-seller-id");
+      $(".seller-id").val(seller_id);
+    })
+
+    function ajaxSubmit (e) {
+      var form = e.target;
+      e.preventDefault();
+
+      $.post(form.action, $(form).serialize(), function(rs) {
+        if(rs.error) {
+          $('#messagebox').message(rs.message);
+          return;
+        }
+        if(rs.success) {
+          $('#messagebox').message(rs.message, 'success');
+        }
+        if(rs.redirect) {
+          location.href = rs.redirect;
+        }
+      });
+    }
+    // 上传证书
+    function ajaxUpload(file){
+      var data = new FormData();
+      // data.append('a_id', model.a_id);
+      data.append('name', $(file).data('name'));
+      // data.append('sort', model.sort);
+      if($(file)[0].files[0] == 'undefined') {
+        return;
+      }
+      data.append('file', $(file)[0].files[0]);
+      $.ajax({
+          url: '<{url action=topshop_ctl_shop_payment@upload_cert}>',
+          type: 'POST',
+          data: data,
+          dataType: 'json',
+          processData: false, // 告诉jQuery不要去处理发送的数据
+          contentType: false, // 告诉jQuery不要去设置Content-Type请求头
+          success: function (returndata) {
+                      // alert(returndata);
+                      if(returndata.error){
+                          alert(returndata.message);
+                          return;
+                      }
+                      $('.' + $(file).data('name')).val(returndata.filename);
+                  },
+          error: function (returndata) {
+              alert('上传失败！');
+          }
+      });
+    };
+  </script>
+<{/if}>

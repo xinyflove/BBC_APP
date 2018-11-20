@@ -1,0 +1,107 @@
+<script type="text/javascript" src="https://res.wx.qq.com/open/js/jweixin-1.3.2.js"></script>
+<style type="text/css">
+  .index-content-countdown{background-color: #fff;padding-bottom: .6rem;padding-top: 1.6rem;}
+  .index-content-countdown p{font-size: 18px;color: #000;text-align: center;}
+  .index-content-countdown span{display: block;text-align: center;}
+  .index-content-countdown span font{display: inline-block;padding: 2px 3px;background-color: #000;color: #fff;}
+  header .icon-func{color:#666666 !important;}
+  .bbc-radio input[type="radio"]:checked:before{color:#f0ad4e;content:"\e442";}
+  .index-content-countdown .offline_icon{width: 60px;height: 60px;border-radius: 50%;background-color: #f3f1e9;display: block;margin: 0 18px;
+    float: left;}
+  .index-content-countdown img{ width: 50px;height: 50px;margin-top: 5px;margin-left: 5px;}
+  .index-content-countdown p{text-align: left;}
+</style>
+<header class="page-header">
+  <a href="<{url action=topwap_ctl_member_offlinepay@payInfo}>"><i class="header-left icon-func bbc-icon bbc-icon-back"></i></a>
+  <div class="header-title">
+    <{$title}>
+  </div>
+</header>
+<section class="container">
+  <form class="form-container no-header-padded" action="<{url action=topwap_ctl_offlinepay_pay@dopay}>" method="post" id="dopay_form" data-async="false" target="_self">
+    <input type="hidden" name="payment[payment_id]" value="<{$payment_id}>">
+    <input type="hidden" name="payment[money]" value="<{$money}>">
+    <input type="hidden" name="payment[tids]" value="<{$tids}>">
+        <!--<section class="index-content-countdown">-->
+          <!--<p >支付剩余时间</p>-->
+          <!--<span class="countdown-view" data-time="<{$surplus_time}>"></span>-->
+        <!--</section>-->
+        <section class="index-content-countdown">
+          <div class="offline_icon">
+            <img src="<{resource app='topwap' path='/images/icon_other.png'}>">
+          </div>
+            <p style="color: #f0ad4e;"><{$money|cur}></p>
+            <p ><{$company_name}></p>
+        </section>
+        <section class="pay-style" style="margin-top: 5px;">
+          <{if $payments}>
+          <div class="shopex-input-group" style="background-color: #efeff4;">
+            <{foreach from=$payments item=item name="payments" }>
+              <div class="shopex-input-row shopex-radio bbc-radio payment-name" style="background-color: #ffffff;margin-bottom: 5px;">
+                <label><i class="bbc-icon <{$payment_icon[$item.app_id]}>"></i>
+                  <{$item.app_display_name}>
+                </label>
+                <input data-password="<{$hasDepositPassword.result}>" type="radio" name="payment[pay_app_id]" value="<{$item.app_id}>" <{if $item.def_payment}> checked <{/if}>>
+              </div>
+              <input type="hidden"  name="payment[open_bank]" value="<{$item.open_bank}>">
+              <input type="hidden"  name="payment[msg_type]" value="<{$item.msg_type}>">
+              <{/foreach}>
+          </div>
+          <{else}>
+          <div class="content-padded font-gray-60 content-center theme-border-top">暂无可用支付方式</div>
+          <{/if}>
+        </section>
+        <section class="shopex-content-padded form-op-section">
+          <input type="hidden" id="deposit_password" name="deposit_password" value="">
+          <input type="hidden" name="has_deposit_password" value="<{$hasDepositPassword.result}>">
+          <button id="payment_btn" type="button" class="shopex-btn shopex-btn-block shopex-btn-yellow">确认支付</button>
+        </section>
+  </form>
+</section>
+
+<script>
+function pushHistory() {
+    var state = {
+        title: "title",
+        url: "#"
+    };
+    if(state.url){
+        window.history.pushState(state, "title", "#");
+    }
+}
+
+$(function() {
+
+    pushHistory();
+    var bool=false;
+    setTimeout(function(){
+        bool=true;
+    },1500);
+    window.addEventListener("popstate", function(e) {
+        if(bool)
+        {
+            location.href = "<{$back_url}>";
+        }
+        pushHistory();
+
+    }, false);
+});
+
+$('#payment_btn').on('tap',function(){
+  var paymentType = $('input[name="payment[pay_app_id]"]:checked').val();
+  if($('input[name="payment[pay_app_id]"]:checked').length <= 0)
+  {
+    shopex.alert('请选择支付方式！');
+    return;
+   }
+    var postUrl = $('#dopay_form').attr('action');
+    postUrl = postUrl + '?' + $('#dopay_form').serialize();
+    $('#dopay_form').attr('action', postUrl);
+    $('#dopay_form').submit();
+});
+  countdown($(".countdown-view"),{
+      'start': $('.countdown-view').attr('data-time'),
+      'secondOnly': false,
+      'callback': null
+  });
+</script>

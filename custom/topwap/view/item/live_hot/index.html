@@ -1,0 +1,153 @@
+<{css app="topwap" src="see_more.css"}>
+<style>
+    .shopex-off-canvas-wrap{position:absolute;}
+    .shopex-scroll-wrapper{margin-top:-57px;}
+    .livesale-body-list ul li{
+        height: 290px;
+        width: 100%;
+        background: #fff;
+        margin-bottom: 10px;
+        position: relative;
+    }
+    .livesale-body-list ul li .info{
+        position: absolute;
+        bottom: 60px;
+        left: 12px;
+        font-size: 14px;
+    }
+    .livesale-body-list ul li .price{
+        position: absolute;
+        bottom: 35px;
+        left: 12px;
+        color: #ffaa2c;
+        font-size: 16px;
+    }
+    .live-hot-list .tags-group{
+        position: absolute;
+        left: 12px;
+        bottom: 4px;
+    }
+    .tag-a{
+        display: inline-block;
+        height: 1.2rem;
+        font-size: 0.7rem;
+        padding: 0 0.4rem;
+        border-radius: 0.2rem;
+        margin-right: 0;
+        line-height: 1.2rem;
+        background: #fff;
+        color: #ffac20;
+        border: 1px solid #ffac20;
+    }
+</style>
+<div class="shopex-bar shopex-bar-nav">
+    <header class="home-header">
+        <i class="icon-func bbc-icon bbc-icon-back shopex-action-back"></i>
+        <div class="header-title"><{t}>直播热售<{/t}></div>
+    </header>
+</div>
+<div id="offCanvasWrapper" class="shopex-off-canvas-wrap shopex-draggable shopex-slide-in live-hot-list">
+    <div class="livesale-body">
+        <div id="pullrefresh" class="shopex-scroll-wrapper bbc-pullrefresh-top">
+            <{if $items}>
+            <div class="livesale-body-list shopex-scroll">
+                <div class="livesale-body-banner">
+                    <div class="swiper-container">
+                        <div class="swiper-wrapper">
+                            <{foreach from=$pic  item=pic}>
+                                <div class="swiper-slide">
+                                    <img src="<{$pic.link}>"/>
+                                </div>
+                            <{/foreach}>
+                        </div>
+                        <!-- Add Pagination -->
+                        <div class="swiper-pagination"></div>
+                    </div>
+                </div>
+                <ul class="goods-list">
+                    <{include file="topwap/item/live_hot/item_list.html" }>
+                </ul>
+            </div>
+            <{else}>
+            <{include file="topwap/empty/item.html" }>
+            <{/if}>
+        </div>
+    </div>
+</div>
+<!--add_2017/11/10_by_wanghaichao_start  分享的-->
+<{include file="topwap/index.html"}>
+<!--add_2017/11/10_by_wanghaichao_end-->
+<script type="text/javascript">
+    var swiper = new Swiper('.swiper-container', {
+        pagination: '.swiper-pagination',
+        paginationClickable: true
+    });
+
+    $(function() {
+        var count = 1;
+        var totalpage = "<{$pagers.total}>";
+        var listwrapper = $('.goods-list');
+        shopex.init({
+            swipeBack: false,
+            pullRefresh: {
+                container: '#pullrefresh',
+//                down: {
+//                    callback: pulldownRefresh
+//                },
+                up: {
+                    contentrefresh: '正在加载...',
+                    callback: pullupRefresh
+                }
+            },
+            swipe: true,
+            dobluetap: true,
+            longtap: true
+        });
+
+        var activeFilter = JSON.parse('<{$activeFilter|json_encode}>');
+
+        /**
+         * 下拉刷新具体业务实现
+         */
+        function pulldownRefresh() {
+            setTimeout(function () {
+                count = 1;
+                var param = {
+                    'pages': count
+                }
+                var reqdata = $.extend(activeFilter, param);
+                getList(reqdata, function (rs) {
+                    listwrapper.html(rs);
+                    shopex('#pullrefresh').pullRefresh().endPulldownToRefresh()
+                });
+            }, 1000);
+        }
+
+        /**
+         * 上拉加载具体业务实现
+         */
+        function pullupRefresh() {
+            setTimeout(function () {
+                shopex('#pullrefresh').pullRefresh().endPullupToRefresh((++count > totalpage)); //参数为true代表没有更多数据了。
+                var param = {
+                    'pages': count
+                }
+                var reqdata = $.extend(activeFilter, param);
+                getList(reqdata, function (rs) {
+                    listwrapper.append(rs);
+                });
+            }, 1000);
+        }
+
+        function getList(param, callback) {
+            $.ajax({
+                url: '<{url action=topwap_ctl_item_livehot@ajaxGetItemList}>',
+                type: 'get',
+                dataType: 'html',
+                data: param,
+                success: callback
+            })
+        }
+    })
+</script>
+

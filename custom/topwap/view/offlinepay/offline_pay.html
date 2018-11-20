@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <{css src="offline_pay.css" app="topwap"}>
+</head>
+
+<body>
+<!-- payOrder-top -->
+<div class="payOrder-top">
+    <img src="<{resource app='topwap' path='/images/milier/index/milier_index_share.png'}>" alt="" class="shopex-pull-left">
+    <span>米粒儿支付</span>
+</div>
+<!-- payOrder-title -->
+<div class="payOrder-title ns-payorder-title">
+    <h2 class="ns-h2">付款给</h2>
+    <h3 class="ns-h3">
+        <{$agent_name}>
+        <{if $activity_count}>
+        <a href="<{url action=topwap_ctl_offlinepay_pay@getOfflinePayCoupon agent_shop_id=$agent_shop_id}>">
+            <span class="ns-coupon">领券</span>
+        </a>
+        <{/if}>
+    </h3>
+    <{if $all_hold_info}>
+    <p class="ns-discounts_text">
+        <img src="<{resource app='topwap' path='/images/icon_notice.png'}>" alt="" class="ns-discounts_icon">
+        <{$all_hold_info.activity_name}>
+    </p>
+    <{/if}>
+</div>
+<!-- payOrder-money -->
+<form action="<{url action=topwap_ctl_offlinepay_pay@createOfflineTrade}>" name="offline_pay" method="post" >
+    <div class="payOrder-money">
+        <span class="payOrder-money-span">输入消费金额</span>
+        <div class="payOrder-money-content">
+            <span class="shopex-pull-left">￥</span>
+            <input type="number" placeholder="询问服务员后输入" id="original_pay_price" name="original_pay_price">
+        </div>
+    </div>
+    <!-- payOrder-select -->
+    <div class="ns-payOrder-dropdownChoice">
+        <{if $voucher_list}>
+        <div class="ns-available-coupon" id="availableCoupon">
+            <span class="shopex-pull-left">选择可用的优惠券</span>
+            <span class="shopex-pull-right"><{$voucher_count}>张优惠券</span>
+            <img src="<{resource app='topwap' path='/images/icon_rightarrow.png'}>" alt="" id="ns-rightArrow">
+        </div>
+        <{else}>
+        <div class="ns-available-coupon">
+            <span class="shopex-pull-left">无可用优惠券</span>
+        </div>
+        <{/if}>
+        <div class="ns-coupon-changeBox" id="ChangeBox">
+            <{foreach from=$voucher_list item=item key=key}>
+            <{if $item.agent_type == 'CASH_VOCHER'}>
+            <div class="ns-changeBox_bg" value="<{$key}>" id="option_<{$key}>" voucher_type="<{$item.agent_type}>" voucher_ids="<{$item.voucher_ids}>">
+                <h3 class="shopex-ellipsis-2"><{$item.show_title}></h3><span class="limit_hint"><{$item.max_desc}></span>
+                <p>有效期至<{$item.end_time|cdate:'FDATE'}></p><span class="limit_hint"><{$item.min_desc}></span>
+            </div>
+            <{else}>
+            <{foreach from=$item.list  item=good key=g_key}>
+            <div class="ns-changeBox_bg" value="<{$key}>_<{$good.vocher_id}>" id="option_<{$key}>_<{$good.vocher_id}>" voucher_type="<{$good.agent_type}>" voucher_ids="<{$good.vocher_id}>">
+                <h3 class="shopex-ellipsis-2"><{$good.title}></h3><span class="limit_hint"><{$item.max_desc}></span>
+                <p>有效期至<{$good.end_time|cdate:'FDATE'}></p><span class="limit_hint"><{$item.min_desc}></span>
+            </div>
+            <{/foreach}>
+            <{/if}>
+            <{/foreach}>
+        </div>
+        <div class="payOrder-item-box">
+            <{foreach from=$voucher_list item=list key=v_key}>
+            <{if $list.agent_type == 'CASH_VOCHER'}>
+            <div class="payOrder-item" id="voucher_list_<{$v_key}>">
+                <dl>
+                    <dt class="shopex-pull-left">
+                        <img src="<{$list.item_image|storager}>" alt="">
+                    </dt>
+                    <dd>
+                        <p><{$list.title}></p>
+                        <p><{$list.min_desc}></p>
+                        <p><{$list.max_desc}></p>
+                        <p>限用数量：<{if $list.agent_use_limit}><{$list.agent_use_limit}>张<{else}>无限制<{/if}></p>
+                        <{if $list.agent_type === 'CASH_VOCHER'}>
+                            <div class="shopex-numbox payOrder-numcontent">
+                                <!-- "-"按钮，点击可减小当前数值 -->
+                                <button class="shopex-btn shopex-numbox-btn-minus" type="button">-</button>
+                                <input class="shopex-numbox-input" type="number" min="0" max="<{$list.agent_use_limit}>" own_count="<{$list.count}>" voucher_ids="<{$list.voucher_ids}>" />
+                                <!-- "+"按钮，点击可增大当前数值 -->
+                                <button class="shopex-btn shopex-numbox-btn-plus" type="button">+</button>
+                            </div>
+                        <{/if}>
+                    </dd>
+                </dl>
+            </div>
+            <{else}>
+            <{foreach from=$list.list  item=good key=g_key}>
+            <div class="payOrder-item" id="voucher_list_<{$v_key}>_<{$good.vocher_id}>">
+                <dl>
+                    <dt class="shopex-pull-left">
+                        <img src="<{$good.item_image|storager}>" alt="">
+                    </dt>
+                    <dd>
+                        <p><{$good.title}></p>
+                        <p><{$good.min_desc}></p>
+                        <p><{$good.max_desc}></p>
+                        <p>限用数量：<{if $good.agent_use_limit}><{$good.agent_use_limit}>张<{else}>无限制<{/if}></p>
+                    </dd>
+                </dl>
+            </div>
+            <{/foreach}>
+            <{/if}>
+            <{/foreach}>
+        </div>
+        <div class="ns-graybox"></div>
+    </div>
+    <div class="payOrder-lis-line">
+        <h3 class="shopex-pull-left">优惠金额</h3>
+        <span class="shopex-pull-right" id="discount_amount">￥0.00</span>
+        <input type="hidden" name="discount_amount" value="0.00">
+    </div>
+    <div class="payOrder-lis-line offline-pay-money">
+        <h3 class="shopex-pull-left">支付金额</h3>
+        <span class="shopex-pull-right" id="need_pay_price">￥0.00</span>
+        <input type="hidden" name="need_pay_price" value="0.00">
+    </div>
+    <input type="hidden" name="voucher_ids" id="voucher_ids" value=""/>
+    <input type="hidden" name="use_count" id="use_count" value="0"/>
+    <input type="hidden" name="company_name" id="company_name" value="<{$agent_name}>"/>
+    <input type="hidden" name="agent_shop_id" id="agent_shop_id" value="<{$agent_shop_id}>"/>
+    <input type="hidden" name="shop_id" id="shop_id" value="<{$shop_id}>"/>
+    <input type="hidden" name="active_id" id="active_id" value="<{$all_hold_info['agent_activity_id']}>"/>
+    <!-- payOrder-btns -->
+    <div class="ns-payOrder-notice">
+        提示：使用优惠券后，将取消全场优惠
+    </div>
+    <div class="payOrder-btns">
+        <input type="button" value="取消" class="payOrder-btns-cancel shopex-pull-left">
+        <input type="submit" value="确认" class="payOrder-btns-ok">
+    </div>
+</form>
+<script>
+    var voucher_ids = [];
+    var use_count = 0;
+    var timer = false;
+
+    $('#original_pay_price').on("focus",function(){
+        $(window).scrollTop(200);
+    });
+    // 点击下拉箭头进行内容的展示和隐藏
+    $("#availableCoupon").on('click', function() {
+        $(this).find("img").toggleClass("ns-active");
+        $("#ChangeBox").toggleClass("cc-active");
+    });
+    $(".ns-changeBox_bg").on('click',function() {
+        var item_id = $(this).attr('value');
+        var original_pay_price = $('#original_pay_price').val();
+        voucher_ids = [];
+        use_count = 0;
+        $('.shopex-numbox-input').val(0);
+        if($(this).hasClass("changeBox_bg_active"))
+        {
+            $(this).removeClass("changeBox_bg_active");
+            $("#ChangeBox").toggleClass("cc-active");
+            $("#availableCoupon").find("img").toggleClass("ns-active");
+            $('.payOrder-item').hide();
+            $(".payOrder-item-box").css("margin-bottom",'');
+            var active_id = parseInt($('#active_id').val());
+            if(active_id && !use_count && voucher_ids.length == 0)
+            {
+                ajaxGetAllHoldPrice(original_pay_price, active_id);
+                return false;
+            }
+        }
+        else
+        {
+            $(this).addClass("changeBox_bg_active").siblings().removeClass("changeBox_bg_active");
+            $("#ChangeBox").toggleClass("cc-active");
+            $("#availableCoupon").find("img").toggleClass("ns-active");
+            $('#voucher_list_'+item_id).show().siblings().hide();
+//            $(".payOrder-item-box").css("margin-bottom", "50px");
+
+            if($('#option_'+item_id).attr('voucher_type') !== 'CASH_VOCHER')
+            {
+                var voucher_ids_string = $('#option_'+item_id).attr('voucher_ids');
+                voucher_ids = voucher_ids_string.split(',');
+                use_count = 1;
+            }
+        }
+
+        ajaxGetNeedPayPrice(use_count, original_pay_price, voucher_ids);
+    });
+
+    $('#original_pay_price').bind('input propertychange',function()
+    {
+        if(timer)
+        {
+            clearTimeout(timer);
+        }
+        var _this = this;
+        timer = setTimeout(function(){
+            var original_pay_price = $(_this).val();
+            if(!original_pay_price)
+            {
+                $(_this).val('');
+                return false;
+            }
+            var lastPoinPosition = original_pay_price.lastIndexOf('.');
+            if(lastPoinPosition>0  && original_pay_price.toString().split('.')[1].length > 2)
+            {
+                original_pay_price = parseFloat(original_pay_price.substring(0, lastPoinPosition+3));
+                $(_this).val(original_pay_price);
+            }
+            var active_id = parseInt($('#active_id').val());
+            if(active_id && !use_count && voucher_ids.length == 0)
+            {
+                ajaxGetAllHoldPrice(original_pay_price, active_id);
+                return false;
+            }
+            ajaxGetNeedPayPrice(use_count, original_pay_price, voucher_ids);
+        },500);
+    });
+
+    $('.shopex-numbox-input').change(function()
+    {
+        voucher_ids = [];
+        use_count = 0;
+        use_count = $(this).val();
+        var voucher_ids_string = $(this).attr('voucher_ids');
+        var voucher_ids_array = voucher_ids_string.split(',');
+        var original_pay_price = $('#original_pay_price').val();
+        if(use_count <= 0)
+        {
+            $(this).val(0);
+            use_count = 0;
+        }
+        if(use_count > parseInt($(this).attr('own_count')))
+        {
+            shopex.toast('您目前只有'+ $(this).attr('own_count') + '张');
+            $(this).val($(this).attr('own_count'));
+            use_count = parseInt($(this).attr('own_count'));
+        }
+        if(use_count > parseInt($(this).attr('max')))
+        {
+            shopex.toast('最多使用'+ $(this).attr('max') + '张');
+            $(this).val($(this).attr('max'));
+            use_count = parseInt($(this).attr('max'));
+        }
+        voucher_ids = voucher_ids_array.slice(0,use_count);
+        var active_id = parseInt($('#active_id').val());
+        if(active_id && !use_count && voucher_ids.length == 0)
+        {
+            ajaxGetAllHoldPrice(original_pay_price, active_id);
+            return false;
+        }
+        ajaxGetNeedPayPrice(use_count, original_pay_price, voucher_ids)
+    });
+
+    function ajaxGetAllHoldPrice(original_pay_price, active_id)
+    {
+        $('#use_count').val(use_count);
+        $('#voucher_ids').val(voucher_ids);
+        if(!original_pay_price || !active_id)
+        {
+            return false;
+        }
+        $.ajax({
+            type: "POST",
+            url: "<{url action=topwap_ctl_offlinepay_pay@ajaxGetAllHoldPrice}>",
+            dataType: "json",
+            data:{'original_pay_price':original_pay_price, 'active_id':active_id},
+            success:function(rs){
+                if(rs){
+                    if(rs.success)
+                    {
+                        $('#need_pay_price').html('￥'+parseFloat(rs.data.need_pay_price));
+                        $('#discount_amount').html('￥'+parseFloat(rs.data.discount_amount));
+                        $('#need_pay_price').next('input').val(rs.data.need_pay_price);
+                        $('#discount_amount').next('input').val(rs.data.discount_amount);
+                    }
+                    else
+                    {
+                        shopex.alert(rs.message);
+                    }
+                }
+            }
+        });
+    }
+
+    function ajaxGetNeedPayPrice(use_count, original_pay_price, voucher_ids)
+    {
+        $('#use_count').val(use_count);
+        $('#voucher_ids').val(voucher_ids);
+        if(!original_pay_price)
+        {
+//            shopex.alert('消费金额不能为0');
+            return false;
+        }
+        if(!voucher_ids || !use_count)
+        {
+            $('#need_pay_price').html('￥'+parseFloat(original_pay_price));
+            $('#need_pay_price').next('input').val(original_pay_price);
+            $('#discount_amount').html('￥0.00');
+            $('#discount_amount').next('input').val(0);
+            return false;
+        }
+        $.ajax({
+            type: "POST",
+            url: "<{url action=topwap_ctl_offlinepay_pay@ajaxGetNeedPayPrice}>",
+            dataType: "json",
+            data:{'use_count': use_count,'original_pay_price':original_pay_price, 'voucher_ids':voucher_ids},
+            success:function(rs){
+                if(rs){
+                    if(rs.success)
+                    {
+                        $('#need_pay_price').html('￥'+parseFloat(rs.data.need_pay_price));
+                        $('#discount_amount').html('￥'+parseFloat(rs.data.discount_amount));
+                        $('#need_pay_price').next('input').val(rs.data.need_pay_price);
+                        $('#discount_amount').next('input').val(rs.data.discount_amount);
+                    }
+                    else
+                    {
+                        shopex.alert(rs.message);
+                    }
+                }
+            }
+        });
+    }
+
+    $('.payOrder-btns-cancel').click(function(){
+        var from_voucher = "<{$from_voucher}>";
+        if(from_voucher == 1)
+        {
+            history.back();
+        }
+        else
+        {
+            shopex.alert('请在浏览器里关闭窗口');
+        }
+    })
+</script>
+<script>
+    $("title").text("米粒儿");
+</script>
+</body>
+</html>

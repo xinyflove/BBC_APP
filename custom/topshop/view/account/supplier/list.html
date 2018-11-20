@@ -1,0 +1,199 @@
+<aside class="control-sidebar control-sidebar-light" style="height: 100%;">
+  <!-- Create the tabs -->
+  <ul class="nav nav-tabs nav-justified control-sidebar-tabs">
+    <li class=""><a href="#">筛选</a></li>
+    <li class=""><a href="#" data-toggle="control-sidebar"><i class="glyphicon glyphicon-remove"></i></a></li>
+  </ul>
+  <!-- Tab panes -->
+  <div class="tab-content">
+    <form action="<{url action=topshop_ctl_account_supplier@index}>" method="get" id="search-form">
+      <input type="hidden" value="<{$supplier_id}>" name="supplier_id" id="supplier_id">
+      <div class="box-body">
+        <!-- text input -->
+        <div class="form-group">
+          <label>供应商名称：</label>
+          <input type="text" id="supplier_name" name="supplier_name" class="form-control" value="<{$supplier_name|escape:"html"}>" placeholder="请输入 ...">
+        </div>
+        <div class="form-group">
+          <label>公司名称：</label>
+          <input type="text" id="company_name" name="company_name" class="form-control" value="<{$company_name|escape:"html"}>" placeholder="请输入 ...">
+        </div>
+        <div class="form-group">
+          <label>电话：</label>
+          <input type="text" id="mobile" name="mobile" class="form-control" value="<{$mobile|escape:"html"}>" placeholder="请输入 ...">
+        </div>
+      </div>
+      <!-- /.box-body -->
+      <div class="box-footer">
+        <button id="reset-form" type="button" class="btn btn-default">重置</button>
+        <button type="submit" class="btn btn-info pull-right">搜索</button>
+      </div>
+      <!-- /.box-footer -->
+    </form>
+  </div>
+</aside>
+
+
+<div class="box box-primary">
+  <div class="mailbox-controls with-border">
+    <a href="<{url action=topshop_ctl_account_supplier@chkExistingSupplier}>" class="btn btn-default btn-sm text-light-blue"><i class="fa fa-plus-square-o"></i> 添加供应商</a>
+    <div class="btn-group" style="float:right;">
+      <button data-toggle="control-sidebar" class="btn btn-default">
+        <div class="text-light-blue">
+          <i class="fa fa-search"></i>
+          搜索
+        </div>
+      </button>
+    </div>
+  </div>
+  <li class="pull-right header">
+
+  </li>
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>登录账号</th>
+        <th>供应商名称</th>
+        <th>公司名称</th>
+        <th>电话</th>
+        <th>邮箱</th>
+        <th>审核状态</th>
+        <th>操作</th>
+      </tr>
+    </thead>
+    <{if $data}>
+    <tbody>
+      <{foreach from=$data item=item}>
+		<tr>
+		  <td><{$item.login_account}></td>
+          <td><{$item.supplier_name}></td>
+          <td><{$item.company_name}></td>
+		  <td><{$item.mobile}></td>
+		  <td><{$item.email}></td>
+          <td>
+            <{if $item.is_audit=='PASS'}>
+            已通过
+            <{elseif $item.is_audit=='REJECTED'}>
+            已拒绝
+            <{elseif $item.is_audit=='PENDING'}>
+            未审核
+            <{/if}>
+          </td>
+		  <td>
+			<a href="<{url action=topshop_ctl_account_supplier@edit supplier_id=$item.supplier_id}>">编辑</a>&nbsp;
+            <{if $item.is_audit == 'PASS'}>
+			<{if $item.agent_sign ==1 && $shopInfo.offline == "on"}>
+			<a href="<{url action=topshop_ctl_account_supplier@agentShopList supplier_id=$item.supplier_id}>">线下店管理</a>&nbsp;
+			<{/if}>
+            <{/if}>
+			<a href="#" data-supplier-id="<{$item.supplier_id}>" data-toggle="modal" data-target="#modifyAccountShopPwd">修改密码</a>&nbsp;&nbsp;
+			<a href="<{url action=topshop_ctl_account_supplier@delete supplier_id=$item.supplier_id}>" class="remove text-danger" >删除</a>
+		  </td>
+		</tr>
+      <{/foreach}>
+    </tbody>
+    <{else}>
+    <tbody id="none_cat">
+      <tr class="none-information">
+        <td colspan="6"><p class="help-block text-center">暂无数据</p></td>
+      </tr>
+    </tbody>
+    <{/if}>
+  </table>
+  <div class="text-right">
+    <{pagers data=$pagers}>
+    <{if $count > 0}>
+    <span class="page-number">共&nbsp;<em class="text-aqua"><{$count}></em>&nbsp;条记录</span>
+    <{/if}>
+  </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="modifyAccountShopPwd" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">修改子帐号密码</h4>
+      </div>
+      <form  action="<{url action=topshop_ctl_account_supplier@modifyPwd}>" method="post" class="form-horizontal" data-validate-onsuccess="ajaxSubmit" id="form_delivery" role="form">
+        <div class="modal-body">
+          <input type="hidden" class='supplier-id' name="supplier_id" value="">
+          <div class="form-group">
+            <label class="col-sm-4 control-label" >重置密码：</label>
+            <div class="col-sm-6">
+              <input type="password" name="login_password" class="form-control" placeholder="6-20个字符,不能纯数字,字母" required maxlength="20" data-validate-length-min="6" pattern="^(?!\d+$|[a-zA-Z]+$)[^\u4e00-\u9fa5]*$" data-validate-regexp-message="不能纯数字、字母">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-4 control-label" >确认密码：</label>
+            <div class="col-sm-6">
+              <input  name='psw_confirm' type='password' placeholder="确认重置密码" maxlength="20" required data-validate-equalto-field="login_password" data-validate-equalto-message="两次密码输入不一致" class="form-control" >
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+          <button type="submit" class="btn btn-primary">保存</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+
+  $('#reset-form').click(function () {
+      $('#supplier_name').val('');
+      $('#company_name').val('');
+      $('#mobile').val('');
+  });
+
+  $('#modifyAccountShopPwd').on('show.bs.modal', function (event) {
+    var supplier_id = $(event.relatedTarget).attr("data-supplier-id");
+    $(".supplier-id").val(supplier_id);
+  })
+
+function ajaxSubmit (e) {
+  var form = e.target;
+  e.preventDefault();
+  $.post(form.action, $(form).serialize(), function(rs) {
+    if(rs.error) {
+      $('#messagebox').message(rs.message);
+      return;
+    }
+    if(rs.success) {
+      $('#messagebox').message(rs.message, 'success');
+    }
+    if(rs.redirect) {
+      location.href = rs.redirect;
+    }
+  });
+}
+
+
+$('.remove').on('click', function(e) {
+  var _this = $(this);
+  e.preventDefault();
+  Modal.confirm({msg: "确定删除该账号吗？"}).on(function(e) {
+    if(e==true) {
+      var href = _this.attr('href');
+      $.get(href, function(rs) {
+        if(rs.error) {
+          $('#messagebox').message(rs.message);
+          return;
+        }else{
+          $('#messagebox').message(rs.message, 'success');
+        }
+
+        if(rs.redirect) {
+          setTimeout(function(){location.href=rs.redirect;}, 800);
+        }
+
+      });
+    }
+  });
+});
+
+</script>

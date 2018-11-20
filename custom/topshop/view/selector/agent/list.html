@@ -1,0 +1,21 @@
+<ul class="clearfix">
+<{if !$itemsList}>
+  <p class="help-block text-center">暂无数据</p>
+<{else}>
+  <{foreach from=$itemsList item=data}>
+  <li data-id="<{$data.agent_shop_id}>" data-src="<{$data.agent_img_src}>" title="<{$data.name}>" >
+    <div class="thumb">
+        <{if $data.agent_img_src}>
+        <img src="<{$data.agent_img_src|storager:'m'}>">
+        <{else}>
+        <img src="<{$image_default_id.M.default_image}>">
+        <{/if}>
+    </div>
+    <div class="title"><{$data.name}></div>
+  </li>
+  <{/foreach}>
+<{/if}>
+</ul>
+<div>
+  <{pagers data=$pagers}>
+</div>

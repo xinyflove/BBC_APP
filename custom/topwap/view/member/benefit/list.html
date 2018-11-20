@@ -1,0 +1,96 @@
+<{css app="topwap" src="benefit/lib/ago/style.min.css"}>
+<{css app="topwap" src="benefit/lib/ago/newtv.min.css"}>
+<{css app="topwap" src="benefit/lib/public.min.css"}>
+<{css app="topwap" src="benefit/css/member.min.css"}>
+
+<div class="m-lm-member">
+    <div class="member-cash goal">
+         <div class="member-avator">
+              <div class="avator">
+                    <!-- <{img app="topwap" src="benefit/avator.png"}> -->
+                    <img src="<{$user_info.shop_grade.grade_logo|storager}>">
+                </div>
+              <div class="info">
+                  <p><{$shop_data.shop_name}></p>
+                  <span><{$user_info.shop_grade.grade_name}></span>
+              </div>
+         </div>
+         <div class="points">经验值<{$user_info.shop_grade.experience}></div>
+         <div class="leval">
+             <{img app="topwap" src="benefit/huangjin.png" class="huangjin"}>
+             <div class="process"></div>
+             <{img app="topwap" src="benefit/baijin.png" class="baijin"}>
+         </div>
+         <div class="tips">还差<i><{$user_info.shop_grade.higher_grade.experience - $user_info.shop_grade.experience}></i>经验值升级至<i><{$user_info.shop_grade.higher_grade.grade_name}></i></div>
+    </div>
+    <div class="member-legal">
+        <h1>会员专享权益</h1>
+        <ul class="legal">
+            <li>
+                <div class="icon">
+                    <{img app="topwap" src="benefit/1.png"}>
+                </div>
+                <div class="text">
+                    <p>生日特权</p>
+                    <span><{$interests.birthday_privilege_desc}></span>
+                </div>
+            </li>
+            <li>
+                <div class="icon">
+                    <{img app="topwap" src="benefit/2.png"}>
+                </div>
+                <div class="text">
+                    <p>会员日</p>
+                    <span><{$interests.member_day_desc}></span>
+                </div>
+            </li>
+            <li>
+                <div class="icon">
+                    <{img app="topwap" src="benefit/3.png"}>
+                </div>
+                <div class="text">
+                    <p>每月专享礼包</p>
+                    <span><{$interests.vip_package_desc}></span>
+                </div>
+                <div class="btn btn-get-coupon" data-shop_id="<{$user_info.shop_grade.shop_id}>">立即领取</div>
+            </li>
+        </ul>
+    </div>
+    <div class="rules">
+        <a href="<{url action=topwap_ctl_member_benefit@benefitRule}>">查看规则</a></div>
+</div>
+<script>
+$('body').on('tap','.btn-get-coupon',function(e){
+    // shopex.alert('内容', '标题', '确认',  function() {
+        //   location.href = rs.redirect;
+    // });
+    // return;
+    // shopex.toast('haha', function() {
+    //     //   location.href = rs.redirect;
+    //     });
+    var that = $(this);
+    var shop_id = that.data('shop_id');
+    $.post('<{url action=topwap_ctl_member_benefit@ajaxGetBenefit}>', {'shop_id': shop_id}, function(rs){
+        if(rs.error) {
+            shopex.alert(rs.message);
+            if(rs.redirect) {
+                setTimeout(function() {
+                    window.location.href = rs.redirect;
+                }, 1500);
+            }
+        }else{
+            var message = '';
+            $.each( rs.message, function(i, n){
+                $.each( n, function(k, v){
+                    console.log(v);
+                    message = message + v + '\n';
+                });
+            });
+            shopex.alert(message, '领取成功', '我知道了',  function() {
+            //   location.href = rs.redirect;
+            });
+        }
+
+    });
+});
+</script>

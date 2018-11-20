@@ -1,0 +1,139 @@
+<{include file="topwap/lease/header.html"}>
+<style>
+.m-fmcc-selectSubmit-btn a{width: 100%;height: 100%;margin: 0.45rem auto 0 auto;background-color: #2dbc90;border-radius: 0.08rem;border: 0;outline: none;-webkit-appearance: none;font-size: 0.34rem;color: #fff;margin-left: 0.3rem;text-align: center;line-height: 1rem}
+#commonfoot{display:none}
+#commonfoots{display: none;}
+</style>
+<body>
+
+    <form method="get" id="login-form">
+        <!--m-fmcc-selectSubmit start-->
+        <section class="m-fmcc-selectSubmit">
+            <ul>
+                <li class="retainbb">
+                    <input id="name" type="text" name="name" placeholder="姓名">
+                </li>
+                <li class="retainbb">
+                    <input id="number" type="text" name="number" placeholder="身份证号">
+                </li>
+                <!--<li class="retainbb">
+                    <input type="text" placeholder="车牌号(鲁)">
+                </li>-->
+                <li class="retainbb">
+                    <input id="check_vcode" type="text" placeholder="验证码">
+                    <div id="vcode">VTB3</div>
+                </li>
+            </ul>
+        </section>
+        <!--end m-fmcc-selectSubmit-->
+        <!--m-fmcc-selectSubmit-btn start-->
+        <section class="m-fmcc-selectSubmit-btn">
+            <a id="submit" href="JavaScript:;">查询</a>
+        </section>
+        <!--end m-fmcc-selectSubmit-btn-->
+    </form>
+    <script>
+		$('#submit').click(function(){
+			var message;
+			var check_code=$('#check_vcode').val();
+			var vcode=$('#vcode').html();
+			if($('#check_vcode').val()==''){
+				message="验证码不能为空";
+				$.toast(message,'text');
+				return false;
+			}
+			if(check_code!=vcode.toLowerCase()){
+				console.log($('#check_vcode').val()+"====================="+$('#vcode').html());
+				message="验证码不正确";
+				$.toast(message,'text');
+				return false;
+			}
+			if($('#name').val()==''){
+				message="姓名没有填写";
+				$.toast(message,'text');
+				return false;
+			}
+			
+			if($('#number').val()==''){
+				message="身份证号没有填写";
+				$.toast(message,'text');
+				return false;
+			}
+			//if(message!='' && message!='已经完成'){
+				//$.toast(message,'text');
+				//return false;
+			//}
+			var name=$('#name').val();
+			var number=$('#number').val();
+			$.ajax({
+				url:"<{url action=topwap_ctl_lease_login@createUser}>",
+				type:'post',
+				data:{name:name,number:number},
+				dataType:'json',
+				success:function(e){
+					if(e.success){
+						$.toast(e.message,'text');
+						window.location.href=e.redirect;
+					}else{
+						$.toast('查询失败','text');
+					}
+				}
+			});
+		});
+
+
+
+
+	//$('title').html('汽车租购信息查询登录页');
+        // 减去边框操作
+        ~(function () {
+            var $oLi = $(".m-fmcc-selectSubmit ul li").last();
+            $oLi.removeClass("retainbb");
+        })();
+        // 验证码处理
+        ~(function () {
+            var $vcode = $("#vcode");
+            // 设置随机数获取的范围
+            var codeStr = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            // 处理随机数的方法
+            function getRandom(n, m) {
+                n = Number(n);
+                m = Number(m);
+                if (isNaN(n) || isNaN(m)) {
+                    return Math.random();
+                }
+                if (n > m) {
+                    var temp = n;
+                    n = m;
+                    m = temp;
+                }
+                return Math.round(Math.random() * (m - n) + n);
+            }
+            // 获取验证码
+            function getCode() {
+                var str = "";
+                for (var i = 0; i < 4; i++) {
+                    var ran = getRandom(0, 61);
+                    str += codeStr.charAt(ran);
+                }
+                $vcode.html(str);
+            }
+            // 执行getCode方法
+            getCode();
+            // 点击vcode盒子触发方法
+            $vcode.on('click', function () {
+                getCode();
+            });
+
+        })();
+
+
+
+   
+
+
+
+
+    </script>
+</body>
+</html>

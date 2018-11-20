@@ -1,0 +1,26 @@
+<{foreach from=$item_info item=item}>
+<div class="ns-gc-ticket bg_orange">
+    <dl class="clearfix">
+        <dt class="shopex-pull-left">
+            <img src="<{$item.image_default_id}>" alt="">
+        </dt>
+        <dd class="shopex-pull-left dd-2">
+            <h3 class="shopex-ellipsis-2"><{$item.title}></h3>
+            <!--<span><{$item.show_title}></span>-->
+            <span class="show_pay_title"><{$item.min_desc}></span>
+            <span class="show_pay_title"><{$item.max_desc}></span>
+            <!--<p style="font-size:12px;color: #ffac20;"><{$item.show_pay_title}></p>-->
+        </dd>
+        <dd class="shopex-pull-right dd-3">
+            <{if !$item.real_store}>
+            <img src="<{resource app='topwap' path='/images/img_circle_g.png'}>" alt="" class="dd-3-img">
+            <{else}>
+            <a href="<{url action=topwap_ctl_item_detail@index item_id=$item.item_id}>">
+                <img src="<{resource app='topwap' path='/images/img_circle_q.png'}>" alt="" class="dd-3-img">
+                <p class="dd-3-p"><{$item.re_percent}></p>
+            </a>
+            <{/if}>
+        </dd>
+    </dl>
+</div>
+<{/foreach}>

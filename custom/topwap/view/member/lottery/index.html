@@ -1,0 +1,118 @@
+<style>
+    .shopex-pull-bottom-tips {
+      text-align: center;
+      background-color: #efeff4;
+      font-size: 15px;
+      line-height: 40px;
+      color: #777;
+    }
+
+    .shopex-pull-top-canvas {
+      overflow: hidden;
+      background-color: #fafafa;
+      border-radius: 40px;
+      box-shadow: 0 4px 10px #bbb;
+      width: 40px;
+      height: 40px;
+      margin: 0 auto;
+    }
+</style>
+    <header class="page-header">
+      <a href="<{$lottery_link}>"><i class="header-left icon-func bbc-icon bbc-icon-back shopex-left"></i></a>
+      <div class="header-title">
+        <{$title}>
+      </div>
+      <a href="#minimenu" class="header-right icon-func bbc-icon bbc-icon-more-vertical btn-mini-menu"></a>
+    </header>
+    <section class="container">
+      <div id="slider" class="shopex-slider shopex-fullscreen bbc-pullrefresh-top bbc-tab-bar">
+        <div class="shopex-slider-group">
+          <div id="item1mobile" class="shopex-slider-item shopex-control-content shopex-active">
+
+            <div id="refreshContainer" class="shopex-content shopex-scroll-wrapper">
+              <div class="shopex-scroll" data-current-page="0">
+                <ul class="shopex-table-view shopex-table-view-chevron lottery-list">
+
+                </ul>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- 右上角menu菜单 -->
+    <div id="minimenu" class="bbc-mini-menu shopex-popover">
+    <div class="shopex-popover-arrow"></div>
+    </div>
+    <{script src="shopex.pullToRefresh.js" app=topwap}>
+    <{script src="shopex.pullToRefresh.material.js" app=topwap}>
+    <script>
+    // shopex.init();
+    shopex.init({
+      pullRefresh : {
+        container:"#refreshContainer",//下拉刷新容器标识，querySelector能定位的css选择器均可，比如：id、.class等
+        down : {
+          height:50,//可选,默认50.触发下拉刷新拖动距离,
+          auto: true,//可选,默认false.首次加载自动下拉刷新一次
+          contentdown : "下拉可以刷新",//可选，在下拉可刷新状态时，下拉刷新控件上显示的标题内容
+          contentover : "释放立即刷新",//可选，在释放可刷新状态时，下拉刷新控件上显示的标题内容
+          contentrefresh : "正在刷新...",//可选，正在刷新状态时，下拉刷新控件上显示的标题内容
+          callback : function() {  //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+                var self = this;
+
+                $('.lottery-list').parent().attr('data-current-page', 0);
+                setTimeout(function() {
+                  getList(false, self);
+                }, 1000);
+              }
+        },
+        up : {
+          height:50,//可选.默认50.触发上拉加载拖动距离
+          // auto:true,//可选,默认false.自动上拉加载一次
+          contentrefresh : "正在加载...",//可选，正在加载状态时，上拉加载控件上显示的标题内容
+          contentnomore:'没有更多数据了',//可选，请求完毕若没有更多数据时显示的提醒内容；
+          callback : function() {  //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+                var self = this;
+                setTimeout(function() {
+                  getList(true, self);
+                }, 1000);
+              }
+        }
+      }
+    });
+    function getList(isPullup = true , pullRefresh) {
+            var el = '.lottery-list';
+            var num = parseInt($(el).parent().attr('data-current-page')) + 1;
+
+            if(!isPullup){
+              num = 1;
+              pullRefresh.refresh(true);
+            }
+
+            $.ajax({
+              url: '<{url action=topwap_ctl_member_lottery@ajaxGetprizeList}>',
+              type: 'get',
+              dataType: 'json',
+              data: {
+                'page_no': num
+              },
+              success: function(rs) {
+                var totalpage = rs.pagers.total;
+
+                if(num > parseInt(totalpage)){
+                  pullRefresh.endPullupToRefresh(true);
+                }else{
+                  if (isPullup) {
+                    $(el).append(rs.html);
+                  } else {
+                    pullRefresh.endPulldownToRefresh();
+                    $(el).html(rs.html);
+                  }
+                  pullRefresh.endPullupToRefresh(false);
+                  $(el).parent().attr('data-current-page', num);
+                }
+              }
+            });
+         };
+    </script>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="/app/topmaker/statics/lib/common/flexible.js"></script>
+    <link rel="stylesheet" href="/app/topmaker/statics/lib/layui/css/layui.css">
+    <link rel="stylesheet" href="/app/topmaker/statics/lib/common/public.css">
+    <link rel="stylesheet" href="/app/topmaker/statics/css/styleSheet.css">
+    <title><{$topmaker.contentTitle}></title>
+</head>
+
+<body>
+<div class="m-hacker-login">
+    <div class="login-img">
+        <img src="/app/topmaker/statics/images/login/logo.png" alt="">
+    </div>
+    <div class="login-into">
+        <div class="login-into-name">
+            <input type="text" name="login_account" placeholder="请输入手机号">
+            <p>手机号</p>
+        </div>
+        <div class="login-into-word">
+            <input type="password" name="login_password" placeholder="请输入密码">
+            <img src="/app/topmaker/statics/images/login/eyes1.png" alt="" class="eyes1">
+            <img src="/app/topmaker/statics/images/login/eyes2.png" alt="" class="eyes2">
+            <p>密码</p>
+        </div>
+    </div>
+    <div class="login-btn">
+        <p>确认</p>
+    </div>
+</div>
+
+<script src="/app/topmaker/statics/lib/jquery/jquery-3.2.1.js"></script>
+<script src="/app/topmaker/statics/lib/layui/layui.all.js"></script>
+<script>
+    $(function () {
+        //提示
+        $('.login-into-name input').on('focus', function () {
+            $('.login-into-name p').animate({
+                "bottom": "0.86rem"
+            }, 200);
+            $(this).attr('placeholder', '');
+        });
+        $('.login-into-name input').on('blur', function () {
+            if ($(this).val() == '') {
+                $('.login-into-name p').animate({
+                    "bottom": "0.25rem"
+                }, 200);
+                $(this).attr('placeholder', '请输入手机号');
+            }
+        });
+        $('.login-into-word input').on('focus', function () {
+            $('.login-into-word p').animate({
+                "bottom": "0.86rem"
+            }, 200);
+            $(this).attr('placeholder', '');
+        });
+        $('.login-into-word input').on('blur', function () {
+            if ($(this).val() == '') {
+                $('.login-into-word p').animate({
+                    "bottom": "0.25rem"
+                }, 200);
+                $(this).attr('placeholder', '请输入密码');
+            }
+        });
+        //密码显示
+        var pun = true
+        $('.login-into-word img').on('click',function(){
+            if(pun){
+                $('.eyes1').hide();
+                $('.eyes2').show();
+                $('.login-into-word input').attr('type','text');
+                pun =!pun;
+            }else{
+                $('.eyes1').show();
+                $('.eyes2').hide();
+                $('.login-into-word input').attr('type','password');
+                pun =!pun;
+            }
+        })
+    })
+</script>
+<script>
+    var third = eval('('+'<{$thirdData}>'+')');
+    $('.login-btn').on('click', function () {
+        var login_account = $('[name="login_account"]').val();
+        if(login_account == '') {
+            layer.msg('请输入手机号');
+            return false;
+        }
+        var login_password = $('[name="login_password"]').val();
+        if(login_password == '') {
+            layer.msg('请输入密码');
+            return false;
+        }
+        var data = {login_account:login_account, login_password:login_password};
+        if(third != '') data.third = third;
+
+        var index = layer.load(1, {
+            shade: [0.1,'#fff'] //0.1透明度的白色背景
+        });
+
+        $.ajax({
+            type: "POST",
+            url: '<{url action=topmaker_ctl_passport@login}>',
+            data: data,
+            dataType: "json",
+            success: function(rs) {
+                layer.close(index);
+                layer.msg(rs.message);
+                if(rs.success) {
+                    setTimeout(function(){window.location.href=rs.redirect;}, 500);
+                }
+            },
+            error: function() {
+                layer.close(index);
+                layer.msg('登录失败，请重新登录');
+            }
+        });
+    });
+</script>
+</body>
+
+</html>

@@ -1,0 +1,87 @@
+<{if $voucherinfo}>
+<table class="table table-striped ">
+    <thead>
+    <tr>
+        <th>优惠券编号</th>
+        <th>优惠券名称</th>
+        <th>优惠券类型</th>
+        <th>优惠规则</th>
+        <th>有效时间</th>
+        <th>使用数量</th>
+        <th>使用时间</th>
+    </tr>
+    </thead>
+    <tbody>
+    <{foreach from=$voucherinfo item=item}>
+    <tr>
+        <td><{$item.vocher_id}></td>
+        <td><{$iteminfo.title}></td>
+        <td>
+            <{if $item.agent_type == 'CASH_VOCHER'}>代金券
+            <{elseif $item.agent_type == 'DISCOUNT'}>满折券
+            <{elseif $item.agent_type == 'REDUCE'}>满减券
+            <{/if}>
+        </td>
+        <td>
+            <{if $item.agent_type == 'CASH_VOCHER'}>
+            抵扣<{$item.deduct_price|cur}>元<{if $item.agent_use_limit}>,限用<{$item.agent_use_limit}>张<{/if}>
+            <{elseif $item.agent_type == 'DISCOUNT'}>
+                <{if $item.min_consum == 0}>
+            无消费限制<{$item.deduct_price|cur}>折优惠<{if $item.max_deduct_price}>,优惠金额最大为<{$item.max_deduct_price|cur}><{/if}>
+            <{else}>
+            满<{$item.min_consu|cur}>元享受<{$item.deduct_price|cur}>折优惠<{if $item.max_deduct_price|cur}>,优惠金额最大为<{$item.max_deduct_price|cur}><{/if}>
+            <{/if}>
+            <{elseif $item.agent_type == 'REDUCE'}>
+                <{if $item.min_consum == 0}>
+                无消费限制优惠<{$item.deduct_price|cur}>元<{if $item.max_deduct_price|cur}>,优惠金额最大为<{$item.max_deduct_price|cur}><{/if}>
+                <{else}>
+                满<{$item.min_consu|cur}>元享受<{$item.deduct_price|cur}>元优惠<{if $item.max_deduct_price|cur}>,优惠金额最大为<{$item.max_deduct_price|cur}><{/if}>
+                <{/if}>
+            <{/if}>
+        </td>
+        <td>
+            <{$item.start_time|cdate}> ~ <{$item.end_time|cdate}>
+        </td>
+        <td>1</td>
+        <td><{$item.write_time|cdate}></td>
+    </tr>
+    <{/foreach}>
+    </tbody>
+</table>
+<{elseif $activityinfo}>
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>活动编号</th>
+        <th>活动名称</th>
+        <th>活动类型</th>
+        <th>优惠方式</th>
+        <th>有效时间</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td><{$activityinfo.agent_activity_id}></td>
+        <td><{$activityinfo.activity_name}></td>
+        <td>
+            <{if $activityinfo.activity_type == 'ALL_DISCOUNT'}>全场优惠
+            <{else}>
+            其他
+            <{/if}>
+        </td>
+        <td>
+            <{if $activityinfo.activity_type == 'ALL_DISCOUNT'}>
+            <{$activityinfo.activity_value}>折
+            <{else}>
+            其他
+            <{/if}>
+        </td>
+        <td>
+            <{$activityinfo.start_time|cdate}> ~ <{$activityinfo.end_time|cdate}>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<{else}>
+<div class="text-center">无优惠信息</div>
+<{/if}>

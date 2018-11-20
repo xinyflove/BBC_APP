@@ -1,0 +1,295 @@
+<!--add_20170926_by_xinyufeng_start 商品详情样式-->
+<{css app="topwap" src="swiper.min.css"}>
+<{css app="topwap" src="newtv.css"}>
+<{css app="topwap" src="details.css"}>
+<{css app="topwap" src="iconfont_news.css"}>
+<{css app="topwap" src="details_custom.css"}>
+<!--add_20170926_by_xinyufeng_end-->
+<style>
+mark{color:#ffac20}
+.box-item-flex1 {float:left;margin-left: 50px;margin-top: 10px;}
+.shopex-btn-warning, .shopex-btn-yellow{background-color:#fff;color:#ffac20}
+.activity-bar {height:5rem;color:#fff;}
+</style>
+<section class="shopex-content m-tvplazaNew-details-content" style="padding-top:0;margin-bottom:5.5rem">
+  <{include file="topwap/activity/pic_01.html"}>	
+  <!--m-tvplazaNew-details-collect start-->
+  <section class="m-tvplazaNew-details-collect shopex-clearfix">
+    <section class="details-collect-left shopex-pull-left">
+      <{if $activityDetail}>
+      <span class="tag"><{$activityDetail.activity_info.activity_tag}></span>
+      <{/if}>
+      <h3 class="shopex-ellipsis"><{$item.title}></h3>
+      <div>
+        <span><{if $activityDetail.activity_price}><{$activityDetail.activity_price|cur}> <{else}><{$item.price|cur}><{/if}></span>
+        <{if $item.show_mkt_price}>
+        <del><{$item.mkt_price|cur}></del>
+        <{/if}>
+        <!--add_20171010_by_fanglongji_start-->
+        <font class="sales">剩余<{$item.realStore}>件</font>
+        <!--add_20171010_by_fanglongji_end-->
+        <font class="sales">销量<{$item.paid_quantity|default:'0'}>件</font>
+      </div>
+    </section>
+    <section class="details-collect-right shopex-pull-left">
+      <!-- <span class="shopex-icon shopex-icon-star shopex-block"></span> -->
+      <!--<span class="iconfont icon-shoucang2"></span>
+      <p>收藏</p>-->
+      <{if $nologin!=1}>
+      <div class="op-item goods-op-faverite">
+        <a href="<{url action=topwap_ctl_passport@goLogin next_page=$next_page}>">
+          <i class="iconfont icon-shoucang2"></i>
+          <p>收藏</p>
+        </a>
+      </div>
+      <{else}>
+      <div class="op-item goods-op-faverite <{if $collect.itemCollect}>goods-faverited<{/if}>">
+        <a href="javascript:void(0);" data-ajax-data="item_id=<{$item.item_id}>" data-ajax-type="post" class="collect-goods">
+          <i class="iconfont icon-shoucang2 <{if $collect.itemCollect}>icon-shoucang2-faverite<{/if}>"></i>
+          <p><{if $collect.itemCollect}>已收藏<{else}>收藏<{/if}></p>
+        </a>
+      </div>
+      <{/if}>
+    </section>
+  </section>
+  <!--end m-tvplazaNew-details-collect-->
+
+   <section class="m-tvplazaNew-details-ratings" style="padding:16px">
+	  <p>		
+          <{if $group_item.activity_info.end_time < $env.now }>
+          <div class="activity-closed">已结束</div>
+          <{elseif $group_item.activity_info.start_time > $env.now}>
+			<i class="bbc-icon bbc-icon-countdown"></i> 距离活动开始还有：
+          <mark class="countdown-view" data-time="<{$group_item.activity_info.start_time}>"></mark>
+          <{elseif $env.now < $group_item.activity_info.end_time && $group_item.activity_info.start_time < $env.now}>
+          <i class="bbc-icon bbc-icon-countdown"></i> 距离活动结束还有：
+          <mark class="countdown-view" data-time="<{$group_item.activity_info.end_time}>"></mark>
+          <{/if}>
+		<!--距离活动结束还有：<mark class="countdown-view" data-time="1609344000"></mark>-->
+	  </p>
+   </section>
+  <!--m-tvplazaNew-details-ratings start-->
+    <section class="m-tvplazaNew-details-ratings" id="Ratings">
+      <ul class="shopex-table-view">
+        <li class="shopex-table-view-cell">
+          <a href="<{url action=topwap_ctl_item_detail@getItemRate item_id=$item.item_id}>" class="shopex-navigate-right">宝贝评价<span class="shopex-pull-right">查看全部</span></a>
+        </li>
+      </ul>
+      <{if $rate_data.rate}>
+      <{foreach from=$rate_data.rate item=rate_info}>
+      <section class="details-ratings-content">
+        <dl class="shopex-clearfix">
+          <dt class="shopex-pull-left">
+            <img src="<{$rate_data.userInfo[$rate_info.user_id].headimg_url|storager}>"/>
+          </dt>
+          <dd class="shopex-pull-left">
+            <h3><{if $rate_data.userInfo[$rate_info.user_id].name}><{$rate_data.userInfo[$rate_info.user_id].name}><{else}>匿名<{/if}></h3>
+          </dd>
+        </dl>
+        <span><{$rate_info.created_time|cdate:'FDATE'}></span>
+        <p class="shopex-ellipsis-2"><{$rate_info.content}></p>
+        <div class="shopex-clearfix">
+          <{if $rate_info.rate_pic}>
+          <{foreach from=$rate_info.rate_pic item=rate_pic}>
+          <img src="<{$rate_pic|storager:t}>" data-preview-src="<{$rate_pic|storager:l}>" alt="" />
+          <{/foreach}>
+          <{/if}>
+        </div>
+      </section>
+      <{/foreach}>
+      <{/if}>
+    </section>
+    <!--end m-tvplazaNew-details-ratings-->
+
+    <section class="section-white m-tvplazaNew-details-store-2">
+      <div class="shop-goods-brand shopex-content-padded">
+        <div class="shop-goods-brand-logo"><img src="<{$item.shop_id|shoplogo}>" alt=""></div>
+        <div class="shop-goods-brand-name"><{$item.shop_id|shopname}></div>
+      </div>
+      <div class="action-group shopex-content-padded">
+        <!--
+          <div class="action-item">
+            <{imwap type='itemInfo' shop_id=$item.shop_id class="shopex-btn shopex-btn-warning shopex-btn-outlined shopex-btn-block bbc-btn-outlined" content='<div href="#" ><i class="bbc-icon bbc-icon-communication font-red fontm"></i> 联系客服</div>' note='商品：'.$item.item_id}>
+          </div>
+          -->
+        <{if $nologin!=1}>
+        <div class="action-item"><a href="<{url action=topwap_ctl_passport@goLogin next_page=$next_page}>" class="shopex-btn shopex-btn-outlined shopex-btn-block bbc-btn-outlined"><i class="bbc-icon bbc-icon-star-empty"></i> &nbsp;收藏店铺</a></div>
+        <{else}>
+        <div class="action-item"><a href="javascript:void(0);" data-ajax-data="shop_id=<{$item.shop_id}>"  data-ajax-type="post" class="shopex-btn shopex-btn-outlined shopex-btn-block collect-shop bbc-btn-outlined"><i class="bbc-icon <{if $collect.shopCollect}>bbc-icon-faverite<{else}>bbc-icon-star-empty<{/if}>"></i> &nbsp;<span><{if $collect.shopCollect}>已
+收藏<{else}>收藏店铺<{/if}></span></a></div>
+        <{/if}>
+
+        <div class="action-item"><a href="<{url action=topwap_ctl_shop@index shop_id=$item.shop_id}>" class="shopex-btn shopex-btn-warning shopex-btn-outlined shopex-btn-block bbc-btn-outlined"><i class="bbc-icon bbc-icon-store-empty"></i> 进入店铺</a></div>
+      </div>
+    </section>
+
+    <!-- m-tvplazaNew-details-figureSpynav start -->
+    <div>
+      <section class="m-tvplazaNew-details-figureSpynav shopex-clearfix" id="Details">
+        <ul>
+          <li class="active"><a href="javascript:;" class="shopex-block">图文详情</a></li>
+          <li><a href="javascript:;" class="shopex-block">详细参数</a></li>
+          <li><a href="javascript:;" class="shopex-block">备注信息</a></li>
+        </ul>
+      </section>
+    </div>
+
+    <!-- end m-tvplazaNew-details-figureSpynav-->
+    <section class="details-figure-content" style="display: block;">
+      <!--m-tvplazaNew-details-goodsParams start-->
+      <section class="m-tvplazaNew-details-goodsParams">
+        <div class="details-goodsParams-imgBox">
+          <{$item.wap_desc|stripslashes}>
+        </div>
+      </section>
+      <!--end m-tvplazaNew-details-goodsParams-->
+    </section>
+
+    <section class="details-figure-content">
+      <!--m-tvplazaNew-details-goodsParams start-->
+      <section class="m-tvplazaNew-details-goodsParams">
+        <ul class="shopex-table-view">
+          <li class="shopex-table-view-cell">基本参数</li>
+          <{foreach from=$item.natureProps item=props}>
+          <li class="shopex-table-view-cell">
+            <span><{$props.prop_name}>：</span>
+            <span><{$props.prop_value}></span>
+          </li>
+          <{/foreach}>
+        </ul>
+        <{if $item.params}>
+        <{foreach from=$item.params item=row key=key}>
+        <ul class="shopex-table-view">
+          <li class="shopex-table-view-cell"><{$key}></li>
+          <{foreach from=$row item=params key=paramsName}>
+          <li class="shopex-table-view-cell">
+            <span><{$paramsName}>：</span>
+            <span><{$params}></span>
+          </li>
+          <{/foreach}>
+        </ul>
+        <{/foreach}>
+        <{/if}>
+      </section>
+    </section>
+    <section class="details-figure-content parameter-table-view">
+      <section class="parameter-table-view-group">
+        <div class="parameter-table-view-cell">
+          <div class="parameter-table-view-key">品牌：</div>
+          <div class="parameter-table-view-val"><{$itemPic.brand_id|brandname}></div>
+        </div><div class="parameter-table-view-cell">
+        <div class="parameter-table-view-key">货号：</div>
+        <div class="parameter-table-view-val"><{$itemPic.bn}></div>
+      </div>
+        <div class="parameter-table-view-cell">
+          <div class="parameter-table-view-key">备注：</div>
+          <div class="parameter-table-view-val"><{$itemPic.sub_title}></div>
+        </div>
+      </section>
+    </section>
+
+
+</section>
+
+  <{if $group_item.activity_info.release_time < $env.now && $env.now < $group_item.activity_info.start_time && $group_item.activity_info.remind_enabled}>
+  <section class="activity-bar activity-ready" style="background-color:#ffac20;position:fixed;bottom:0;right:0;left:0">
+    <div class="box-item-flex1 content-center">
+      <div class="fontM"><i class="bbc-icon bbc-icon-tag"></i><{$group_item.activity_price|cur}></div>
+      <div class="fontS">建议价格：<span class="original-price"><{$group_item.price|cur}></span></div>
+    </div>
+    <div class="box-item-flex1 content-center">
+      <a class="shopex-btn shopex-btn-warning" href="<{url action=topwap_ctl_activity@remind activity_id=$group_item.activity_info.activity_id}>">开售提醒</a><br>
+      <span class="fonts">每人限购<{$group_item.activity_info.buy_limit}>件</span>
+    </div>
+  </section>
+  <{elseif $group_item.activity_info.start_time <= $env.now && $env.now < $group_item.activity_info.end_time }>
+  <section class="activity-bar activity-start" style="background-color:#ffac20;position:fixed;bottom:0;right:0;left:0">
+    <div class="box-item-flex1 content-center">
+      <div class="fontM"><i class="bbc-icon bbc-icon-tag"></i><{$group_item.activity_price|cur}></div>
+      <div class="fontS">建议价格：<span class="original-price"><{$group_item.price|cur}></span></div>
+    </div>
+    <div class="box-item-flex1 content-center" style="margin-left:90px;">
+      <a class="shopex-btn  shopex-btn-warning" href="<{url action=topwap_ctl_item_detail@index item_id=$group_item.item_id}>">马上抢</a><br>
+      <span class="fonts">每人限购<{$group_item.activity_info.buy_limit}>件</span>
+    </div>
+  </section>
+  <{elseif $group_item.activity_info.end_time <= $env.now }>
+  <section class="action-bar-mini">
+    <div class="op-item op-btn goods-op-cart"><a href="<{url action=topwap_ctl_activity@detail id=$group_item.activity_id}>">去活动首页</a></div>
+    <div class="op-item op-btn goods-op-buy"><a href="<{url action=topwap_ctl_item_detail@index item_id=$group_item.item_id}>">原价购买</a></div>
+  </section>
+  <{/if}>
+  <{script src="swiper-3.4.2.min.js" app="topwap"}>
+<{script src="lazy.js" app="topwap"}>
+<script>
+  //$(function(){
+   // wxShare({
+   //   title: $('.goods-detail-title h1').html(),
+   //   desc: '',
+   //   link: location.href,
+  //    imgUrl: $('.shopex-slider-item').eq(1).find('img').attr('src')
+   // });
+ // });
+  // 商品sku
+  var specSkuJson = '<{$item.spec.specSku|json_encode}>';
+  var specSku = JSON.parse(specSkuJson);
+  var spec_select = $('#skuScroll');
+  var spec_size = spec_select.find('li').length;
+  var shopId = "<{$item.shop_id}>";
+  var item_id= "<{$item.item_id}>";
+  var keys = new Array(spec_size);
+  // 货币符号和精度
+  var sig = '<{$cur_symbol.sign}>';
+  var decimals = '<{$cur_symbol.decimals}>';
+
+  var gallery = shopex("#slider");
+  shopex.init({
+    swipeBack:false //启用右滑关闭功能
+  });
+  shopex('body').on('shown', '.shopex-popover', function(e) {
+    //console.log('shown', e.detail.id);//detail为当前popover元素
+  });
+  shopex('body').on('hidden', '.shopex-popover', function(e) {
+    //console.log('hidden', e.detail.id);//detail为当前popover元素
+  });
+
+  shopex('#skuScroll').scroll();
+
+  $('.btn-modal-close').on('tap',function(){
+    $('.action-fastbuy').removeClass('selected-action');
+    $('.action-addtocart').removeClass('selected-action');
+    $('.action-fastbuy, .action-addtocart').show();
+    shopex('#sku').popover('hide');
+  });
+
+countdown($('.countdown-view'),{
+  'start': $('.countdown-view').attr('data-time')-<{$env.now}>,
+  'secondOnly': false,
+  'callback': null
+});
+
+/*切换图文详情*/ 
+$(".m-tvplazaNew-details-figureSpynav ul li").on('click',function(){
+	var _index=$(this).index();
+	$(this).addClass("active").siblings().removeClass("active");
+	$(".details-figure-content").eq(_index).show().siblings(".details-figure-content").hide();
+});
+
+  //收藏商品
+  $('.collect-goods').on('tap', function(e) {
+    e.preventDefault();
+    var $this = $(this);
+
+    if($this.find('i').hasClass('icon-shoucang2-faverite')) return ;
+
+    $.post('<{url action=topwap_ctl_member_favorite@ajaxAddItemCollect}>', $(this).attr('data-ajax-data'), function(rs) {
+      if(rs.success) {
+        $this.find('i').removeClass('bbc-icon-star-empty').addClass('icon-shoucang2-faverite');
+        $this.find('span').html("已收藏");
+        $this.parent('.goods-op-faverite').addClass('goods-faverited');
+      }else{
+        shopex.alert(rs.message);
+      }
+    });
+  });
+</script>

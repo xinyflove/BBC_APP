@@ -1,0 +1,61 @@
+<{foreach from=$trade_list key=key item=trade}>
+<li>
+	<div class="offline_trade">
+		<h3><{$trade.agent_shop_name}><span class='shopex-pull-right'><font><{$trade.explain}></font></span></h3>
+		<div class="timeMoneySpan shopex-clearfix">
+			<span class="shopex-pull-left">订单号：<{$trade.tid}></span>
+		</div>
+		<{if $trade.cancel_reason}>
+		<div class="timeMoneySpan shopex-clearfix">
+			<span class="shopex-pull-left">关闭原因：<{$trade.cancel_reason}></span>
+		</div>
+		<{/if}>
+		<div class="timeMoneySpan shopex-clearfix">
+			<span class="shopex-pull-left">实付金额：<font>￥<{$trade.payment}></font></span>
+			<span class="shopex-pull-right"><{$trade.pay_time}></span>
+			<img src="<{resource app='topwap' path='/images/icon_rightarrow.png'}>" alt="" id="ns-rightArrow">
+		</div>
+	</div>
+	<div class="payInfo-coupon">
+		<div class="timeMoneySpan">
+			<span>消费金额：￥<{$trade.total_fee}></span>
+		</div>
+		<{if $trade.all_hold_info}>
+		<div class="timeMoneySpan">
+			<span>优惠：<{$trade.all_hold_info.activity_name}></span>
+		</div>
+		<{/if}>
+		<{if $trade.voucher_list}>
+		<div class="timeMoneySpan">
+			<span>优惠券：</span>
+		</div>
+		<a href="<{url action=topwap_ctl_item_detail@index item_id=$trade.voucher_list.item_id}>">
+			<div class="payInfo-coupon-dlList">
+				<dl>
+					<dt class="shopex-pull-left">
+						<img src="<{$trade.voucher_list.item_image|storager}>" alt="">
+					</dt>
+					<dd>
+						<h3><{$trade.voucher_list.title}></h3>
+						<div><span><{$trade.voucher_list.count}>张</span><span class="shopex-pull-right">抵扣金额：￥<{$trade.voucher_fee}></span></div>
+					</dd>
+				</dl>
+			</div>
+		</a>
+		<{/if}>
+	</div>
+	<{if $trade.status == "WAIT_BUYER_PAY" && $trade.cancel_status == "NO_APPLY_CANCEL"}>
+	<div class="m-voucher-bottom shopex-clearfix">
+                    <span class="shopex-pull-left">
+                        <a class="shopex-btn shopex-btn-outlined bbc-btn-outlined bbc-btn-sm shopex-linkto" href="<{url action=topwap_ctl_member_offlinepay@cancel tid=$trade.tid}>"><{t}>取消订单<{/t}></a>
+                    </span>
+		<span class="shopex-pull-right">
+                            <a class="shopex-btn shopex-btn-warning  bbc-btn-sm trade-pay" href="javascript:void(0);" data-href="<{url action=topwap_ctl_offlinepay_pay@createPay}>" data-tid="<{$trade.tid}>"><{t}>去付款<{/t}></a>
+                    </span>
+	</div>
+	<{/if}>
+</li>
+<{/foreach}>
+<script>
+    refresh_tap_tap();
+</script>

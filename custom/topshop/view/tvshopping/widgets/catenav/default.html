@@ -1,0 +1,15 @@
+<!--nav菜单-->
+<div class="m-lm-index-nav">
+	<ul class="nav-list">
+		<{foreach from=$datas['pic'] item=pic key=key}>
+		<li>
+			<a href="<{$datas['url'][$key]}>">
+				<div class="nav-list-logo">
+					<img class="imglazyload" data-original="<{$pic|storager:t}>" alt="">
+				</div>
+				<p class="nav-list-title"><{$datas['title'][$key]}></p>
+			</a>
+		</li>
+		<{/foreach}>
+	</ul>
+</div>

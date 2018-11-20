@@ -1,0 +1,48 @@
+
+<style>
+    .slideRow {
+        border-bottom: 1px dashed #D3D3D3;
+        margin-top: 10px;
+    }
+</style>
+
+    <div class="form-group">
+        <label class="col-sm-3 control-label">标题图片：</label>
+        <div class="col-sm-3">
+            <div class="multiple-item" style="position:relative">
+                <div class="multiple-del glyphicon glyphicon-remove-circle removeImg" style="position: absolute;left: 60px;top: -5px;z-index: 999;"></div>
+                <a class="select-image" data-toggle="modal" href="<{url action=topshop_ctl_shop_image@loadImageModal}>" data-target="#gallery_modal">
+                    <input class="top_ad_image" type="hidden" name="title_pic" value="<{$setting.title_pic}>">
+                    <div class="img-put">
+                        <img  class=""  src="<{$setting.title_pic}>">
+                        <i class="glyphicon glyphicon-picture"></i>
+                    </div>
+                </a>
+            </div>
+            <span class="help-block">图片大小：435*35 px。</span>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="" class="col-sm-3 control-label">更多链接：</label>
+        <div class="col-sm-3">
+            <input type="text" name="more_link" value="<{$setting.more_link}>" class="form-control" required>
+        </div>
+        <span class="label label-info"></span>
+    </div>
+
+<script>
+    $('.removeImg').on('click',function(){
+        $(this).next().find('input').attr('value','');
+        $(this).next().find('img').attr('src','');
+    });
+
+    var submit_validate = function(){
+        if(!$('.top_ad_image').val()){
+            $('#messagebox').message('请配置标题图片');
+            return false;
+        }
+        return true;
+    }
+
+</script>

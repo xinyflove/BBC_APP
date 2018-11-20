@@ -1,0 +1,26 @@
+<!--add_20170914_by_gurundong_start 二图显示-->
+<section class="wap2" style="overflow:hidden;">
+    <div class="img-box">
+        <{foreach from=$widgetDetail.params key=key item=item}>
+        <div class="two">
+            <{if empty($item.item)}>
+            <a href="<{$item.imglink}>">
+            <{else}>
+            <a href="<{url action=topwap_ctl_item_detail@index item_id=$item.item_id}>">
+            <{/if}>
+                <img class="imglazyload twoimage" data-original="<{$item.imgurl}>">
+            </a>
+        </div>
+        <{/foreach}>
+    </div>
+    <!--<div class="clear"></div>-->
+</section>
+<!--add_20170914_by_gurundong_end-->
+<script>
+$(function(){
+	var $divWidth = $('.two').width();
+	var leftHeight = $divWidth;
+	$('.twoimage').css({'height':leftHeight});
+	$('.wap2').css({'height':leftHeight});
+});
+</script>

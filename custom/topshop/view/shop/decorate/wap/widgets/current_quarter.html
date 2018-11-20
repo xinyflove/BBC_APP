@@ -1,0 +1,185 @@
+<!--add_20170914_by_xinyufeng_start 当季推荐-->
+<script>
+    var current_quarterFormItem = '<div class="current_quarter-item form-item"><div class="form-group"><div class="input-group"><input name="imgsrc"  type="text" class="form-control" readonly placeholder="图片地址"><span class="input-group-addon select-image" data-toggle="modal" data-imgurl="" href="<{url action=topshop_ctl_shop_image@loadImageModal}>" data-target="#gallery_modal">选择图片</span></div></div><div class="form-group"><p class="help-block">已选择商品</p><div id="selected_goods"></div></div><div class="form-group"><a class="btn btn-primary form-control select-goods" href="<{url action=topshop_ctl_selector_item@loadSelectGoodsModal limit=16}>" data-item_id="<{$notEndItem}>" data-textcol="title,price,sub_title" data-toggle="modal" data-target="#goods_modal" data-fetchgoods="<{url action=topshop_ctl_selector_item@formatSelectedGoodsRow}>" data-limit="1" data-insertwhere="#selected_goods">选择商品</a></div><div class="form-item-action action-remove"><i class="glyphicon glyphicon-remove"></i></div></div>';
+</script>
+<script type="text/html" id="current_quarter">
+    <style>
+        .current_quarter-box {
+            height: 345px;
+            background: #ffffff;
+            padding-top: 2px;
+        }
+        .current_quarter-box img{
+            width: 100%;
+            height: 180px;
+            display: block;
+        }
+        .current_quarter-box .swiper-slide a {
+            display: block;
+            height: 150px;
+        }
+        .current_quarter-box .goods-info {
+            display: block;
+            width: 100%;
+            text-align: center;
+        }
+        .current_quarter-box .goods-info h2 {
+            font-size: 14px;
+            font-weight: 700;
+            color: #000;
+            margin: 10px 0 4px 0;
+            overflow: hidden;
+            text-overflow:ellipsis;
+            white-space: nowrap;
+        }
+        .current_quarter-box .goods-info h3 {
+            font-size: 12px;
+            color: #999;
+            font-weight: normal;
+            text-align: center;
+            overflow: hidden;
+            -webkit-text-overflow: ellipsis;
+            -moz-text-overflow: ellipsis;
+            -o-text-overflow: ellipsis;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+        .current_quarter-box .goods-info p {
+            color: #f36521;
+            font-size: 12px;
+            margin-top: 6px;
+            margin-bottom: 0;
+            font-weight: 600;
+        }
+        .current_quarter-box .current_quarter-title {
+            width: 100%;
+            padding: 6px 0;
+            background-color: #fff;
+        }
+        .current_quarter-box .current_quarter-title span {
+            font-size: 16px;
+            color: #000;
+            text-align: center;
+            display: block;
+            background: url("../app/topwap/statics/images/world11.png") no-repeat 130px center;
+            background-size: 16px 16px;
+        }
+    </style>
+    <div class="decorate-layout-items" id="<%= wid %>" data-widgets="current_quarter">
+        <div class="swiper-container current_quarter-box">
+            <div class="current_quarter-title">
+                <span>当季推荐</span>
+            </div>
+            <div class="swiper-wrapper">
+                <% if(list && list.length > 0){ %>
+                    <% for(var i=0; i<list.length; i++){ %>
+                    <div class="swiper-slide">
+                        <a href="#">
+                            <img src="<%= list[i].imgsrc %>">
+                            <% if(list[i].goods.length == 1){ %>
+                            <span class="goods-info">
+                                <h2><%= list[i].goods[0].goodstitle%></h2>
+                                <h3><%= list[i].goods[0].goodssub_title%></h3>
+                                <p><%= list[i].goods[0].price%></p>
+                            </span>
+                            <% } %>
+                        </a>
+                    </div>
+                    <% } %>
+                <% }else{ %>
+                    <% for(var i=0; i<3; i++){ %>
+                    <div class="swiper-slide">
+                        <a href="#">
+                            <img src="http://placehold.it/320x180">
+                            <span class="goods-info">
+                                <h2>商品标题</h2>
+                                <h3>商品子标题</h3>
+                                <p>￥00.00</p>
+                            </span>
+                        </a>
+                    </div>
+                    <% } %>
+                <% } %>
+            </div>
+            <!-- Add Pagination -->
+            <div class="swiper-pagination"></div>
+        </div>
+    </div>
+</script>
+<script type="text/html" id="current_quarter_form">
+    <div class="current_quarter" data-id="<%= wid %>">
+        <h5>当季推荐</h5>
+        <div class="current_quarter-items-list">
+            <% if(list && list.length > 0){ %>
+            <% for(var i=0; i<list.length; i++){ %>
+            <div class="current_quarter-item form-item">
+                <div class="form-group">
+                    <div class="input-group">
+                        <input name="imgsrc" type="text" readonly class="form-control" value="<%= list[i].imgsrc %>" placeholder="图片地址">
+                        <span class="input-group-addon select-image" data-toggle="modal" data-imgurl="<%= list[i].imgurl %>" href="<{url action=topshop_ctl_shop_image@loadImageModal}>" data-target="#gallery_modal">选择图片</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <p class="help-block">已选择商品</p>
+                    <div id="selected_goods">
+                        <% if(list[i].goods.length > 0){ %>
+                        <% var goods = list[i].goods %>
+                        <table wdith="100%" class="table table-primary table-hover table-goods">
+                            <tbody>
+                            <% for(var j=0; j<goods.length; j++){ %>
+                            <tr data-itemid="<%= goods[j].item_id %>">
+                                <td>
+                                    <input type="hidden" name="item_id[]" value="<%= goods[j].item_id %>">
+                                    <div class="goods">
+                                        <a href="<%= goods[j].goodslink %>" target="_blank">
+                                            <img src="<%= goods[j].imgurl %>" alt="">
+                                            <span><%= goods[j].goodstitle %></span>
+                                            <span><%= goods[j].price %></span>
+                                        </a>
+                                    </div>
+                                </td>
+                                <td><a class="item-del" href="#">删除</a></td>
+                            </tr>
+                            <% } %>
+                            </tbody>
+                        </table>
+                        <% } %>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <a class="btn btn-primary form-control select-goods" href="<{url action=topshop_ctl_selector_item@loadSelectGoodsModal limit=16}>" data-item_id="<%= $json_string(list[i].item_ids) %>" data-textcol="title,price,sub_title" data-toggle="modal" data-target="#goods_modal" data-fetchgoods="<{url action=topshop_ctl_selector_item@formatSelectedGoodsRow}>" data-limit="1" data-insertwhere="#selected_goods">选择商品</a>
+                </div>
+                <% if(i!=0){ %>
+                <div class="form-item-action action-remove"><i class="glyphicon glyphicon-remove"></i></div>
+                <% } %>
+            </div>
+            <% } %>
+            <% }else{ %>
+            <div class="current_quarter-item form-item">
+                <div class="form-group">
+                    <div class="input-group">
+                        <input name="imgsrc" type="text" readonly class="form-control" placeholder="图片地址">
+                        <span class="input-group-addon select-image" data-toggle="modal" data-imgurl="" href="<{url action=topshop_ctl_shop_image@loadImageModal}>" data-target="#gallery_modal">选择图片</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <p class="help-block">已选择商品</p>
+                    <div id="selected_goods">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <a class="btn btn-primary form-control select-goods" href="<{url action=topshop_ctl_selector_item@loadSelectGoodsModal limit=16}>" data-item_id="<{$notEndItem}>" data-textcol="title,price,sub_title" data-toggle="modal" data-target="#goods_modal" data-fetchgoods="<{url action=topshop_ctl_selector_item@formatSelectedGoodsRow}>" data-limit="1" data-insertwhere="#selected_goods">选择商品</a>
+                </div>
+            </div>
+            <% } %>
+        </div>
+        <button class="btn btn-default btn-block action-add">添加</button>
+    </div>
+</script>
+<!--add_20170914_by_xinyufeng_end-->

@@ -1,0 +1,70 @@
+<div class="invoice no-touch">
+    <{if $trade.status == "WAIT_BUYER_PAY"}>
+    <{include file="topshop/offline/trade/status/unpay.html"}>
+    <{elseif $trade.status == "TRADE_FINISHED"}>
+    <{include file="topshop/offline/trade/status/finish.html"}>
+    <{elseif $trade.status == "TRADE_CLOSED"}>
+    <{include file="topshop/offline/trade/status/cancel.html"}>
+    <{/if}>
+    <div class="row">
+        <div class="col-xs-12">
+            <h2 class="page-header">
+                <i class="fa fa-globe"></i> 订单信息
+                <small class="pull-right">下单时间: <{$trade.created_time|cdate}></small>
+            </h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-3">
+            <address>
+                订单号：<{$trade.tid}> <br>
+                订单状态：
+                <{if $trade.status == "WAIT_BUYER_PAY"}>待付款<br>下单时间：<{$trade.created_time|cdate}>
+                <{elseif $trade.status == "TRADE_FINISHED"}>已完成<br/>付款时间：<{$trade.pay_time|cdate}>
+                <{elseif $trade.status == "TRADE_CLOSED"}>已关闭<br/>取消时间：<{$trade.end_time|cdate}>
+                <{/if}> <br>
+            </address>
+        </div>
+        <div class="col-sm-4">
+            <address>
+                线下店：<{$store.name}><br>
+                供应商：<{$supplier.company_name}><br>
+                优惠类型：
+                <{if $activityinfo}>全场优惠
+                <{elseif $voucherinfo}>优惠券
+                <{else}>无优惠
+                <{/if}>
+            </address>
+        </div>
+        <div class="col-sm-2">
+            <address>
+                消费总额：<{$trade.total_fee|cur}><br>
+                优惠金额：<{$trade.voucher_fee|cur}><br>
+                应付金额：<{$trade.payment|cur}>
+            </address>
+        </div>
+        <div class="col-sm-3">
+            <address>
+                手机号码：<{$useraccount.mobile}><br>
+                真实姓名：<{$userinfo.username}><br>
+                登录账号：<{$useraccount.login_name}><br>
+            </address>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
+            <h2 class="page-header">
+                <i class="fa fa-money"></i> 优惠信息
+            </h2>
+        </div>
+    </div>
+    <{include file="topshop/offline/trade/detail_voucher.html"}>
+    <div class="row">
+        <div class="col-xs-12">
+            <h2 class="page-header">
+                <i class="fa fa-money"></i> 宣传基金信息
+            </h2>
+        </div>
+    </div>
+    <{include file="topshop/offline/trade/detail_settle.html"}>
+</div>

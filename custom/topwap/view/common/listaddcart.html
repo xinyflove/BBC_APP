@@ -1,0 +1,37 @@
+
+<form action="<{url action=topc_ctl_cart@add mode=fastbuy}>" method="post" id="items_action_form_dialog">
+	<div id="sku" class="shopex-popover shopex-popover-action shopex-popover-bottom">
+	</div>
+</form>
+<script>
+shopex('body').on('shown', '.shopex-popover', function(e) {
+	//console.log('shown', e.detail.id);//detail为当前popover元素
+});
+shopex('body').on('hidden', '.shopex-popover', function(e) {
+	//console.log('hidden', e.detail.id);//detail为当前popover元素
+});
+
+$('.goods-list').on('tap','.action-get-cart',function(){
+	$('#sku').html('');
+	var url = $(this).attr('data-carturl');
+	$.ajax({
+		type:'get',
+		url:url,
+		dataType:'html',
+		success:function(html){
+			$('#sku').append(html);
+			$(this).addClass('selected-action');
+			shopex('#sku').popover('show');
+		}
+	});
+});
+
+//$('.goods-list').on('tap','.btn-modal-close',function(){
+//	alert(12321);return false;
+	//$('.action-fastbuy').removeClass('selected-action');
+	//$('.action-addtocart').removeClass('selected-action');
+	//$('.action-fastbuy, .action-addtocart').show();
+//	shopex('#sku').popover('hide');
+//});
+
+</script>

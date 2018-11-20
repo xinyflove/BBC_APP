@@ -1,0 +1,228 @@
+<form class="form-horizontal" action="<{url action=topshop_ctl_syscart_syscart@leaseSave}>" method="post" role="form" id="specification" data-validate-onsuccess="ajaxSubmit" data-validate-excluded=":disabled, :not(:visible)">
+  <{*<input type="hidden" name="rsftockens" value="<{$rsf|gettocken}>">*}>
+  <input type="hidden" name="return_to_url" value="<{$return_to_url}>">
+  <input type="hidden" name ="owner_id" value="<{$_GET['owner_id']}>">
+  <input type="hidden" name="deposit_id" value="<{$_GET['deposit_id']}>">
+  <div class="panel panel-outter">
+    <div class="panel-heading" style="position:relative">
+      <h4>租赁信息</h4>
+		<button style="position:absolute;right:20px;top:10px;border:none;background-color:#00639e;color:#fff;padding:8px 15px;" onclick="history.back()">返回</button>
+    </div>
+    <div class="panel-body">
+      <div class="col-md-11">
+        <h4>新增租赁信息</h4>
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            基本内容
+          </div>
+          <div class="panel-body">
+			<{if !isset($_GET['owner_id']) || $_GET['owner_id']==0 || $_GET['owner_id']==''}>
+            <div class="form-group">
+              <label for="" class="col-sm-2 control-label">个人/公司：</label>
+              <div class="col-sm-10">
+                
+                <label  class="form-inline"><input type="radio" name="item[is_person]" value="1" <{if !$item.is_person}>checked<{/if}> > 个人</label>
+                <label  class="form-inline"><input type="radio" name="item[is_person]" value="2" <{if $item.is_person == 2}>checked<{/if}>> 公司</label>
+              </div>
+            </div>
+
+            <div id='company' class="form-group" style="display:none">
+              <label for="" class="col-sm-2 control-label"><span class="txt-required">*</span> 公司名：</label>
+              <div class="col-sm-3">
+                <select name="item[company_id]" required id="act-selectshopcat" class="form-control">
+                  <{foreach from=$companylist item=dly}>
+                  <option value="<{$dly.company_id}>" <{if $dly.template_id==$item.dlytmpl_id}> selected <{/if}>><{$dly.company_name}></option>
+                  <{/foreach}>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group" id="lx_name">
+              <label for="" class="col-sm-2 control-label"><span class="txt-required">*</span>联系人姓名：</label>
+              <div class="col-sm-3">
+                <input type="text" name="item[user_name]" maxlength="30" value="<{$item.user_name}>" class="form-control">
+              </div>
+            </div>
+
+            <div id="lx_mobile" class="form-group">
+              <label for="" class="col-sm-2 control-label"><span class="txt-required">*</span>联系人手机号：</label>
+              <div class="col-sm-3">
+                <input type="text" name="item[mobile]" maxlength="30" value="<{$item.mobile}>" class="form-control">
+              </div>
+            </div>
+			<{/if}>
+
+            <div class="form-group">
+              <label for="" class="col-sm-2 control-label"><span class="txt-required">*</span> 汽车品牌：</label>
+              <div class="col-sm-3">
+                <input type="text" name="item[cart_name]" value="<{$cart_info.cart_name}>" required readonly class="form-control" maxlength="50">
+              </div>
+            </div>
+		
+            <div class="form-group">
+              <label for="" class="col-sm-2 control-label"><span class="txt-required">*</span>车牌号：</label>
+              <div class="col-sm-3">
+                <input type="text" name="item[cart_number]" required maxlength="30" value="<{$cart_info['cart_number']}>" <{if $cart_info['cart_number']}> readonly<{/if}> class="form-control">
+              </div>
+            </div>
+
+            <!--<div class="form-group">
+              <label for="" class="col-sm-2 control-label"><span class="txt-required">*</span>押金：</label>
+              <div class="col-sm-3">
+                <input type="text" name="item[lease_deposit]" required maxlength="30" value="<{$item.lease_deposit}>" class="form-control">
+              </div>
+            </div>-->
+
+
+            <!--<div class="form-group">
+              <label for="" class="col-sm-2 control-label">定金：</label>
+              <div class="col-sm-3">
+                <input type="text" name="item[front_money]" maxlength="30" value="<{$item.front_money}>" class="form-control">
+              </div>
+            </div>-->
+
+            <!--<div class="form-group">
+              <label for="" class="col-sm-2 control-label"><span class="txt-required">*</span>还款总额：</label>
+              <div class="col-sm-3">
+                <input type="text" name="item[lease_total]" required maxlength="30" value="<{$item.lease_total}>" class="form-control">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="" class="col-sm-2 control-label"><span class="txt-required">*</span>每期还款金额：</label>
+              <div class="col-sm-3">
+                <input type="text" name="item[lease_each]" required maxlength="30" value="<{$item.lease_each}>" class="form-control">
+              </div>
+            </div>-->
+			
+
+			<!--add_2018/1/17_by_wanghaichao_start--> 
+			<{if $leaseInfo.repayment_date}>
+            <div class="form-group">
+              <label for="" class="col-sm-2 control-label"><span class="txt-required">*</span>重新生成还款记录:</label>
+              <div class="col-sm-3">
+                <label>重新生成 <input class="is_again" type="radio" name="is_again" value="1" <{if !$leaseInfo.repayment_date}>checked readonly<{/if}>></label>
+                <label>不重新生成 <input class="is_again" type="radio" name="is_again" value="0" <{if !$leaseInfo.repayment_date}>readonly<{else}>checked<{/if}>></label>
+              </div>
+			  <span style="color:red">(重新生成还款记录则表示之前的还款记录将删除,包括已还款的记录)</span>
+            </div>
+			<{else}>
+				<input type="hidden" name="is_again" value="1">
+			<{/if}>
+			<!--add_2018/1/17_by_wanghaichao_end-->
+			
+            <div class="form-group">
+              <label for="" class="col-sm-2 control-label"><span class="txt-required">*</span>租用形式：</label>
+              <div class="col-sm-3">
+                <input type="text" name="item[lease_type]" required maxlength="30" value="<{$leaseInfo.lease_type}>" <{if $leaseInfo.lease_type}>disabled<{/if
+				}> class="form-control again">
+			<{if $leaseInfo.lease_type}><!--<input name="item[lease_type]" type="hidden" value="<{$leaseInfo.lease_type}>">--><{/if}>
+              </div>
+            </div>
+			<!----------租购起始日期------------>
+            <div class="form-group">
+              <label for="" class="col-sm-2 control-label"><span class="txt-required">*</span>租购起始日期：</label>
+              <div class="col-sm-3">
+                <input type="text" class="form-control pull-right reservation again" readonly name="item[lease_start_time]" required maxlength="30" value="<{$leaseInfo.lease_start_time}>" class="form-control" <{if $leaseInfo.lease_start_time}>disabled<{/if}>>
+			 <{if $leaseInfo.lease_start_time}><!--<input name="item[lease_start_time]" type="hidden" value="<{$leaseInfo.lease_start_time}>">--><{/if}>
+              </div>
+            </div>
+
+
+            <div class="form-group">
+              <label for="" class="col-sm-2 control-label"><span class="txt-required">*</span>每月截止还款日期：</label>
+              <div class="col-sm-3">
+                <select name="item[repayment_date]" required id="act-selectshopcat" class="form-control">
+                  <{foreach from=$dataArr item=dly}>
+                  <option value="<{$dly}>" <{if $leaseInfo.repayment_date==$dly}>selected<{/if}>><{$dly}>号</option>
+                  <{/foreach}>
+                </select> 
+				<{if $leaseInfo.repayment_date}><!--<input name="item[repayment_date]" type="hidden" value="<{$leaseInfo.repayment_date}>">--><{/if}>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="" class="col-sm-2 control-label">销售经理：</label>
+              <div class="col-sm-3">
+                <select name="sale_id" id="act-selectshopcat" class="form-control">
+                  <option value="">请选择</option>
+                  <{foreach from=$sale item=item}>
+                  <option value="<{$item.sale_id}>" <{if $leaseInfo.sale_id==$item.sale_id}>selected<{/if}>><{$item.sale_manager}></option>
+                  <{/foreach}>
+                </select>
+              </div>
+            </div>
+
+            <div id="lx_mobile" class="form-group">
+              <label for="" class="col-sm-2 control-label">备注：</label>
+              <div class="col-sm-3">
+                <textarea class="form-control"  name="remarks" ><{$deposit_info.remarks}></textarea>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+	  <div class="col-md-2" style="text-align:center;margin-bottom:60p;">
+		<button type="submit" class="btn btn-primary btn-lg btn-block save-action" style="margin-left:1em;">保存</button>
+	  </div>
+    </div>
+  </div>
+</form>
+
+<{script src="md5.js" app="desktop"}>
+<{script app="toputil" src="jquery-catselect.js"}>
+<script>
+
+
+$('.reservation').daterangepicker({
+    //"timePicker": true,
+    "opens": "right",
+   // "timePicker24Hour": true,
+	"singleDatePicker": true,
+    "timePickerIncrement": 1,
+    "locale": {
+        "format": "YYYY-MM-DD"
+    }
+});
+
+
+$('input:radio[name="item[is_person]"]').change(function(){
+	var is_person=$(this).val();
+	if(is_person==1){
+		$('#lx_name').show();
+		$('#lx_mobile').show();
+		$('#company').hide();
+	}else{
+		$('#lx_name').hide();
+		$('#lx_mobile').hide();
+		$('#company').show();
+	}
+});
+
+function ajaxSubmit (e) {
+  var form = e.target;
+  e.preventDefault();
+  $.post(form.action, $(form).serialize(), function(rs) {
+    if(rs.error) {
+      $('#messagebox').message(rs.message);
+      return;
+    }
+    if(rs.success) {
+      $('#messagebox').message(rs.message, 'success');
+    }
+    if(rs.redirect) {
+      location.href = rs.redirect;
+    }
+  });
+}
+
+$('.is_again').on('click',function(){
+	var is_again=$(this).val();
+	if(is_again==1){
+		$('.again').removeAttr("disabled"); 
+	}else{
+		$('.again').attr("disabled","disabled"); 
+	}
+});
+</script>

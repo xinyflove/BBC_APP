@@ -1,0 +1,47 @@
+<div class="box box-default">
+    <{if empty($tag_row['tag_id'])}>
+        <form  action="<{url action=topshop_ctl_supplier_buyerTag@store}>" method="post" class="form-horizontal clearfix" data-validate-onsuccess="ajaxSubmit" role="form">
+    <{else}>
+        <form  action="<{url action=topshop_ctl_supplier_buyerTag@update}>" method="post" class="form-horizontal clearfix" data-validate-onsuccess="ajaxSubmit" role="form">
+        <input type='hidden' name='tag_id' value="<{$tag_row.tag_id}>">
+    <{/if}>
+            <div class="box-body">
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">标签名称：</label>
+                    <div class="col-sm-3">
+                        <input type="text" name="tag_name" value="<{$tag_row.tag_name}>" class="form-control" placeholder="" required maxlength="15">
+                    </div>
+                </div>
+            </div>
+            <div class="box-footer">
+                <button type="submit" class="btn btn-primary"><{t}>保存<{/t}></button>
+                &nbsp;
+                <a href="<{url action=topshop_ctl_supplier_buyerTag@index}>" class="btn btn-default">取消</a>
+            </div>
+        </form>
+</div>
+<script>
+    function ajaxSubmit (e) {
+        var form = e.target;
+        e.preventDefault();
+        $.post(form.action, $(form).serialize(), function(rs) {
+            if(rs.error) {
+                $('#messagebox').message(rs.message);
+                return;
+            }
+            if(rs.success) {
+                $('#messagebox').message(rs.message, 'success');
+            }
+            if(rs.redirect) {
+                location.href = rs.redirect;
+            }
+        });
+    }
+
+    $('.rich-editor').summernote({
+        height: 400,
+        tabsize: 2,
+        uploadURI: '<{url action=toputil_ctl_image@uploadImages from=shop}>',
+        uploadPerfix: 'upload_file'
+    });
+</script>

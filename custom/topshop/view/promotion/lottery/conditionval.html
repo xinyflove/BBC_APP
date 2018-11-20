@@ -1,0 +1,251 @@
+<style>
+    .rules-decr{
+        width: 100%;
+        margin-top: 5px;
+        text-align: center;
+    }
+</style>
+<{if $lottery_rules}>
+  <{foreach from=$lottery_rules item=rules key=key}>
+
+    <{if $rules['bonus_type'] == 'none'}>
+    <tr>
+        <td>
+          <label>无中奖</label>
+          <input type="hidden" name="lotteryrules[<{$key}>][bonus_type]" value="none">
+          <input type="hidden" name="lotteryrules[key]" value="<{$key}>">
+        </td>
+        <td>
+          <input type="text" class="form-control" placeholder="" name="lotteryrules[<{$key}>][bonus_desc]" value="<{$rules['bonus_desc']}>" >
+        </td>
+        <td>
+          <div class="input-group">
+              <input type="number" class="form-control" placeholder="" name="lotteryrules[<{$key}>][rate]" value="<{$rules['rate']}>" >
+              <span class="input-group-addon">%</span>
+          </div>
+        </td>
+        <td>
+            <div class="input-group">
+                <div class="multiple-item" style="position:relative">
+                    <div class="multiple-del glyphicon glyphicon-remove-circle bonus-removeImg" style="position: absolute;left: 60px;top: -5px;z-index: 999;"></div>
+                    <a class="select-image" data-toggle="modal" href="<{url action=topshop_ctl_shop_image@loadImageModal}>" data-target="#gallery_modal">
+                        <input class="reshow_logo" type="hidden" name="lotteryrules[<{$key}>][img]" value="<{$rules['img']}>">
+                        <div class="img-put">
+                            <img  class="rightlogo" src="<{$rules['img']|storager}>">
+                            <i class="glyphicon glyphicon-picture"></i>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </td>
+        <td>
+                <div class="checkbox">
+                    <label>
+                        <input type="color" name="lotteryrules[<{$key}>][color]" value="<{$rules['color']}>">
+                    </label>
+                </div>
+        </td>
+        <td>
+
+        </td>
+        <td>
+            <div class="checkbox">
+                <label>
+                  否
+                </label>
+            </div>
+        </td>
+        <td>
+            <div class="checkbox">
+                <label>
+                  否
+                </label>
+            </div>
+        </td>
+        <td></td>
+    </tr>
+    <{elseif $rules['bonus_type'] == 'custom'}>
+    <tr>
+        <td>
+          <label>自定义</label>
+          <input type="hidden" name="lotteryrules[<{$key}>][bonus_type]" value="custom">
+          <input type="hidden" name="lotteryrules[key]" value="<{$key}>">
+        </td>
+        <td>
+            <input type="text" class="form-control" placeholder="" name="lotteryrules[<{$key}>][bonus_desc]" value="<{$rules['bonus_desc']}>" >
+          </td>
+        <td>
+          <div class="input-group">
+              <input type="number" class="form-control" placeholder="" name="lotteryrules[<{$key}>][rate]" value="<{$rules['rate']}>" >
+              <span class="input-group-addon">%</span>
+          </div>
+        </td>
+        <td>
+            <div class="input-group">
+                <div class="multiple-item" style="position:relative">
+                    <div class="multiple-del glyphicon glyphicon-remove-circle bonus-removeImg" style="position: absolute;left: 60px;top: -5px;z-index: 999;"></div>
+                    <a class="select-image" data-toggle="modal" href="<{url action=topshop_ctl_shop_image@loadImageModal}>" data-target="#gallery_modal">
+                        <input class="reshow_logo" type="hidden" name="lotteryrules[<{$key}>][img]" value="<{$rules['img']}>">
+                        <div class="img-put">
+                            <img  class="rightlogo" src="<{$rules['img']|storager}>">
+                            <i class="glyphicon glyphicon-picture"></i>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </td>
+        <td>
+                <div class="checkbox">
+                    <label>
+                        <input type="color" name="lotteryrules[<{$key}>][color]" value="<{$rules['color']}>">
+                    </label>
+                </div>
+            </td>
+        <td>
+            <input type="number" class="form-control" name="lotteryrules[<{$key}>][sum]" value="<{$rules['sum']}>" >
+            <label class="rules-decr">已获得 <{$rules['decr']}></label>
+        </td>
+        <td>
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" class="bonus-delivery" name="lotteryrules[<{$key}>][is_delivery]" value="on" <{if $rules['is_delivery'] == 'on'}> checked <{/if}> >
+                </label>
+            </div>
+        </td>
+        <td>
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" class="bonus-delivery" name="lotteryrules[<{$key}>][send_limit]" value="on" <{if $rules['send_limit'] == 'on'}> checked <{/if}> >
+                </label>
+            </div>
+        </td>
+        <td></td>
+      </tr>
+    <{elseif $rules['bonus_type'] == 'coupon'}>
+    <tr>
+        <td>
+            <div class="input-group">
+            <label>优惠券</label>
+            <div class="input-group">
+                <div class="form-group">
+                        <label class="col-sm-2 control-label">
+                            ID
+                        </label>
+                        <div class="col-sm-9">
+                                <input type="number" class="form-control" name="lotteryrules[<{$key}>][coupon_id]" value="<{$rules['coupon_id']}>" readonly>
+                        </div>
+                </div>
+            </div>
+            <input type="hidden" name="lotteryrules[<{$key}>][bonus_type]" value="coupon">
+            <input type="hidden" name="lotteryrules[key]" value="<{$key}>">
+            </div>
+        </td>
+        <td>
+            <input type="text" class="form-control" placeholder="" name="lotteryrules[<{$key}>][bonus_desc]" value="<{$rules['bonus_desc']}>" >
+        </td>
+        <td>
+          <div class="input-group">
+              <input type="number" class="form-control" placeholder="" name="lotteryrules[<{$key}>][rate]" value="<{$rules['rate']}>" >
+              <span class="input-group-addon">%</span>
+          </div>
+        </td>
+        <td>
+            <div class="input-group">
+                <div class="multiple-item" style="position:relative">
+                    <div class="multiple-del glyphicon glyphicon-remove-circle bonus-removeImg" style="position: absolute;left: 60px;top: -5px;z-index: 999;"></div>
+                    <a class="select-image" data-toggle="modal" href="<{url action=topshop_ctl_shop_image@loadImageModal}>" data-target="#gallery_modal">
+                        <input class="reshow_logo" type="hidden" name="lotteryrules[<{$key}>][img]" value="<{$rules['img']}>">
+                        <div class="img-put">
+                            <img  class="rightlogo" src="<{$rules['img']|storager}>">
+                            <i class="glyphicon glyphicon-picture"></i>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </td>
+        <td>
+                <div class="checkbox">
+                    <label>
+                        <input type="color" name="lotteryrules[<{$key}>][color]" value="<{$rules['color']}>">
+                    </label>
+                </div>
+            </td>
+        <td>
+            <!-- <input type="number" class="form-control" name="" readonly> -->
+            <label class="rules-decr">已获得 <{$rules['decr']}></label>
+        </td>
+        <td>
+            <div class="checkbox">
+                <label>
+                  否
+                </label>
+            </div>
+        </td>
+        <td>
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" class="bonus-delivery" name="lotteryrules[<{$key}>][send_limit]" value="on" <{if $rules['send_limit'] == 'on'}> checked <{/if}> >
+                </label>
+            </div>
+        </td>
+        <td></td>
+      </tr>
+    <{/if}>
+  <{/foreach}>
+<{else}>
+    <tr>
+      <td>
+        <label>无中奖</label>
+        <input type="hidden" name="lotteryrules[0][bonus_type]" value="none">
+        <input type="hidden" name="lotteryrules[key]" value="0">
+      </td>
+      <td>
+        <input type="text" class="form-control" placeholder="" name="lotteryrules[0][bonus_desc]" >
+      </td>
+      <td>
+        <div class="input-group">
+            <input type="number" class="form-control" placeholder="" name="lotteryrules[0][rate]" >
+            <span class="input-group-addon">%</span>
+        </div>
+      </td>
+      <td>
+          <div class="input-group">
+              <div class="multiple-item" style="position:relative">
+                  <div class="multiple-del glyphicon glyphicon-remove-circle bonus-removeImg" style="position: absolute;left: 60px;top: -5px;z-index: 999;"></div>
+                  <a class="select-image" data-toggle="modal" href="<{url action=topshop_ctl_shop_image@loadImageModal}>" data-target="#gallery_modal">
+                      <input class="reshow_logo" type="hidden" name="lotteryrules[0][img]">
+                      <div class="img-put">
+                          <img  class="rightlogo" src="">
+                          <i class="glyphicon glyphicon-picture"></i>
+                      </div>
+                  </a>
+              </div>
+          </div>
+      </td>
+      <td>
+          <div class="checkbox">
+              <label>
+                  <input type="color" name="lotteryrules[0][color]" value="#cccccc">
+              </label>
+          </div>
+      </td>
+      <td>
+          <!-- <input type="number" class="form-control" name="" value="" readonly> -->
+      </td>
+      <td>
+          <div class="checkbox">
+              <label>
+                否
+              </label>
+          </div>
+      </td>
+      <td>
+          <div class="checkbox">
+              <label>
+                否
+              </label>
+          </div>
+      </td>
+      <td></td>
+    </tr>
+<{/if}>

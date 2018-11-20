@@ -1,0 +1,47 @@
+<form action="<{url action=topshop_ctl_shop_livehot@add_post}>" method="post" class="form-horizontal clearfix" data-validate-onsuccess="ajaxSubmit" role="form">
+    <div class="panel panel-default select-goods-panel">
+        <div class="panel-heading">
+            选择适用商品
+        </div>
+        <div class="panel-body">
+            <button class="btn btn-md btn-block btn-danger select-goods" data-remote="<{url action=topshop_ctl_selector_item@loadSelectGoodsModal}>" data-item_sku=<{$item_sku|json_encode}> data-item_id="<{$notEndItem}>" data-textcol="title,price" data-target="#goods_modal" data-fetchgoods="<{url action=topshop_ctl_selector_item@formatSelectedGoodsRow}>">选择商品</button>
+            <div class="selected-goods-list">
+
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary btn-lg btn-block action-save">保存</button>
+        </div>
+        <div class="col-md-2">
+            <a onclick="window.history.back();"><button type="button" class="btn btn-default btn-lg btn-block action-cancel">取消</button></a>
+        </div>
+        <div class="col-md-4">
+
+        </div>
+    </div>
+</form>
+<script>
+    function ajaxSubmit (e) {
+        var form = e.target;
+        e.preventDefault();
+        $.post(form.action, $(form).serialize(), function(rs) {
+            if(rs.error) {
+                $('#messagebox').message(rs.message);
+            }
+            if(rs.success) {
+                $('#messagebox').message(rs.message, 'success');
+            }
+            if(rs.redirect) {
+                setTimeout(function () {
+                    location.href = rs.redirect;
+                },1500);
+            }
+        });
+    }
+</script>

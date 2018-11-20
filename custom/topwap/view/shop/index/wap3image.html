@@ -1,0 +1,205 @@
+<!-- 3图广告图片 m-fm964-threeCoulm start -->
+<section class="m-fm964-threeCoulm horizontal-view" style="height:auto">
+	<div class="retainbr">
+		<{if $widgetDetail.params.0.item.sell_time>$now}>
+		<a href="<{url action=topwap_ctl_item_detail@index item_id=$widgetDetail.params.0.item_id}>">
+			<!--<h3><{$widgetDetail['params'][1].activityitem.activity_tag}></h3>-->
+			<div id="times_wrap" class="time_num horizontal-view">
+				<em id="activity_mark"></em>
+				<p class="time_w" id="time_w">
+					<font id="times_d" class="time"> </font>:
+					<font id="times_h" class="time"> </font>:
+					<font id="times_m" class="time"> </font>:
+					<font id="times_s" class="time"> </font>
+				</p>
+			</div>
+			<img src="<{$widgetDetail['params'][0].imgurl|storager:m}>" alt="" >
+		</a>
+		<{else}>
+		<{if $widgetDetail['params'][0].item.activity.activity_id}>
+		<a href="<{url action=topwap_ctl_item_detail@index item_id=$widgetDetail.params.0.item_id}>">
+			<h3><{$widgetDetail['params'][0].item.activity.activity_tag}></h3>
+			<div id="times_wrap" class="time_num horizontal-view">
+				<em id="activity_mark"></em>
+				<p class="time_w" id="time_w">
+					<font id="times_d" class="time"> </font>:
+					<font id="times_h" class="time"> </font>:
+					<font id="times_m" class="time"> </font>:
+					<font id="times_s" class="time"> </font>
+				</p>
+			</div>
+			<img  class="imglazyload three-image-left" data-original="<{$widgetDetail['params'][0].imgurl|storager:m}>" alt="">
+		</a>
+		<{else}>
+		<{if $widgetDetail.params.0.item_id}>
+		<a href="<{url action=topwap_ctl_item_detail@index item_id=$widgetDetail.params.0.item_id}>">
+		<{else}>
+		<a href="<{$widgetDetail['params'][0].imglink}>">
+		<{/if}>
+			<img  class="imglazyload three-image-left" data-original="<{$widgetDetail['params'][0].imgurl|storager:m}>" alt="" >
+		</a>
+		<{/if}>
+		<{/if}>
+	</div>
+
+	<div class="vertical-view">
+
+		<{if $widgetDetail.params.1.item_id}>
+		<a class="retainbb right-image" href="<{url action=topwap_ctl_item_detail@index item_id=$widgetDetail.params.1.item_id}>"  style="height:auto;overflow:hidden;display:block;border-bottom:0.1rem solid #eee">
+		<{else}>
+		<a class="retainbb right-image" href="<{$widgetDetail['params'][1].imglink}>" style="height:auto;overflow:hidden;display:block;border-bottom:0.1rem solid #eee">
+		<{/if}>
+			<img  class="imglazyload three-image-right" data-original="<{$widgetDetail['params'][1].imgurl|storager:t}>" alt="">
+		</a>
+		<{if $widgetDetail.params.2.item_id}>
+		<a class='right-image' href="<{url action=topwap_ctl_item_detail@index item_id=$widgetDetail.params.2.item_id}>"  style="height:auto;overflow:hidden;display:block">
+		<{else}>
+		<a class="right-image" href="<{$widgetDetail['params'][2].imglink}>" style="height:auto;overflow:hidden;display:block">
+		<{/if}>
+			<img  class="imglazyload three-image-right" data-original="<{$widgetDetail['params'][2].imgurl|storager:t}>" alt="">
+		</a>
+	</div>
+</section>
+<!-- end  m-fm964-threeCoulm-->
+<script type="text/javascript">
+	<{if $widgetDetail.params.0.item.sell_time>$now}>// 活动开始时间
+	var start_time = <{$widgetDetail['params'][0].item.sell_time}>*1000;
+
+	// 处理倒计时功能
+	var end_timer = setTimeout("show_time()",1000);
+	var activity_mark = document.getElementById("activity_mark");
+	var time_w = document.getElementById("time_w");
+	var time_d    = document.getElementById("times_d");
+	var time_h    = document.getElementById("times_h");
+	var time_m    = document.getElementById("times_m");
+	var time_s    = document.getElementById("times_s");
+
+	function show_time(){
+		var time_now = new Date();  // 获取当前时间
+			time_now = time_now.getTime();
+
+		var time_distance = 0;// 结束时间减去当前时间
+		// 活动未开始
+		if(time_now < start_time){
+			time_distance = start_time - time_now;
+			activity_mark.innerHTML = '距开售还有';
+		}
+		// 活动进行中
+		///else if((start_time <= time_now) && (end_time > time_now)){
+		//	time_distance = end_time - time_now;
+		//	activity_mark.innerHTML = '距活动结束';
+		//}
+		// 活动已结束
+		//else if(end_time <= time_now){
+		//	activity_mark.innerHTML = '活动已结束';
+		//	time_w.style.display = 'none';
+		//	clearTimeout(end_timer);
+	//	}
+		var int_day, int_hour, int_minute, int_second;
+		if(time_distance > 0){
+			// 天时分秒换算
+			int_day = Math.floor(time_distance/86400000)
+			time_distance -= int_day * 86400000;
+			int_hour = Math.floor(time_distance/3600000)
+			time_distance -= int_hour * 3600000;
+			int_minute = Math.floor(time_distance/60000)
+			time_distance -= int_minute * 60000;
+			int_second = Math.floor(time_distance/1000)
+
+			// 时分秒为单数时、前面加零站位
+			if(int_day < 10)
+			int_day = "0" + int_day;
+			if(int_hour < 10)
+			int_hour = "0" + int_hour;
+			if(int_minute < 10)
+			int_minute = "0" + int_minute;
+			if(int_second < 10)
+			int_second = "0" + int_second;
+
+			// 显示时间
+			time_d.innerHTML = int_day;
+			time_h.innerHTML = int_hour;
+			time_m.innerHTML = int_minute;
+			time_s.innerHTML = int_second;
+
+			setTimeout("show_time()",1000);
+		}
+	};
+	<{else}>
+	<{if $widgetDetail['params'][0].item.activity}>
+	// 活动开始时间
+	var start_time =<{$widgetDetail['params'][0].item.activity.start_time}>*1000;
+	// 活动结束时间
+	var end_time = <{$widgetDetail['params'][0].item.activity.end_time}>*1000;
+
+	// 处理倒计时功能
+	var end_timer = setTimeout("show_time()",1000);
+	var activity_mark = document.getElementById("activity_mark");
+	var time_w = document.getElementById("time_w");
+	var time_d    = document.getElementById("times_d");
+	var time_h    = document.getElementById("times_h");
+	var time_m    = document.getElementById("times_m");
+	var time_s    = document.getElementById("times_s");
+
+	function show_time(){
+		var time_now = new Date();  // 获取当前时间
+			time_now = time_now.getTime();
+
+		var time_distance = 0;// 结束时间减去当前时间
+		// 活动未开始
+		if(time_now < start_time){
+			time_distance = start_time - time_now;
+			activity_mark.innerHTML = '距活动开始';
+		}
+		// 活动进行中
+		else if((start_time <= time_now) && (end_time > time_now)){
+			time_distance = end_time - time_now;
+			activity_mark.innerHTML = '距活动结束';
+		}
+		// 活动已结束
+		else if(end_time <= time_now){
+			activity_mark.innerHTML = '活动已结束';
+			time_w.style.display = 'none';
+			clearTimeout(end_timer);
+		}
+		var int_day, int_hour, int_minute, int_second;
+		if(time_distance > 0){
+			// 天时分秒换算
+			int_day = Math.floor(time_distance/86400000)
+			time_distance -= int_day * 86400000;
+			int_hour = Math.floor(time_distance/3600000)
+			time_distance -= int_hour * 3600000;
+			int_minute = Math.floor(time_distance/60000)
+			time_distance -= int_minute * 60000;
+			int_second = Math.floor(time_distance/1000)
+
+			// 时分秒为单数时、前面加零站位
+			if(int_day < 10)
+			int_day = "0" + int_day;
+			if(int_hour < 10)
+			int_hour = "0" + int_hour;
+			if(int_minute < 10)
+			int_minute = "0" + int_minute;
+			if(int_second < 10)
+			int_second = "0" + int_second;
+
+			// 显示时间
+			time_d.innerHTML = int_day;
+			time_h.innerHTML = int_hour;
+			time_m.innerHTML = int_minute;
+			time_s.innerHTML = int_second;
+
+			setTimeout("show_time()",1000);
+		}
+	};
+	<{/if}>
+	<{/if}>
+$(function(){
+	var $divWidth = $('.retainbr').width();
+	var leftHeight = $divWidth;
+	var rightHeight = $divWidth*0.5;
+	$('.three-image-left').css({'height':leftHeight});
+	$('.three-image-right').css({'height':rightHeight});
+	$('.right-image').css({'height':rightHeight});
+})
+</script>

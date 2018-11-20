@@ -1,0 +1,12 @@
+<{foreach from=$contentlist item=info}>
+<!--modify_20171026_by_fanglongji_start
+<li class="shopex-table-view-cell"><a class="shopex-navigate-right shopex-linkto" href="<{url action=topwap_ctl_content@getContentInfo aid=$info.article_id}>"><{$info.title}></a>
+</li>
+ -->
+<li data-link="<{url action=topwap_ctl_content@getContentInfo aid=$info.article_id}>" class="topline-body-list2">
+    <h3><{if $info.new_label}><span><{$info.new_label}></span><{/if}><{$info.title}></h3>
+    <p class="topline-info"><{$info.content}></p>
+    <p class="topline-time"><{$info.modified|cdate:'FDATE_STIME'}></p>
+</li>
+<!--modify_20171026_by_fanglongji_end-->
+<{/foreach}>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>搜索</title>
+    <{css src="milier/dist/style.css" app="topwap"}>
+    <{css src="milier/css/search.min.css?201806051521" app="topwap"}>
+</head>
+<body>
+<div class="m-mili-search">
+    <div class="search-input">
+        <input type="search" autofocus placeholder="<{$keyword}>" />
+        <span><a href="javascript:history.go(-1);">取消</a></span>
+    </div>
+    <div class="m-ml-index-fliter mescroll" id="mescroll">
+
+        <ul class="index-fliter-list" id="dataList">
+        </ul>
+    </div>
+</div>
+</body>
+<{script app="topwap" src="milier/dist/public.js" }>
+<script>
+    $(function () {
+        var keyword = "<{$keyword}>";
+        var shop_id = "<{$shop_id}>";
+
+
+        // mescroll 
+        var mescroll = new MeScroll("mescroll", {
+            down: {
+                offset: 40
+            },
+            up: {
+                offset: 40,
+                loadFull: {
+                    use: true,
+                    delay: 500
+                },
+                page:{
+                    num : 1 ,
+                    size : 10 ,
+                    time : null
+                },
+                clearEmptyId: "dataList",
+                callback: getListData
+            }
+        });
+
+        function getListData(page){
+            //          page.num++;
+            console.log("page.num=="+page.num);
+            getListDataFromNet(page.num, page.size, keyword,function(data,res){
+                console.log(data.length);
+                mescroll.endByPage(data.length,res);
+                //mescroll.endSuccess(data.length);
+                setListdom(data,"dataList");
+            }, function(){
+                mescroll.endErr();
+            })
+        }
+        function setListdom(data,appDomid){
+            //console.log(JSON.stringify(data));
+            var oul = document.getElementsByClassName('news-list')[0];
+            console.log(data)
+            for(var i in data){
+                var str='<a href="<{url action=topwap_ctl_supplier_agentShopInfo@agentShopDetail}>?shop_id='+data[i].shop_id+'&supplier_id='+data[i].supplier_id+'&agent_shop_id='+data[i].agent_shop_id+'">';
+                str+='<div class="list-leftImg">'
+                str+='<img src="'+data[i].agent_img_src+'" alt=""/>'
+                str+='</div>'
+                str+='<div class="list-rightText">'
+                str+='<h4 class="list-rightText-title">'+data[i].name+'</h4>'
+                str+='<div class="list-rightText-grade">'
+                str+='<div class="list-rightText-grade-icon">'
+                for(var j = 0;j<data[i].length;j++){
+                    str+='<img src="/app/topwap/statics/milier/img/index/icon-start.png" alt="">'
+                }
+                str+='</div>'
+                if(data[i].all_hold_info!=null && data[i].all_hold_info>0){
+                    str+='<p class="list-rightText-grade-num" style="font-weight:normal;font-size: 12px;">'+'<span style="color:red;font-weight:bold;font-size: 15px;">'+data[i].all_hold_info+'折'+'</span>'+'买单</p>'
+                }else{
+                    if(data[i].shop_consumption!=null){
+                        str+='<p class="list-rightText-grade-num">￥'+data[i].shop_consumption+'/人</p>'
+                    }else{
+                        str+='<p class="list-rightText-grade-num">￥'+100+'/人</p>'
+                    }
+                }
+                str+='</div>'
+                str+='<div class="list-rightText-address">'
+                if(data[i].agent_category_name!=null){
+                    str+='<p>'+data[i].agent_category_name+'</p>'
+                }else{
+                    str+='<p>'+'全部美食'+'</p>'
+                }
+
+                str+='<p>'+data[i].district_info+'</p>'
+
+                if(data[i].distance){
+                    str+='<p>'+data[i].distance+'</p>'
+                }else{
+                    str+='<p>'+''+'</p>'
+                }
+                str+='</div><div class="list-rightText-shop">'
+                if(data[i].agentShopActivityData!=""){
+                    str+='<p class="shop-quan"><i>券</i>'
+                    for(var x = 0;x<data[i].agentShopActivityData.length;x++){
+                        str+='<span>'+data[i].agentShopActivityData[x].title+'</span>'
+                    }
+                    str+='</p>'
+                }
+                str+='</div></div></a>'
+                var Dl = document.createElement('li');
+                Dl.innerHTML = str;
+                document.getElementById(appDomid).appendChild(Dl);
+            }
+
+
+        }
+        function getListDataFromNet(pageNum, pageSize,keyword,successCB, errorCB){
+            setTimeout(function(){
+                $.ajax({
+                    url: '<{url action=topwap_ctl_supplier_index@getAjaxSearchData}>',
+                    type: 'get',
+                    dataType: 'json',
+                    async: true,
+                    data: {
+                        curpage:pageNum,
+                        keyword: keyword,
+                        shop_id: shop_id
+                    },
+                    success: function(res){
+                        console.log(res)
+                        var listData = [];
+                        listData = res.data;
+
+                        successCB(listData,res.page_total);
+                    },
+                    error: errorCB
+                });
+            },500)
+        }
+
+
+
+
+        document.getElementsByTagName('input')[0].focus();
+        $('.search-input').find('input').on('keypress', function(e) {
+            var keycode = e.keyCode;
+            if(keycode =='13'){
+//                console.log($(this).val());
+                keyword = $(this).val();
+                mescroll.resetUpScroll();
+            }
+//
+        });
+    })
+</script>
+</html>

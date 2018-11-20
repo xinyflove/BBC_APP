@@ -1,0 +1,133 @@
+ <style>
+ .goods{margin-top:0 !important}
+ </style>
+  <!--start whc_三图展示的js_2017/9/12  -->
+  <script>
+    var wap3imageFormItem = '<div class="slider-item form-item"><div class="form-group"><div class="input-group"><input name="imgsrc"  type="text" class="form-control" readonly placeholder="图片地址"><span class="input-group-addon select-image" data-toggle="modal" data-imgurl="" href="<{url action=topshop_ctl_shop_image@loadImageModal}>" data-target="#gallery_modal">选择图片</span></div></div><div class="form-group"><input type="text" name="imglink" class="form-control" placeholder="图片链接"></div><div class="form-group"><p class="help-block">已选择商品</p><div id="selected_goods"></div></div><div class="form-group"><a class="btn btn-primary form-control select-goods" href="<{url action=topshop_ctl_selector_item@loadSelectGoodsModal limit=16}>" data-item_id="<{$notEndItem}>" data-textcol="title,price" data-toggle="modal" data-target="#goods_modal" data-fetchgoods="<{url action=topshop_ctl_selector_item@formatSelectedGoodsRow}>" data-limit="1" data-insertwhere="#selected_goods">选择商品</a></div><div class="form-item-action action-remove"><i class="glyphicon glyphicon-remove"></i></div></div>';
+  </script>
+  <script type="text/html" id="wap3image">
+  <div class="decorate-layout-items" id="<%= wid %>" data-widgets="wap3image">
+	<% if(list && list.length > 0){ %>
+	  <section class="m-fm964-threeCoulm horizontal-view">
+		<div class="retainbr">
+			<a href="<%= list[0].imglink %>">
+				<img src="<%= list[0].imgsrc %>" alt="" style="display: block;">
+			</a>
+		</div>
+
+		<div class="vertical-view">			
+		<% if(list && list.length > 1){ %>
+          <% for(var i=1; i<list.length; i++){ %>
+			<a <% if(i==1){ %>class="retainbb" <% } %>href="<%= list[i].imglink %>">
+				<img src="<%= list[i].imgsrc %>" alt="" style="display: block;">
+			</a>
+			<% }%>
+		<% }%>
+		</div>
+		</section>
+
+      <% }else{ %>
+	  <section class="m-fm964-threeCoulm horizontal-view">
+		<div class="retainbr">
+			<a href="">
+				<img src="http://placehold.it/360x360" alt="" style="display: block;">
+			</a>
+		</div>
+
+		<div class="vertical-view">
+			<a class="retainbb" href="">
+				<img src="http://placehold.it/360x180" alt="" style="display: block;">
+			</a>
+			<a href="">		
+				<img src="http://placehold.it/360x180" alt="" style="display: block;">				
+			</a>
+		</div>
+		</section>
+      <% } %>
+    </div>
+  </script>
+
+  <script type="text/html" id="wap3image_form">
+    <div class="wap3image" data-id="<%= wid %>">
+      <h5>三图展示</h5>
+      <div class="slider-items-list">
+        <% if(list && list.length > 0){ %>
+          <% for(var i=0; i<list.length; i++){ %>
+          <div class="slider-item form-item">
+            <div class="form-group">
+              <div class="input-group">
+                <input name="imgsrc" type="text" readonly class="form-control" value="<%= list[i].imgsrc %>" placeholder="图片地址">
+                <span class="input-group-addon select-image" data-toggle="modal" data-imgurl="<%= list[i].imgurl %>" href="<{url action=topshop_ctl_shop_image@loadImageModal}>" data-target="#gallery_modal">选择图片</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <input type="text" name="imglink" class="form-control" value="<%= list[i].imglink %>" placeholder="图片链接">
+            </div>
+			
+			<div class="form-group">
+				<p class="help-block">已选择商品</p>
+				<div id="selected_goods">
+					<% if(list[i].goods.length > 0){ %>
+					<% var goods = list[i].goods %>
+					<table wdith="100%" class="table table-primary table-hover table-goods">
+						<tbody>
+						<% for(var j=0; j<goods.length; j++){ %>
+						<% if (goods[j]){%>
+						<tr data-itemid="<%= goods[j].item_id %>">
+							<td>
+								<input type="hidden" name="item_id[]" value="<%= goods[j].item_id %>">
+								<div class="goods">
+									<a href="<%= goods[j].goodslink %>" target="_blank">
+										<img src="<%= goods[j].imgurl %>" alt="">
+										<span><%= goods[j].goodstitle %></span>
+										<span><%= goods[j].price %></span>
+									</a>
+								</div>
+							</td>
+							<td><a class="item-del" href="#">删除</a></td>
+						</tr>
+						<% }%>
+						<% } %>
+						</tbody>
+					</table>
+					<% } %>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<a class="btn btn-primary form-control select-goods" href="<{url action=topshop_ctl_selector_item@loadSelectGoodsModal limit=16}>" data-item_id="<%= $json_string(list[i].item_ids) %>" data-textcol="title,price" data-toggle="modal" data-target="#goods_modal" data-fetchgoods="<{url action=topshop_ctl_selector_item@formatSelectedGoodsRow}>" data-limit="1" data-insertwhere="#selected_goods">选择商品</a>
+			</div>
+            <% if(i!=0){ %>
+            <div class="form-item-action action-remove"><i class="glyphicon glyphicon-remove"></i></div>
+            <% } %>
+          </div>
+          <% } %>
+        <% }else{ %>
+          <div class="slider-item form-item">
+            <div class="form-group">
+              <div class="input-group">
+                <input name="imgsrc" type="text" readonly class="form-control" placeholder="图片地址">
+                <span class="input-group-addon select-image" data-toggle="modal" data-imgurl="" href="<{url action=topshop_ctl_shop_image@loadImageModal}>" data-target="#gallery_modal">选择图片</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <input type="text" name="imglink" class="form-control" placeholder="图片链接">
+            </div>
+			
+			<div class="form-group">
+				<p class="help-block">已选择商品</p>
+				<div id="selected_goods">
+				</div>
+			</div>
+
+			<div class="form-group">
+				<a class="btn btn-primary form-control select-goods" href="<{url action=topshop_ctl_selector_item@loadSelectGoodsModal limit=16}>" data-item_id="<{$notEndItem}>" data-textcol="title,price" data-toggle="modal" data-target="#goods_modal" data-fetchgoods="<{url action=topshop_ctl_selector_item@formatSelectedGoodsRow}>" data-limit="1" data-insertwhere="#selected_goods">选择商品</a>
+			</div>
+          </div>
+        <% } %>
+      </div>
+      <button class="btn btn-default btn-block action-add">添加</button>
+    </div>
+  </script>
+
+  <!--end whc_三图展示的js_2017/9/12  -->

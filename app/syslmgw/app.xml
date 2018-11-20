@@ -1,0 +1,14 @@
+<app>
+    <name>蓝莓电视购物业务管理</name>
+    <type>service</type>
+    <description>提供蓝莓电视购物基本功能</description>
+
+    <author>
+        <name>广电开发(PHP Team)</name>
+        <email></email>
+        <url>http://www.tvplaza.cn</url>
+    </author>
+
+    <version>0.1</version>
+    <license>shopex license</license>
+</app>

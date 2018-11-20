@@ -1,0 +1,93 @@
+<div class="wrap">
+    <div class="top">
+        <span>欢迎来到广电优选</span>
+        <span><{$login_shop['shop_name']}></span>
+    </div>
+</div>
+
+<div class="logo-box">
+    <div class="logo">
+        <a href="<{url action=topshop_ctl_mall_home@index}>">
+            <img src="/app/topshop/mall/statics/images/common/logo.png" alt="">
+        </a>
+    </div>
+    <div class="search">
+        <label for="">
+            <input type="text" placeholder="请输入关键字" id="searchIpt" name="title" value="" />
+            <a href="javascript: searchEvent();">搜索</a>
+            <script>
+                function searchEvent() {
+                    var title = $('#searchIpt').val();
+                    var searchUrl = '<{url action=topshop_ctl_mall_list@index}>';
+                    if(title != '')
+                    {
+                        searchUrl += '?title=' + title;
+                    }
+                    location.href = searchUrl;
+                }
+            </script>
+        </label>
+        <div class="search-list">
+            <span class="title">大家都在搜：</span>
+            <ul>
+                <li><a href="<{url action=topshop_ctl_mall_list@index title=红酒}>">红酒</a></li>
+                <li><a href="<{url action=topshop_ctl_mall_list@index title=汤臣倍健}>">汤臣倍健</a></li>
+                <li><a href="<{url action=topshop_ctl_mall_list@index title=五粮液}>">五粮液</a></li>
+            </ul>
+        </div>
+    </div>
+    <a href="<{url action=topshop_ctl_mall_admin_list@index}>" class="shopCar" target="_blank">
+        <span>进入选货列表</span>
+        <i class="count"><{$initItemsNum}></i>
+    </a>
+</div>
+
+<div class="wrap-nav">
+    <div class="nav">
+        <div class="allkind hidelist">
+            <span>全部商品分类</span>
+            <div class="inner-container common-category">
+                <div class="inner">
+                    <div class="category">
+                        <ul class="category-ul">
+                            <!--循环一级菜单start-->
+                            <{foreach from=$items_cat item=cat1 key=key1}>
+                            <li class="category-ul-li">
+                                <i class="icon">
+                                    <{if $cat1.cat_logo}>
+                                    <img src="<{$cat1.cat_logo|storager}>" alt="">
+                                    <{/if}>
+                                </i><{$cat1.cat_name}><i class="arrows"></i>
+                                <div class="category-detail-part">
+                                    <!--遍历二级菜单start-->
+                                    <{foreach from=$cat1.lv2 item=cat2 key=key2}>
+                                    <div class="category-one">
+                                        <h2><{$cat2.cat_name}></h2>
+                                        <ul class="category-detail-ul">
+                                            <!--遍历三级菜单start-->
+                                            <{foreach from=$cat2.lv3 item=cat3 key=key3}>
+                                            <li>
+                                                <a href="<{url action=topshop_ctl_mall_list@index cat_id=$cat3.cat_id}>"><{$cat3.cat_name}></a>
+                                            </li>
+                                            <{/foreach}>
+                                            <!--遍历三级菜单end-->
+                                        </ul>
+                                    </div>
+                                    <{/foreach}>
+                                    <!--遍历二级菜单end-->
+                                </div>
+                            </li>
+                            <{/foreach}>
+                            <!--循环一级菜单end-->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <ul class="subnav">
+            <li class="active"><a href="<{url action=topshop_ctl_mall_home@index}>">首页</a></li>
+            <li><a href="javascript:;" style="display: none;">频道自选</a></li>
+        </ul>
+    </div>
+</div>

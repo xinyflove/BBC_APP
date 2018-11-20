@@ -1,0 +1,34 @@
+  <!--add_2017/9/15_by_wanghaichao_start-->  
+  <!-- icon -->
+  <script type="text/html" id="shopsigns">
+   <div class="decorate-layout-items" id="<%= wid %>" data-widgets="shopsigns">
+	  <!--<div class="shop-sign-edit select-image" data-toggle="modal" data-imgurl="" href="<{url action=topshop_ctl_shop_image@loadImageModal}>" data-target="#gallery_modal">编辑店招</div>-->
+	  <div class="shop-sign">
+		<div class="shop-sign-cover"></div>
+		<div class="shop-signs-img">
+		<% if(imgsrc!=""){ %>
+		  <img src="<%= imgsrc %>" style="width:100%;">
+		<% }else{%>
+		  <img src="http://placehold.it/320x60">
+		<% }%>
+		</div>
+		<div class="shop-sign-info">
+		  <div class="shop-logo"><img src="<{$shop.shop_logo|storager}>" alt=""></div>
+		  <div class="shop-name"><{$shop.shopname}><i class="fa fa-angle-right"></i></div>
+		  <button class="shopex-btn shop-favorite-btn"><i class="fa fa-star-o"></i> 收藏</button>
+		</div>
+	  </div>
+   </div>
+  </script>
+  <script type="text/html" id="shopsigns_form">
+ 	<form class="shopsigns" data-id="<%= wid %>">
+      <h5>店招配置</h5>
+      <div class="form-group">
+        <div class="input-group">
+          <input name="imgsrc" type="text" readonly class="form-control" value="<%= imgsrc %>" placeholder="图片地址">
+          <span class="input-group-addon select-image" data-imgurl="<%= imgurl %>" data-toggle="modal" href="<{url action=topshop_ctl_shop_image@loadImageModal}>" data-target="#gallery_modal">选择图片</span>
+        </div>
+      </div>
+    </form>
+  </script>
+  <!--add_2017/9/15_by_wanghaichao_end-->

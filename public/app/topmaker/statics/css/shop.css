@@ -1,0 +1,233 @@
+.user-center {
+  width: 100%;
+  height: 100%;
+  background: #f5f5f5;
+}
+.user-center .posi-fixed {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 9999;
+  width: 100%;
+  background: #f5f5f5;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  background-attachment: fixed;
+}
+.user-center .hide {
+  display: none;
+}
+.user-center .mescroll-empty {
+  padding-top: 45%;
+}
+.user-center .empty-icon {
+  margin: 0 auto;
+  width: 2.04rem;
+  height: 2.04rem;
+}
+.user-center .empty-tip {
+  font-size: 0.32rem;
+  color: #333;
+  margin-top: 0.4rem;
+}
+.user-center .posi {
+  position: relative;
+}
+.user-center .user-center-top {
+  height: 3.72rem;
+}
+.user-center .user-center-top .bg {
+  width: 100%;
+  height: 2.6rem;
+}
+.user-center .user-center-top .user-center-des {
+  height: 1.12rem;
+  background: #ffffff;
+  position: relative;
+}
+.user-center .user-center-top .user-center-des .photo-shadow {
+  width: 1.2rem;
+  height: 1.2rem;
+  position: absolute;
+  top: -0.55rem;
+  left: 0.24rem;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.26);
+}
+.user-center .user-center-top .user-center-des .photo {
+  width: 100%;
+  height: 100%;
+}
+.user-center .user-center-top .user-center-des span {
+  color: #f7f7f7;
+  font-size: 0.32rem;
+  position: absolute;
+  left: 1.75rem;
+  top: -0.54rem;
+}
+.user-center .user-center-top .user-center-des .user-center-tab {
+  height: 1.12rem;
+  width: 6.38rem;
+  float: right;
+}
+.user-center .user-center-top .user-center-des .user-center-tab li {
+  width: 50%;
+  text-align: center;
+  color: #333;
+  font-size: 0.24rem;
+  line-height: 1.12rem;
+  float: left;
+}
+.user-center .user-center-top .user-center-des .user-center-tab li div {
+  display: inline-block;
+}
+.user-center .user-center-top .user-center-des .user-center-tab li img {
+  width: 0.4rem;
+  height: 0.4rem;
+  display: inline-block;
+  margin-top: 0.38rem;
+  margin-left: 0.2rem;
+}
+.user-center .user-center-top .user-center-des .user-center-tab li .num {
+  margin-right: 0.2rem;
+}
+.user-center .user-center-top .user-center-des .user-center-tab li .line {
+  width: 0.01rem;
+  height: 0.3rem;
+  display: inline-block;
+  background: #eee;
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.user-center .search {
+  height: 0.92rem;
+  background: #f5f5f5;
+  padding: 0.17rem 0.24rem;
+  width: 100%;
+}
+.user-center .search .default {
+  width: 100%;
+  height: 100%;
+  background: #fff;
+  border-radius: 4px;
+  position: relative;
+}
+.user-center .search input {
+  width: 100%;
+  height: 100%;
+  padding-left: 0.2rem;
+  background: #fff;
+  border-radius: 4px;
+  border: 0;
+  outline: none;
+  color: #999;
+  font-size: 0.24rem;
+}
+.user-center .search input:focus {
+  outline: none;
+}
+.user-center .search span {
+  position: absolute;
+  color: #999;
+  font-size: 0.24rem;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+.user-center .search span i {
+  background: url(../images/userCenter/search.png) no-repeat;
+  width: 0.3rem;
+  height: 0.3rem;
+  display: inline-block;
+  background-size: 100% 100%;
+  margin-right: 0.12rem;
+  vertical-align: top;
+}
+.user-center .vmwarp .nav {
+  background: #fff;
+  height: 0.88rem;
+  line-height: 0.88rem;
+  margin-bottom: 0.08rem;
+}
+.user-center .vmwarp .nav li {
+  width: 50%;
+  float: left;
+  text-align: center;
+  color: #666;
+  font-size: 0.26rem;
+}
+.user-center .vmwarp .nav li .sort-wrap {
+  display: inline-block;
+  padding-left: 0.1rem;
+}
+.user-center .vmwarp .nav li .sort {
+  display: block;
+  width: 0.12rem;
+  height: 0.12rem;
+  border: 1px solid #818181;
+  border-top: 0;
+  border-left: 0;
+  position: relative;
+}
+.user-center .vmwarp .nav li .up {
+  transform: rotate(-135deg);
+  top: 2px;
+  border: 1px solid #4d9fff;
+  border-top: 0;
+  border-left: 0;
+}
+.user-center .vmwarp .nav li .down {
+  transform: rotate(45deg);
+}
+.user-center .mescroll {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  height: auto;
+  /*如设置bottom:50px,则需height:auto才能生效*/
+}
+.user-center .mescroll .data-list li {
+  width: 50%;
+  height: 5.55rem;
+  float: left;
+  padding: 0 0.05rem 0.1rem 0;
+}
+.user-center .mescroll .data-list li:nth-child(2n) {
+  padding: 0 0 0.1rem 0.05rem;
+}
+.user-center .mescroll .data-list li .data-list-warp {
+  width: 100%;
+  height: 100%;
+  background: #fff;
+  font-size: 0.28rem;
+}
+.user-center .mescroll .data-list li .data-list-warp .product-img {
+  width: 100%;
+  height: 4rem;
+  position: relative;
+}
+.user-center .mescroll .data-list li .data-list-warp .product-img img {
+  width: 2.9rem;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+.user-center .mescroll .data-list li .data-list-warp .tit {
+  color: #000;
+  padding: 0 0.28rem;
+  min-height: 0.8rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.user-center .mescroll .data-list li .data-list-warp .price {
+  color: #f64a47;
+  padding-left: 0.28rem;
+}
+.user-center .mescroll .data-list li .data-list-warp .price span {
+  font-size: 0.38rem;
+}

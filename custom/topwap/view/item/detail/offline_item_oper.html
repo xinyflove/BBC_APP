@@ -1,0 +1,12 @@
+<!-- <div class="op-item op-btn bbc-btn-disabled goods-op-nostock">缺货</div> -->
+<{if $item.valid && $item.realStore > 0  && $item.sell_time<$now_time}>
+<{if !$item.sell_time_end || $item.sell_time_end>$now_time}>
+<{if $nologin!=1}>
+<div class="op-item op-btn goods-op-buy"><a href="<{url action=topwap_ctl_passport@goLogin next_page=$next_page}>">立即领取</a></div>
+<{else}>
+<div class="op-item op-btn goods-op-buy"><a href="javascript:void(0);" class="action-freeTickets" >立即领取</a></div>
+<{/if}>
+<{else}>
+<div class="op-item op-btn goods-op-buy bbc-btn-disabled" style="width:14rem">暂不销售</div>
+<{/if}>
+<{/if}>

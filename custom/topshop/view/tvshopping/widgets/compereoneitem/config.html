@@ -1,0 +1,23 @@
+<div class="form-group">
+    <label class="col-sm-3 control-label">标题图片：</label>
+    <div class="col-sm-3">
+        <div class="multiple-item" style="position:relative">
+            <div id="removeTopAdImg" class="multiple-del glyphicon glyphicon-remove-circle" style="position: absolute;left: 60px;top: -5px;z-index: 999;"></div>
+            <a class="select-image" data-toggle="modal" href="<{url action=topshop_ctl_shop_image@loadImageModal}>" data-target="#gallery_modal">
+                <input class="top_ad_image" type="hidden" name="title_pic" value="<{$setting.title_pic}>">
+                <div class="img-put">
+                    <img  class=""  src="<{$setting.title_pic}>">
+                    <i class="glyphicon glyphicon-picture"></i>
+                </div>
+            </a>
+        </div>
+        <span class="help-block">图片大小：435px*35pxpx。</span>
+    </div>
+</div>
+
+<div class="form-group">
+	<label class="col-sm-3 control-label">显示主播数量</label>
+	<div class="col-sm-3">
+		<input type="text" name="comperecount" value="<{$setting.comperecount}>" class="form-control" required>
+	</div>
+</div>

@@ -1,0 +1,24 @@
+<!--店铺Logo图片-->
+<div class="form-group">
+    <label class="col-sm-3 control-label">店铺Logo图片：</label>
+    <div class="col-sm-3">
+        <div class="multiple-item" style="position:relative">
+            <div id="removeTopAdImg" class="multiple-del glyphicon glyphicon-remove-circle" style="position: absolute;left: 60px;top: -5px;z-index: 999;"></div>
+            <a class="select-image" data-toggle="modal" href="<{url action=topshop_ctl_shop_image@loadImageModal}>" data-target="#gallery_modal">
+                <input class="top_ad_image" type="hidden" name="logo_pic" value="<{$setting.logo_pic}>">
+                <div class="img-put">
+                    <img  class=""  src="<{$setting.logo_pic}>">
+                    <i class="glyphicon glyphicon-picture"></i>
+                </div>
+            </a>
+        </div>
+        <span class="help-block">图片大小：50px*58px。</span>
+    </div>
+</div>
+
+<div class="form-group">
+	<label class="col-sm-3 control-label">搜索提示文字</label>
+	<div class="col-sm-3">
+		<input type="text" name="searchword" value="<{$setting.searchword}>" class="form-control">
+	</div>
+</div>

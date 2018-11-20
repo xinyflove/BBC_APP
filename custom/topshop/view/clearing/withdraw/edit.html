@@ -1,0 +1,118 @@
+<form class="form-horizontal" action="<{url action=topshop_ctl_clearing_withdraw@saveWithdraw}>" method="post" role="form" id="specification" data-validate-onsuccess="ajaxSubmit" data-validate-excluded=":disabled, :not(:visible)">
+    <input type="hidden" name="withdraw[id]" value="<{$withdraw.id}>">
+    <div class="panel panel-outter">
+        <div class="panel-heading">
+            <h4>申请提现</h4>
+        </div>
+        <div class="panel-body">
+            <div class="form-group virtual">
+                <label class="col-md-2 control-label"><{t}>提现周期<{/t}>：</label>
+                <div class="col-sm-4">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input type="text" class="form-control reservation" name="withdraw[time_range]" value="<{$time_range}>" readonly>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group virtual">
+                <label class="col-md-2 control-label"><{t}>收款金额<{/t}>：</label>
+                <div class="col-sm-4">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon"><i class="fa fa-money"></i></span>
+                        <input type="text" id="payment" class="form-control" name="withdraw[payment]" value="<{$withdraw.payemnt}>" readonly>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="form-group">
+                <label class="col-md-2 control-label"><{t}>平台手续费用<{/t}>：</label>
+                <div class="col-sm-4">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon"><i class="fa fa-money"></i></span>
+                        <input type="text" id="platform_service_fee" class="form-control" name="withdraw[platform_service_fee]" value="<{$withdraw.platform_service_fee}>" readonly>
+                    </div>
+                </div>
+                <div class="col-sm-2"><span  data-toggle="tooltip" data-placement="right" title="平台收取营业额的1%作为手续费用"><i class="fa fa-question-circle text-aqua"></i></span></div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-2 control-label"><{t}>提现金额<{/t}>：</label>
+                <div class="col-sm-4">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon"><i class="fa fa-money"></i></span>
+                        <input type="text" id="money" class="form-control" name="withdraw[money]" value="<{$withdraw.money}>" readonly>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-2 control-label"><{t}>报表导出<{/t}>：</label>
+                <div class="col-sm-4">
+                    <div class="input-group input-group-sm">
+                        <span class="form-control">
+                            <a id="excel-detail" href="#" target="_blank"><i class="fa fa-download"></i>明细下载</a>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <a id="excel-daily" href="#" target="_blank"><i class="fa fa-download"></i>日报下载</a>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="form-group">
+            <label class="col-md-2 control-label"></label>
+            <div class="col-sm-2">
+            <button type="submit" class="btn btn-primary btn-md save-action">保存</button>
+            <a href="<{url action=topshop_ctl_clearing_withdraw@index}>" class="btn btn-warning btn-md">取消</a>
+            </div>
+        </div>
+    </div>
+    </div>
+</form>
+
+<script>
+
+    function ajaxSubmit (e) {
+        var form = e.target;
+        e.preventDefault();
+        $.post(form.action, $(form).serialize(), function(rs) {
+            $(form).find('button[type=submit]').prop('disabled', false);
+            if(rs.error) {
+                $('#messagebox').message(rs.message, 'error');
+                return;
+            }
+            else if(rs.success) {
+                $('#messagebox').message(rs.message, 'success');
+            }
+            if(rs.redirect) {
+                location.href = rs.redirect;
+            }
+        });
+    }
+    $('.reservation').daterangepicker({
+        format: 'YYYY/MM/DD',
+        opens: 'right',
+    });
+    $('.reservation').on('change',function(e){
+        var time_range=$('.reservation').val();
+        $.post("<{url action=topshop_ctl_clearing_withdraw@calcWithdraw}>",{time_range:time_range},function(rs){
+            var withdraw_data=rs.message;
+            if(rs.error) {
+                $('#messagebox').message(rs.message, 'error');
+                return;
+            }
+            else if(rs.success) {
+                $('#payment').val(rs.message.payment);
+                $('#platform_service_fee').val(rs.message.platform_service_fee);
+                $('#money').val(rs.message.shop_fee);
+                var detaillink="<{url action=topshop_ctl_clearing_withdraw@export type=detail}>"+'&time_range='+rs.message.time_range;
+                var daillylink="<{url action=topshop_ctl_clearing_withdraw@export type=daily}>"+'&time_range='+rs.message.time_range;
+                $('#excel-detail').attr('href',detaillink);
+                $('#excel-daily').attr('href',daillylink);
+            }
+        });
+    });
+    /*$(document).on('click', '.save-action', function () {
+        alert('todo::save and check action')
+    });*/
+</script>

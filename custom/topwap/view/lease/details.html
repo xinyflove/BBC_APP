@@ -1,0 +1,43 @@
+<{include file="topwap/lease/header.html"}>
+<body>
+    <!--m-fmcc-selectDetails-list start-->
+    <section class="m-fmcc-selectDetails-list">
+        <ul id="list">
+        </ul>
+    </section>
+    <!--end m-fmcc-selectDetails-list-->
+    <script>
+        ~(function () {
+            // 0.准备数据
+            var data = [
+                { "title": "汽车型号", "value": "<{$leaseRow.cart_name}>" },
+                { "title": "车牌号", "value": "<{$leaseRow.cart_number}>" },
+                { "title": "租购日期", "value": "<{$leaseRow.lease_start_time|cdate:Y-m-d}>" },
+                { "title": "租购押金", "value": "<{$leaseRow.lease_deposit}>" },
+                { "title": "还款总额", "value": "<{$leaseRow.lease_total}>"},
+                { "title": "剩余还款余额", "value": "<{$leaseRow.lease_balance}>"},
+                { "title": "还款日期", "value": "每月<{$leaseRow.repayment_date}>日" },
+                { "title": "每期还款额", "value": "<{$leaseRow.lease_each}>" },
+                { "title": "还款分期", "value": "<{$leaseRow.lease_stages}>期" },
+                { "title": "已还期数", "value": "<{$leaseRow.repaid_stages}>期" },
+                { "title": "还款状态", "value": "正常"}
+            ];
+            
+            // 1.获取变量
+            var oUl=document.getElementById("list");
+            // 2.字符串绑定
+            var str = "";
+            for (var i = 0; i < data.length; i++) {
+                var cur = data[i];
+                str+='<li class="retainbb">';
+                str+='<h3 class="hz-fl">'+cur["title"]+'</h3>';
+                str+='<span class="hz-fr">'+cur["value"]+'</span>';
+                str+='</li>';               
+            }
+            // 3.追加到ul中
+            oUl.innerHTML += str;
+            
+        })();
+    </script>
+</body>
+</html>

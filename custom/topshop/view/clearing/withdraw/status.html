@@ -1,0 +1,34 @@
+<div class="panel-heading">
+    <div class="text-center">
+        <ul class="step-bar">
+            <li class="on">
+                <div class="state">已提交，待审核</div>
+                <div class="time"><{$trade.created_time|cdate}></div>
+                <i class="glyphicon glyphicon-chevron-right"></i>
+            </li>
+            <!--<li class="on">
+                <div class="state">已取消</div>
+                <div class="time"><{$trade.created_time|cdate}></div>
+                <i class="glyphicon glyphicon-chevron-right"></i>
+            </li>-->
+            <li class="on">
+                <div class="state">审核已通过</div>
+                <!--<div class="time"><{$trade.pay_time|cdate}></div>-->
+                <i class="glyphicon glyphicon-chevron-right"></i>
+            </li>
+            <!--<li class="on">
+                <div class="state">审核未通过</div>
+                &lt;!&ndash;<div class="time"><{$trade.pay_time|cdate}></div>&ndash;&gt;
+                <i class="glyphicon glyphicon-chevron-right"></i>
+            </li>-->
+            <li class="off">
+                <div class="state">已打款，提现成功</div>
+                <!--<div class="time"><{$trade.end_time|cdate}></div>-->
+            </li>
+            <!--<li class="on">
+                <div class="state">未付款，提现失败</div>
+                <div class="time"><{$trade.end_time|cdate}></div>
+            </li>-->
+        </ul>
+    </div>
+</div>

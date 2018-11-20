@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="/app/topmaker/statics/lib/common/flexible.js"></script>
+    <link rel="stylesheet" href="/app/topmaker/statics/lib/common/public.css">
+    <link rel="stylesheet" href="/app/topmaker/statics/css/styleSheet.css">
+    <title><{$topmaker.contentTitle}></title>
+</head>
+
+<body>
+<div class="m-hacker-applyFor">
+    <div class="applyFor-content">
+        <div class="applyFor-content-into">
+            <p class="into-title">创客申请进度</p>
+            <{if $account_status == 'refuse' || $shop_status == 'refuse'}>
+            <div class="lose-img">
+                <img src="/app/topmaker/statics/images/apply/icon_x.png" alt="">
+            </div>
+            <p class="lose-result">审核失败</p>
+            <p class="lose-text">不予通过审核，有问题请联系相关人员</p>
+            <{else}>
+            <div class="into-proress">
+                <div class="active into-proress-li">
+                    <img src="/app/topmaker/statics/images/apply/res1.png" alt="" class="li1">
+                    <img src="/app/topmaker/statics/images/apply/res_a1.png" alt="" class="li2">
+                    <p>提交信息</p>
+                </div>
+                <div class="active into-proress-li">
+                    <img src="/app/topmaker/statics/images/apply/res2.png" alt="" class="li1">
+                    <img src="/app/topmaker/statics/images/apply/res_a2.png" alt="" class="li2">
+                    <p>平台审核</p>
+                </div>
+                <div class="<{if $account_status == 'success'}>active <{/if}>into-proress-li">
+                    <img src="/app/topmaker/statics/images/apply/res3.png" alt="" class="li1">
+                    <img src="/app/topmaker/statics/images/apply/res_a3.png" alt="" class="li2">
+                    <p>店铺审核</p>
+                </div>
+                <div class="into-proress-warn1 warn-active"></div>
+                <div class="into-proress-warn2"></div>
+            </div>
+            <{/if}>
+        </div>
+
+    </div>
+</div>
+</body>
+
+</html>

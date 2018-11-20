@@ -1,0 +1,142 @@
+<{script app="topshop" src="bootstrap-switch.min.js"}>
+
+<div class="box box-primary clearfix">
+    <div class="mailbox-controls with-border">
+      <a class="btn btn-default btn-sm act-addcat" href="<{url action=topshop_ctl_promotion_lottery@edit_lottery}>">
+        <i class="fa fa-plus-square-o"></i> 添加转盘抽奖活动
+      </a>
+    </div>
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th>名称</th>
+            <td>使用平台</td>
+            <th>活动时间</th>
+            <th>状态</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <{if $lotteryList}>
+        <tbody>
+            <{foreach from=$lotteryList item=item}>
+            <tr class="">
+                <td>
+                    <{$item.lottery_name}>
+                </td>
+                <td>
+                    <{if $item.used_platform == 1}>
+                    pc端
+                    <{elseif $item.used_platform == 2}>
+                    wap端
+                    <{else}>
+                    全平台
+                    <{/if}>
+                </td>
+                <td>
+                    <{$item.start_time|cdate:'FDATE_STIME'}>~<{$item.end_time|cdate:'FDATE_STIME'}>
+                </td>
+                <td>
+                    <div class="switch top-switch" data-lottery-id="<{$item.lottery_id}>">
+                        <input type="checkbox" data-size="mini" class="btn btn-default" data-animate="true" data-on-label="启用" data-off-label="停用" <{if $item.status == 'active'}>checked<{/if}> name="my-checkbox"/>
+                    </div>
+                </td>
+                <td>
+                    <a href="<{url action=topshop_ctl_promotion_lottery@edit_lottery lottery_id=$item.lottery_id }>">编辑</a>
+
+                    <!-- <a class="action-delete-lottery" href="javascript:void(0);" data-delete-url="<{url action=topshop_ctl_promotion_lottery@delete_lottery lottery_id=$item.lottery_id }>">删除</a> -->
+
+                    <a href="javascript:void(0)" onclick="copyurl(this)" data-url="<{url action=topwap_ctl_lottery@index lottery_id=$item.lottery_id}>">复制链接</a>
+
+                    <a href="javascript:void(0);" class="get_qr_code" data-url="<{url action=topwap_ctl_lottery@index lottery_id=$item.lottery_id}>">下载二维码</a>
+
+                    <a href="<{url action=topshop_ctl_promotion_lottery@log_detail_list lottery_id=$item.lottery_id }>">中奖记录</a>
+                </td>
+            </tr>
+            <{/foreach}>
+        </tbody>
+        <{else}>
+        <tbody>
+            <tr>
+              <td algin="center" colspan="9">
+                <p class="help-block text-center">暂无数据</p>
+              </td>
+            </tr>
+        </tbody>
+        <{/if}>
+    </table>
+    <div class="text-right">
+        <{pagers data=$pagers}>
+        <{if $total > 0}>
+        <span class="page-number">共&nbsp;<em class="text-aqua"><{$total}></em>&nbsp;条记录</span>
+        <{/if}>
+    </div>
+</div>
+<input type="text" value="" id="copy-content" style="margin-left:-9999px;">
+<div id="qrcode" style="margin-left:-9999px;"></div>
+<a id="download_qr_code" download="qrcode.jpg" style="margin-left:-9999px;"></a>
+
+<{script app="topshop" src="lib/jquery.qrcode.min.js"}>
+<script>
+    $(function () {
+        $("[name='my-checkbox']").bootstrapSwitch();
+        $("[name='my-checkbox']").on('switchChange.bootstrapSwitch',function(event,status){
+            var lottery_id = $(this).parents('.top-switch').data('lottery-id');
+            var url = '<{url action=topshop_ctl_promotion_lottery@updateStatus}>';
+            // alert(status);
+            if(status){
+                status = 'active';
+            }else{
+                status = 'stop';
+            }
+            $.post(url,{'lottery_id':lottery_id,'status':status},function (data) {
+                if(data.success == true)
+                {
+                    // setTimeout(function(){location.reload();}, 500);
+                }
+                else {
+                    $('#messagebox').message(data.message, 'error');
+                }
+            },'json');
+        });
+
+        $('[data-toggle="tooltip"]').tooltip()
+        $('.action-delete-lottery').on('click',function(){
+            var url = $(this).attr('data-delete-url');
+            Modal.confirm({msg: '确定要删除转盘抽奖活动吗？'}).on(function(e) {
+                if(e==true) {
+                    $.post(url,'',function(rs){
+                        if(rs.success) {
+                            $('#messagebox').message(rs.message, 'success');
+                            setTimeout(function(){location.reload();}, 500);
+                        }
+                        if(rs.error) {
+                            $('#messagebox').message(rs.message);
+                            return;
+                        }
+                    });
+                }
+            });
+        });
+
+        $('.get_qr_code').on('click',function(){
+            var url = $(this).data('url');
+            $('#qrcode').qrcode({width: 500,height: 500,text: url});
+            var canvas = $('#qrcode').find("canvas").get(0);
+            var url = canvas.toDataURL('image/jpeg');
+            $("#download_qr_code").attr('href', url).get(0).click();
+            return false;
+        });
+
+    });
+
+    // 点击复制链接
+    function copyurl(t) {
+      var url = $(t).data('url');
+      var copyobject=document.getElementById("copy-content");
+      copyobject.setAttribute('value', url);
+      //   input.value = url; // 修改文本框的内容
+      copyobject.select(); // 选中文本
+      document.execCommand("copy"); // 执行浏览器复制命令
+      alert("已复制成功哦~");
+    }
+</script>

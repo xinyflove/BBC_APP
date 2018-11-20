@@ -1,0 +1,31 @@
+<div class="panel-heading">
+  <div class="clearfix">
+    <div class="pull-left">
+      <h2 class="panel-title">选择优惠券</h2>
+    </div>
+    <div class="pull-right">
+      <button id="choose_coupon" type="button" class="btn btn-primary btn-sm">确定</button>
+      <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">取消</button>
+    </div>
+  </div>
+</div>
+<div class="panel-body">
+  <div class="coupon-condition clearfix" style="margin-bottom: 5px;">
+    <div class="coupon-search form-group">
+        <div class="col-sm-4">
+            <input type="text" name="coupon_name" value="" id="coupon-search-na" class="form-control coupon-search-key" placeholder="优惠券名称关键词">
+        </div>
+
+      <div class="pull-right">
+        <button id="search_coupon" type="button" class="btn btn-warning btn-sm">搜索</button>
+        <!-- &nbsp; <a id="uncheck_all" href="javascript:;">清空当前页</a> -->
+        &nbsp; <a id="clear_filter" href="javascript:;">清空筛选条件</a>
+      </div>
+
+    </div>
+  </div>
+  <div class="row coupon-list">
+    <div id="coupon_list">
+    </div>
+  </div>
+</div>

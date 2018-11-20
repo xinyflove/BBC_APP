@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="/app/topmaker/statics/lib/common/flexible.js"></script>
+    <link rel="stylesheet" href="/app/topmaker/statics/lib/common/public.css">
+    <link rel="stylesheet" href="/app/topmaker/statics/css/styleSheet.css">
+    <title>创客中心</title>
+</head>
+<body>
+    <div class="m-hacker-center">
+        <div class="hacker-box-wrap">
+            <div class="hacker-left">
+                <span>累计佣金(元)</span>
+                <p><{$total}></p>
+            </div>
+        </div>
+        <ul class="hacker-list">
+            <!--<li class="nodata">
+                <img src="../images/empty.png" alt="">
+                <p>暂无数据</p>
+            </li>-->
+            <li class="canuse">
+                <p class="title"><i class="keyong"></i>可提现佣金</p>
+                <span class="price"><{$data.cash_com}>元</span>
+            </li>
+            <!--<li>
+                <p class="title"><i class="wuxiao"></i>无效佣金</p>
+                <span class="price">0.00元</span>
+            </li>-->
+            <li>
+                <p class="title"><i class="success"></i>成功提现佣金</p>
+                <span class="price"><{$data.has_com}>元</span>
+            </li>
+            <li>
+                <p class="title"><i class="daishou"></i>待收货佣金</p>
+                <span class="price"><{$data.confirm_com}>元</span>
+            </li>
+            <li>
+                <p class="title"><i class="weijie"></i>未结算佣金</p>
+                <span class="price"><{$data.unsettled_com}>元</span>
+            </li>
+        </ul>
+    </div>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<style>
+    /*add_start_gurundong_2017-09-29*/
+    header .icon-func{
+        color: #989898;
+    }
+    .bbc-btn-warning{
+        background-color: #ffac20;
+        border-color: #ffac20;
+    }
+    /*add_end_gurundong_2017-09-29*/
+    .set-userimg img{
+        border-radius: 50%;
+        display: block;
+        width: 141px;
+        height: 141px;
+        margin:10px 0;
+        border: 0;
+    }
+    .set-userimg #preview{
+        padding: 0;
+        border: 0;
+        margin: 0 auto;
+    }
+</style>
+<style>
+    .txt{ height:28px; border:1px solid #cdcdcd; width:670px;}
+    .mybtn{ background-color:#FFF; line-height:14px;vertical-align:middle;border:1px solid #CDCDCD;height:30px; width:70px;}
+    .file{ position:absolute; top:0; right:80px; height:24px; filter:alpha(opacity:0);opacity: 0;width:260px }
+</style>
+<header class="page-header">
+    <i class="header-left icon-func bbc-icon bbc-icon-back shopex-action-back"></i>
+    <div class="header-title">修改头像</div>
+</header>
+<section class="container set-userimg">
+        <section class="shopex-input-group">
+            <div class="shopex-input-row">
+                <div id="preview">
+                    <!--modify_20171108_by_fanglongji_start
+                    <img id="imghead" src="<{$headimg_url}>">
+                     -->
+                    <div class="images-uploader-headimg">
+                        <input id="edit_file_headimg" type="file" name="pic[]" multiple accept="image/*" data-size="<{$env.config.image.uploadedFileMaxSize}>" data-max="5" data-remote="<{url action=toputil_ctl_image@uploadImages from=user type=headimg}>" style="display: none">
+                    </div>
+                    <img id="imghead" src="<{$headimg_url|storager}>">
+                    <!--modify_20171108_by_fanglongji_end-->
+                </div>
+            </div>
+        </section>
+        <div class="form-group">
+            <input type='hidden' name='textfield' id='textfield' class='txt' />
+            <input type="file" accept="image/*" name="file" class="file" id="file" data-size="20000" />
+        </div>
+        <section class="shopex-content-padded form-op-section">
+            <button id="upload" type="button" class="shopex-btn shopex-btn-block shopex-btn-warning bbc-btn-warning">保存</button>
+        </section>
+    <!--</form>-->
+</section>
+<script src="/app/topwap/statics/vote/js/jquery-1.11.3.min.js"></script>
+<link href="/app/topwap/statics/vote/css/dialog.css" rel="stylesheet" media="screen, projection" />
+<script src="/app/topwap/statics/vote/js/dialog.js"></script>
+<{script src="uploader.js" app="site"}>
+<script type="text/javascript">
+    $('#imghead').on('click', function() {
+        $('#edit_file_headimg').trigger('click');
+    });
+    /*add_20171228_by_fanglongji_start*/
+    $(function () {
+        var uploader_headimg = $('.images-uploader-headimg');
+        uploader_headimg.AjaxFileUpload({
+            onComplete: function(rs, element) {
+                if (rs.error) {
+                    return alert(rs.message);
+                }
+                var data = $.makeArray(rs.data);
+                var url =  data[0].t_url;
+                $('#imghead').attr('src',url);
+            }
+        });
+    });
+    /*add_20171228_by_fanglongji_end*/
+        $('#upload').click(function () {
+            shopex.toast('保存成功');
+            window.location.href = '<{url action=topwap_ctl_member@detail}>';
+        });
+</script>

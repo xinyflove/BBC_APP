@@ -1,0 +1,91 @@
+<style type="text/css">
+    .res-msg-box{
+        font-size:18px;
+        border-radius:2px;
+        padding:5px 10px;
+        float:left;
+        text-align: center;
+    }
+</style>
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title" id="myModalLabel">导入城通运费信息</h4>
+</div>
+<input type="hidden" name="upload_status" value=""/>
+<form action="<{url action='topshop_ctl_import_ctpostfee@uploadCsvFile'}>" method="post" class="form-horizontal bg-white clearfix" id="import_form">
+    <input type="hidden" name="model" value="<{$model|escape:"html"}>" id='input_import_model'>
+    <input type="hidden" name="app" value="<{$app|escape:"html"}>" id="input_import_app">
+    <input type="hidden" name="filter" value="" id="input_export_filter">
+    <div class="modal-body">
+        <div class="form-group">
+            <label class="col-sm-4 control-label" >上传城通运费信息文件：</label>
+            <div class="col-sm-6">
+                <input type='file' name='csv_file' id='ImportType' class="btn btn-default"/>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <span class="res-msg-box" id="response-msg-box"></span>
+        <button type="button" class="btn btn-default" id="import-cancel" data-dismiss="modal">取消</button>
+        <button type="submit" class="btn btn-primary" id="import-upload">上传</button>
+        <button type="button" class="btn btn-success" id='import-invoice-no' disabled="disabled" data-name="" onclick="importInvoiceNo();" style="display: none;">开始对比</button>
+    </div>
+    </div>
+</form>
+<script>
+    $('#importDlyCodeDialog').on('shown.bs.modal', function () {
+        var app_val = $(this).data('app');
+        var model_val = $(this).data('model');
+        $('#input_import_app').val(app_val);
+        $('#input_import_model').val(model_val);
+        $('#name').val('');
+        var filter = $('.export-filter').attr('data-value');
+        $('#input_export_filter').val(filter);
+    });
+
+    var upload_status = $('#upload_status');
+
+    $('#import_form').ajaxForm({
+        beforeSend: function() {
+            upload_status.empty();
+        },
+        success: function() {
+            $('#response-msg-box').message('上传成功');
+        },
+        complete: function(xhr) {
+            data = eval("("+xhr.responseText+")");
+            if(data.code==1){
+                $('#response-msg-box').message(data.msg);
+                $("#import-invoice-no").attr("data-name", data.f_name);
+                $('#import-upload').hide()
+                $('#import-invoice-no').attr('disabled',false);
+                $('#import-invoice-no').show();
+            }else{
+                $('#response-msg-box').message(data.msg);
+            }
+
+        }
+    });
+    //模板文件上传成功以后导入数据
+    function importInvoiceNo(){
+        $('.modal-footer .log-info').remove();
+        $.post(
+            '<{url action=topshop_ctl_import_ctpostfee@import}>',
+            {'f_name':$("#import-invoice-no").attr("data-name")},
+            function(data){
+                data = eval("("+data+")");
+                if(data.code){
+                    $('#response-msg-box').message(data.msg, 'success');
+                    $('#miport-invoice-no').attr('disabled',true);
+                    $('#import-invoice-no').hide();
+                    $('#import-cancel').html('关闭');
+                } else {
+                    $('#response-msg-box').message(data.msg);
+                }
+                if(data.log){
+                    $('.modal-footer').append("<a href='/csvs/ctbill/"+data.log+"' class='btn btn-success log-info' target='_blank'>下载导入日志文件</a>");
+                }
+            }
+        );
+    }
+</script>

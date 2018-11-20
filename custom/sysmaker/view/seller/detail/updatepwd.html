@@ -1,0 +1,24 @@
+<div class="tableform">
+    <form action="?app=sysmaker&ctl=seller&act=savePwd"  method="post">
+        <div class="division">
+            <table width="100%" cellspacing="0" cellpadding="0" border="0">
+                <{input type="hidden" name="seller[seller_id]" value=$data.seller_id}>
+                <tbody>
+                <tr>
+                    <th><{t}>会员名称：<{/t}></th>
+                    <td><span class="price0"><{ $data.name}></span></td>
+                </tr>
+                <tr>
+                    <th ><{t}>请输入新密码：<{/t}></th>
+                    <td><{input type="password" vtype="required"  name="seller[login_password]"}></td>
+                </tr>
+                <tr>
+                    <th><{t}>请确认新密码：<{/t}></th>
+                    <td><{input type="password" vtype="required"  name="seller[psw_confirm]"}></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="table-action"><{button type="submit" label="保存"|t:'___sysuser' }></div>
+    </form>
+</div>

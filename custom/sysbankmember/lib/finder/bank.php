@@ -15,7 +15,7 @@ class sysbankmember_finder_bank {
         foreach($list as $k=>$row)
         {
             $editUrl = '?app=sysbankmember&ctl=bank&act=edit&finder_id='.$_GET['_finder']['finder_id'].'&p[0]='.$row['bank_id'];
-            $editTar = 'target="dialog::{title:\''.app::get('sysbankmember')->_('编辑').'\', width:400, height:165}"';
+            $editTar = 'target="dialog::{title:\''.app::get('sysbankmember')->_('编辑').'\', width:400, height:365}"';
             $html = '<a href="'.$editUrl.'" '.$editTar.'>'.app::get('sysbankmember')->_('编辑').'</a>';
 
             $html .= ' | ';

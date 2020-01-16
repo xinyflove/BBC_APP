@@ -207,10 +207,18 @@ class topwap_ctl_passport extends topwap_controller{
         // 增加客户手机信息的留存
         if( !app::get('sysconf')->getConf('user.account.register.multipletype') )
         {
-            if(!preg_match("/^1[34578]{1}[0-9]{9}$/", $uname))
+            $validator = validator::make(
+                [$uname],['required|mobile'],['您的手机号不能为空!|请输入正确的手机号码']
+            );
+
+            if ($validator->fails())
             {
-                $msg = app::get('topwap')->_("请输入正确的手机号码");
-                return $this->splash('error','',$msg);
+                $messages = $validator->messagesInfo();
+                // $url = url::action('topwap_ctl_passport@goFindPwd');
+                foreach( $messages as $error )
+                {
+                    return $this->splash('error', null, $error[0]);
+                }
             }
         }
 

@@ -103,7 +103,7 @@
 /*可提现佣金*/
 .m-hacker-withdraw #mescroll {
   position: fixed;
-  top: 2.9rem;
+  top: 3.65rem;
   bottom: 0;
   height: auto;
   width: 100%;
@@ -151,7 +151,7 @@
 /*佣金明细*/
 .m-hacker-detail #mescroll {
   position: fixed;
-  top: 2.9rem;
+  top: 3.65rem;
   bottom: 0;
   height: auto;
   width: 100%;
@@ -215,7 +215,7 @@
   height: 100%;
 }
 .m-hacker-choose .goods-wrap {
-  height: 92%;
+  height: 86%;
   display: flex;
   width: 100%;
   overflow: hidden;
@@ -256,7 +256,7 @@
   padding: 0 0.15rem;
 }
 .m-hacker-choose .goods-box .search {
-  height: 1rem;
+  height: 0.9rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -395,10 +395,11 @@
   position: fixed;
   top: 0;
   left: 0;
+  padding-bottom: 1rem;
 }
 .m-hacker-applyFor .applyFor-content {
   width: 100%;
-  height: 100%;
+  height: auto;
   position: relative;
   padding-top: 5.5rem;
   background: url('../images/apply/backi.png') no-repeat top;
@@ -720,6 +721,23 @@
   font-size: 0.32rem;
   background: #ff7c1c;
 }
+.gener-mark {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.7);
+  top: 0;
+  left: 0;
+  display: none;
+}
+.gener-mark img {
+  width: 5rem;
+  height: 2.2rem;
+  position: absolute;
+  right: 0.3rem;
+  top: 0.3rem;
+}
 .m-hacker-index {
   width: 100%;
   height: 100%;
@@ -734,31 +752,45 @@
 }
 .index-head .index-head-content {
   width: 100%;
-  height: auto;
+  height: 1.1rem;
   background: #fff;
-  padding: 0.2rem 0.35rem;
+  padding: 0 0.35rem;
 }
 .index-head .index-head-content div {
   display: inline-block;
   width: 0.7rem;
-  height: 0.7rem;
+  height: 100%;
+  position: relative;
 }
 .index-head .index-head-content div img {
-  width: 100%;
-  height: 100%;
+  width: 0.7rem;
+  height: 0.7rem;
   border-radius: 5px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
 }
 .index-head .index-head-content p {
   display: inline-block;
-  line-height: 0.7rem;
   vertical-align: top;
   color: #333;
   font-size: 0.28rem;
-  width: 5rem;
+  width: 4rem;
+  height: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   margin-left: 0.25rem;
+  padding-top: 0.15rem;
+}
+.index-head .index-head-content a {
+  display: block;
+  float: right;
+  height: 100%;
+  line-height: 1.1rem;
+  color: #4d9fff;
+  font-size: 0.28rem;
 }
 .index-draw {
   width: 100%;
@@ -1013,6 +1045,16 @@
   border-radius: 5px;
   margin: 0 auto;
 }
+.login-join {
+  width: 100%;
+  height: 1rem;
+  line-height: 1rem;
+  text-align: center;
+}
+.login-join a {
+  font-size: 0.28rem;
+  color: #4d9fff;
+}
 .choose-goods {
   background: #fff;
   width: 100%;
@@ -1048,7 +1090,7 @@
   line-height: 0.48rem;
   border-radius: 2px;
   position: absolute;
-  padding-left: 0.42rem;
+  padding-left: 0.22rem;
   right: 0.24rem;
   top: 50%;
   transform: translateY(-50%);
@@ -1080,7 +1122,7 @@
 }
 .choose-goods .mescroll {
   position: fixed;
-  top: 1rem;
+  top: 1.8rem;
   bottom: 0;
   height: auto;
   /*如设置bottom:50px,则需height:auto才能生效*/
@@ -1110,6 +1152,7 @@
   overflow: hidden;
   padding-left: 0.18rem;
   font-size: 0.24rem;
+  position: relative;
 }
 .choose-goods .data-list li .goods-des h2 {
   font-size: 0.28rem;
@@ -1117,11 +1160,10 @@
   padding: 0.17rem 0.18rem 0.08rem 0;
   font-weight: normal;
   min-height: 0.4rem;
-  display: -webkit-box;
-  -webkit-line-clamp: 1;
-  -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 4.7rem;
 }
 .choose-goods .data-list li .goods-des .price span {
   color: #ff4200;
@@ -1129,6 +1171,13 @@
 }
 .choose-goods .data-list li .goods-des .sale-price {
   color: #999;
+}
+.choose-goods .data-list li .warn {
+  position: absolute;
+  top: 0.15rem;
+  right: 0.24rem;
+  font-size: 0.24rem;
+  color: #ff4200;
 }
 .choose-goods .data-list li .delete {
   width: 0.98rem;
@@ -1204,6 +1253,52 @@
 .model .pop-up ul li .commit {
   background: #4d9fff;
   color: #fff;
+}
+.m-hacker-choose-header {
+  width: 100%;
+  height: 0.8rem;
+  position: relative;
+  background: #fff;
+  border-bottom: 1px solid #eee;
+}
+.m-hacker-choose-header .header-mid {
+  width: 100%;
+  height: 100%;
+}
+.m-hacker-choose-header .header-mid p {
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  line-height: 0.8rem;
+  color: #333;
+  font-size: 0.34rem;
+}
+.m-hacker-choose-header .header-left {
+  width: 0.8rem;
+  height: 0.8rem;
+  position: absolute;
+  left: 0;
+  top: 0;
+  padding-left: 0.25rem;
+  padding-top: 0.25rem;
+}
+.m-hacker-choose-header .header-left img {
+  width: 0.18rem;
+  height: 0.3rem;
+}
+.m-hacker-choose-header .header-right {
+  width: 0.8rem;
+  height: 0.8rem;
+  position: absolute;
+  right: 0;
+  top: 0;
+  padding-right: 0.25rem;
+  padding-top: 0.25rem;
+}
+.m-hacker-choose-header .header-right img {
+  width: 0.35rem;
+  height: 0.35rem;
+  margin: 0 auto;
 }
 .user-center {
   width: 100%;

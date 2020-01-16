@@ -30,6 +30,7 @@ class topwap_controller extends base_routing_controller
     public function __construct()
     {
         $this->thirdparty_app_login();
+
         theme::setIcon(app::get('topwap')->res_url.'/favicon.ico');
     }
 

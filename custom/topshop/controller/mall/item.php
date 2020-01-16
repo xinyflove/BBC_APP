@@ -19,30 +19,44 @@ class topshop_ctl_mall_item extends topshop_controller {
      *
      * @return void
      * @Author 王衍生 50634235@qq.com
+     * @Update xinyufeng
      */
     public function pushItem()
     {
         $postData = input::get();
-        // return $this->splash('success', '', $postData['item_id'], true);
+
         try
         {
+            $db = app::get('topshop')->database();
+            $db->beginTransaction();//开启事务
+
             // 检查参数
             $this->_checkPost($postData);
-            $postData['shop_id'] = $this->shopId;
-            // 格式化参数
-            // $postData = $this->_formatItemData($postData);
-            $result = app::get('topshop')->rpcCall('mall.item.push',$postData);
-            if($result)
-            {
-                $this->sellerlog('推送商品' . $postData['item_id'] . '到广电优选！');
-                $msg = app::get('topshop')->_('推送成功');
-                return $this->splash('success', '', $msg, true);
+            if(!isset($postData['sale_type'])){
+                throw new LogicException("参数错误，sale_type不为空！");
             }
+
+            $item_arr = explode(',', $postData['item_id']);
+            $apiData = array();
+            foreach ($item_arr as $item_id)
+            {
+                $apiData['item_id'] = $item_id;
+                $apiData['shop_id'] = $this->shopId;
+                $apiData['sale_type'] = $postData['sale_type'];
+
+                $result = app::get('topshop')->rpcCall('mall.item.push', $apiData);
+            }
+
+            $db->commit();//提交
         }
         catch (Exception $e)
         {
+            $db->rollback();//回滚
             return $this->splash('error', '', $e->getMessage(), true);
         }
+
+        $msg = app::get('topshop')->_('推送成功');
+        return $this->splash('success', '', $msg, true);
     }
 
     /**
@@ -50,7 +64,7 @@ class topshop_ctl_mall_item extends topshop_controller {
      * @return string
      * @auth:xinyufeng
      */
-    public function deleteItem()
+    public function withdraw()
     {
         $postData = input::get();
         try
@@ -59,7 +73,7 @@ class topshop_ctl_mall_item extends topshop_controller {
             $this->_checkPost($postData);
 
             $postData['shop_id'] = $this->shopId;
-            $result = app::get('topshop')->rpcCall('mall.item.delete',$postData);
+            $result = app::get('topshop')->rpcCall('mall.item.soldout',$postData);
             if($result)
             {
                 $this->sellerlog('从广电优选回撤商品' . $postData['item_id']);

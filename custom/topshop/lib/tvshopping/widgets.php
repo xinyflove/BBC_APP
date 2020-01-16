@@ -66,6 +66,22 @@ class topshop_tvshopping_widgets {
                 'widget_title' => '主播推荐(多个商品)',
                 'widget_desc' => '',
             ),
+			'oneimg'=>array(
+				'widget_title'=>'单图',
+                'widget_desc' => '',
+			),
+			'doublelist'=>array(
+				'widget_title'=>'双列商品',
+                'widget_desc' => '',
+			),
+			'threelist'=>array(
+				'widget_title'=>'三列商品',
+                'widget_desc' => '',
+			),
+			'text'=>array(
+				'widget_title'=>'文字文本',
+                'widget_desc' => '',
+			),
         ),
         'pc' => array(),
     );

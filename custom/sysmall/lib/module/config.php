@@ -10,11 +10,18 @@ class sysmall_module_config {
         'top_slider' => '顶部轮播',
         'new_products' => '新品推荐',
         'floor' => '楼层分类',
+        'carousel' => '频道顶部轮播',
+        'ad' => '频道广告图',
+        'channel_floor' => '频道楼层'
     ];
 
     // 页面类型
     public $tmpls = [
-        'index' => '首页',
-        // 'activityindex' => '活动首页',
+        'index' => [
+            'index' => '首页',
+        ],
+        'channel' => [
+            'channel' => '频道自选',
+        ]
     ];
 }

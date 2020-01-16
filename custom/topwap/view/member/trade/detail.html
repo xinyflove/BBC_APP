@@ -187,22 +187,28 @@
 		<div class="receiver-info-item">
 			<div class="receiver-user">
 				<div class="receiver-name">发票类型：</div>
-				<div class="receiver-phone"><{if $trade.invoice_type=='normal'}>普通发票<{elseif $trade.invoice_type=='vat'}>增值税发票<{/if}></div>
+				<div class="receiver-phone"><{if $trade.invoice_type=='individual'}>个人普通电子发票<{elseif $trade.invoice_type=='unit'}>公司普通电子发票<{elseif $trade.invoice_type=='vat'}>增值税发票<{/if}></div>
 			</div>
-      <{if $trade.invoice_type=='normal'}>
-      <div class="add-detail"><{if $trade.invoice_name=='individual'}>个人<{else}>公司<{/if}>（<{$trade.invoice_main}>）</div>
-      <{else}>
-      <div class="shopex-table">
-  		<dl class="checkout-fee">
-  			<dt>公司名：</dt><dd>&nbsp;<{$trade.invoice_vat_main.company_name}></dd>
-      		<dt>公司登记号：</dt><dd>&nbsp;<{$trade.invoice_vat_main.registration_number}></dd>
-      		<dt>公司地址：</dt><dd>&nbsp;<{$trade.invoice_vat_main.company_address}></dd>
-      		<dt>公司电话：</dt><dd>&nbsp;<{$trade.invoice_vat_main.company_phone}></dd>
-      		<dt>银行开户名：</dt><dd>&nbsp;<{$trade.invoice_vat_main.bankname}></dd>
-      		<dt>银行账号：</dt><dd>&nbsp;<{$trade.invoice_vat_main.bankaccount}></dd>
-  		</dl>
-      </div>
-      <{/if}>
+        <{if $trade.invoice_type=='individual'}>
+            <div class="shopex-table">
+                <dl class="checkout-fee">
+                    <dt>姓名：</dt><dd>&nbsp;<{$trade.invoice_vat_main.name}></dd>
+                    <dt>身份证号：</dt><dd>&nbsp;<{$trade.invoice_vat_main.registration_number}></dd>
+                    <dt>公司电话：</dt><dd>&nbsp;<{$trade.invoice_vat_main.phone}></dd>
+                </dl>
+            </div>
+        <{elseif $trade.invoice_type=='vat' || $trade.invoice_type=='unit'}>
+            <div class="shopex-table">
+                <dl class="checkout-fee">
+                    <dt>公司名：</dt><dd>&nbsp;<{$trade.invoice_vat_main.company_name}></dd>
+                    <dt>公司登记号：</dt><dd>&nbsp;<{$trade.invoice_vat_main.registration_number}></dd>
+                    <dt>公司地址：</dt><dd>&nbsp;<{$trade.invoice_vat_main.company_address}></dd>
+                    <dt>公司电话：</dt><dd>&nbsp;<{$trade.invoice_vat_main.company_phone}></dd>
+                    <dt>银行开户名：</dt><dd>&nbsp;<{$trade.invoice_vat_main.bankname}></dd>
+                    <dt>银行账号：</dt><dd>&nbsp;<{$trade.invoice_vat_main.bankaccount}></dd>
+                </dl>
+            </div>
+        <{/if}>
 	</div>
   </section>
   <{/if}>

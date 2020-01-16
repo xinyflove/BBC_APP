@@ -1,0 +1,51 @@
+<div class="form-group">
+    <label><{t}>商家编码<{/t}>：</label>
+    <input type="text" name="base_conf[customer_code]" class="form-control" value="<{$corpData.base_conf.customer_code}>">
+</div>
+
+<div class="form-group">
+    <label><{t}>app_key<{/t}>：</label>
+    <input type="text" name="base_conf[app_key]" class="form-control" value="<{$corpData.base_conf.app_key}>">
+</div>
+
+<div class="form-group">
+    <label><{t}>app_secret<{/t}>：</label>
+    <input type="text" name="base_conf[app_secret]" class="form-control" value="<{$corpData.base_conf.app_secret}>">
+</div>
+
+<div class="form-group">
+    <label><{t}>寄件人姓名<{/t}>：</label>
+    <input type="text" name="base_conf[sender_name]" class="form-control" value="<{$corpData.base_conf.sender_name}>">
+</div>
+
+<div class="form-group">
+    <label><{t}>寄件人地址<{/t}>：</label>
+    <input type="text" name="base_conf[sender_address]" class="form-control" value="<{$corpData.base_conf.sender_address}>">
+</div>
+
+<div class="form-group">
+    <label><{t}>寄件人手机<{/t}>：</label>
+    <input type="text" name="base_conf[sender_mobile]" class="form-control" value="<{$corpData.base_conf.sender_mobile}>">
+</div>
+
+<button class="btn btn-success btn-sm jdwl-authorize" type="button" onclick="jdwlAuthorize()"><{t}>申请京东授权<{/t}></button>
+
+<script>
+    function jdwlAuthorize () {
+        $.get('<{url action=topshop_ctl_shop_dlycorp@jdwlAuthorize}>', function(rs) {
+            if(rs.error) {
+            $('#messagebox').message(rs.message);
+            return;
+            }
+
+            if(rs.success) {
+            $('#messagebox').message(rs.message, 'success');
+            }
+
+            if(rs.redirect) {
+                //   location.href = rs.redirect;
+                window.open(rs.redirect, '_blank').location;
+            }
+        });
+    }
+</script>

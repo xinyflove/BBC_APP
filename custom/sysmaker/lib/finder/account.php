@@ -83,8 +83,27 @@ class sysmaker_finder_account{
         $pagedata['url'] = $url;
         $sellerMdl = app::get('sysmaker')->model('seller');
         $info = $sellerMdl->getRow('*', array('seller_id'=>$id));
+        if($info)
+        {
+            $info['id_card_no'] || $info['id_card_no'] = '无';
+            if($info['registered'])
+            {
+                $_addr = explode(':', $info['registered']);
+                $info['registered'] = $_addr[0];
+            }
+            else
+            {
+                $info['registered'] = '无';
+            }
+            $info['pid'] || $info['pid'] = 0;
+            if($info['pid'])
+            {
+                $objSeller = kernel::single('sysmaker_data_seller');
+                $info['pname'] = $objSeller->getPName($info['pid']);
+            }
+        }
         $pagedata['data'] = $info;
-        
+
         return view::make('sysmaker/seller/detail/basic.html',$pagedata)->render();
     }
     public $detail_pwd = '密码修改';

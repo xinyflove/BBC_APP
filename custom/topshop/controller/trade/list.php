@@ -108,6 +108,10 @@ class topshop_ctl_trade_list extends topshop_controller{
             $this->__saveTradeSearchFilter($postFilter);
             $filter = $this->_checkParams($postFilter);
         }
+
+        if($this->loginSupplierId){
+            $filter['supplier_id'] = $this->loginSupplierId;
+        }
         $limit = $this->limit;
         $status = $filter['status'];
         if(is_array($filter['status']))
@@ -134,6 +138,8 @@ class topshop_ctl_trade_list extends topshop_controller{
             'logi_no' => $filter['logi_no'],
             'create_time_start' =>$filter['created_time_start'],
             'create_time_end' =>$filter['created_time_end'],
+            'pay_time_start' =>$filter['pay_time_start'],
+            'pay_time_end' =>$filter['pay_time_end'],
             'receiver_mobile' =>$filter['receiver_mobile'],
             'receiver_phone' =>$filter['receiver_phone'],
             'receiver_name' =>$filter['receiver_name'],
@@ -141,6 +147,7 @@ class topshop_ctl_trade_list extends topshop_controller{
             'pay_type' =>$filter['pay_type'],
             'shipping_type' =>$filter['shipping_type'],
             'settlement_status' =>$filter['settlement_status'],
+			'cart_number'=>$filter['cart_number'],
             'page_no' => intval($page),
             'page_size' =>intval($limit),
             'order_by' =>'created_time desc',
@@ -148,9 +155,9 @@ class topshop_ctl_trade_list extends topshop_controller{
             'supplier_id'=>$filter['supplier_id'],
             'is_virtual'=>$filter['is_virtual'],
 			'type'=>$filter['type'],
-            'fields' =>'order.spec_nature_info,shipping_type,tid,shop_id,user_id,status,payment,points_fee,total_fee,post_fee,payed_fee,receiver_name,trade_memo,created_time,receiver_mobile,discount_fee,adjust_fee,seat,order.title,order.price,order.num,order.pic_path,order.tid,order.oid,order.item_id,need_invoice,invoice_name,invoice_type,invoice_main,pay_type,cancel_status,receiver_idcard,order.is_virtual,is_cross,identity_card_number,order.init_shop_id',
+            'fields' =>'order.spec_nature_info,shipping_type,tid,shop_id,user_id,status,payment,points_fee,total_fee,post_fee,payed_fee,receiver_name,trade_memo,created_time,receiver_mobile,discount_fee,adjust_fee,seat,channel,exchange_code,order.title,order.price,order.num,order.pic_path,order.tid,order.oid,order.item_id,need_invoice,invoice_name,invoice_type,invoice_main,pay_type,cancel_status,receiver_idcard,order.is_virtual,is_cross,identity_card_number,order.init_shop_id,order.seller_id',
         );
-
+		//echo "<pre>";print_r($params);die();
         //显示订单售后状态
         $params['is_aftersale'] = true;
         $params['shop_id'] = $this->shopId;
@@ -187,6 +194,18 @@ class topshop_ctl_trade_list extends topshop_controller{
             $tradeList[$key]['user_login_name'] = $username[$value['user_id']];
             $tradeList[$key]['payinfo']=$paymentIds[$value['tid']];
             $tradeList[$key]['cancelinfo']=$cancel[$value['tid']];
+			/*add_2019/9/10_by_wanghaichao_start*/
+			if(!empty($value['order']['0']['seller_id'])){
+				$seller=app::get('sysmaker')->model('seller')->getRow('cart_number,name,mobile',array('seller_id'=>$value['order']['0']['seller_id']));
+				$tradeList[$key]['seller_name']=$seller['name'];
+				$tradeList[$key]['seller_cart_number']=$seller['cart_number'];
+				$tradeList[$key]['seller_mobile']=$seller['mobile'];
+			}else{
+				$tradeList[$key]['seller_name']='';
+				$tradeList[$key]['seller_cart_number']='';
+				$tradeList[$key]['seller_mobile']='';
+			}
+			/*add_2019/9/10_by_wanghaichao_end*/
         }
         $pagedata['orderlist'] =$tradeList;
         $pagedata['count'] =$count;
@@ -196,7 +215,6 @@ class topshop_ctl_trade_list extends topshop_controller{
         {
             $zitiDeliveryVcode = app::get('topshop')->rpcCall('trade.shop.delivery.vcode.get', ['tid' => implode(',', $tid),'shop_id'=>$this->shopId]);
         }
-
         $pagedata['deliveryVcode'] = $zitiDeliveryVcode;
         $pagedata['pagers'] = $this->__pager($postFilter,$page,$count);
 		/*add_2018/6/25_by_wanghaichao_start*/
@@ -264,6 +282,17 @@ class topshop_ctl_trade_list extends topshop_controller{
                 }
             }
 
+            if($key == 'pay_time')
+            {
+                $times = array_filter(explode('-',$value));
+                if($times)
+                {
+                    $filter['pay_time_start'] = strtotime($times['0']);
+                    $filter['pay_time_end'] = strtotime($times['1'])+86400;
+                    unset($filter['pay_time']);
+                }
+            }
+
             if($key=='status' && $value)
             {
                 //if($value <= 5 || ($value==8))
@@ -285,6 +314,7 @@ class topshop_ctl_trade_list extends topshop_controller{
                 }
             }
         }
+		$filter['cart_number']=strtoupper($filter['cart_number']);
         return $filter;
     }
 

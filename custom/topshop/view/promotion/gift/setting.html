@@ -1,1 +1,2 @@
-<input type="number" name="sku_num[<{$sku.sku_id}>]" value="<{$sku.datavalue.gift_num|default:1}>" class="package_price_input" >件
+<input type="number" name="sku_num[<{$sku.sku_id}>]" value="<{$sku.datavalue.gift_num|default:1}>" class="package_price_input" >件&nbsp;
+<input type="checkbox" name="withoutReturn[]" value='<{$sku.sku_id}>' <{if $sku.datavalue.withoutReturn}>checked='checked'<{/if}>> 退货无需退回赠品

@@ -218,7 +218,7 @@ class topwap_ctl_newshop extends topwap_controller{
                     'orderBy'   => $this->orderSort['addtime-l'],
                     /*modify_20171009_by_fanglongji_end*/
                     'pages' => 1,
-					'is_onsale'=>'no',
+					'is_onsale'=>'yes',
                 );
 				
 				/*modify_20171013_by_xinyufeng_start*/
@@ -230,7 +230,9 @@ class topwap_ctl_newshop extends topwap_controller{
 				if(!empty($item_sort)){
 					$itemList=$_tempItemsData['list'];
 					foreach($item_sort as $ke=>$v){
-						$itemList[$ke]['sort']=$v;
+						if($itemList[$ke]){
+							$itemList[$ke]['sort']=$v;
+						}
 					}
 					$itemList=$this->array_sort($itemList,'sort');
 					foreach($itemList as $ke=>$item){
@@ -320,7 +322,9 @@ class topwap_ctl_newshop extends topwap_controller{
                 if(!empty($item_sort)){
                     $itemList=$_tempItemsData['list'];
                     foreach($item_sort as $ke=>$v){
-                        $itemList[$ke]['sort']=$v;
+						if($itemList[$ke]){
+							$itemList[$ke]['sort']=$v;
+						}
                     }
                     $itemList=$this->array_sort($itemList,'sort');
                     foreach($itemList as $ke=>$item){

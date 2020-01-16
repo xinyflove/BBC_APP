@@ -9,7 +9,7 @@
                             <{foreach from=$widget.params.pic item=item_pic key=key_pic}>
                             <div class="swiper-slide">
                                 <a href="<{$item_pic.url}>" title="<{$item_pic.linkinfo}>">
-                                    <img data-src="<{$item_pic.link|storager:l}>">
+                                    <img data-src="<{$item_pic.link}>">
                                 </a>
                             </div>
                             <{/foreach}>
@@ -47,7 +47,9 @@
 
                             <{if $item_column.shop_id == $login_shop.shop_id}>
                             <div class="oversale">本店铺商品</div>
-                            <{elseif $item_column.sell_out <= 0}>
+                            <{elseif $item_column.status != 'onsale'}>
+                            <div class="oversale">已下架</div>
+                            <{elseif $item_column.real_store <= 0}>
                             <div class="oversale">已售罄</div>
                             <{elseif in_array($item_column.item_id, $initItemsId)}>
                             <div class="oversale">已优选</div>
@@ -60,7 +62,9 @@
 
                         <{if $item_column.shop_id == $login_shop.shop_id}>
                         <img src="/app/topshop/mall/statics/images/details/shop.png" alt="" class="recommend-oversale">
-                        <{elseif $item_column.sell_out <= 0}>
+                        <{elseif $item_column.status != 'onsale'}>
+                        <img src="/app/topshop/mall/statics/images/details/instock.png" alt="" class="recommend-oversale">
+                        <{elseif $item_column.real_store <= 0}>
                         <img src="/app/topshop/mall/statics/images/details/floridian.png" alt="" class="recommend-oversale">
                         <{elseif in_array($item_column.item_id, $initItemsId)}>
                         <img src="/app/topshop/mall/statics/images/details/opt.png" alt="" class="recommend-oversale">
@@ -92,14 +96,14 @@
                             <i>¥<{$item_row.price}></i>
                         </div>
 
-                        <{if $item_row.shop_id != $login_shop.shop_id && $item_row.sell_out > 0 && !in_array($item_row.item_id, $initItemsId)}>
+                        <{if $item_row.shop_id != $login_shop.shop_id && $item_row.status == 'onsale' && $item_row.real_store > 0 && !in_array($item_row.item_id, $initItemsId)}>
                         <div class="putaway-new" data-id="<{$item_row.item_id}>">
                             <i></i>
                         </div>
                         <{/if}>
                     </div>
 
-                    <{if $item_row.shop_id == $login_shop.shop_id || $item_row.sell_out <= 0 || in_array($item_row.item_id, $initItemsId)}>
+                    <{if $item_row.shop_id == $login_shop.shop_id || $item_row.real_store <= 0 || in_array($item_row.item_id, $initItemsId)}>
                     <!--<div class="price-right">
                         <img src="/app/topshop/mall/statics/images/details/icon_add.png" alt="">
                     </div>-->
@@ -107,7 +111,9 @@
 
                     <{if $item_row.shop_id == $login_shop.shop_id}>
                     <img src="/app/topshop/mall/statics/images/details/shop.png" alt="" class="over warn">
-                    <{elseif $item_row.sell_out <= 0}>
+                    <{elseif $item_row.status != 'onsale'}>
+                    <img src="/app/topshop/mall/statics/images/details/instock.png" alt="" class="over warn">
+                    <{elseif $item_row.real_store <= 0}>
                     <img src="/app/topshop/mall/statics/images/details/floridian.png" alt="" class="over warn">
                     <{elseif in_array($item_row.item_id, $initItemsId)}>
                     <img src="/app/topshop/mall/statics/images/details/opt.png" alt="" class="over warn">
@@ -119,3 +125,6 @@
     </div>
 </div>
 <{/if}>
+
+
+

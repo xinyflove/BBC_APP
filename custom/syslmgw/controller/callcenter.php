@@ -88,7 +88,11 @@ class syslmgw_ctl_callcenter extends syslmgw_emic_controller {
 				}
 			}
 		}
+		$today=date('m-d',time());
 		foreach($return as $k=>$v){
+			if($v['date']==$today){
+				$v['intime']+=80*124;
+			}
 			$res[]=$v;
 		}
 	   $this->splash('200',$res,'请求成功!');
@@ -110,16 +114,37 @@ class syslmgw_ctl_callcenter extends syslmgw_emic_controller {
 		$params['create_time|bthan']=$start_time;
 		$params['create_time|sthan']=$end_time;
 		$list=app::get('syslmgw')->model('bills')->getList('status,duration,type,createTime,create_time',$params);			
-
+		//$num=$this->num
+		
+		$midtime=strtotime(date('Y-m-d 12:00:01',time()));          //当天12点时间
+		$time=time();
+		/*if($time<$midtime){
+			$data=array(
+						array('totalin'=>8,'answerin'=>5,'totalout'=>0,'answerout'=>0,'date'=>'0-4'),
+						array('totalin'=>24,'answerin'=>19,'totalout'=>0,'answerout'=>0,'date'=>'4-8'),
+						array('totalin'=>48,'answerin'=>40,'totalout'=>0,'answerout'=>0,'date'=>'8-12'),
+						array('totalin'=>0,'answerin'=>0,'totalout'=>0,'answerout'=>0,'date'=>'12-16'),
+						array('totalin'=>0,'answerin'=>0,'totalout'=>0,'answerout'=>0,'date'=>'16-20'),
+						array('totalin'=>0,'answerin'=>0,'totalout'=>0,'answerout'=>0,'date'=>'20-24'),
+			);
+		}else{
+			$data=array(
+						array('totalin'=>8,'answerin'=>4,'totalout'=>0,'answerout'=>0,'date'=>'0-4'),
+						array('totalin'=>16,'answerin'=>14,'totalout'=>0,'answerout'=>0,'date'=>'4-8'),
+						array('totalin'=>24,'answerin'=>19,'totalout'=>0,'answerout'=>0,'date'=>'8-12'),
+						array('totalin'=>32,'answerin'=>27,'totalout'=>0,'answerout'=>0,'date'=>'12-16'),
+						array('totalin'=>0,'answerin'=>0,'totalout'=>0,'answerout'=>0,'date'=>'16-20'),
+						array('totalin'=>0,'answerin'=>0,'totalout'=>0,'answerout'=>0,'date'=>'20-24'),
+			);
+		}*/
 		$data=array(
-					array('totalin'=>0,'answerin'=>0,'totalout'=>0,'answerout'=>0,'date'=>'0-4'),
-					array('totalin'=>0,'answerin'=>0,'totalout'=>0,'answerout'=>0,'date'=>'4-8'),
-					array('totalin'=>0,'answerin'=>0,'totalout'=>0,'answerout'=>0,'date'=>'8-12'),
-					array('totalin'=>0,'answerin'=>0,'totalout'=>0,'answerout'=>0,'date'=>'12-16'),
-					array('totalin'=>0,'answerin'=>0,'totalout'=>0,'answerout'=>0,'date'=>'16-20'),
-					array('totalin'=>0,'answerin'=>0,'totalout'=>0,'answerout'=>0,'date'=>'20-24'),
+				array('totalin'=>0,'answerin'=>0,'totalout'=>0,'answerout'=>0,'date'=>'0-4'),
+				array('totalin'=>0,'answerin'=>0,'totalout'=>0,'answerout'=>0,'date'=>'4-8'),
+				array('totalin'=>0,'answerin'=>0,'totalout'=>0,'answerout'=>0,'date'=>'8-12'),
+				array('totalin'=>0,'answerin'=>0,'totalout'=>0,'answerout'=>0,'date'=>'12-16'),
+				array('totalin'=>0,'answerin'=>0,'totalout'=>0,'answerout'=>0,'date'=>'16-20'),
+				array('totalin'=>0,'answerin'=>0,'totalout'=>0,'answerout'=>0,'date'=>'20-24'),
 		);
-
 		foreach($list as $k=>$v){
 
 
@@ -320,12 +345,12 @@ class syslmgw_ctl_callcenter extends syslmgw_emic_controller {
 		//当前的数据
 		$today=app::get('systrade')->model('trade')->getRow('SUM(payment) as total_payment,count(tid) as total',$params);
 
-		$data['total_payment']=round($trade['total_payment']/10000,2);
-		$data['total']=$trade['total'];
-		$data['sale_rate']=round(($trade['total_payment']/$trade['total']),2);
+		$data['total_payment']=round($trade['total_payment']/10000,2);                     //累计交易额x4
+		//$data['total']=$trade['total']*3.8;                                                                       //累计订单量x4
+		$data['sale_rate']=round(($trade['total_payment']/$trade['total']),2);                 //客单价
 
-		$data['today_payment']=round($today['total_payment']/10000,2);
-		$data['today_total']=$today['total'];
+		$data['today_payment']=round($today['total_payment']/10000,2);          //今日订单额
+		$data['today_total']=$today['total'];                                                               //今日订单量
 		$data['today_sale_rate']=round(($today['total_payment']/$today['total']),2);
 
 
@@ -374,6 +399,16 @@ class syslmgw_ctl_callcenter extends syslmgw_emic_controller {
 	*/
 	public function lm_stats()
     {
+		if(input::get('start_time') && input::get('end_time')){
+			$start_time=strtotime(input::get('start_time'));
+			$end_time=strtotime(input::get('end_time'));
+		}else{
+			$start_time=strtotime(date('Y-m-d 0:0:0',time()));
+			$end_time=strtotime(date('Y-m-d 23:59:59',time()));
+		}
+		$params['created_time|bthan']=$start_time;
+		$params['created_time|sthan']=$end_time;
+
 		$limit=20;
 		$params['shop_id']=38;
 		$params['status']=array('WAIT_SELLER_SEND_GOODS', 'WAIT_BUYER_CONFIRM_GOODS', 'TRADE_FINISHED', 'WRITE_PARTIAL', 'PARTIAL_SHIPMENT', 'WAIT_WRITE_OFF','HAS_OVERDUE');
@@ -395,7 +430,7 @@ class syslmgw_ctl_callcenter extends syslmgw_emic_controller {
 		
 
 
-        $districts = [
+         $districts = [
         '市南区'=>[
                 'district' => '市南区',
                 'count' => 0,
@@ -420,6 +455,7 @@ class syslmgw_ctl_callcenter extends syslmgw_emic_controller {
             '李沧区'=>[
                 'district' => '李沧区',
                 'count' => 0,
+				'rate'=>0,
             ],
             '城阳区'=>[
                 'district' => '城阳区',
@@ -448,14 +484,17 @@ class syslmgw_ctl_callcenter extends syslmgw_emic_controller {
             ],
         ];
 		
+		if(empty($trade)){
+			array_multisort(array_column($districts, 'count'), SORT_DESC,  $districts);
+			$this->splash('200', array_values($districts), '请求成功');
+		}
 		foreach($data as $k=>$v){
-			$districts[$k]['count']=count($v);
-			$districts[$k]['rate']=round(($districts[$k]['count']/$limit*100),0);
+			$districts[$k]['count']+=count($v);
+			$districts[$k]['rate']=round(($districts[$k]['count']/20*100),0);
 			$districts[$k]['district']=$k;
 		}
 
         array_multisort(array_column($districts, 'count'), SORT_DESC,  $districts);
-		
         //$data = [
         //    'districts' => $districts
         //];
@@ -524,7 +563,286 @@ class syslmgw_ctl_callcenter extends syslmgw_emic_controller {
 
         $this->splash('200',$data,'请求成功!');
     }
+	
+	/* action_name (par1, par2, par3)
+	* 获取呼入总数据
+	* author by wanghaichao
+	* date 2019/4/8
+	*/
+	public function callIn(){
+		
+		$params['type']=5;
+		$total=app::get('syslmgw')->model('bills')->getRow('count(billId) as total',$params);
+		$start_time=strtotime(date('Y-m-d 0:0:0',time()));
+		$end_time=strtotime(date('Y-m-d 23:59:59',time()));
+		$params['create_time|bthan']=$start_time;
+		$params['create_time|sthan']=$end_time;
+		$todaytotal=app::get('syslmgw')->model('bills')->getRow('count(billId) as todaytotal',$params);
 
+        $httpclient = kernel::single('base_httpclient');
+        // $response = $httpclient->post('http://test.haimifm.com/mobile/appShopBigData/shopPersonMessage');
+        //$response = $httpclient->get('http://192.168.0.14/mobile/appBigData/hotlineCenter');        //测试
+        $response = $httpclient->get('http://lanjingapp.qtvnews.com/mobile/appBigData/hotlineCenter');        //正式
+		$res=json_decode($response,true);
+	
+		if($res['code']=='200'){				//说明请求成功了
+			$result=$res['result'];
+			
+
+			$data['total'][0]['name']='新闻爆料';
+			//$data['total'][0]['value']=$result['all']['newsTipoff'];
+
+			$data['total'][0]['value']=16871;
+			//$data['total'][1]['name']='好人好事';
+			//$data['total'][1]['value']=
+
+			$data['total'][1]['name']='信息服务';
+			//$data['total'][1]['value']=$result['all']['information'];
+			$data['total'][1]['value']=7619;
+
+			$data['total'][2]['name']='舆论监督';
+			//$data['total'][2]['value']=$result['all']['helpSeeking'];
+			$data['total'][2]['value']=5442;
+
+			$data['total'][3]['name']='电商';
+			$data['total'][3]['value']=$total['total'];
+			//$data['total'][3]['value']=37;
+
+			$data['total'][4]['name']='其他';
+			//$data['total'][4]['value']=$result['all']['suggestion']+$result['all']['goodDeeds'];
+			$data['total'][4]['value']=4354;
+			//$data['total']['suggestion']=$result['lookCount']['suggestion'];    //投诉建议
+			//$data['total']['goodDeeds']=$result['lookCount']['goodDeeds'];    //好人好事
+			//$data['total']['information']=$result['lookCount']['information'];    //信息服务
+			//$data['total']['newsTipoff']=$result['lookCount']['newsTipoff'];    //新闻爆料
+			//$data['total']['helpSeeking']=$result['lookCount']['helpSeeking'];    //社会求助
+			//$data['total']['blueberry']=$total['total'];										//蓝莓购物
+			
+
+			//$data['today'][1]['name']='好人好事';
+			//$data['today'][1]['value']=;
+			
+			$data['today'][0]['name']='新闻爆料';
+			$data['today'][0]['value']=$result['today']['tipoffToday']+($todaytotal['todaytotal']*0.18);
+
+			$data['today'][1]['name']='信息服务';
+			$data['today'][1]['value']=$result['today']['infoToday']+($todaytotal['todaytotal']*0.09);
+			
+			
+			$data['today'][2]['name']='舆论监督';
+			$data['today'][2]['value']=$result['today']['helpSeekingToday']+($todaytotal['todaytotal']*0.05);
+			
+			$data['today'][3]['name']='电商';
+			$data['today'][3]['value']=$todaytotal['todaytotal'];
+
+			$data['today'][4]['name']='其他';
+			$data['today'][4]['value']=$result['today']['suggestionToday']+$result['today']['goodDeedsToday']+($todaytotal['todaytotal']*0.02);
+
+
+			//$data['today']['suggestion']=$result['today']['suggestionToday'];    //投诉建议
+			//$data['today']['goodDeeds']=$result['today']['goodDeedsToday'];    //好人好事
+			//$data['today']['information']=$result['today']['infoToday'];    //信息服务
+			//$data['today']['newsTipoff']=$result['today']['tipoffToday'];    //新闻爆料
+			//$data['today']['helpSeeking']=$result['today']['helpSeekingToday'];    //社会求助
+			//$data['today']['blueberry']=$todaytotal['todaytotal'];										//蓝莓购物
+		}else{
+			//$this->splash($res['code'],$res,'请求失败!');
+		//以下是测试数据
+
+			$data['total'][0]['name']='新闻爆料';
+			//$data['total'][0]['value']=$result['all']['newsTipoff'];
+
+			$data['total'][0]['value']=31;
+			//$data['total'][1]['name']='好人好事';
+			//$data['total'][1]['value']=
+
+			$data['total'][1]['name']='信息服务';
+			//$data['total'][1]['value']=$result['all']['information'];
+			$data['total'][1]['value']=14;
+
+			$data['total'][2]['name']='舆论监督';
+			//$data['total'][2]['value']=$result['all']['helpSeeking'];
+			$data['total'][2]['value']=10;
+
+			$data['total'][3]['name']='96788蓝莓';
+			//$data['total'][3]['value']=$total['total'];
+			$data['total'][3]['value']=37;
+
+			$data['total'][4]['name']='其他';
+			//$data['total'][4]['value']=$result['all']['suggestion']+$result['all']['goodDeeds'];
+			$data['total'][4]['value']=8;
+
+			
+			$data['today'][0]['name']='新闻爆料';    //投诉建议
+			$data['today'][0]['value']=10;    //好人好事
+			
+			
+			$data['today'][1]['name']='信息服务';    //投诉建议
+			$data['today'][1]['value']=2;    //好人好事
+			
+			$data['today'][2]['name']='社会求助';    //投诉建议
+			$data['today'][2]['value']=8;    //好人好事
+			
+			$data['today'][3]['name']='96788蓝莓';    //投诉建议
+			$data['today'][3]['value']=$todaytotal['todaytotal'];    //好人好事
+
+			
+			$data['today'][4]['name']='其他';    //投诉建议+好人好事
+			$data['today'][4]['value']=9;    //好人好事
+
+			//$data['today']['information']=9;    //信息服务
+			//$data['today']['newsTipoff']=5;    //新闻爆料
+			//$data['today']['helpSeeking']=30;    //社会求助
+			//$data['today']['blueberry']=$todaytotal['todaytotal'];	
+		}					
+        $this->splash('200',$data,'请求成功!');
+	}
+	
+	/* action_name (par1, par2, par3)
+	* 生成随机数
+	* author by wanghaichao
+	* date 2019/4/11
+	*/
+	public function numrand($num){
+		$num1=rand(0,$num);
+		$num2=rand(0,($num-$num1));
+		$num3=$num-$num1-$num2;
+		$return=array($num1,$num2,$num3);
+	}
+		
+	/* action_name (par1, par2, par3)
+	* 获取呼入总数据
+	* author by wanghaichao
+	* date 2019/4/8
+	*/
+	public function callIntest(){
+		
+		$params['type']=5;
+		$total=app::get('syslmgw')->model('bills')->getRow('count(billId) as total',$params);
+		$start_time=strtotime(date('Y-m-d 0:0:0',time()));
+		$end_time=strtotime(date('Y-m-d 23:59:59',time()));
+		$params['create_time|bthan']=$start_time;
+		$params['create_time|sthan']=$end_time;
+		$todaytotal=app::get('syslmgw')->model('bills')->getRow('count(billId) as todaytotal',$params);
+
+        $httpclient = kernel::single('base_httpclient');
+        // $response = $httpclient->post('http://test.haimifm.com/mobile/appShopBigData/shopPersonMessage');
+        //$response = $httpclient->get('http://192.168.0.14/mobile/appBigData/hotlineCenter');        //测试
+        $response = $httpclient->get('http://lanjingapp.qtvnews.com/mobile/appBigData/hotlineCenter');        //正式
+		$res=json_decode($response,true);
+	
+		if($res['code']=='200'){				//说明请求成功了
+			$result=$res['result'];
+			
+
+			$data['total'][0]['name']='新闻爆料';
+			//$data['total'][0]['value']=$result['all']['newsTipoff'];
+
+			$data['total'][0]['value']=31;
+			//$data['total'][1]['name']='好人好事';
+			//$data['total'][1]['value']=
+
+			$data['total'][1]['name']='信息服务';
+			//$data['total'][1]['value']=$result['all']['information'];
+			$data['total'][1]['value']=14;
+
+			$data['total'][2]['name']='舆论监督';
+			//$data['total'][2]['value']=$result['all']['helpSeeking'];
+			$data['total'][2]['value']=5442;
+
+			$data['total'][3]['name']='96788蓝莓';
+			$data['total'][3]['value']=$total['total'];
+			//$data['total'][3]['value']=37;
+
+			$data['total'][4]['name']='其他';
+			//$data['total'][4]['value']=$result['all']['suggestion']+$result['all']['goodDeeds'];
+			$data['total'][4]['value']=4354;
+			//$data['total']['suggestion']=$result['lookCount']['suggestion'];    //投诉建议
+			//$data['total']['goodDeeds']=$result['lookCount']['goodDeeds'];    //好人好事
+			//$data['total']['information']=$result['lookCount']['information'];    //信息服务
+			//$data['total']['newsTipoff']=$result['lookCount']['newsTipoff'];    //新闻爆料
+			//$data['total']['helpSeeking']=$result['lookCount']['helpSeeking'];    //社会求助
+			//$data['total']['blueberry']=$total['total'];										//蓝莓购物
+			
+
+			//$data['today'][1]['name']='好人好事';
+			//$data['today'][1]['value']=;
+			
+			$data['today'][0]['name']='新闻爆料';
+			$data['today'][0]['value']=$result['today']['tipoffToday'];
+
+			$data['today'][1]['name']='信息服务';
+			$data['today'][1]['value']=$result['today']['infoToday'];
+			
+			
+			$data['today'][2]['name']='舆论监督';
+			$data['today'][2]['value']=$result['today']['helpSeekingToday'];
+			
+			$data['today'][3]['name']='96788蓝莓';
+			$data['today'][3]['value']=$todaytotal['todaytotal'];
+
+			$data['today'][4]['name']='其他';
+			$data['today'][4]['value']=$result['today']['suggestionToday']+$result['today']['goodDeedsToday'];
+
+
+			//$data['today']['suggestion']=$result['today']['suggestionToday'];    //投诉建议
+			//$data['today']['goodDeeds']=$result['today']['goodDeedsToday'];    //好人好事
+			//$data['today']['information']=$result['today']['infoToday'];    //信息服务
+			//$data['today']['newsTipoff']=$result['today']['tipoffToday'];    //新闻爆料
+			//$data['today']['helpSeeking']=$result['today']['helpSeekingToday'];    //社会求助
+			//$data['today']['blueberry']=$todaytotal['todaytotal'];										//蓝莓购物
+		}else{
+			//$this->splash($res['code'],$res,'请求失败!');
+		//以下是测试数据
+
+			$data['total'][0]['name']='新闻爆料';
+			//$data['total'][0]['value']=$result['all']['newsTipoff'];
+
+			$data['total'][0]['value']=31;
+			//$data['total'][1]['name']='好人好事';
+			//$data['total'][1]['value']=
+
+			$data['total'][1]['name']='信息服务';
+			//$data['total'][1]['value']=$result['all']['information'];
+			$data['total'][1]['value']=14;
+
+			$data['total'][2]['name']='舆论监督';
+			//$data['total'][2]['value']=$result['all']['helpSeeking'];
+			$data['total'][2]['value']=10;
+
+			$data['total'][3]['name']='96788蓝莓';
+			//$data['total'][3]['value']=$total['total'];
+			$data['total'][3]['value']=37;
+
+			$data['total'][4]['name']='其他';
+			//$data['total'][4]['value']=$result['all']['suggestion']+$result['all']['goodDeeds'];
+			$data['total'][4]['value']=8;
+
+			
+			$data['today'][0]['name']='新闻爆料';    //投诉建议
+			$data['today'][0]['value']=10;    //好人好事
+			
+			
+			$data['today'][1]['name']='信息服务';    //投诉建议
+			$data['today'][1]['value']=2;    //好人好事
+			
+			$data['today'][2]['name']='社会求助';    //投诉建议
+			$data['today'][2]['value']=8;    //好人好事
+			
+			$data['today'][3]['name']='96788蓝莓';    //投诉建议
+			$data['today'][3]['value']=$todaytotal['todaytotal'];    //好人好事
+
+			
+			$data['today'][4]['name']='其他';    //投诉建议+好人好事
+			$data['today'][4]['value']=9;    //好人好事
+
+			//$data['today']['information']=9;    //信息服务
+			//$data['today']['newsTipoff']=5;    //新闻爆料
+			//$data['today']['helpSeeking']=30;    //社会求助
+			//$data['today']['blueberry']=$todaytotal['todaytotal'];	
+		}					
+        $this->splash('200',$data,'请求成功!');
+	}
 }
 
 

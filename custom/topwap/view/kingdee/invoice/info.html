@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>输入发票信息</title>
+    <{css app="topwap" src="min/style.min.css"}>
+    <{css app="topwap" src="kingdee/public.min.css"}>
+    <{css app="topwap" src="kingdee/myorder.min.css"}>
+</head>
+<body>
+<form id="invoice_form">
+    <input type="hidden" name="tid" value="<{$tid}>">
+    <div class="m-order-into">
+        <div class="into-choose">
+            <p>发票抬头</p>
+            <ul class="choose-tab">
+                <li class="active" data-active='0'>个人</li>
+                <li data-active='1'>企业</li>
+                <input type="hidden" value="0" name="invoice_name_type">
+            </ul>
+        </div>
+        <div class="into-input">
+            <div class="name">
+                <p>下单手机号</p>
+                <input type="text" name="trade_mobile" placeholder="下单手机号，用于验证">
+            </div>
+        </div>
+        <div class="into-input person">
+            <div class="name">
+                <p>姓名</p>
+                <input type="text" name="person_name" placeholder="请输入姓名">
+            </div>
+            <div class="card">
+                <p>身份证号</p>
+                <input type="text" name="identity_card_number" placeholder="请输入身份证号">
+            </div>
+            <div class="phone">
+                <p>手机号</p>
+                <input type="text" name="personal_mobile" placeholder="请输入手机号">
+            </div>
+        </div>
+        <div class="into-input firm">
+            <div class="name">
+                <p>企业名称</p>
+                <input type="text" name="company_name" placeholder="请输入企业名称">
+            </div>
+            <div class="card">
+                <p>纳税人识别号</p>
+                <input type="text" name="registration_number" placeholder="请输入纳税人识别号">
+            </div>
+            <div class="phone">
+                <p>企业电话</p>
+                <input type="text" name="company_phone" placeholder="请输入企业手机号">
+            </div>
+        </div>
+        <div class="into-btn">
+            <a href="javascript:void(0)" onclick="submit_invoice()">提交</a>
+        </div>
+    </div>
+</form>
+<{script app="topwap" src="flexible.min.js"}>
+<{script src="shopex.js" app="topwap"}>
+<script src="/app/topshop/mall/statics/lib/jquery/jquery-3.3.0.min.js"></script>
+<script>
+    function submit_invoice()
+    {
+        $.ajax({
+            type:'POST',
+            dataType:'json',
+            data:$('#invoice_form').serialize(),
+            url:'<{url action=topwap_ctl_kingdee_invoice@invoiceSubmit}>',
+            success:function(res) {
+                if(res.error) {
+                    shopex.alert(res.message);
+                    return;
+                }
+                if(res.success) {
+                    shopex.alert(res.message, 'success');
+                }
+                if(res.redirect) {
+                    location.href = res.redirect;
+                }
+            }
+        })
+    }
+
+    $(function(){
+
+        $('.choose-tab li').click(function(){
+            $(this).addClass('active').siblings().removeClass('active');
+            if($(this).attr('data-active')==0){
+                $('.person').show();
+                $('.firm').hide();
+            }else{
+                $('.person').hide();
+                $('.firm').show();
+            }
+            $('input[name=invoice_name_type]').val($(this).attr('data-active'));
+        });
+
+
+    })
+</script>
+</body>
+</html>

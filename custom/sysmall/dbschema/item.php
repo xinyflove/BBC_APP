@@ -54,13 +54,25 @@ return  array(
             'comment' => app::get('sysmall')->_('审核不通过原因'),
             'order' => 13,
         ),
+        'sale_type' => array(
+            'type' => array(
+                0 => app::get('sysmall')->_('全部'),
+                1 => app::get('sysmall')->_('仅主持人'),
+            ),
+            'default' => 0,
+            'in_list'=>true,
+            'default_in_list'=>true,
+            'label' => app::get('sysmall')->_('销售类型'),
+            'comment' => app::get('sysmall')->_('销售类型'),
+            'order' => 14,
+        ),
         'created_time' => array(
             'type' => 'time',
             'in_list' => true,
             'default_in_list' => true,
             'comment' => app::get('sysmall')->_('创建时间'),
             'label' => app::get('sysmall')->_('创建时间'),
-            'order' => 14,
+            'order' => 15,
         ),
         'modified_time' => array(
             'type' => 'last_modify',
@@ -68,7 +80,7 @@ return  array(
             'comment' => app::get('sysmall')->_('最后更新时间'),
             'in_list' => true,
             'default_in_list' => true,
-            'order' => 15,
+            'order' => 16,
         ),
         'deleted' => array(
             'type' => array(
@@ -77,6 +89,7 @@ return  array(
             ),
             'default' => 0,
             'comment' => app::get('sysmall')->_('是否删除'),
+            'order' => 17,
         ),
     ),
     'primary' => 'mall_item_id',

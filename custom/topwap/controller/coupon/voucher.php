@@ -25,6 +25,7 @@ class topwap_ctl_coupon_voucher extends topwap_ctl_member{
             $pagedata['keyword']=$filter['keyword'];
         }
 		$pagedata['status']=0;
+		$pagedata['confirm_type'] = $filter['confirm_type'] ? $filter['confirm_type'] : 0;
         return $this->page('topwap/coupon/voucher/list.html', $pagedata);
 	}
 
@@ -117,6 +118,7 @@ class topwap_ctl_coupon_voucher extends topwap_ctl_member{
             $status="";
 		}
         $params['status'] = $status;
+        $params['confirm_type'] = trim($postdata['confirm_type']);
         $params['user_id'] = userAuth::id();
         $params['page_no'] = intval($postdata['pages']) ? intval($postdata['pages']) : 1;
         $params['page_size'] = intval($this->limit);
@@ -132,7 +134,7 @@ class topwap_ctl_coupon_voucher extends topwap_ctl_member{
                 'shop_id'=>$row['shop_id'],
                 'item_id'=>$row['item_id'],
                 'fields'=>[
-                    'rows'=>'image_default_id,title,is_ticket'
+                    'rows'=>'image_default_id,title,is_ticket,confirm_type'
                 ]
             ];
             $item_info = app::get('topwap')->rpccall('item.get',$item_where);
@@ -164,6 +166,7 @@ class topwap_ctl_coupon_voucher extends topwap_ctl_member{
 			$voucherlist[$key]['end_time']=date('Y.m.d',$row['end_time']);
 			$orderInfo=app::get('systrade')->model('order')->getRow('spec_nature_info',array('oid'=>$row['oid']));
 			$voucherlist[$key]['spec_nature_info']=$orderInfo['spec_nature_info'];
+			$voucherlist[$key]['confirm_type']=$item_info['confirm_type'];
         }
 		//echo "<pre>";print_r($voucherlist);die();
         $pagedata['vouchers'] = $voucherlist;
@@ -227,11 +230,12 @@ class topwap_ctl_coupon_voucher extends topwap_ctl_member{
             'shop_id'=>$order['shop_id'],
             'item_id'=>$order['item_id'],
             'fields'=>[
-                'rows'=>'image_default_id'
+                'rows'=>'image_default_id,confirm_type'
             ]
         ];
         $item_info = app::get('topwap')->rpccall('item.get',$item_where);
         $order['pic_path'] = $item_info['image_default_id'];
+		$order['confirm_type']=$item_info['confirm_type'];
         /*add_end_gurundong_2017/11/3*/
 
 		//取出供应商的信息

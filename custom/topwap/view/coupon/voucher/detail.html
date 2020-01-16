@@ -237,7 +237,7 @@ header .header-right,header .header-left{color:#989898}
 				<{else}>
 				<del><{$voucher.voucher_code}></del>
 				<{/if}>
-				<div data-voucher-code="<{$voucher.voucher_code}>"  <{if $voucher.status=="WAIT_WRITE_OFF"}>class="ewm" <{/if}>><img src="/app/topwap/statics/static/img/ewm.png" /></div>
+				<div data-voucher-code="<{$voucher.voucher_code}>"  <{if $voucher.status=="WAIT_WRITE_OFF"}>class="ewm" <{/if}> <{if $order.confirm_type==2}>data-voucher-logo="/app/topwap/statics/static/img/voucher_logo2.png"<{else}>data-voucher-logo="/app/topwap/statics/static/img/voucher_logo1.png"<{/if}>><img src="/app/topwap/statics/static/img/ewm.png" /></div>
 			</li>
 			<{/foreach}>
 			<!--<li>
@@ -266,14 +266,17 @@ header .header-right,header .header-left{color:#989898}
 <section class="tv-ticket-dialog">
 	<div class="cd-popup" id="dialog">
 		<div class="cd-popup-container cd-popup-container1">
-			<div id="code_ewm" style="padding:50px;">
+			<div id="code_ewm" style="text-align: center;padding-top: 50px;">
 			</div>
 			<!--<img id="code_ewm" src="/app/topwap/statics/static/img/ewm.png"/>-->
 		</div>
 	</div>
 </section>
 
-<script src="/app/topwap/statics/static/js/jquery.qrcode.min.js"></script>
+<!--<script src="/app/topwap/statics/static/js/jquery.qrcode.min.js"></script>-->
+<script src="/app/topwap/statics/scripts/jquery-2.1.4.min.js"></script>
+<script src="/app/topwap/statics/static/js/jquery.qrcode.js"></script>
+<script src="/app/topwap/statics/static/js/utf.js"></script>
 <script>
 	//打开窗口
 	//$('.ewm').on('touchstart', function(event) {
@@ -294,16 +297,18 @@ header .header-right,header .header-left{color:#989898}
 	//打开窗口
 	$('body').on('tap','.ewm', function(event) {
 		var voucher_code=$(this).attr('data-voucher-code');
+		var voucher_logo=$(this).attr('data-voucher-logo');
 		var that=$(this);
 		//alert(voucher_code);
 		
 		$('#code_ewm').empty();
 		
 		$('#code_ewm').qrcode({
-			render: "table",
+			render: "canvas",
 			width: 100,
 			height:100,
 			text: voucher_code,
+			src:voucher_logo,
 		});
 		event.preventDefault();
 		$('.cd-popup').addClass('is-visible1');

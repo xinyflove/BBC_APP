@@ -13,6 +13,9 @@ class topshop_ctl_trade_cancel extends topshop_controller {
         }
         $apiParams['page_no']  = intval(input::get('pages',1));
         $apiParams['page_size'] = intval($this->limit);
+        if($this->loginSupplierId){
+            $apiParams['supplier_id'] = $this->loginSupplierId;
+        }
 		/*add_2018/6/25_by_wanghaichao_start*/
 		$pagedata['is_compere']=$this->sellerInfo['is_compere'];
 		//把主持人的查询放进去
@@ -25,7 +28,7 @@ class topshop_ctl_trade_cancel extends topshop_controller {
 			$apiParams['fields'] = '*';
 			$data = app::get('topshop')->rpcCall('trade.cancel.list.get', $apiParams);           //这个接口是按常规处理的,如果有必要可以按照上面的接口查询,暂时先这样
 		}
-		
+
         if( $data['total'] )
         {
             $pagedata['list'] = $data['list'];
@@ -76,7 +79,9 @@ class topshop_ctl_trade_cancel extends topshop_controller {
                 $apiParams['created_time_end'] = strtotime($times['1'])+86400;
             }
         }
-
+        if($this->loginSupplierId){
+            $apiParams['supplier_id'] = $this->loginSupplierId;
+        }
         $apiParams['shop_id'] = $this->shopId;
         $apiParams['page_no']  = intval(input::get('pages',1));
         $apiParams['page_size'] = intval($this->limit);
@@ -209,7 +214,7 @@ class topshop_ctl_trade_cancel extends topshop_controller {
 		/*add_2018/7/4_by_wanghaichao_start*/
 		//判断是否是主持人的
 		$pagedata['is_compere']=$this->sellerInfo['is_compere'];
-		/*add_2018/7/4_by_wanghaichao_end*/		
+		/*add_2018/7/4_by_wanghaichao_end*/
     	return $this->page('topshop/trade/cancel/detail.html',$pagedata);
     }
 
@@ -289,7 +294,7 @@ class topshop_ctl_trade_cancel extends topshop_controller {
         $url = url::action('topshop_ctl_trade_cancel@detail',['cancel_id' => $cancelId]);
         return $this->splash('success', $url, '退款成功', true);
     }
-	
+
 	/* action_name (par1, par2, par3)
 	* 推送商品订单取消管理
 	* author by wanghaichao
@@ -302,7 +307,7 @@ class topshop_ctl_trade_cancel extends topshop_controller {
         {
 			$mintime=strtotime(date('Y-m-d 00:00:00', time()));
             $maxtime=strtotime(date('Y-m-d 23:59:59', time()));
-    
+
 			$filter="b.pay_time > '{$mintime}' and b.pay_time < '{$maxtime}' and (a.seller_id !='' or a.init_shop_id!=0 or a.init_shop_id!='')";
 			//$refundfilter ="b.finish_time >'{$mintime}' and b.finish_time<'{$maxtime}' and (a.seller_id !='' or a.init_shop_id!=0 or a.init_shop_id!='') and b.status='succ'";
 
@@ -313,7 +318,7 @@ class topshop_ctl_trade_cancel extends topshop_controller {
         }else{
             //$filter['pay_time|than']=$params['time_start'];
             //$filter['pay_time|lthan']=$params['time_end'];
-			
+
 			$filter="b.pay_time > '{$params['time_start']}' and b.pay_time < '{$params['time_end']}' and (a.seller_id !='' or a.seller_id!=0 or a.init_shop_id!=0 or a.init_shop_id!='')";
 
 			//$refundfilter ="b.finish_time >'{$params['time_start']}' and b.finish_time<'{$params['time_end']}' and (a.seller_id !='' or a.init_shop_id!=0 or a.init_shop_id!='') and b.status='succ'";
@@ -380,8 +385,8 @@ class topshop_ctl_trade_cancel extends topshop_controller {
 		$pagedata['push']=1;
         return $this->page('topshop/trade/cancel/pushlist.html', $pagedata);
 	}
-	
-	/* 
+
+	/*
 	* 推送商品取消订单
 	* author by wanghaichao
 	* date 2018/7/4
@@ -448,7 +453,7 @@ class topshop_ctl_trade_cancel extends topshop_controller {
 		$pagedata['push']=1;
         return view::make('topshop/trade/cancel/item.html', $pagedata);
     }
-	
+
 	/* action_name (par1, par2, par3)
 	* 推送商品的详情
 	* author by wanghaichao
@@ -488,13 +493,13 @@ class topshop_ctl_trade_cancel extends topshop_controller {
         $params['tid'] = $tid;
 		$params['init_shop_id']=$this->shopId;
         $params['fields'] = "user_id,tid,status,payment,points_fee,ziti_addr,ziti_memo,shipping_type,post_fee,pay_type,payed_fee,receiver_state,receiver_city,receiver_district,receiver_address,receiver_zip,trade_memo,shop_memo,receiver_name,receiver_mobile,cancel_status,orders.price,orders.num,orders.title,orders.item_id,orders.pic_path,total_fee,discount_fee,buyer_rate,adjust_fee,orders.total_fee,orders.adjust_fee,created_time,pay_time,consign_time,end_time,shop_id,orders.bn,cancel_reason,orders.refund_fee,orders.gift_data,orders.init_shop_id,orders.cost_price";
-	
+
         $tradeInfo = app::get('topshop')->rpcCall('trade.get',$params,'seller');
 		if(empty($tradeInfo['orders'])){
 			$pagedata['data']='';
 			return $this->page('topshop/trade/cancel/detail.html',$pagedata);
 		}
-		
+
 		//这里不能给原始店铺展示售价,只能给他展示他的供货价
 		$t_total_fee=''; //订单的总金额;
 		foreach($tradeInfo['orders'] as $k=>$v){

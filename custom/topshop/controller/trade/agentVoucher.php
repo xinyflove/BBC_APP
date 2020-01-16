@@ -61,6 +61,9 @@ class topshop_ctl_trade_agentVoucher extends topshop_controller{
 //        dump($postFilter);die;
         $postFilter['shop_id']=$this->shopId;
         $filter = $this->_checkParams($postFilter);
+        if($this->loginSupplierId){
+            $filter['supplier_id'] = $this->loginSupplierId;
+        }
         $objMdlVoucher=app::get('systrade')->model('agent_vocher');
         $count=$objMdlVoucher->count($filter);
         $page =  $filter['pages'] ? $filter['pages'] : 1;
@@ -71,6 +74,7 @@ class topshop_ctl_trade_agentVoucher extends topshop_controller{
         if(isset($filter['agent_price'])){
             $filter['agent_price'] = $filter['agent_price'] === 'on'?1:0;
         }
+
 //        var_dump($filter);die;
         $result=$objMdlVoucher->batch_dump($filter,'*','default',$offset,$limit,null);
 //        var_dump($result);die;
@@ -119,7 +123,11 @@ class topshop_ctl_trade_agentVoucher extends topshop_controller{
         /** @var base_db_model $objMdlVoucher */
         try{
             $objMdlVoucher=app::get('systrade')->model('agent_vocher');
-            $res = $objMdlVoucher->update(['end_time'=>$endTime],['vocher_id'=>$id]);
+            $filter = ['vocher_id'=>$id];
+            if($this->loginSupplierId){
+                $filter['supplier_id'] = $this->loginSupplierId;
+            }
+            $res = $objMdlVoucher->update(['end_time'=>$endTime], $filter);
             if(is_int($res) && $res>0)
             {
                 return json_encode(['status'=>true,'message'=>'修改成功']);

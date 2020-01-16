@@ -13,8 +13,9 @@ class topshop_ctl_shop_setting extends topshop_controller{
     public function saveSetting()
     {
         $postData = input::get();
+		$postData['shop_id']=shopAuth::getShopId();
 		if($postData['maker_rate']>100 || $postData['maker_rate']<0){
-			return $this->splash('error',null,'主持人佣金请填写小于100的正数');
+			return $this->splash('error',null,'创客佣金请填写小于100的正数');
 		}
         $validator = validator::make(
             [$postData['shop_descript']],['max:200'],['店铺描述不能超过200个字符!']
@@ -107,6 +108,51 @@ class topshop_ctl_shop_setting extends topshop_controller{
 		
         return $this->splash($result,$url,$msg,true);
 	}
+
+	/* action_name (par1, par2, par3)
+	* 设置创客佣金
+	* author by wanghaichao
+	* date 2018/11/22
+	*/
+	public function setCommission(){
+        $shopdata = app::get('topshop')->rpcCall('shop.get',array('shop_id'=>shopAuth::getShopId()),'seller');
+        $pagedata['shop'] = $shopdata;
+        $this->contentHeaderTitle = app::get('topshop')->_('创客佣金设置');
+        return $this->page('topshop/shop/setCommission.html', $pagedata);
+	}
+	
+	/**
+	* 二维码背景
+	* author by wanghaichao
+	* date 2019/7/31
+	*/
+	public function bgqr(){
+        $shopdata = app::get('topshop')->rpcCall('shop.get',array('shop_id'=>shopAuth::getShopId(),'fields'=>'qr_bg'));
+        $pagedata['shop'] = $shopdata;
+        $this->contentHeaderTitle = app::get('topshop')->_('创客二维码背景设置');
+        return $this->page('topshop/shop/bgqr.html', $pagedata);
+	}
+	
+	/**
+	* 下载背景图
+	* author by wanghaichao
+	* date 2019/8/7
+	*/
+	public function download(){
+		
+        $filename = input::get('file');
+        //设置头信息
+        /*if(input::get('type') == 'yulan')
+        {
+            $filename = 'http://www.tvplaza.cn/'.$filename;
+        }*/
+
+        header('Content-Disposition:attachment;filename=' . basename($filename));
+        header('Content-Length:' . filesize($filename));
+        //读取文件并写入到输出缓冲
+        readfile($filename);
+	}
+	
 
 }
 

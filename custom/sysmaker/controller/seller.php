@@ -18,12 +18,22 @@ class sysmaker_ctl_seller extends desktop_controller{
                 'href'=>'?app=sysmaker&ctl=seller&act=editPage',
                 'target'=>'dialog::{title:\''.app::get('sysmaker')->_('添加用户').'\',width:500,height:380}'
             ),
+            array(
+                'label'=>app::get('sysmaker')->_('删除'),
+                'icon' => 'download.gif',
+                'submit' => '?app=sysmaker&ctl=seller&act=doDelete',
+                'confirm' => app::get('sysmaker')->_('确定要删除选中用户？'),
+            ),
         );
 
         $params = array(
             'title' => app::get('sysmaker')->_('用户列表'),
             'actions'=> $actions,
             'allow_detail_popup' => false,// 不允许新窗口查看
+            'use_buildin_delete' => false,
+            'base_filter' =>array( //对列表数据进行过滤筛选
+                'deleted' => 0,
+            ),
         );
         
         return $this->finder('sysmaker_mdl_account', $params);
@@ -89,6 +99,8 @@ class sysmaker_ctl_seller extends desktop_controller{
         }
         
         $objSeller = kernel::single('sysmaker_data_seller');
+        $seller['status'] = 'success';
+        $seller['reason'] = '平台添加帐号，审核通过';
         $flag = $objSeller->saveSeller($seller,$msg);
         if(!$flag){
             $this->adminlog("{$msg}[{$seller['mobile']}]", 0);
@@ -238,6 +250,32 @@ class sysmaker_ctl_seller extends desktop_controller{
 
         $this->adminlog("{$msg}[{$seller['seller_id']}]", 1);
         return $this->splash('success',null ,$msg);
+    }
+
+    /**
+     * 删除创客等信息
+     */
+    public function doDelete()
+    {
+        $seller_id = input::get('seller_id');
+        // 开启事务
+        $this->begin('?app=sysmaker&ctl=seller&act=lists');
+
+        if(empty($seller_id))
+        {
+            $msg = "请选择要操作的数据项";
+            $this->end(false,$msg);
+        }
+        
+        try{
+            $filter = array('seller_id' => $seller_id);
+            kernel::single('sysmaker_data_seller')->delete($filter);
+        }catch(Exception $e){
+            $msg = $e->getMessage();
+            $this->end(false,$msg);
+        }
+
+        $this->end(true,app::get('sysmaker')->_('删除数据成功'));
     }
 
     /**

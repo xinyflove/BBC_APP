@@ -92,6 +92,8 @@ class topwap_ctl_sales extends topwap_controller{
             $pagedata['data']=$this->array_sort($sortData,'sort');
         }
 
+        $shopdata = app::get('topwap')->rpcCall('shop.get',array('shop_id'=>$shopId));
+		$pagedata['shopdata']=$shopdata;
         if($params['request_type']=='ajax'){
             if(empty($pagedata['data'])){
                 $data['html']=false;

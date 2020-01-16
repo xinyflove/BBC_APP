@@ -417,6 +417,47 @@
               </div>
             </div>
           </div>
+
+          <!--指定售卖地区配置开始 @auth:xinyufeng time:2019-01-17-->
+          <div class="form-group" id="region-form">
+            <label>
+              指定售卖地区：
+            </label>
+            <div id="region-detail">
+              <div class="well well-sm">
+                <h5>指定商品允许售卖的地区</h5>
+                <table class="table table-valign-middle bg-white">
+                  <tbody class="no-border" id="regiondata_grid">
+                    <tr>
+                      <{if empty($tmplData.area_conf)}>
+                      <td style="width: 83px;">
+                        <button class="btn btn-success btn-sm btn-editregionaddr" data-toggle="modal" data-target="#areaselect_modal" data-template="editregion_template">
+                          <i class="fa fa-plus-square-o"></i>
+                          编辑地区
+                        </button>
+                      </td>
+                      <td style="text-align: left;">
+                        未选择地区
+                      </td>
+                      <{else}>
+                      <td style="width: 83px;">
+                        <a class="btn btn-success btn-sm action-edit" data-toggle="modal" data-target="#areaselect_modal" data-template="editregion_template">
+                          <i class="fa fa-plus-square-o"></i>
+                          编辑地区
+                        </a>
+                      </td>
+                      <td style="text-align: left;">
+                        <span><{$tmplData.area_conf|areaNameById}></span>
+                        <input type="hidden" name="area_conf" value="<{$tmplData.area_conf}>">
+                      </td>
+                      <{/if}>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <!--指定售卖地区配置结束-->
         </div>
       </div>
     </div>
@@ -572,6 +613,21 @@
       </ul>
     </td>
     <td><a href="javascript:void(0);" class="action-del"><small>删除</small></a></td>
+  </tr>
+</textarea>
+<!-- 指定售卖地区模板 @auth:xinyufeng time:2019-01-17 -->
+<textarea class="sr-only" id="region_template">
+  <tr>
+    <td style="width: 83px;">
+      <a class="btn btn-success btn-sm action-edit" data-toggle="modal" data-target="#areaselect_modal" data-template="editregion_template">
+        <i class="fa fa-plus-square-o"></i>
+        编辑地区
+      </a>
+    </td>
+    <td style="text-align: left;">
+      <span>{areas}</span>
+      <input type="hidden" name="area_conf" value="{values}">
+    </td>
   </tr>
 </textarea>
 
@@ -825,6 +881,26 @@ area_list.jsonList({
     name: 'areas',
     success: function(self) {
         dialog.on('click', '.action-save', function(e){
+
+          /*指定售卖地区选择JS开始 @auth:xinyufeng time:2019-01-17*/
+          if(currtpl = 'editregion_template'){
+
+            var selected = self.getChecked(['value', 'id']);
+            var value = selected[0].join() || '未选择地区';
+            var id = selected[1].join();
+
+            var region = {
+              areas: value,
+              values: id
+            };
+            var row = $(substitute($('#region_template').val(), region));
+            row.appendTo(region_data_tbody.empty());
+
+            dialog.modal('hide');
+            return;
+          }
+          /*指定售卖地区选择JS结束*/
+
             if(!self.container.find('input[type=checkbox]:checked')[0]) {
                 return $('#messagebox').message('请至少选择一个地区。');
             }
@@ -1115,3 +1191,20 @@ $('.free-calculate').on('blur', '.money-number', function() {
   }
 });
 </script>
+<!--指定售卖地区JS开始 @auth:xinyufeng time:2019-01-17-->
+<script>
+  var region_data_tbody = $('#regiondata_grid');
+  // 指定商品售卖地区添加
+  $('.btn-editregionaddr').on('click', function(e) {
+    e.preventDefault();
+    getAreaData(this);
+  });
+  region_data_tbody.on('click', '.action-edit', function(e) {
+    $(this).parents('td').addClass('editing');
+    currtpl = $(this).attr('data-template');
+
+    var self = area_list.data('JSONList');
+    self && self.rebuild(getDisabled(this), getChecked(this));
+  });
+</script>
+<!--指定售卖地区JS结束-->

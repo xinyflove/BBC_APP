@@ -15,7 +15,13 @@
 <section class="container">
   <section class="section-container">
     <div class="pay-order-info content-center">
-      <p><{$error}></p>
+      <p>
+        <{if $error_info}>
+          <{$error_info}>
+        <{else}>
+          <{$error}>
+        <{/if}>
+      </p>
     </div>
   </section>
   <section class="shopex-content-padded">

@@ -1,0 +1,119 @@
+<{include file='topshop/cash/card_search.html'}>
+<input type="hidden" name="nav_name" value="card">
+<form action="" method="post" role="form">
+<div class="nav-tabs-custom" id="tabs">
+    <{include file='topshop/cash/nav_list.html'}>
+  <div id="data_node">
+    <div class="tab-content no-padding">
+        <div class="panel panel-default">
+            <div class="panel-body">
+
+                <li class="pull-right header export-filter">
+                    <div class="btn-group">
+                        <button data-url="<{url action=topshop_ctl_cash_card@exportView}>" class="btn btn-box-tool btn-export" data-widget="more"
+                                data-toggle="tooltip" title="" data-original-title="礼金卡导出">
+                                <i class="glyphicon glyphicon-download-alt"></i>
+                        </button>
+                        <button data-toggle="control-sidebar" class="btn btn-default">
+                            <div class="text-light-blue">
+                                <i class="fa fa-search"></i>
+                                搜索
+                            </div>
+                        </button>
+                    </div>
+                </li>
+
+            </div>
+        </div>
+      <table class="table table-hover table-goods">
+        <thead>
+        <tr>
+          <th>卡号</th>
+          <th>客户编码</th>
+          <th>价值礼金</th>
+          <th>创建时间</th>
+          <th>兑换用户</th>
+          <th>兑换时间</th>
+        </tr>
+        </thead>
+        <{if $cardList}>
+        <tbody>
+        <{foreach from=$cardList item=citem}>
+        <tr>
+          <td>
+            <{$citem.card_id}>
+          </td>
+          <td>
+            <{$citem.client_code}>
+          </td>
+          <td>
+            <{$citem.value}>
+          </td>
+          <td>
+            <{$citem.create_time|cdate:'Y-m-d H:i:s'}>
+          </td>
+          <td>
+            <{$citem.user_mobile}>
+          </td>
+          <td>
+            <{$citem.exchange_time|cdate:'Y-m-d H:i:s'}>
+          </td>
+        </tr>
+        <{/foreach}>
+        </tbody>
+        <{else}>
+        <tbody>
+        <tr>
+          <td algin="center" colspan="6">
+            <p class="help-block text-center">暂无数据</p>
+          </td>
+        </tr>
+        </tbody>
+        <{/if}>
+      </table>
+
+      <div class="text-right">
+            <{pagers data=$pagers}>
+            <{if $card_count > 0}>
+            <span class="page-number">共&nbsp;<em class="text-aqua"><{$card_count}></em>&nbsp;条记录</span>
+            <{/if}>
+      </div>
+    </div>
+  </div>
+</div>
+</form>
+<script>
+    // 重置表单
+    $('input[name="modified_time"]').val('');
+    $('#reset-form').on('click',function(){
+        $('input:visible').val('');
+    });
+    $('.reservation').daterangepicker({
+        format: 'YYYY/MM/DD',
+        opens: 'right'
+    });
+    $('.reservation').val('');
+
+    $('.btn-export').click(function (e) {
+        e.preventDefault();
+        var url = $(this).data('url');
+        var filter = null
+
+        var card_id = $('input[name=card_id]').val() ? $('input[name=card_id]').val() : '';
+        var client_code = $('input[name=client_code]').val() ? $('input[name=client_code]').val() : '';
+        var value = $('input[name=value]').val() ? $('input[name=value]').val() : '';
+        var mobile = $('input[name=mobile]').val() ? $('input[name=mobile]').val() : '';
+
+        filter = JSON.stringify({card_id, client_code, value, mobile});
+        $('.export-filter').attr('data-value', filter);
+        Modal.confirm({
+            msg: '是否确认导出当前筛选条件下的礼金卡？'
+        }).on(function (e) {
+            if (e == true) {
+                $('#exportDialog').modal({
+                    remote: url
+                });
+            }
+        });
+    })
+</script>

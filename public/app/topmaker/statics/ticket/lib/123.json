@@ -1,0 +1,46 @@
+{
+    "code": "200",
+    "message": "成功！",
+    "result": {
+        "count": 3,
+        "commentList": [
+            {
+                "state":0
+            },{
+                "state":1
+            },{
+                "state":2
+            },{
+                "state":1
+            },{
+                "state":0
+            },{
+                "state":1
+            },{
+                "state":1
+            },{
+                "state":2
+            },{
+                "state":1
+            },{
+                "state":1
+            },{
+                "state":0
+            },{
+                "state":2
+            },{
+                "state":2
+            },{
+                "state":1
+            },{
+                "state":1
+            },{
+                "state":0
+            },{
+                "state":1
+            }
+        ]
+           
+    },
+    "status": "success"
+}

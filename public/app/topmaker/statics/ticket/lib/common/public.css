@@ -1,0 +1,400 @@
+/*reset start*/
+*,
+*:before,
+*:after {
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+*{
+    margin: 0;
+    padding: 0;
+}
+html,
+body {
+	width:100%;
+	height:100%;
+    min-height: 100%;
+}
+
+html {
+    -ms-text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
+    /*禁止文本被选中*/
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select:none;
+    user-select:none;
+    /*兼容IE6-9的写法：onselectstart="return false;" unselectable="on"*/
+    -webkit-font-smoothing: antialiased;/*解决字体在移动端比例缩小后出现锯齿的问题*/
+}
+body {
+    margin: 0;
+    overflow-x:hidden;
+    /*开启moblie网页快速滚动和回弹的效果*/
+    -webkit-overflow-scrolling: touch;
+    -moz-overflow-scrolling: touch;
+    -ms-overflow-scrolling: touch;
+    -o-overflow-scrolling: touch;
+    overflow-scrolling: touch;
+    font-size: 16px;
+}
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+main,
+nav,
+section,
+summary {
+    display: block;
+}
+
+audio,
+canvas,
+progress,
+video {
+    display: inline-block;
+    vertical-align: baseline;
+}
+audio:not([controls]) {
+    display: none;
+    height: 0;
+}
+
+[hidden],
+template,
+script {
+    display: none;
+}
+
+a {
+    background-color: transparent;
+    text-decoration: none;
+    color: #333;
+}
+
+a:focus {
+    outline: thin dotted;
+}
+
+a:active,
+a:hover {
+    outline: 0;
+    text-decoration:none;
+}
+
+abbr[title] {
+    border-bottom: 1px dotted;
+}
+
+b,
+strong {
+    font-weight: bold;
+}
+
+pre {
+    white-space: pre-wrap;
+}
+
+q {
+    quotes: "\201C" "\201D" "\2018" "\2019";
+}
+
+small {
+    font-size: 80%;
+}
+
+sub,
+sup {
+    font-size: 75%;
+    line-height: 0;
+    position: relative;
+    vertical-align: baseline;
+}
+sup {
+    top: -0.5em;
+}
+sub {
+    bottom: -0.25em;
+}
+
+img {
+    -ms-interpolation-mode: bicubic;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    vertical-align: top;
+    border: 0;
+    display: block;
+    /*禁止用户拷贝或存储图像*/
+    -webkit-touch-callout: none;
+    background-repeat:no-repeat;
+    background-size: 100% 100%;
+}
+svg:not(:root) {
+    overflow: hidden;
+}
+
+figure {
+    margin: 0;
+}
+i {
+    font-style: normal;
+}
+code,
+kbd,
+pre,
+samp {
+    font-family: Monaco, Menlo, Consolas, "Courier New", "FontAwesome", monospace;
+    font-size: 1em;
+}
+
+fieldset {
+    border: 1px solid #c0c0c0;
+    margin: 0 2px;
+    padding: 0.35em 0.625em 0.75em;
+}
+
+legend {
+    border: 0;
+    padding: 0;
+}
+
+button,
+input,
+optgroup,
+select,
+textarea {
+    color: inherit;
+    font: inherit;
+    margin: 0;
+}
+button {
+    overflow: visible;
+}
+button,
+input {
+    line-height: normal;
+}
+
+button,
+select {
+    text-transform: none;
+}
+
+
+button,
+html input[type="button"],
+input[type="reset"],
+input[type="submit"] {
+    /*-webkit-appearance: button;*/
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    -ms-appearance: none;
+    -o-appearance: none;
+    appearance: none;
+    cursor: pointer;
+}
+
+input[type="radio"],
+input[type="checkbox"] {
+    cursor: pointer;
+    padding: 0;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+button[disabled],
+html input[disabled] {
+    cursor: default;
+}
+
+/*解决firefox按钮文字难以垂直居中问题*/
+input[type="reset"]::-moz-focus-inner,
+input[type="button"]::-moz-focus-inner,
+input[type="submit"]::-moz-focus-inner,
+input[type="file"] > input[type="button"]::-moz-focus-inner{
+    border:none;padding:0;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    height: auto;
+}
+
+input[type="search"] {
+    -webkit-appearance: textfield;
+    -webkit-box-sizing: content-box;
+    box-sizing: content-box;
+}
+
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-decoration {
+    -webkit-appearance: none;
+}
+body,input,textarea,select,button {text-rendering: optimizeLegibility;-webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;-moz-font-feature-settings: "liga", "kern";}
+button,
+input:not([type="radio"]):not([type="checkbox"]),
+select {
+    vertical-align: middle;
+}
+
+textarea {
+    overflow: auto;
+    vertical-align: top;/*设置方向在顶部，这样里面的文字就不会在中间或底部了*/
+    resize: vertical;
+}
+
+optgroup {
+    font-weight: bold;
+}
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+td,
+th {
+    padding: 0;
+}
+
+ul,ol,li{
+    list-style: none;
+}
+/*end reset*/
+
+/*********public start*********/
+
+body{font-family: "Segoe UI", "Lucida Grande", Helvetica, Arial, "Microsoft YaHei", FreeSans, Arimo, "Droid Sans",
+"wenquanyi micro hei", "Hiragino Sans GB", "Hiragino Sans GB W3", "FontAwesome", sans-serif;}
+/*水平线*/
+hr {display: block;padding: 0;border: 0;height: 0;border-top: 1px solid #eeeeee;/*线的颜色可以自己进行更改*/
+    -webkit-box-sizing: content-box;box-sizing: content-box;}
+/*常用宽度%*/
+
+/*内容超出容器宽度时显示水平/垂直滚动条*/
+.tv-scrollable-horizontal{
+    width: 100%;
+    overflow-y: hidden;
+    overflow-x: auto;
+    -ms-overflow-style: -ms-autohiding-scrollbar;
+    -webkit-overflow-scrolling: touch;
+}
+.tv-scrollable-vertical{
+    height: 240px;
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
+    resize: vertical;
+}
+/*文本-省略号 截断*/
+.hz-ellipsis{
+    word-wrap: normal;/* for IE */
+    -webkit-text-overflow: ellipsis;
+    -moz-text-overflow: ellipsis;
+    -o-text-overflow: ellipsis;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+/*多行位置截断*/
+.hz-line-clamp {
+    overflow : hidden;
+    -webkit-text-overflow: ellipsis;
+    -moz-text-overflow: ellipsis;
+    -o-text-overflow: ellipsis;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;/*行数*/
+    -webkit-box-orient: vertical;
+}
+/*透明度优化*/
+.opa{
+    opacity: .2;
+    -ms-filter: progid: DXImageTransform.Microsoft.Alpha(Opacity = 20);
+    filter: alpha(opacity = 20);
+    -moz-opacity: .2;
+    -khtml-opacity: .2;
+}
+/*文本框提示文本颜色设置 - 可根据项目进行局部设置*/
+/* WebKit browsers */
+::-webkit-input-placeholder {
+    color: #ababab;
+}
+/* Mozilla Firefox 4 to 18 */
+:-moz-placeholder {
+    color: #ababab;
+    opacity: 1;
+}
+/* Mozilla Firefox 19+ */
+::-moz-placeholder {
+    color: #ababab;
+    opacity: 1;
+}
+/* Internet Explorer 10+ */
+:-ms-input-placeholder {
+    color: #ababab;
+}
+/* 1像素 优化 - 可以通过类进行调用,一些场景并不适用*/
+.retainbt,.retainbb,.retainbl,.retainbr,.retainb { position:relative; }
+.retainbt:before,.retainbb:after {pointer-events: none;position: absolute;content: ""; height: 1px; background: rgba(32,35,37,.24);left: 0;right: 0}
+.retainbt:before {top: 0}
+.retainbb:after {bottom: 0}
+.retainbl:before,.retainbr:after {pointer-events: none;position: absolute;content: ""; width: 1px; background: rgba(32,35,37,.24); top: 0; bottom: 0}
+.retainbl:before {left: 0}
+.retainbr:after {right: 0}
+.retainb:after {position: absolute;content: "";top: 0;left: 0; -webkit-box-sizing: border-box; box-sizing: border-box; width: 100%; height: 100%; border: 1px solid rgba(32,35,37,.24); pointer-events: none}
+
+@media (-webkit-min-device-pixel-ratio:1.5),(min-device-pixel-ratio:1.5),(min-resolution: 144dpi),(min-resolution:1.5dppx) {
+    .retainbt:before,.retainbb:after {-webkit-transform:scaleY(.5);transform: scaleY(.5) }
+    .retainbl:before,.retainbr:after {-webkit-transform: scaleX(.5); transform: scaleX(.5) }
+    .retainb:after { width: 200%; height: 200%;-webkit-transform: scale(.5); transform: scale(.5) }
+    .retainbt:before,.retainbl:before,.retainb:after {-webkit-transform-origin: 0 0;transform-origin: 0 0}
+    .retainbb:after,.retainbr:after { -webkit-transform-origin: 100% 100%;transform-origin: 100% 100%}
+}
+
+@media (-webkit-device-pixel-ratio:1.5) {
+    .retainbt:before,.retainbb:after { -webkit-transform: scaleY(.6666); transform: scaleY(.6666) }
+    .retainbl:before,.retainbr:after {-webkit-transform: scaleX(.6666); transform: scaleX(.6666)}
+    .retainb:after {width: 150%; height: 150%;-webkit-transform: scale(.6666); transform: scale(.6666) }
+}
+
+@media (-webkit-device-pixel-ratio:3) {
+    .retainbt:before,.retainbb:after { -webkit-transform: scaleY(.3333); transform: scaleY(.3333)}
+    .retainbl:before,.retainbr:after { -webkit-transform: scaleX(.3333); transform: scaleX(.3333)}
+    .retainb:after {width: 300%;height: 300%; -webkit-transform: scale(.3333);transform: scale(.3333)}
+}
+/*消除transition闪屏*/
+.transition-css{
+    /*设置内嵌的元素在 3D 空间如何呈现：保留 3D*/
+    -webkit-transform-style: preserve-3d;
+    /*（设置进行转换的元素的背面在面对用户时是否可见：隐藏）*/
+    -webkit-backface-visibility: hidden;
+}
+/*开启硬件加速/解决页面闪白/保证动画流畅*/
+.run-css{
+    -webkit-transform: translate3d(0, 0, 0);
+    -moz-transform: translate3d(0, 0, 0);
+    -ms-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+}
+/*flex box盒模型样式*/
+.vertical-view{display:-webkit-box;display:-webkit-flex;display:flex;
+    -webkit-box-orient:vertical;-webkit-box-direction:normal;-webkit-flex-direction:column;
+    flex-direction:column;}
+.horizontal-view{display:-webkit-box;display:-webkit-flex;display:flex;
+    -webkit-box-orient:horizontal;-webkit-box-direction:normal;-webkit-flex-direction:row ;
+    flex-direction:row;}
+
+
+
+
+
+
+
+
+

@@ -35,6 +35,18 @@ class topshop_ctl_account_supplier extends topshop_controller
         $params['pages']=time();
 
         $data = app::get('topshop')->rpcCall('supplier.shop.list.page', $params);
+
+        if($this->isHmShop) {
+            $supplier_ids = array_column($data, 'supplier_id');
+            if(!empty($supplier_ids)) {
+                $objMdlHmSupplier = app::get('sysshop')->model('hm_supplier');
+                $hm_supplier_list = $objMdlHmSupplier->getList('*', ['supplier_id|in' => $supplier_ids]);
+                $hm_supplier_list = array_bind_key($hm_supplier_list, 'supplier_id');
+                foreach($data as &$v) {
+                    $v['is_synced'] = $hm_supplier_list[$v['supplier_id']]['is_synced'];
+                }
+            }
+        }
         $pagers = array(
             'link'=>url::action('topshop_ctl_account_supplier@index',$params),
             'current'=>$currentPage,
@@ -48,6 +60,9 @@ class topshop_ctl_account_supplier extends topshop_controller
         $pagedata['supplier_name']=$params['supplier_name'];
         $pagedata['company_name']=$params['company_name'];
         $pagedata['mobile']=$params['mobile'];
+
+
+        $pagedata['is_hm_shop'] = $this->isHmShop;
         return $this->page('topshop/account/supplier/list.html', $pagedata);
     }
 
@@ -785,12 +800,52 @@ class topshop_ctl_account_supplier extends topshop_controller
                 $pagedata = $data;
             }
         }
-        // /$params['shop_id'] = $this->shopId;
-        // $rolesData = app::get('topshop')->rpcCall('account.shop.roles.list',$params);
-        // $pagedata['rolesData'] = $rolesData;
-        // echo "<pre>";print_r($pagedata);die();
-//        $pagedata['shop'] = app::get('topshop')->rpcCall('shop.get',['shop_id'=>$this->shopId]);
+        if($this->isHmShop) {
+
+            $hm_cate_list = [];
+            $hm_obj = kernel::single('ectools_huimin');
+            $hm_cate_list = $hm_obj->getSupplierCate($this->shopId);
+            $pagedata['hm_cate_list'] = $hm_cate_list;
+
+            $objMdlHmSupplier = app::get('sysshop')->model('hm_supplier');
+            $hm_supplier_info = $objMdlHmSupplier->getRow('*', ['supplier_id' => input::get('supplier_id')]);
+            $pagedata['hm_supplier_info'] = $hm_supplier_info;
+        }
         $pagedata['shop'] = $this->shopInfo;
+        $pagedata['seller_id'] = $this->sellerId;
+        $pagedata['is_hm_supplier'] = false;
+        $pagedata['is_hm_shop'] = $this->isHmShop;
+        return $this->page('topshop/account/supplier/edit.html', $pagedata);
+    }
+
+    /**
+     * @return html
+     * 惠民商户资料
+     */
+    public function hmEdit()
+    {
+        $this->contentHeaderTitle = app::get('topshop')->_('完善商户资料');
+        $this->runtimePath = [];
+
+        $params['supplier_id'] = input::get('supplier_id') ? input::get('supplier_id') : $_SESSION['huimin_supplier_id'];
+        $data = app::get('topshop')->rpcCall('supplier.shop.get', $params);
+        if ($data) {
+            $pagedata = $data;
+        }
+
+        $hm_cate_list = [];
+        $hm_obj = kernel::single('ectools_huimin');
+        $hm_cate_list = $hm_obj->getSupplierCate($this->shopId);
+        $pagedata['hm_cate_list'] = $hm_cate_list;
+
+        $objMdlHmSupplier = app::get('sysshop')->model('hm_supplier');
+        $hm_supplier_info = $objMdlHmSupplier->getRow('*', ['supplier_id' => input::get('supplier_id')]);
+        $pagedata['hm_supplier_info'] = $hm_supplier_info;
+
+        $pagedata['shop'] = $this->shopInfo;
+        $pagedata['seller_id'] = $this->sellerId;
+        $pagedata['is_hm_supplier'] = true;
+        $pagedata['is_hm_shop'] = true;
         return $this->page('topshop/account/supplier/edit.html', $pagedata);
     }
 
@@ -803,12 +858,43 @@ class topshop_ctl_account_supplier extends topshop_controller
         // }
         $params = input::get();
         $supplierId = 0;
+        //todo 供应商推送金蝶得开启事务
+//        $db = app::get('sysshop')->database();
+//        $db->beginTransaction();
         try {
             if (input::get('supplier_id')) {
 
                 $params = input::get();
                 $params['shop_id'] = $this->shopId;
                 app::get('topshop')->rpcCall('supplier.shop.update', $params);
+
+                if($this->checkHuiminSupplierLogin()) {
+                    $hm_update_data['hm_cate_id'] = $params['hm_supplier_cate_id'];
+                    $hm_update_data['hm_cate_name'] = $params['hm_supplier_cate_name'];
+                    $hm_update_data['district'] = $params['district'];
+                    $hm_update_data['district_name'] = $params['district_name'];
+
+                    $hm_sup_filter['supplier_id'] = input::get('supplier_id');
+                    $objMdlHmSupplier = app::get('sysshop')->model('hm_supplier');
+                    $has_count = $objMdlHmSupplier->count($hm_sup_filter);
+                    if($has_count > 0) {
+                        $objMdlHmSupplier->update($hm_update_data, $hm_sup_filter);
+                    } else {
+                        $hm_insert_data['supplier_id'] = input::get('supplier_id');
+                        $hm_insert_data['hm_cate_id'] = $params['hm_supplier_cate_id'];
+                        $hm_insert_data['hm_cate_name'] = $params['hm_supplier_cate_name'];
+                        $hm_insert_data['district'] = $params['district'];
+                        $hm_insert_data['district_name'] = $params['district_name'];
+                        $objMdlHmSupplier->insert($hm_insert_data);
+                    }
+
+                    $supplier_id = $params['supplier_id'];
+                    $objMdlSupplier = app::get('sysshop')->model('supplier');
+                    $supplier_data = $objMdlSupplier->getRow('supplier_id, supplier_name, company_name, is_audit', ['supplier_id' => $supplier_id]);
+                    if($supplier_data['is_audit'] == 'PASS') {
+                        $this->handleSync($supplier_data);
+                    }
+                }
                 $msg = '修改供应商成功';
                 $supplierId = $params['supplier_id'];
             } else {
@@ -821,13 +907,80 @@ class topshop_ctl_account_supplier extends topshop_controller
                 $supplierId = app::get('topshop')->rpcCall('supplier.shop.add', $params);
                 $msg = '创建供应商成功';
             }
-        } catch (\LogicException $e) {
+
+            //todo 以下为供应商推送金蝶的逻辑
+//            $tv_shop_id = app::get('sysshop')->getConf('sysshop.tvshopping.shop_id');
+//            if($supplierId && $tv_shop_id == $this->shopId)
+//            {
+//                $supplierModel = app::get('sysshop')->model('supplier');
+//                $supplier_info = $supplierModel->getRow('*',['supplier_id'=>$supplierId]);
+//                $kingdee_supplier_id = $supplier_info['kingdee_supplier_id'];
+//
+//                $sup_gen_data = [
+//                    'to_org_id' => 400,
+//                    'company_name'        =>  $supplier_info['invoice_name'],
+//                    'company_addr'        =>  $supplier_info['addr'],
+//                    'registration_number' =>  $supplier_info['registration_number'],
+//                    'deposit_bank'        =>  $supplier_info['deposit_bank'],
+//                    'card_number'         =>  $supplier_info['card_number'],
+//                    'supplier_id'         =>  $supplierId,
+//                    'throw'               =>  true,//表示接口抛出异常
+//                ];
+//
+//                $kingdeeSupplierModel = kernel::single('sysclearing_kingdeeSupplier');
+//                //todo 以下逻辑为了兼容之前已经创建的供应商，只有当金蝶编码和主键同时存在的时候才认为是更新操作，
+//                //todo 只有两者都不存在的时候才认为是创建操作
+//                if($supplier_info['kingdee_supplier_id'] && $supplier_info['kingdee_supplier_isn']) {
+//                    $sup_gen_data['kingdee_supplier_isn'] = $supplier_info['kingdee_supplier_isn'];
+//                    $sup_gen_res = $kingdeeSupplierModel->generate($sup_gen_data);
+//                    if(!$sup_gen_res)
+//                    {
+//                        throw new Exception('金蝶供应商创建失败');
+//                    }
+//                }
+//
+//                if(!$supplier_info['kingdee_supplier_id'] && !$supplier_info['kingdee_supplier_isn']) {
+//                    $sprint_id = sprintf("%06d", $supplierId);
+//                    $kingdee_supplier_id = $sup_update['kingdee_supplier_id'] = 'GYS089.'.$sprint_id;
+//                    $sup_gen_data['kingdee_supplier_id'] = $kingdee_supplier_id;
+//
+//                    $sup_gen_res = $kingdeeSupplierModel->generate($sup_gen_data);
+//                    if(!$sup_gen_res)
+//                    {
+//                        throw new Exception('金蝶供应商创建失败');
+//                    }
+//                }
+//
+//                if(!$supplier_info['kingdee_supplier_isn'])
+//                {
+//                    $supplier_params['FUseOrgId'] = 227509;//电视购物组织对应的金蝶主键
+//                    $supplier_params['FNumber'] = $kingdee_supplier_id;
+//                    $supplier_query_res = $kingdeeSupplierModel->queryInfo($supplier_params);
+//                    if(empty($supplier_query_res))
+//                    {
+//                        throw new Exception('未查询到金蝶内的供应商信息');
+//                    }
+//                    if(empty($supplier_query_res[0][0])) {
+//                        throw new Exception('未获取到供应商的金蝶编码主键');
+//                    }
+//                    $sup_update['kingdee_supplier_isn'] = $supplier_query_res[0][0];
+//                    $sup_update['kingdee_supplier_id'] = $kingdee_supplier_id;
+//                    $supplierModel->update($sup_update, ['supplier_id' => $supplierId]);
+//                }
+//            }
+        } catch (Exception $e) {
             $msg = $e->getMessage();
+//            $db->rollback();
             return $this->splash('error', '', $msg, true);
         }
 
         $this->sellerlog('添加/修改供应商账号是 ' . $params['login_account']);
         $url = url::action('topshop_ctl_account_supplier@index');
+
+        //如果是惠民二级商户登陆，则跳转至当前页面
+        if($this->checkHuiminSupplierLogin()) {
+            $url = url::action('topshop_ctl_account_supplier@hmEdit', ['supplier_id' => $supplierId]);
+        }
 
         // 暂不同步
         /*
@@ -835,7 +988,7 @@ class topshop_ctl_account_supplier extends topshop_controller
          * app::get('foodmap')->rpcCall('supplier.sync', ['supplier_id'=> $supplierId]);
          * }
          */
-
+//        $db->commit();
         return $this->splash('success', $url, $msg, true);
     }
 
@@ -1054,6 +1207,113 @@ class topshop_ctl_account_supplier extends topshop_controller
         return response::json($data);
     }
 
+    /**
+     * @return string
+     * 审核供应商
+     */
+    public function auditSupplier()
+    {
+        $request_data = input::get();
+
+        $is_reject = $request_data['is_reject'];
+        $supplier_id = $request_data['supplier_id'];
+        $objMdlSupplier = app::get('sysshop')->model('supplier');
+        $supplier_data = $objMdlSupplier->getRow('is_audit, supplier_id, supplier_name, company_name', ['supplier_id' => $supplier_id]);
+        $is_audit = $supplier_data['is_audit'];
+
+        if($is_reject && $is_audit != 'REJECTED') {
+            $update_data['is_audit'] = 'REJECTED';
+            $audit_logo = '拒绝';
+        } else {
+            if($is_audit == 'PENDING' || $is_audit == 'REJECTED') {
+                $update_data['is_audit'] = 'FIRST_TRIAL';
+                $audit_logo = '初步审核';
+            } elseif($is_audit == 'FIRST_TRIAL' && $this->sellerId == '64') {
+                $update_data['is_audit'] = 'PASS';
+                $audit_logo = '最终审核';
+            } else {
+            }
+        }
+
+        if($update_data['is_audit']) {
+            $objMdlSupplier->update($update_data, ['supplier_id' => $supplier_id]);
+            $this->sellerlog($audit_logo.'惠民供应商'.$supplier_id .'操作人id：'.$this->sellerId);
+        }
+        //如果是终审 则同步商户信息至惠民平台，因终审权限在山东省文旅厅手中，防止网络问题，将同步放在最后，
+        //如果同步不成功，可在列表中单独点击同步按钮
+        if($update_data['is_audit'] = 'PASS') {
+           $this->handleSync($supplier_data);
+        }
+        $url = url::action('topshop_ctl_account_supplier@index');
+        return $this->splash('success',$url,'成功');
+    }
+
+    /**
+     * 同步至惠民
+     */
+    public function singleSyncToHm()
+    {
+        $request_data = input::get();
+        $supplier_id = $request_data['supplier_id'];
+
+        try {
+            if(!$this->isHmShop) {
+                throw new Exception('只有惠民店铺允许操作');
+            }
+            $objMdlSupplier = app::get('sysshop')->model('supplier');
+            $supplier_info = $objMdlSupplier->getRow('supplier_id, supplier_name, company_name, is_audit', ['supplier_id' => $supplier_id]);
+
+            if($supplier_info['is_audit'] != 'PASS') {
+                throw new Exception('未审核通过的商户不允许同步');
+            }
+
+            $sync_res = $this->handleSync($supplier_info);
+            if($sync_res['status'] === false) {
+                throw new Exception($sync_res['err_msg']);
+            }
+        } catch(Exception $e) {
+            return $this->splash('error',null,$e->getMessage(),true);
+        }
+        return $this->splash('success',null, '成功！',true);
+    }
+
+    /**
+     * @param $supplier_info
+     * @throws Exception
+     * 同步共同处理的地方
+     */
+    public function handleSync($supplier_info)
+    {
+        $supplier_id = $supplier_info['supplier_id'];
+
+        $objMdlHmSupplier = app::get('sysshop')->model('hm_supplier');
+        $hm_supplier_info = $objMdlHmSupplier->getRow('*', ['supplier_id' => $supplier_id]);
+
+        $district_name = explode('/', $hm_supplier_info['district_name']);
+        $prov_name = $district_name[0];
+        $city_name = $district_name[1];
+        $area_name = $district_name[2];
+
+        $sync_params['supplier_id'] = $supplier_id;
+        $sync_params['supplier_name'] = $supplier_info['supplier_name'];
+        $sync_params['company_name']  = $supplier_info['company_name'];
+        $sync_params['prov_name'] = $prov_name;
+        $sync_params['city_name'] = $city_name;
+        $sync_params['area_name'] = $area_name;
+        $sync_params['cate_name'] = $hm_supplier_info['hm_cate_id'];
+
+        $hm_obj = kernel::single('ectools_huimin');
+        $sync_res = $hm_obj->syncSupplierInfo($sync_params);
+        if($sync_res['status'] === true) {
+            $objMdlHmSupplier->update(['is_synced' => 1], ['supplier_id' => $supplier_id]);
+            $return_data['status'] = true;
+            $return_data['err_msg'] = '';
+        } else {
+            $return_data['status'] = false;
+            $return_data['err_msg'] = $sync_res['err_msg'];
+        }
+        return $return_data;
+    }
 }
 
 

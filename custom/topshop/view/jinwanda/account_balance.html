@@ -1,0 +1,142 @@
+<aside class="control-sidebar control-sidebar-light" style="height: 100%;">
+  <!-- Create the tabs -->
+  <ul class="nav nav-tabs nav-justified control-sidebar-tabs">
+    <li class=""><a href="#">筛选</a></li>
+    <li class=""><a href="#" data-toggle="control-sidebar"><i class="glyphicon glyphicon-remove"></i></a></li>
+  </ul>
+      <!-- Tab panes -->
+  <div class="tab-content">
+    <div class="form-group">
+      <div class="input-group">
+        <label>商品内码</label>
+        <input name="inner_code" class="form-control select-reset" value="<{$inner_code}>" id="inner_code">
+      </div>
+    </div>
+    <div class="box-footer">
+      <button type="button" class="btn btn-default" id="reset-form">重置</button>
+      <a href="javascript:void(0);" id="inner_code_search" class="btn btn-primary pull-right">查询</a>
+    </div>
+  </div>
+</aside>
+<div class="row">
+  <div class="col-md-12">
+    <div class="box box-primary">
+      <div class="mailbox-controls with-border">
+        <div class="box-header">
+          <a  href="<{url action=topshop_ctl_jwd@view}>" data-app="sysclearing" data-model="jwd_billing" class="btn btn-primary btn-sm export-filter-btn export-filter-settlement">
+            <i class="glyphicon glyphicon-export"></i>
+            导入对比
+          </a>
+          <a  data-href="<{url action=topshop_ctl_jwd@syncSuplusNumber}>" onclick="syncSuplusNumber(this)"  class="btn btn-primary btn-sm">
+            <i class="glyphicon glyphicon-export"></i>
+            同步剩余数量
+          </a>
+          <button data-toggle="control-sidebar" class="btn btn-default btn-sm pull-right">
+            <div class="text-light-blue">
+              <i class="fa fa-search"></i>
+              搜索
+            </div>
+          </button>
+        </div>
+      </div>
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>内码</th>
+            <th>条形码</th>
+            <th>商品名称</th>
+            <th>剩余数量</th>
+            <th>原始剩余数量</th>
+          </tr>
+        </thead>
+        <tbody>
+           <{foreach from=$data item=item}>
+            <tr>
+              <td><{$item.inner_code}></td>
+              <td><{$item.bar_code}></td>
+              <td><{$item.item_title}></td>
+              <td><{$item.surplus_number}></td>
+              <td><{$item.ori_surplus_number}></td>
+            </tr>
+            <{/foreach}>
+        </tbody>
+      </table>
+      <div class="text-right">
+        <{pagers data=$pagers}>
+        <{if $count > 0}>
+        <span class="page-number">共&nbsp;<em class="text-aqua"><{$count}></em>&nbsp;条记录</span>
+        <{/if}>
+      </div>
+      <{if !$data}>
+      <div class="help-block text-center"><{t}>暂无数据<{/t}></div>
+      <{/if}>
+    </div>
+  </div>
+</div>
+<span class="export-filter" data-value="" data-app="" data-model=""></span>
+<script>
+
+  $("#inner_code_search").click(function() {
+      var inner_code = $('#inner_code').val();
+
+      window.location.href="<{url action=topshop_ctl_jwd@accountBalance}>?inner_code="+inner_code;
+  });
+
+  $(document).ready(
+      function() {
+          $(".sidebar .sidebar-menu li a i.glyphicon").eq(1).removeClass("glyphicon-list-alt").addClass("glyphicon-cloud");
+      }
+  );
+  $('.export-filter-btn').click(function (e) {
+      e.preventDefault();
+      var url = $(this).attr('href');
+      var app = $(this).data('app');
+      var model = $(this).data('model');
+
+      $('.export-filter').attr('data-app',app);
+      $('.export-filter').attr('data-model',model);
+
+      $('#exportDialog').modal({remote: url}).attr('data-app',app).attr('data-model',model);
+  });
+
+  // 重置表单
+  $('#reset-form').on('click',function(){
+      $('input:visible').val('');
+      $('.select-reset').val(-1);
+  });
+
+  //导出
+  function exportPostFee()
+  {
+      var timearea = "<{$timearea}>";
+      var post_fee_compare_status = $('#post_fee_compare_status').val();
+      window.open("<{url action=topshop_ctl_export_ctpostfee@exportPostFee}>?timearea="+timearea+"&post_fee_compare_status="+post_fee_compare_status);
+  }
+
+  function syncSuplusNumber()
+  {
+      $.ajax({
+          url: '<{url action=topshop_ctl_jwd@syncSuplusNumber}>',
+          method: 'GET',
+          dataType:'json',
+          success: function(res) {
+              console.log(res);
+              if(res.error)
+              {
+                    $('#messagebox').message(res.message, 'error');
+              }
+              if(res.success)
+              {
+                  $('#messagebox').message(res.message, 'success');
+              }
+          }
+      });
+  }
+
+  //下载导入模板
+  function download_tpl()
+  {
+      window.open("<{url action=topshop_ctl_jwd@downLoadCsvTpl}>");
+  }
+</script>
+

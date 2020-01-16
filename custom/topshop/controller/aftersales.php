@@ -43,6 +43,9 @@ class topshop_ctl_aftersales extends topshop_controller {
         $data['filter'] = $params;
         $this->__checkParams($params);
         $params['shop_id'] = $this->shopId;
+        if($this->loginSupplierId){
+            $params['supplier_id'] = $this->loginSupplierId;
+        }
         $params['page_no'] = intval(input::get('pages',1));
         $params['page_size'] = intval($this->limit);
         $params['fields'] = 'aftersales_bn,aftersales_type,shop_id,created_time,oid,tid,num,progress,status,sku,gift_data,init_shop_id';
@@ -269,6 +272,76 @@ class topshop_ctl_aftersales extends topshop_controller {
     }
 
     /**
+     * 再次发起上门取件
+     *
+     * @return void
+     * @Author 王衍生 50634235@qq.com
+     */
+    public function retakeGoods()
+    {
+
+        $params['aftersales_bn'] = input::get('bn');
+        $params['shop_id'] = $this->shopId;
+        $tradeFields = 'trade.tid,trade.receiver_name,trade.user_id,trade.shop_id,trade.receiver_mobile,trade.receiver_state,trade.receiver_district,trade.receiver_address,trade.receiver_city,trade.post_fee,sku.tid,sku.oid,sku.sku_id,sku.bn,sku.title,sku.num,sku.spec_nature_info,sku.price,sku.sendnum,sku.payment,sku.total_weight,sku.source_house,sku.gift_data';
+        $params['fields'] = 'aftersales_bn,shop_id,aftersales_type,sendback_data,description,shop_explanation,sendconfirm_data,shop_explanation,admin_explanation,user_id,reason,evidence_pic,created_time,oid,tid,num,progress,status,' . $tradeFields;
+
+        try{
+            $result = app::get('topshop')->rpcCall('aftersales.get', $params,'seller');
+            $trade = $result['trade'];
+            $order = $result['sku'];
+            $aftersales_bn = $result['aftersales_bn'];
+
+            // 判断如果子订单不是呼叫中心的订单，则不推送物流
+            if(!in_array($order['source_house'], ['CALL_CENTER_HOUSE', 'KZZ_HOUSE']))
+            {
+                throw new LogicException(app::get('sysaftersales')->_('非呼叫中心的订单，不能发起！'));
+            }
+
+            if($result['delivery_aggregation']){
+                foreach ($result['delivery_aggregation'] as $value) {
+                    if(!in_array($value['status'], ['rppm', 'push_failed'])){
+                        throw new LogicException(app::get('sysaftersales')->_('当前有订单正在配送中，不能再次发起！'));
+                    }
+                }
+            }
+
+            $push_info = array(
+                'shop_id'           => $trade['shop_id'],
+                'user_id'           => $trade['user_id'],
+                'payment'           => $order['payment'],
+                'itemnum'           => $order['num'],
+                'notes'             => $result['description'],
+                'shop_explanation'  => $result['shop_explanation'],
+                // 'Ymd'               => date('ymd'),
+                'total_weight'      => $order['total_weight'],
+                'collect_payment'   => 0,//退款金额，传值为退款金额的负数，只换货时为0，
+                'delivery_type'     => $result['aftersales_type'],
+                'receiver_name'     => $trade['receiver_name'],
+                'receiver_state'    => $trade['receiver_state'],
+                'receiver_city'     => $trade['receiver_city'],
+                'receiver_district' => $trade['receiver_district'],
+                'receiver_address'  => $trade['receiver_address'],
+                'receiver_mobile'   => $trade['receiver_mobile'],
+                'source_house'   => $order['source_house'],
+
+                'trade' => [
+                    $aftersales_bn =>[
+                        'orders' => [$order]
+                    ]
+                ]
+            );
+            $logistics_plug = kernel::single('syslogistics_logistics_logistics', $push_info['shop_id']);
+            $logistics_plug->push_trade($push_info);
+        }
+        catch(Exception $e)
+        {
+            $msg = $e->getMessage();
+            return $this->splash('error', '', $msg, true);
+        }
+
+        return $this->splash('success', '', '发起成功！', true);
+    }
+    /**
      * 审核售后申请
      */
     public function verification()
@@ -372,8 +445,6 @@ class topshop_ctl_aftersales extends topshop_controller {
      * 2017-09-15
      */
     public function aftersales_refund(){
-        $db = app::get('sysaftersales')->database();
-        $db->beginTransaction();
         $postdata = input::get();
         try{
             // 售后服务编号
@@ -385,19 +456,16 @@ class topshop_ctl_aftersales extends topshop_controller {
             //货到付款的单不进行在线退款操作
             $refunds['pay_type'] = $postdata['pay_type'];
             kernel::single('topshop_refunds')->dorefund($refunds);
-            $db->commit();
             $this->sellerlog('处理售后订单退款申请。申请ID是'.$postdata['aftersales_bn']);
 
-            $refund_data['tid']  = $refunds['tid'];
             $refund_data['oid']  = $refunds['oid'];
-            $refund_data['shop_id']  = $this->shopId;
             $refund_data['push_type']= 'REFUND_GOODS';
+            $refund_data['refund_amount']= $refunds['total_price'];
 
-            event::fire('kingdee.refund',[$refunds['tid'], $this->shopId, null, 'REFUND_GOODS', $refunds['oid']]);
+            event::fire('kingdee.refund',[$refunds['tid'], $this->shopId, null, $refund_data]);
         }
         catch(LogicException $e)
         {
-            $db->rollback();
             return $this->splash('error',null, $e->getMessage(), true);
         }
 
@@ -419,18 +487,19 @@ class topshop_ctl_aftersales extends topshop_controller {
             {
                 $res = app::get('topshop')->rpcCall('trade.virtual.coupon', $params);
             }
-            /*add_201711211623_by_wudi_start:voucher aftersale settlement*/
-            $aftersalesRefundInfo=app::get('sysaftersales')->model('refunds')->getRow('*',array('aftersales_bn'=>$postdata['aftersales_bn']));
-            $tradeData['shop_id']=$aftersalesRefundInfo['shop_id'];
-            $tradeData['status']='TRADE_FINISHED';
-            $tradeData['payment']=$aftersalesRefundInfo['order_price'];
-            $tradeData['pay_time']=$aftersalesRefundInfo['order_price'];
-            $tradeData['orders'][0]['tid']=$aftersalesRefundInfo['tid'];
-            $tradeData['orders'][0]['oid']=$aftersalesRefundInfo['oid'];
-            /*add_201711211623_by_wudi_end*/
-            $re = kernel::single('sysclearing_settle')->generate($tradeData,'3');
         }
         /*add_2017-11-17_by_xinyufeng_endt*/
+
+        /*add_201711211623_by_wudi_start:voucher aftersale settlement*/
+        $aftersalesRefundInfo=app::get('sysaftersales')->model('refunds')->getRow('*',array('aftersales_bn'=>$postdata['aftersales_bn']));
+        $tradeData['shop_id']=$aftersalesRefundInfo['shop_id'];
+        $tradeData['status']='TRADE_FINISHED';
+        $tradeData['payment']=$aftersalesRefundInfo['order_price'];
+        $tradeData['pay_time']=$aftersalesRefundInfo['order_price'];
+        $tradeData['orders'][0]['tid']=$aftersalesRefundInfo['tid'];
+        $tradeData['orders'][0]['oid']=$aftersalesRefundInfo['oid'];
+        /*add_201711211623_by_wudi_end*/
+        $re = kernel::single('sysclearing_settle')->generate($tradeData,'3');
 
         $url = url::action('topshop_ctl_aftersales@detail', array('bn'=>$postdata['aftersales_bn']));
         return $this->splash('success', $url, '退款成功', true);

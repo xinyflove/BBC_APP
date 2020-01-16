@@ -90,10 +90,14 @@
 <!-- Copyright 2015-2017 GrowingIO, Inc. More info available at http://www.growingio.com -->
 
 <!--如果为小程序，则显示返回小程序按钮-->
+<{if isset($_SESSION['shop_id']) && $_SESSION['shop_id']=='7'}>
 <{if config::get('app.debug', false)}>
     <img class="miliBack" src="http://bbc.dev.tvplaza.cn/app/topwap/mini/img/call_back.png" alt="" style="position: fixed;bottom: 90px;right: 30px;z-index: 99999;width: 67px;height: 67px;display: none">
 <{else}>
     <img class="miliBack" src="http://www.tvplaza.cn/app/topwap/mini/img/call_back.png" alt="" style="position: fixed;bottom: 90px;right: 30px;z-index: 99999;width: 67px;height: 67px;display: none">
+<{/if}>
+<{else}>
+    <img class="miliBack" src="http://www.tvplaza.cn/app/topwap/mini/img/back_index.png" alt="" style="position: fixed;bottom: 90px;right: 30px;z-index: 99999;width: 67px;height: 67px;display: none">
 <{/if}>
 <script type="text/javascript" src="https://res.wx.qq.com/open/js/jweixin-1.3.2.js"></script>
 <script>

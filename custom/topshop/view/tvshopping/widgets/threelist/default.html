@@ -1,0 +1,21 @@
+<{if $datas.title_pic}>
+<div class="activity-img" style="margin-bottom:0.05rem"><a href="#"><img src="<{$datas.title_pic|storager}>" alt=""></a></div>
+<{/if}>
+<div class="col-3">
+
+	<{foreach from=$datas['item'] item=item}>
+	<a href="<{url action=topwap_ctl_item_detail@index item_id=$item.item_id}>">
+		<dl>
+			<dt><img class="imglazyload" data-original="<{$item['image_default_id']|storager:m}>" alt=""></dt>
+			<dd>
+				<p class="title"><{$item['title']}></p>
+				<span>
+					<i><{$item.price|cur}></i>
+					<!--<s>￥399</s>-->
+				</span>
+				<button>立即抢购</button>
+			</dd>
+		</dl>
+	</a>
+	<{/foreach}>
+</div>

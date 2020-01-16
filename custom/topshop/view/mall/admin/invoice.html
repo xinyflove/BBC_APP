@@ -1,0 +1,101 @@
+<form action="<{url action=topshop_ctl_mall_admin_invoice@save}>" method="post" class="form-horizontal clearfix" data-validate-onsuccess="ajaxSubmit" role="form">
+    <div class="panel panel-default">
+        <div class="panel-heading">店铺发票信息设置</div>
+        <div class="panel-body">
+            <input type="hidden" name="id" value="<{$id}>">
+
+            <div class="form-group">
+                <label for="" class="col-sm-2 control-label">公司纳税类别：</label>
+                <div class="col-sm-4">
+                    <label class="radio-inline">
+                        <input type="radio" name="invoice_class" value="general"
+                        <{if empty($invoice_class) || $invoice_class == 'general'}>checked<{/if}>
+                        >一般纳税人
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="invoice_class" value="small"
+                        <{if $invoice_class == 'small'}>checked<{/if}>
+                        >小规模纳税人
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="" class="col-sm-2 control-label">公司名称：</label>
+                <div class="col-sm-4">
+                    <input type="text" name="invoice_name" value="<{$invoice_name}>" id="invoice_name" class="form-control" placeholder="输入公司名称" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="" class="col-sm-2 control-label">纳税人登：</label>
+                <div class="col-sm-4">
+                    <input type="text" name="registration_number" value="<{$registration_number}>" id="registration_number" class="form-control" placeholder="输入纳税人识别号" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="" class="col-sm-2 control-label">公司地址：</label>
+                <div class="col-sm-4">
+                    <input type="text" name="addr" value="<{$addr}>" id="addr" class="form-control" placeholder="输入公司地址" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="" class="col-sm-2 control-label">联系电话：</label>
+                <div class="col-sm-4">
+                    <input type="text" name="contact_way" value="<{$contact_way}>" id="contact_way" class="form-control" placeholder="输入联系电话" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="" class="col-sm-2 control-label">开户银行：</label>
+                <div class="col-sm-4">
+                    <input type="text" name="deposit_bank" value="<{$deposit_bank}>" id="deposit_bank" class="form-control" placeholder="输入开户行名称" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="" class="col-sm-2 control-label">银行账户：</label>
+                <div class="col-sm-4">
+                    <input type="text" name="card_number" value="<{$card_number}>" id="card_number" class="form-control" placeholder="输入银行卡号" required>
+                </div>
+            </div>
+            <{if $id}>
+            <div class="form-group">
+                <label for="" class="col-sm-2 control-label">金蝶客户编码：</label>
+                <div class="col-sm-4">
+                    <input type="text" name="kingdee_custom_code" value="<{$kingdee_custom_code}>" id="kingdee_custom_code" class="form-control" placeholder="输入金蝶客户编码" readonly="readonly">
+                </div>
+            </div>
+            <{/if}>
+
+            <div class="form-group">
+                <div class="col-md-8 text-center">
+                    <button type="submit" class="btn btn-primary action-save">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script>
+    function ajaxSubmit (e) {
+        var form = e.target;
+        e.preventDefault();
+        $.post(form.action, $(form).serialize(), function(rs) {
+            if(rs.error) {
+                $('#messagebox').message(rs.message);
+                return;
+            }
+            if(rs.success) {
+                $('#messagebox').message(rs.message, 'success');
+            }
+            if(rs.redirect) {
+                location.href = rs.redirect;
+            } else {
+                //window.location.reload();
+            }
+        });
+    }
+</script>

@@ -56,6 +56,7 @@ class sysmaker_plugin_wapweixin extends sysmaker_plugin_abstract implements sysm
         }
 
         $this->tmpOpenId = $msg['openid'];
+		$_SESSION['wx_openid']=$this->tmpOpenId;
         return $msg['access_token'];
     }
 

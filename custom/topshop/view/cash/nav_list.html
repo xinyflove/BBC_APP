@@ -1,0 +1,21 @@
+<ul class="nav nav-tabs" role="tablist">
+    <li role="presentation" class="nav-config">
+        <a href="<{url action=topshop_ctl_cash_manage@config}>">礼金配置</a>
+    </li>
+    <li role="presentation" class="nav-cashChangeLogs">
+        <a href="<{url action=topshop_ctl_cash_manage@cashChangeLogs}>">礼金统计</a>
+    </li>
+    <li role="presentation" class="nav-card">
+        <a href="<{url action=topshop_ctl_cash_card@card}>">礼金卡管理</a>
+    </li>
+    <li role="presentation" class="nav-createCard">
+        <a href="<{url action=topshop_ctl_cash_card@createCard}>">礼金卡生成</a>
+    </li>
+</ul>
+
+<script>
+    $(function(){
+        var nav_name = $(":input[name='nav_name']").val();
+        $('.nav-' + nav_name).addClass('active');
+    })
+</script>

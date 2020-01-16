@@ -50,6 +50,16 @@
                 </tr>
                 <!--优选商城主持人账号是否需要审核2018-10-29 jiangyunhan end-->
 
+                <tr>
+                    <th><{t}>代售店铺发票信息是否必填:<{/t}></th>
+                    <td>
+                        <input type="radio" value="true"  name='check_invoice' id="check_invoice_true" <{if $check_invoice == 'true'}>checked="checked"<{/if}>  />
+                        <label for="check_invoice_true"><{t}>是<{/t}></label>
+                        <input  type="radio" value="false" name='check_invoice' id="check_invoice_false" <{if $check_invoice != 'true'}>checked="checked"<{/if}> />
+                        <label for="check_invoice_false"><{t}>否<{/t}></label>
+                        <!--NULL 和 'false' 为否,'true'为是-->
+                    </td>
+                </tr>
             </table>
         </div>
 

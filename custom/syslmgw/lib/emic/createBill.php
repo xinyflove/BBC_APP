@@ -96,7 +96,7 @@ class syslmgw_emic_createBill extends syslmgw_emic_controller {
     {
 		if($data)
         {
-			$insertSql="INSERT INTO syslmgw_bills (`billId`,`type`,`subAccountSid`,`switchNumber`,`callId`,`caller`,`called`,`userData`,`createTime`,`establishTime`,`hangupTime`,`status`,`duration`,`subDetails`,`subNumber`,`useNumber`,`adtel`,`create_time`) VALUES ";
+			$insertSql="INSERT INTO syslmgw_bills (`billId`,`type`,`subAccountSid`,`switchNumber`,`callId`,`caller`,`called`,`userData`,`createTime`,`establishTime`,`hangupTime`,`status`,`duration`,`subDetails`,`subNumber`,`useNumber`,`adtel`,`create_time`,`callerMobile`,`calledMobile`) VALUES ";
 
 			foreach($data as $k=>$v)
             {
@@ -106,10 +106,15 @@ class syslmgw_emic_createBill extends syslmgw_emic_controller {
 				$subNumber = empty($v['subNumber']) ? '' : $v['subNumber'];
 				$useNumber = empty($v['useNumber']) ? '' : $v['useNumber'];
 				$adtel = empty($v['adtel']) ? '' : $v['adtel'];
-
+				/*add_2019/4/22_by_wanghaichao_start*/
+				$callerMobile = empty($v['callerMobile']) ? '' : $v['callerMobile'];
+				$calledMobile = empty($v['calledMobile']) ? '' : $v['calledMobile'];
+				
+				/*add_2019/4/22_by_wanghaichao_end*/
+				
 				$create_time=strtotime($v['createTime']);
 
-				$insertSql.="('{$v['billId']}','{$v['type']}','{$subAccountSid}','{$v['switchNumber']}','{$v['callId']}','{$v['caller']}','{$v['called']}','{$userData}','{$v['createTime']}','{$v['establishTime']}','{$v['hangupTime']}','{$v['status']}','{$v['duration']}','{$SubDetails}','{$subNumber}','{$useNumber}','{$adtel}','{$create_time}'),";
+				$insertSql.="('{$v['billId']}','{$v['type']}','{$subAccountSid}','{$v['switchNumber']}','{$v['callId']}','{$v['caller']}','{$v['called']}','{$userData}','{$v['createTime']}','{$v['establishTime']}','{$v['hangupTime']}','{$v['status']}','{$v['duration']}','{$SubDetails}','{$subNumber}','{$useNumber}','{$adtel}','{$create_time}','{$callerMobile}','{$calledMobile}'),";
 			}
 
 			$insertSql=substr($insertSql,0,-1);

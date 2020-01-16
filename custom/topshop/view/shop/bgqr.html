@@ -1,0 +1,72 @@
+<!--add_20171026_by_fanglongji_start-->
+<style>
+  .logo_block{display:inline-block;margin-right:10px;}
+  .logo_name{font-size:13px;width: 100%;}
+</style>
+<!--add_20171026_by_fanglongji_start-->
+<form  action="<{url action=topshop_ctl_shop_setting@saveSetting}>" method="post" data-validate-onsuccess="ajaxSubmit" role="form">
+  <div class="box box-default">
+    <div class="box-header with-border">
+		<button type="button"  id="yulan" data-img="../public/app/topmaker/statics/images/bg.png" class="btn btn-primary" style="padding:8px 10px;float:right">下载默认背景图</button>
+    </div>
+    <div class="box-body">
+      <{if $shop.shop_id}><input type="hidden" name="shop_id" value="<{$shop.shop_id}>"><{/if}>
+      <div class="row">
+          <div class="form-group">
+            <!--<label class="col-sm-4 control-label" style="text-align:right;line-height:40px"><{t}>创客佣金<{/t}>：</label>-->
+			<div class="col-sm-12">
+			  <div class="form-group text-center">
+				<div class="pad">
+				  <a class="select-image center-block logo_block" data-toggle="modal" href="<{url action=topshop_ctl_shop_image@loadImageModal}>" data-target="#gallery_modal">
+					<input type="hidden" name="qr_bg" value="<{$shop.qr_bg}>">
+					<div class="img-put">
+					  <img src="<{$shop.qr_bg|storager}>">
+					  <i class="glyphicon glyphicon-picture"></i>
+					</div>
+					<span class="logo_name">二维码背景图</span>
+				  </a>
+				</div>
+				<span class="help-block"><small>点击上传/修改</small></span>
+				<span class="help-block"><small>尺寸标准：500px*800px</small></span>
+			  </div>
+			</div>
+          </div>
+		  
+      </div>
+    </div>
+    <div class="box-footer" style="text-align:center">
+      <button type="submit" class="btn btn-primary" style="padding:12px 44px;">保存</button>
+    </div>
+  </div>
+</form>
+
+<script>
+  function ajaxSubmit (e) {
+    var form = e.target;
+    e.preventDefault();
+    $.post(form.action, $(form).serialize(), function(rs) {
+      if(rs.error) {
+        $('#messagebox').message(rs.message);
+        return;
+      }
+      if(rs.success) {
+        $('#messagebox').message(rs.message, 'success');
+		window.location.reload();
+      }
+      //if(rs.redirect) {
+     //   setTimeout(function(){location.href=rs.redirect;}, 800);
+    //  }
+    });
+  }
+</script>
+<script>
+  $(document).ready(
+    function() {
+      $(".sidebar .sidebar-menu li a i.glyphicon").eq(1).removeClass("glyphicon-list-alt").addClass("glyphicon-cog");
+    }
+  );
+   $('#yulan').click(function () {
+       var img = $(this).data('img');
+        window.location.href = '<{url action=topshop_ctl_shop_setting@download}>'+'?file='+img;
+    });
+</script>

@@ -83,6 +83,18 @@
             <{/foreach}>
           </select>
         </div>
+
+		<!---代售店铺----->
+        <div class="form-group">
+          <label>代售店铺名称：</label>
+          <select name="shop_id" class="form-control select-reset">
+            <option value="">全部</option>
+            <{foreach from=$shop item=value key=key}>
+            <option value="<{$value.shop_id}>"><{$value.shop_name}></option>
+            <{/foreach}>
+          </select>
+        </div>
+
         <!--add_201709241653_by_wudi_start-->
 
         <!-- select -->
@@ -125,10 +137,10 @@
     <li><a href="<{url action=topshop_ctl_trade_muumi_list@search}>#tab_10" data-toggle="tab">全部核销</a></li>
     <li class="pull-right header export-filter" data-value="" data-app="" data-model="">
       <div class="btn-group">
-        <a href="<{url action=topshop_ctl_exporttrade@view app=systrade model=trade orderBy=tid}>" data-model="trade" data-app="systrade" class="btn btn-box-tool btn-export" data-widget="more" data-toggle="tooltip" title="" data-original-title="订单导出">
+        <a href="<{url action=topshop_ctl_exporttrade@pushview app=systrade model=trade orderBy=tid}>" data-model="trade" data-app="systrade" class="btn btn-box-tool btn-export" data-widget="more" data-toggle="tooltip" title="" data-original-title="订单导出">
           <i class="glyphicon glyphicon-open"></i>
         </a>
-        <a href="<{url action=topshop_ctl_exporttrade@vieworder app=systrade model=order orderBy=tid}>" data-model="order" data-app="systrade" class="btn btn-box-tool btn-exportorder" data-widget="more" data-toggle="tooltip" title="" data-original-title="子订单导出">
+        <a href="<{url action=topshop_ctl_exporttrade@pushvieworder app=systrade model=order orderBy=tid}>" data-model="order" data-app="systrade" class="btn btn-box-tool btn-exportorder" data-widget="more" data-toggle="tooltip" title="" data-original-title="子订单导出">
           <i class="glyphicon glyphicon-export"></i>
         </a>
         <a href="<{url action=topshop_ctl_import@import app=systrade model=trade orderBy=tid}>" data-model="order" data-app="systrade" class="btn btn-box-tool btn-import" data-widget="more" data-toggle="tooltip" title="" data-original-title="批量发货">
@@ -324,13 +336,14 @@
         var create_time=$('input[name=create_time]').val()?$('input[name=create_time]').val():'';
         var supplier_id=$('select[name=supplier_id]').find('option:checked').val()?$('select[name=supplier_id]').find('option:checked').val():'';
         var is_virtual=$('select[name=is_virtual]').find('option:checked').val()?$('select[name=is_virtual]').find('option:checked').val():'';
+        var shop_id=$('select[name=shop_id]').find('option:checked').val()?$('select[name=shop_id]').find('option:checked').val():'';
         //导出当前表格选中的内容
         if( listArr.length > 0 ){
             filter = '{"tid|in":['+ listArr + ']}';
             $('.export-filter').attr('data-value',filter);
             $('#exportDialog').modal({remote: url}).attr('data-app',app).attr('data-model',model);
         }else{
-            filter = '{"receiver_mobile":"'+receiver_mobile+'","receiver_phone":"'+receiver_phone+'","tid":"'+tid+'","receiver_name":"'+receiver_name+'","keyword":"'+keyword+'","user_name":"'+user_name+'","status":"'+status+'","supplier_id":"'+supplier_id+'","is_virtual":"'+is_virtual+'","create_time":"'+create_time+'"}';
+            filter = '{"receiver_mobile":"'+receiver_mobile+'","receiver_phone":"'+receiver_phone+'","tid":"'+tid+'","receiver_name":"'+receiver_name+'","keyword":"'+keyword+'","user_name":"'+user_name+'","status":"'+status+'","supplier_id":"'+supplier_id+'","shop_id":"'+shop_id+'","is_virtual":"'+is_virtual+'","create_time":"'+create_time+'"}';
             $('.export-filter').attr('data-value',filter);
             Modal.confirm({msg: '是否确认导出当前筛选条件下的全部订单？'}).on(function(e) {
                 if(e==true) {
@@ -369,12 +382,13 @@
         var create_time=$('input[name=create_time]').val()?$('input[name=create_time]').val():'';
         var supplier_id=$('select[name=supplier_id]').find('option:checked').val()?$('select[name=supplier_id]').find('option:checked').val():'';
         var is_virtual=$('select[name=is_virtual]').find('option:checked').val()?$('select[name=is_virtual]').find('option:checked').val():'';
+        var shop_id=$('select[name=shop_id]').find('option:checked').val()?$('select[name=shop_id]').find('option:checked').val():'';
         if( listArr.length > 0 ){
             filter = '{"tid|in":['+ listArr + ']}';
             $('.export-filter').attr('data-value',filter);
             $('#exportOrderDialog').modal({remote: url}).attr('data-app',app).attr('data-model',model);
         }else{
-            filter = '{"receiver_mobile":"'+receiver_mobile+'","receiver_phone":"'+receiver_phone+'","tid":"'+tid+'","receiver_name":"'+receiver_name+'","keyword":"'+keyword+'","user_name":"'+user_name+'","status":"'+status+'","create_time":"'+create_time+'","supplier_id":"'+supplier_id+'","is_virtual":"'+is_virtual+'"}';
+            filter = '{"receiver_mobile":"'+receiver_mobile+'","receiver_phone":"'+receiver_phone+'","tid":"'+tid+'","receiver_name":"'+receiver_name+'","keyword":"'+keyword+'","user_name":"'+user_name+'","status":"'+status+'","create_time":"'+create_time+'","supplier_id":"'+supplier_id+'","shop_id":"'+shop_id+'","is_virtual":"'+is_virtual+'"}';
             $('.export-filter').attr('data-value',filter);
             Modal.confirm({msg: '是否确认导出当前筛选条件下的子订单？'}).on(function(e) {
                 if(e==true) {
@@ -413,6 +427,7 @@
         var status=$('select[name=status]').find('option:checked').val()?$('select[name=status]').find('option:checked').val():'';
         var create_time=$('input[name=create_time]').val()?$('input[name=create_time]').val():'';
         var supplier_id=$('select[name=supplier_id]').find('option:checked').val()?$('select[name=supplier_id]').find('option:checked').val():'';
+        var shop_id=$('select[name=shop_id]').find('option:checked').val()?$('select[name=shop_id]').find('option:checked').val():'';
         if( listArr.length > 0 ){
             filter = '{"tids":['+ listArr + ']}';
             $('.export-filter').attr('data-value',filter);
@@ -421,7 +436,7 @@
                 $(this).removeData('bs.modal');
             });*/
         }else{
-            filter = '{"receiver_mobile":"'+receiver_mobile+'","receiver_phone":"'+receiver_phone+'","tid":"'+tid+'","receiver_name":"'+receiver_name+'","keyword":"'+keyword+'","user_name":"'+user_name+'","status":"'+status+'","create_time":"'+create_time+'","supplier_id":"'+supplier_id+'"}';
+            filter = '{"receiver_mobile":"'+receiver_mobile+'","receiver_phone":"'+receiver_phone+'","tid":"'+tid+'","receiver_name":"'+receiver_name+'","keyword":"'+keyword+'","user_name":"'+user_name+'","status":"'+status+'","create_time":"'+create_time+'","supplier_id":"'+supplier_id+'","shop_id":"'+shop_id+'"}';
             $('.export-filter').attr('data-value',filter);
             Modal.confirm({msg: '是否确认对当前筛选条件下的订单进行操作？'}).on(function(e) {
                 if(e==true) {

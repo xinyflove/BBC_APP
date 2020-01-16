@@ -1,0 +1,203 @@
+<style>
+    .schedule {
+        overflow-x: scroll;
+    }
+    .schedule .weeks {
+        padding: 0 6px;
+        min-width: 1340px;
+    }
+    .schedule .weeks:after {
+        content: '';
+        display: block;
+        clear: both;
+    }
+    .schedule .week {
+        float: left;
+        width: 188px;
+        border-radius: 0;
+        text-align: center;
+    }
+    .schedule .week .panel-body {
+        padding: 0;
+    }
+    .schedule .week .panel-body .table {
+        margin-bottom: 0;
+    }
+    .schedule .week .panel-body a {
+        display: block;
+        overflow: hidden;
+        width: 170px;
+        text-overflow:ellipsis;
+        white-space: nowrap;
+        text-align: left;
+    }
+</style>
+
+<div class="modal fade" id="copySchedule" tabindex="-1" role="dialog" aria-labelledby="copyScheduleLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form action="<{url action=topshop_ctl_live_live@copySchedule}>" method="post" class="form-horizontal validate-form bg-white" role="form" data-validate-onsuccess="ajaxSubmitCopy">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="copyScheduleLabel">
+                        复制排班表
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="control-label col-md-4">
+                            <span class="text-red">*</span>复制日期：
+                        </label>
+                        <div class="col-md-5">
+                            <span class="form-act input-group date col-md-2" data-provide="datepicker">
+                                <input class="form-control" type="date" name="copy_date">
+                                <span class="input-group-addon"><i class="icon icon-calendar"></i></span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-4">
+                            <span class="text-red">*</span>复制到日期：
+                        </label>
+                        <div class="col-md-5">
+                            <span class="form-act input-group date col-md-2" data-provide="datepicker">
+                                <input class="form-control" type="date" name="to_date">
+                                <span class="input-group-addon"><i class="icon icon-calendar"></i></span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="submit" class="btn btn-primary">提交</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="box box-primary">
+    <div class="mailbox-controls with-border">
+        <a href="<{url action=topshop_ctl_live_live@edit }>" class="btn btn-default btn-sm text-light-blue">
+            <i class="fa fa-plus-square-o"></i> 添加直播
+        </a>
+
+        <button class="btn btn-default btn-sm" id="preWeek" style="margin-left: 30px;">
+            <
+        </button>
+        <button class="btn btn-default btn-sm" id="NextWeek">
+            >
+        </button>
+
+        <select name="channels" class="btn" required style="margin-left: 22%;padding: 5px 12px;">
+            <{foreach from=$channels item=channel key=key}>
+            <option value="<{$channel.channel_id}>"><{$channel.channel_name}></option>
+            <{/foreach}>
+        </select>
+
+        <span style="padding: 7px 12px;" id="weekInfo"></span>
+
+        <button class="btn btn-default btn-sm pull-right" data-toggle="modal" data-target="#copySchedule">
+            <i class=""></i>复制排班表
+        </button>
+    </div>
+
+    <div class="schedule">
+
+    </div>
+</div>
+
+<script>
+    var channel_id = $('[name="channels"]').val();
+    var curr_w = "<{$w}>";
+    var w = parseInt(curr_w);
+    var min_w = "<{$min_w}>";
+    var max_w = "<{$max_w}>";
+
+    $(function () {
+        switchWeek(channel_id,w);
+    });
+
+    /*切换频道*/
+    $('[name="channels"]').on('change',function () {
+        channel_id = $('[name="channels"]').val();
+        w = parseInt(curr_w);// 周为当前周数
+        switchWeek(channel_id,w);
+    });
+    $("#preWeek").on('click', function () {
+        w -= 1;
+        switchWeek(channel_id,w);
+    });
+    $("#NextWeek").on('click', function () {
+        w += 1;
+        switchWeek(channel_id,w);
+    });
+    var switchWeek = function (channel_id,w) {
+        changeWeek(w);
+        getWeekInfo(w);
+        getWeekSchedule(channel_id,w);
+    };
+    var changeWeek = function (w) {
+        if(w <= min_w)
+        {
+            $("#preWeek").attr("disabled","disabled");
+        }
+        if(w < max_w)
+        {
+            $("#NextWeek").removeAttr("disabled");
+        }
+        if(w >= max_w)
+        {
+            $("#NextWeek").attr("disabled","disabled");
+        }
+        if(w > min_w)
+        {
+            $("#preWeek").removeAttr("disabled");
+        }
+    };
+    var getWeekInfo = function (w) {
+        $.get('<{url action=topshop_ctl_live_live@weekInfo}>',{w},function (data) {
+            $('#weekInfo').text(data);
+        });
+    };
+    var getWeekSchedule = function (channel_id,w) {
+        $.get('<{url action=topshop_ctl_live_live@weekSchedule}>',{channel_id,w},function (data) {
+            $('.schedule').html(data);
+        });
+    };
+
+    function ajaxSubmitCopy(e) {
+        var form = e.target;
+        e.preventDefault();
+
+        var copy_date = $("input[name='copy_date']").val();
+        var to_date = $("input[name='to_date']").val();
+        //var channel_id = $('[name="channels"]').val();
+
+        if(copy_date == '')
+        {
+            $('#messagebox').message('请选择复制日期');
+            return;
+        }
+        if(to_date == '')
+        {
+            $('#messagebox').message('请选择复制到日期');
+            return;
+        }
+
+        $.post(form.action, {copy_date,to_date,channel_id}, function(rs) {
+            if(rs.error) {
+                $('#messagebox').message(rs.message);
+                return;
+            }
+            if(rs.success) {
+                $('#messagebox').message(rs.message, 'success');
+                $("#copySchedule").modal('hide');
+            }
+            if(rs.redirect) {
+                //location.href = rs.redirect;
+                switchWeek(channel_id,w);
+            }
+        });
+    }
+</script>

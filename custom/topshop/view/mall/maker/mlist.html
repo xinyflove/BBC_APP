@@ -11,12 +11,31 @@
       <div class="box-body">
         <!-- text input -->
         <div class="form-group">
-          <label>主持人姓名:</label>
-          <input type="text" id="name" name="name" class="form-control" value="<{$name|escape:"html"}>" placeholder="请输入 ...">
+          <label>创客姓名:</label>
+          <input type="text" id="name" name="name" class="form-control" value="<{$name|escape:'html'}>" placeholder="请输入 ...">
         </div>
-        
+        <div class="form-group">
+          <label>手机号:</label>
+          <input type="text" id="mobile" name="mobile" class="form-control" value="<{$mobile}>" placeholder="请输入 ...">
+        </div>
+        <div class="form-group">
+          <label>车牌号:</label>
+          <input type="text" id="cart_number" name="cart_number" class="form-control" value="<{$cart_number}>" placeholder="请输入 ...">
+        </div>
+        <div class="form-group">
+          <label>身份证号:</label>
+          <input type="text" id="id_card_no" name="id_card_no" class="form-control" value="<{$id_card_no}>" placeholder="请输入 ...">
+        </div>
+        <div class="form-group">
+          <label>推荐人姓名:</label>
+          <input type="text" id="pname" name="pname" class="form-control" value="<{$pname}>" placeholder="请输入 ...">
+        </div>
+        <div class="form-group">
+          <label>推荐人手机号:</label>
+          <input type="text" id="pmobile" name="pmobile" class="form-control" value="<{$pmobile}>" placeholder="请输入 ...">
+        </div>
 		<div class="form-group">
-          <label>状态：</label>
+          <label>审核状态：</label>
 		  <select name="status" class="form-control">
 			<option value="" <{if empty($status)}>selected<{/if}>>请选择</option>
 			<option value="pending" <{if $status=='pending'}>selected<{/if}>>待审核</option>
@@ -41,7 +60,7 @@
 
 <div class="box box-primary">
   <div class="mailbox-controls with-border">
-    <a href="<{url action=topshop_ctl_mall_maker@cash}>" class="btn btn-default btn-sm text-light-blue"><i class="fa fa-plus-square-o"></i>主持人提现</a>
+    <a href="<{url action=topshop_ctl_mall_maker@cash}>" class="btn btn-default btn-sm text-light-blue"><i class="fa fa-plus-square-o"></i>创客提现</a>
     <div class="btn-group" style="float:right;">
       <button data-toggle="control-sidebar" class="btn btn-default">
         <div class="text-light-blue">
@@ -57,7 +76,18 @@
   <table class="table table-hover">
     <thead>
       <tr>
-        <th style="text-align:center">主持人</th>
+        <th style="text-align:center">创客ID</th>
+        <th style="text-align:center">创客姓名</th>
+        <th style="text-align:center">手机号</th>
+		<{if $shopInfo['shop_id']==46}>
+        <th style="text-align:center">车牌号</th>
+		<{/if}>
+		<{if $shopInfo['shop_id']!=46}>
+        <th style="text-align:center">身份证号</th>
+        <th style="text-align:center">户口所在地</th>
+        <th style="text-align:center">推荐人</th>
+        <th style="text-align:center">推荐人ID</th>
+		<{/if}>
         <th style="text-align:center">申请时间</th>
         <th style="text-align:center">状态</th>
 		<th style="text-align:center">拒绝原因</th>
@@ -67,7 +97,18 @@
     <tbody>
       <{foreach from=$data item=item}>
 		<tr>
+		  <td style="text-align:center"><{$item.seller_id}></td>
 		  <td style="text-align:center"><{$item.name}></td>
+		  <td style="text-align:center"><{$item.mobile}></td>
+		 <{if $shopInfo['shop_id']==46}>
+		  <td style="text-align:center"><{$item.cart_number}></td>
+		 <{/if}>
+		<{if $shopInfo['shop_id']!=46}>
+		  <td style="text-align:center"><{$item.id_card_no}></td>
+		  <td style="text-align:center"><{$item.registered}></td>
+		  <td style="text-align:center"><{$item.pname}></td>
+		  <td style="text-align:center"><{$item.pid}></td>
+		  <{/if}>
           <td style="text-align:center"><{$item.created_time|date:'Y-m-d H:i:s'}></td>
           <td style="text-align:center">
 			<{if $item.status=='pending'}>未审核
@@ -77,11 +118,14 @@
 				通过			<{/if}></td>
 	      <td style="text-align:center"><{$item.reason}></td>
           <td style="text-align:center">
-			<{if $item.status=='pending'}>
+			<{if $item.status!='success'}>
 			  <a href="#" data-seller-id="<{$item.seller_id}>" data-toggle="modal" data-target="#modifyAccountShopPwd">审核</a>&nbsp;&nbsp;
 			<{/if}>
 			<a href="<{url action=topshop_ctl_mall_maker@index seller_id=$item.seller_id}>" >提现记录</a>&nbsp;&nbsp;
-
+			<{if $item.shop_id==46}>
+			<a href="<{url action=topshop_ctl_mall_maker@qrcode seller_id=$item.seller_id}>" >下载二维码</a>&nbsp;&nbsp;
+			<{/if}>
+			<a href="<{url action=topshop_ctl_mall_maker@detail seller_id=$item.seller_id}>" target="_blank">查看详情</a>&nbsp;&nbsp;
 			<a href="<{url action=topshop_ctl_mall_maker@mdelete seller_id=$item.seller_id}>" class="remove text-danger" >删除</a>
           </td>
 		</tr>
@@ -90,7 +134,7 @@
     <{else}>
     <tbody id="none_cat">
       <tr class="none-information">
-        <td colspan="6"><p class="help-block text-center">暂无数据</p></td>
+        <td colspan="11"><p class="help-block text-center">暂无数据</p></td>
       </tr>
     </tbody>
     <{/if}>
@@ -110,7 +154,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">审核主持人</h4>
+        <h4 class="modal-title" id="myModalLabel">审核创客</h4>
       </div>
       <form  action="<{url action=topshop_ctl_mall_maker@audit}>" method="post" class="form-horizontal" data-validate-onsuccess="ajaxSubmit" id="form_delivery" role="form">
         <div class="modal-body">
@@ -143,9 +187,13 @@
 <script>
 
   $('#reset-form').click(function () {
-      $('#supplier_name').val('');
-      $('#company_name').val('');
+      $('#name').val('');
       $('#mobile').val('');
+      $('#id_card_no').val('');
+      $('#pname').val('');
+      $('#pmobile').val('');
+      $('#cart_number').val('');
+      $('select[name="status"]').val('');
   });
 
   $('#modifyAccountShopPwd').on('show.bs.modal', function (event) {

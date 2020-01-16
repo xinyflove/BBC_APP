@@ -3,6 +3,10 @@
 <{css app="topwap" src="details.css"}>
 <{css app="topwap" src="iconfont_news.css"}>
 <{css app="topwap" src="details_custom.css"}>
+<!--add by xinyufeng 2019-09-05 start-->
+<{css app="topwap" src="generatePoster.css"}>
+<{css app="topwap" src="viewer.css"}>
+<!--add by xinyufeng 2019-09-05 end-->
 <!--add_20170926_by_xinyufeng_end-->
 <style>
   .agent-table{
@@ -89,12 +93,12 @@
       <{if $activityDetail}>
       <span class="tag"><{$activityDetail.activity_info.activity_tag}></span>
       <{/if}>
-      <h3 class=""><{$item.title}></h3>
+      <h3 class="goods-title"><{$item.title}></h3>
       <{if $item.sub_title}>
       <h4 class="shopex-ellipsis"><{$item.sub_title}></h4>
       <{/if}>
       <div>
-        <span>
+        <span class="goods-price">
           <{if $item.price != 0}>
           <{if $activityDetail.activity_price}><{$activityDetail.activity_price|cur}> <{else}><{$item.price|cur}> <{*<{if $item.is_bank  && !$item.only_bank}><i style="font-weight: normal;font-size: 14px;padding-left: 20px;">绑卡价:<{$item.bank_price|cur}></i><{/if}>*}><{/if}>
           <{else}>
@@ -102,7 +106,7 @@
           <{/if}>
         </span>
         <{if $item.show_mkt_price}>
-        <del><{$item.mkt_price|cur}></del>
+        <del class="goods-mkt-price"><{$item.mkt_price|cur}></del>
         <{/if}>
         <!--add_20171010_by_fanglongji_start-->
         <font class="sales">剩余<{$item.realStore}>件</font>
@@ -136,7 +140,7 @@
   <{if $item.is_virtual==1}>
   <!-- 有效期和使用提示 开始 -->
   <div class="Usetip">
-    <p>有效期：<{$item.start_time}>-<{$item.end_time}></p>
+    <p class="goods-valid">有效期：<{$item.start_time}>-<{$item.end_time}></p>
     <!--支付核销开始-->
     <{if $item.confirm_type == 1}>
     <p>卡券类型 : <{$item.agent_type_name}></p>
@@ -149,6 +153,12 @@
     <p>最低消费金额限制：<{if $item.min_consum}>消费需满<{$item.min_consum|cur}>元<{else}>无<{/if}></p>
     <p>最大优惠金额限制：<{if $item.max_deduct_price}><{$item.max_deduct_price|cur}>元<{else}>无<{/if}></p>
     <{/if}>
+    <{if $item.confirm_type == 0}>
+    <p>核销方式：限量购核销</p>
+    <{/if}>
+    <{if $item.confirm_type == 2}>
+    <p>核销方式：折扣券核销</p>
+    <{/if}>
     <{if $item.description}>
     <p>使用说明：<{$item.description}></p>
     <{/if}>
@@ -157,8 +167,9 @@
   <{/if}>
   <{if $supplier && $item.is_virtual==1}>
   <!-------供应商------->
+  <{if !$is_lm}>
   <div class="Usetip" style="overflow: auto;height: 101px;">
-    <{if $item.confirm_type == 0}>
+    <{if $item.confirm_type == 0 || $item.confirm_type==2}>
     <!--扫码核销-->
     <p>商家：<{$supplier.company_name}></p>
     <{if $supplier.addr}>
@@ -187,6 +198,7 @@
     </div>
     <{/if}>
   </div>
+  <{/if}>
   <!-- -----供应商 结束----- -->
   <{/if}>
 
@@ -328,7 +340,7 @@
 </section>
 <{/if}>
 <!--end m-tvplazaNew-details-ratings-->
-
+<{if $shop.shop_id!=46}>
 <section class="section-white m-tvplazaNew-details-store-2">
   <div class="shop-goods-brand shopex-content-padded">
     <div class="shop-goods-brand-logo"><img src="<{$item.shop_id|shoplogo|storager:t}>" alt=""></div>
@@ -363,7 +375,7 @@
     <{/if}>
   </div>
 </section>
-
+<{/if}>
 <!-- m-tvplazaNew-details-figureSpynav start -->
 <div data-am-sticky>
   <section class="m-tvplazaNew-details-figureSpynav shopex-clearfix" id="Details">
@@ -466,6 +478,7 @@
       <span class="">大家都在看</span>
     </h3>
   </section>
+  <{if $shop.shop_id != 46}>
   <section class="Lovely-Lists">
     <ul class="shopex-clearfix">
       <{foreach from=$recommend item=goods}>
@@ -492,9 +505,15 @@
       <{/foreach}>
     </ul>
   </section>
+  <{/if}>
 </section>
 
 </section>
+<{if $operate_type == 'SUPPLIER_DELIVERY'}>
+<section class="action-bar-mini" style="background-color: #ffac20;color: #f8f8f8;">
+  &nbsp;&nbsp;&nbsp;&nbsp;<a href='tel:96788' style="color: #f8f8f8">此商品请直接拨打96788购买，货到付款，包邮哦！</a>
+</section>
+<{else}>
 <{if !$is_gift}>
 <section class="action-bar-mini">
   <input type="hidden" name="item[sku_id]" class="action-update-item" value="<{$item.default_sku_id}>">
@@ -519,12 +538,17 @@
     </a>
   </div>
 
-<{if $item.sell_time>$now_time && $item.valid}>
-<{if $item['is_ticket']!=1}>
+  <!--如果是创客进入详情页面展示生成海报按钮-->
+  <{if !empty($seller_id) || in_array($shop.shop_id, [7])}>
+  <div class="op-item op-btn generate-poster"><a href="javascript:;">生成海报</a></div>
+  <{/if}>
+
+  <{if $item.sell_time>$now_time && $item.valid}>
+  <{if $item['is_ticket']!=1}>
   <div class="op-item op-btn goods-op-cart"><a href="<{url action=topwap_ctl_cart@addCart}>" class="action-addtocart"  rel="_request">加入购物车</a></div>
-<{/if}>
+  <{/if}>
   <div class="op-item op-btn goods-op-buy nownobuy" style="background:#888"><a href="# ">立即购买</a></div>
-<{/if}>
+  <{/if}>
 
   <{if $item.confirm_type ==1 && $item.agent_price == 0}>
   <{include file='topwap/item/detail/offline_item_oper.html'}>
@@ -538,6 +562,7 @@
   <div class="op-item op-btn goods-op-buy"  style="width:14rem"><a href="javascript:void(0);" class="notify">到货通知</a></div>
   <{/if}>
 </section>
+<{/if}>
 <{/if}>
 <div id="sku" class="shopex-popover shopex-popover-action shopex-popover-bottom">
   <div class="bbc-popover-modal goods-sku-modal">
@@ -897,7 +922,7 @@
       /*add_20180223_by_fanglongji_end*/
         $.post(href, form.serialize(), function(rs) {
             if(rs.error) {
-                shopex.alert(rs.message); return ;
+                shopex.toast(rs.message); return ;
             }
             if( has_fastbuy || has_freetickets ){
                 $('.action-fastbuy').removeClass('selected-action');
@@ -1064,4 +1089,22 @@
     /*add 2017/9/29 wanghaichao start*/
     $('title').html('<{$shop.shop_name}>');
     /*add 2017/9/29 wanghaichao end*/
+	var height=$(".item-detail-img").width();
+	$('.item-detail-img').css('height',height);
+	$('.swiper-slide').css('height',height);
+</script>
+<!--add by xinyufeng 2019-09-05 start-->
+<{if !empty($seller_id) || in_array($shop.shop_id, [7])}>
+<img id="posterQRCode" src="<{$maker.qrcode}>" alt="" style="display: none;">
+<script>
+  var MakerPosterBGImage = '<{$maker.poster_bg_img}>';
+</script>
+<{script app="topwap" src="qrcode.min.js" }>
+<{script app="topwap" src="generatePoster.js" }>
+<{/if}>
+<!--add by xinyufeng 2019-09-05 end-->
+<{script app="topwap" src="viewer.js" }>
+<{script app="topwap" src="jquery-viewer.js" }>
+<script>
+  $('.details-goodsParams-imgBox').viewer({title: false, toolbar: false});
 </script>

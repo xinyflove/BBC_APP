@@ -36,7 +36,7 @@ class sysmaker_data_trustinfo {
             return false;
         }
 
-        return true;
+        return $trustId;
     }
 
     /**
@@ -76,20 +76,38 @@ class sysmaker_data_trustinfo {
 
     /**
      * 删除信任登录数据
-     * @param $sellerId
+     * @param $params
      * @param $msg
      * @return bool
      */
-    public function delTrustInfoData($sellerId, &$msg)
+    public function delTrustInfoData($params, &$msg)
     {
-        if(!$sellerId)
+        $filter = array();
+
+        if($params['trust_id'])
+        {
+            $filter['trust_id'] = $params['trust_id'];
+        }
+        if($params['seller_id'])
+        {
+            $filter['seller_id'] = $params['seller_id'];
+        }
+        if($params['user_flag'])
+        {
+            $filter['user_flag'] = $params['user_flag'];
+        }
+        if($params['flag'])
+        {
+            $filter['flag'] = $params['flag'];
+        }
+
+        if(empty($filter))
         {
             $msg = '参数错误';
             return false;
         }
 
         $msg = '删除信任登录数据成功';
-        $filter = array('seller_id' => $sellerId);
         $this->trustinfoModel->delete($filter);
 
         return true;

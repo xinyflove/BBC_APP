@@ -115,6 +115,11 @@ class topshop_ctl_index extends topshop_controller {
 		        $authNotice = false;
 		    }
 		}
+		/*add_2019/1/8_by_wanghaichao_start*/
+		//增加提示功能
+		$pagedata['init_is_change']=app::get('sysitem')->model('item')->count(array('init_is_change'=>1,'shop_id'=>$this->shopId));
+		/*add_2019/1/8_by_wanghaichao_end*/
+		
 
         //库存报警
         $pagedata['storepolice'] = 0;

@@ -1,0 +1,72 @@
+
+<input type="hidden" name="nav_name" value="createCard">
+<form  action="<{url action=topshop_ctl_cash_card@cardSave}>" method="post" class="form-horizontal clearfix" data-validate-onsuccess="ajaxSubmit" role="form">
+    <div class="nav-tabs-custom" id="tabs">
+        <{include file='topshop/cash/nav_list.html'}>
+        <div class="tab-content no-padding">
+            <div class="panel panel-default">
+                <!-- <div class="panel-heading">创建礼金卡</div> -->
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label for="" class="col-sm-2 control-label">客户编号:</label>
+                        <div class="col-sm-2">
+                                <input type="number" required name="client_code" value="" maxlength="4" minlength="4" class="form-control" placeholder="4位数字">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="" class="col-sm-2 control-label">礼金面额:</label>
+                        <div class="col-sm-2">
+                            <input type="number" required name="value" value="" min="0.01" class="form-control">
+                            <!-- <span class="help-block">默认1元 = 1礼金</span> -->
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="" class="col-sm-2 control-label">数量:</label>
+                        <div class="col-sm-2">
+                            <input type="number" required name="amount" value="" min="1" class="form-control">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-2">
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary btn-lg btn-block action-save">生成</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script>
+
+function ajaxSubmit (e) {
+  var form = e.target;
+
+  if($(form).hasClass('disabled')){
+      return false;
+  }
+  $(form).addClass('disabled');
+
+  e.preventDefault();
+  $.post(form.action, $(form).serialize(), function(rs) {
+    if(rs.error) {
+      $('#messagebox').message(rs.message);
+      return;
+    }
+    if(rs.success) {
+      $('#messagebox').message(rs.message, 'success');
+    }
+    if(rs.redirect) {
+      location.href = rs.redirect;
+    }
+    $(form).removeClass('disabled');
+
+  });
+}
+
+</script>

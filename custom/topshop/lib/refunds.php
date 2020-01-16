@@ -15,12 +15,25 @@ class topshop_refunds {
     {
         try
         {
+            if($refunds['status'] == '1')
+            {
+                throw new \LogicException('此单已经完成退款');
+            }
+            if($refunds['status'] == '7')
+            {
+                throw new \LogicException('此单正在退款，不要重复操作');
+            }
             if( !in_array($refunds['status'],['3','5','6']) )
             {
                 throw new \LogicException(app::get('topshop')->_('当前申请还未审核'));
             };
 
             $trade_paybill = app::get('ectools')->model('trade_paybill')->getRow('payment_id',array('tid' => $refunds['tid'],'status' => 'succ','user_id' => $refunds['user_id']));
+
+            if(empty($trade_paybill))
+            {
+                throw new \LogicException(app::get('topshop')->_('没有成功的支付单'));
+            }
 
             $payments = $trade_paybill = app::get('ectools')->model('payments')->getRow('*',array('payment_id' => $trade_paybill['payment_id'],'status' => 'succ'));
             if(!$payments)
@@ -51,7 +64,7 @@ class topshop_refunds {
             $refundsData['tid'] = $refunds['tid'];
             $refundsData['oid'] = $refunds['oid'];
 
-            $refundsData['op_id'] = pamAccount::getAccountId();
+            $refundsData['op_id'] = pamAccount::getAccountId() ?: 0;
             $refundsData['return_fee'] = $refunds['total_price']; //退款总金额，包含红包，方便退款
             $refundsData['refunds_id'] = $refunds['refunds_id']; //sysaftersales/refunds.php主键，方便退款
             $refundsData['payment_id'] = $payments['payment_id']; //退款对应原支付单号
@@ -62,6 +75,9 @@ class topshop_refunds {
             {
                 throw new \LogicException(app::get('topshop')->_('退款单创建失败'));
             }
+            //退款前将退款申请单的状态改为退款中，防止重复点击退款
+            $objMdlRefunds = app::get('sysaftersales')->model('refunds');
+            $objMdlRefunds->update(['status'=>'7'],['refunds_id'=>$refunds['refunds_id']]);
 
             $shop['shop_id'] =  $refunds['shop_id'];
             $shop_info = app::get('ectools')->rpcCall('shop.get', $shop);

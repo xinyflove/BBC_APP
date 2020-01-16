@@ -239,6 +239,7 @@ class topwap_ctl_cart_checkout extends topwap_controller
                 'coupon_code' => input::get('coupon_code'),
                 'mode' => $buyMode,
                 'platform' => 'wap',
+                'shop_id' => input::get('shop_id'),
             );
             if (app::get('topwap')->rpcCall('promotion.coupon.use', $apiParams, 'buyer')) {
                 //优惠券使用后清空购物券
@@ -504,7 +505,7 @@ class topwap_ctl_cart_checkout extends topwap_controller
         $cartFilter['mode'] = $postData['mode'] ? $postData['mode'] : 'cart';
         $pagedata['nextPage'] = url::action('topwap_ctl_cart@index');
         $pagedata['mode'] = $postData['mode'];
-
+		//$pagedata['is_design']='';
         try {
             /*获取收货地址 start*/
             if (isset($postData['addr_id']) && $postData['addr_id']) {
@@ -548,15 +549,26 @@ class topwap_ctl_cart_checkout extends topwap_controller
                     $isSelfShopArr[] = $val['shop_id'];
                 }
 
-                $coupon_list = $this->__getCoupons($val['shop_id']);
-                $val['couponlist'] = $coupon_list;
+                if(
+                    ($val['shop_id'] == (app::get('sysshop')->getConf('sysshop.hmshopping.shop_id')))
+                    &&
+                    (kernel::single('ectools_huimin')->is_huimin_user(userAuth::getUserMobile()))
+                ){
+                    $val['couponlist'] = kernel::single('ectools_huimin')->get_coupons(userAuth::getUserMobile(), $val);
+                }else{
+                    $coupon_list = $this->__getCoupons($val['shop_id']);
+                    if($cartInfo['totalCart']['has_virtual'] > 0)
+                    {
+                        $coupon_list = [];
+                    }
+                    $val['couponlist'] = $coupon_list;
 
-                $optimal_coupon_info = $this->getOptimalCouponCode($coupon_list, $val['object']);
-                $optimal_coupon_code = $optimal_coupon_info['code'] ? $optimal_coupon_info['code'] : '';
-                $optimal_coupon_name = $optimal_coupon_info['name'] ? $optimal_coupon_info['name'] : '';
-                $pagedata['optimal_coupon_code'] = $optimal_coupon_code;
-                $pagedata['optimal_coupon_name'] = $optimal_coupon_name;
-
+                    $optimal_coupon_info = $this->getOptimalCouponCode($coupon_list, $val['object']);
+                    $optimal_coupon_code = $optimal_coupon_info['code'] ? $optimal_coupon_info['code'] : '';
+                    $optimal_coupon_name = $optimal_coupon_info['name'] ? $optimal_coupon_info['name'] : '';
+                    $pagedata['optimal_coupon_code'] = $optimal_coupon_code;
+                    $pagedata['optimal_coupon_name'] = $optimal_coupon_name;
+                }
 
                 $pagedata['shipping'][$val['shop_id']]['shipping_type'] = 'express';
 
@@ -575,6 +587,21 @@ class topwap_ctl_cart_checkout extends topwap_controller
                     $pagedata['nextPage'] = url::action('topwap_ctl__miniprogram_item@itemDetail', ['goods_id' => $fastBuyItemData['item_id']]);
                 }
 
+				/*add_2019/1/17_by_wanghaichao_start*/
+				foreach($val['object'] as $object){
+                    if ($object['dlytmpl_id']) {
+						$res=app::get('topwap')->rpcCall('systrade.design.addr', array('dlytmpl_id'=>$object['dlytmpl_id'],'area'=>$userDefAddr['area']));
+						if($res==false){ //说明有不能配送的区域
+							$pagedata['is_design']=false;
+							break;
+						}else{
+							$pagedata['is_design']=true;
+						}
+					}else{
+						$pagedata['is_design']=true;
+					}
+				}
+				/*add_2019/1/17_by_wanghaichao_end*/
                 // 王衍生-2018/08/03-start
                 $val['is_need_delivery'] = false;
                 foreach ($val['object'] as $object) {
@@ -622,9 +649,20 @@ class topwap_ctl_cart_checkout extends topwap_controller
         }
         // 王衍生-2018/09/06-start
         $shop_id = reset($shop_ids);
+        //判断蓝莓购物权限
+        $lm_shop_id = app::get('sysshop')->getConf('sysshop.tvshopping.shop_id');
+        $pagedata['is_lm'] = false;
+        if($shop_id == $lm_shop_id)
+        {
+            $pagedata['is_lm'] = true;
+        }
         $pagedata['shop_id'] = $shop_id;
         $lijin_setting = app::get('topwap')->rpcCall('shop.cash.setting.get', ['shop_id' => $shop_id]);
         $pagedata['open_lijin_deduction'] = $lijin_setting['is_open'];
+        //如果有虚拟商品，则不允许使用礼金
+        if ($cartInfo['totalCart']['has_virtual'] > 0) {
+            $pagedata['open_lijin_deduction'] = false;
+        }
         // 目前 礼金抵扣与积分抵扣不能并行使用
         if($pagedata['open_lijin_deduction']){
             $pagedata['if_open_point_deduction'] = 0;
@@ -642,7 +680,6 @@ class topwap_ctl_cart_checkout extends topwap_controller
             $pagedata['store_id'] = $_SESSION['store_id'];
         }
         /*add_2018-01-16_by_xinyufeng_end*/
-
         return $pagedata;
     }
 

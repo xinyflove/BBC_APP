@@ -1,8 +1,8 @@
 <section class="section-white order-goods">
 		<div class="section-title order-goods-header">
 			<div class="title-txt">
-				<a href="<{url action=topwap_ctl_shop@index shop_id=$trade.shop_id}>"><i class="iconfont icon-dianpu"></i><span class="shop_name"><{$trade.shop_id|shopname}></span>
-					<span class="jin">进入店铺<i class="shopex-icon shopex-icon-arrowright"></i></span>
+				<a <{if $trade.shop_id!=46}> href="<{url action=topwap_ctl_shop@index shop_id=$trade.shop_id}>"<{else}> href="#"<{/if}>><i class="iconfont icon-dianpu"></i><span class="shop_name"><{$trade.shop_id|shopname}></span>
+					<{if $trade.shop_id!=46}><span class="jin">进入店铺<i class="shopex-icon shopex-icon-arrowright"></i></span><{/if}>
 				</a>
 			</div>
       <!--
@@ -71,7 +71,7 @@
 				          <{elseif $item.aftersales_status == "REFUNDING"}>
 				          <a class="shopex-btn shopex-btn-warning shopex-btn-outlined bbc-btn-outlined bbc-btn-sm" href="<{url action=topwap_ctl_member_aftersales@goAftersalesDetail id=$item.oid}>">退款中</a>
 				          <{else}>
-				          <{if $trade.status == 'TRADE_FINISHED' }>
+				          <{if $trade.status == 'TRADE_FINISHED' && !$trade.exchange_code }>
                           <{if $item.refund_enabled && $item.changing_enabled}>
 				          <a class="shopex-btn shopex-btn-warning shopex-btn-outlined bbc-btn-outlined bbc-btn-sm" href="<{url action=topwap_ctl_member_aftersales@aftersalesApply tid=$trade.tid oid=$item.oid status=$trade.status}>">申请退换货</a>
                           <{elseif $item.refund_enabled && !$item.changing_enabled}>

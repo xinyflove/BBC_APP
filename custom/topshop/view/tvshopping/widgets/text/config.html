@@ -1,0 +1,19 @@
+<div class="form-group">
+    <label class="col-sm-3 control-label">标题图片：</label>
+    <div class="col-sm-8">
+        <div class="multiple-item" style="position:relative">
+            <!---<div id="removeTopAdImg" class="multiple-del glyphicon glyphicon-remove-circle" style="position: absolute;left: 60px;top: -5px;z-index: 999;"></div>-->
+
+            <textarea name="rules" class="rich-editor" style="width:100%;"><{$setting.rules}></textarea>
+        </div>
+        <!--<span class="help-block">图片大小：1000px*160px。</span>-->
+    </div>
+</div>
+<script>
+    $('.rich-editor').summernote({
+        height: 400,
+        tabsize: 2,
+        uploadURI: '<{url action=toputil_ctl_image@uploadImages from=shop}>',
+        uploadPerfix: 'upload_file'
+    });
+</script>

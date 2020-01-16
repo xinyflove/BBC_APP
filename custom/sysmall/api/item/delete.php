@@ -53,6 +53,7 @@ class sysmall_api_item_delete{
                 'mall_item_id' => $mall_item['mall_item_id'],
                 'deleted' => 1,
                 'status' => 'instock',
+                'reason' => '',
             );
             $objMallDataItem = kernel::single('sysmall_data_item');
             $mall_res = $objMallDataItem->update($mall_params, $msg);

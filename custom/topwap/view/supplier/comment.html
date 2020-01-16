@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>发布文章</title>
+    <{css src="debug/style.css" app="topwap"}>
+    <{css src="milier/dist/add_comment.css" app="topwap"}>
+    <{css src="milier/dist/style.css" app="topwap"}>
+</head>
+
+<body>
+    <div class="m-mili-publish">
+        <div class="m-ml-details-head">
+            <a href="javascript: history.go(-1);">
+            <img src="<{resource app='topwap' path='/images/milier/details/icon-back1.png'}>" alt="" class="head-icon1">
+            </a>
+            <p class="banner-title">发表</p>
+        </div>
+        <div class="m-ml-body">
+            <div class="m-ml-status"></div>
+            <div class="m-ml-content">
+                <div class="content-item">
+                    <label for="">店铺 <i>*</i></label>
+                    <input type="text" id="shop_name" placeholder="请输入店铺名称" />
+                </div>
+                <div class="content-item">
+                    <label for="">店铺地址 <i>*</i></label>
+                    <input type="text" id="shop_addr" placeholder="请输入店铺地址" />
+                </div>
+                <div class="content-item">
+                    <label for="">姓名 <i>*</i></label>
+                    <input type="text" id="user_name" placeholder="请输入姓名" />
+                </div>
+                <div class="content-item">
+                    <label for="">手机号 <i>*</i></label>
+                    <input type="text" id="user_phone" placeholder="请输入手机号" />
+                </div>
+                <!-- <h1>评论</h1> -->
+                <textarea name="description" id="description" cols="30" rows="10" placeholder="请输入评论内容"></textarea>
+                <div class="upload-box">
+                    <!--<div class="img-box"><img src="../img/default.png" alt=""></div>-->
+                    <!--<div class="img-box"><img src="../img/default.png" alt=""></div>-->
+                    <!--<div class="img-box"><img src="../img/default.png" alt=""></div>-->
+                    <!--<div class="img-box"><img src="../img/default.png" alt=""></div>-->
+                    <!--<div class="img-box"><img src="../img/default.png" alt=""></div>-->
+                    <!--<div class="default">-->
+                        <!--<input type="file" accept="image/*" multiple id="uploadImg" />-->
+                    <!--</div>-->
+                    <div class="images-uploader-headimg" style="display: none;">
+                        <input id="edit_file_headimg" type="file" name="pic[]" multiple accept="image/*" data-size="<{$env.config.image.uploadedFileMaxSize}>" data-max="3" data-remote="<{url action=toputil_ctl_image@uploadImages from=rice type=comment}>" style="display: none">
+                    </div>
+                    <div class="default">
+                        <img id="imghead" src="">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+<{script app="topwap" src="milier/dist/public.js" }>
+<{script src="uploader.js" app="site"}>
+<{script src="shopex.js" app="topwap"}>
+<script>
+    $.ajax({
+        url: '<{url action=topwap_ctl_supplier_comment@getUserCommentCount}>',
+        type: 'get',
+        data: {user_id: '<{$userId}>'},
+        dataType: 'json',
+        success: function(res) {
+            $('.m-ml-status').html('当前用户发布了'+res.count+'篇文章，审核通过了'+res.publishCount+'篇');
+        }
+    })
+    // 添加图片
+    // $('#imghead').on('click', function() {
+    $('.upload-box').on('click', '#imghead', function(e) {
+        $('#edit_file_headimg').trigger('click');
+    });
+    $(function () {
+        var uploader_headimg = $('.images-uploader-headimg');
+        uploader_headimg.AjaxFileUpload({
+            onComplete: function(rs, element) {
+                if (rs.error) {
+                    return alert(rs.message);
+                }
+                var data = $.makeArray(rs.data);
+                console.log(data);
+
+                var fileList = data;
+                var imgList = [];
+                for(var i = 0;i < fileList.length;i++){
+                    imgList.push(fileList[i].m_url);
+                }
+                console.log(imgList);
+                var str = '';
+                for (var i = 0; i < imgList.length; i++) {
+                    str += '<div class="img-box"><img src="' + imgList[i] + '" alt=""><span class="delect-img"></span></div>'
+                }
+                // str += '<div class="images-uploader-headimg" style="display: none">\n' +
+                //     '<input id="edit_file_headimg" type="file" name="pic[]" multiple accept="image/*" data-size="<{$env.config.image.uploadedFileMaxSize}>" data-max="3" data-remote="<{url action=toputil_ctl_image@uploadImages from=rice type=comment}>" style="display: none">\n' +
+                //     '</div>' +
+                //     '<div class="default"><img id="imghead" src=""></div>'
+                // $('.upload-box').html(str)
+                $('.upload-box').prepend(str)
+            }
+        });
+    });
+    // 删除图片
+    $('.upload-box').on('click', '.delect-img', function() {
+        $(this).parent().remove();
+    })
+
+    // 提交
+    $('.banner-title').click(function () {
+        var description = $('#description').val();
+        var shop_name = $('#shop_name').val();
+        var shop_addr = $('#shop_addr').val();
+        var user_name = $('#user_name').val();
+        var user_phone = $('#user_phone').val();
+        var image_url = [];
+        $('.img-box img').each(function () {
+            image_url.push($(this).attr('src'));
+        })
+        if (image_url.length > 9 ) {
+            shopex.alert('最多上传9张图片');
+            return false;
+        }
+        image_url = image_url.join(',');
+
+        if (!shop_name) {
+            shopex.alert('请输入店铺名');
+            return false;
+        }
+        if (!shop_addr) {
+            shopex.alert('请输入店铺地址');
+            return false;
+        }
+        if (!user_name) {
+            shopex.alert('请输入姓名');
+            return false;
+        }
+        if (!user_phone) {
+            shopex.alert('请输入手机号码');
+            return false;
+        }
+        if (!description) {
+            shopex.alert('请输入评论内容');
+            return false;
+        }
+        if (!image_url) {
+            shopex.alert('请上传图片');
+            return false;
+        }
+        var shop_id = '<{$shopId}>';
+        var data = {
+            description,
+            shop_name,
+            shop_addr,
+            user_name,
+            user_phone,
+            image_url,
+            shop_id
+        };
+        $.ajax({
+            url: '<{url action=topwap_ctl_supplier_comment@saveComment}>',
+            type: 'post',
+            dataType: 'json',
+            data: data,
+            success: function (res) {
+                if (res.success) {
+                    shopex.alert(res.message);
+                    if(res.redirect) {
+                        setTimeout(function() {
+                            window.location.href = res.redirect;
+                        }, 1500);
+                    }
+                } else {
+                    shopex.alert(res.message);
+                }
+
+                
+            }
+        })
+    })
+
+</script>
+
+</html>

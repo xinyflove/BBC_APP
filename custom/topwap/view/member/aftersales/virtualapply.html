@@ -22,7 +22,7 @@
               <div class="thumb-img" style="margin-left:2rem"><a href="#"><img src="<{$orderInfo.pic_path|default:$defaultImageId.T.default_image|storager:t}>" alt=""></a></div>
               <div class="caption">
                 <div class="order-goods-info">
-                  <div class="order-goods-title"><{$orderInfo.title}></div>
+                  <div class="order-goods-title"><{$item.title}></div>
                   <div class="order-goods-sku"><{$orderInfo.spec_nature_info}></div>
                   <div class="order-goods-price"><mark style="color:#333"><{$orderInfo.price|cur}></mark></div>
 				  <div style="color:#ffac20">卡券号码:<{$item.voucher_code}></div>

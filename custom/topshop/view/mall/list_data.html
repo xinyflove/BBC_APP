@@ -8,7 +8,7 @@
             </div>
             <p class="goods-title"><{$item.title}></p>
         </a>
-        <{if $item.sell_out <= 0}>
+        <{if $item.real_store <= 0}>
         <div class="floridian"><img src="/app/topshop/mall/statics/images/list/floridian.png" alt=""></div>
         <{/if}>
         <div class="goods-shop"><{$item.shop_name}></div>
@@ -22,7 +22,7 @@
         </div>
         <{if $item.shop_id == $shop_id}>
         <div class="chosebtn oversale">本店铺商品</div>
-        <{elseif $item.sell_out <= 0}>
+        <{elseif $item.real_store <= 0}>
         <div class="chosebtn oversale">已售罄</div>
         <{elseif in_array($item.item_id, $initItemsId)}>
         <div class="chosebtn oversale">已优选</div>
@@ -40,7 +40,9 @@
 <{else}>
 <!-- 没有数据显示 -->
 <div class="pc-list-empty" style="">
-    <div><img src="/app/topshop/mall/statics/images/list/nodata.png" alt=""></div>
+    <div>
+        <img src="/app/topshop/mall/statics/images/list/nodata.png" alt="" style="display: block;margin: 20px auto;">
+    </div>
     <p>未搜索到相关商品</p>
 </div>
 <!-- end -->

@@ -1,17 +1,17 @@
 <!-- m-tvplazaNew-details-slider start -->
-<section class="m-tvplazaNew-details-slider swiper-container" id="Baby" style="position: relative;">
+<section class="m-tvplazaNew-details-slider swiper-container goods-images" id="Baby" style="position: relative;height:auto">
 	<ul class="swiper-wrapper">
 		<{if !$item.list_image}>
 		<li class="swiper-slide">
 			<a href="javascript:;">
-				<img src="<{$image_default_id.L.default_image|storager}>" alt="">
+				<img class="item-detail-img" src="<{$image_default_id.L.default_image|storager}>" alt="">
 			</a>
 		</li>
 		<{else}>
 		<{foreach from=$item.list_image item=image_id}>
 		<li class="swiper-slide">
 			<a href="javascript:;">
-				<img src="<{$image_id|storager:'m'}>" alt="">
+				<img class="item-detail-img" src="<{$image_id|storager:'l'}>" alt="">
 			</a>
 		</li>
 		<{/foreach}>

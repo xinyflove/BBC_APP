@@ -19,9 +19,11 @@ class topshop_item_export {
     // 导出主方法
     public function export($params)
     {
-        $params['fields'] = 'item_id,shop_id,sub_title,bn,barcode,use_platform,show_mkt_price,sub_stock,dlytmpl_id,unit';
+        $params['fields'] = 'item_id,shop_id,sub_title,bn,barcode,use_platform,show_mkt_price,sub_stock,dlytmpl_id,unit,supplier_id';
         $itemsList = [];
         $isSearch = $params['is_search'];
+        $is_hm_supplier = $params['is_hm_supplier'];
+        unset($params['is_hm_supplier']);
         unset($params['is_search']);
         // 根据条件调用不同的api
         // 库存报警
@@ -51,10 +53,24 @@ class topshop_item_export {
         else
         {
             $itemsList = app::get('topshop')->rpcCall('item.search',$params);
+            $hm_item_ids = array_column($itemsList['list'], 'item_id');
+            $hm_item_ids = array_unique($hm_item_ids);
+            if($hm_item_ids) {
+                $hm_item_cat_model = app::get('sysitem')->model('item_hm_cat');
+                $hm_item_cat_list = $hm_item_cat_model->getList('*', ['item_id|in' => $hm_item_ids]);
+                $hm_item_cat_list = array_bind_key($hm_item_cat_list, 'item_id');
+
+                foreach($itemsList['list'] as &$hm_item_list) {
+                    $hm_item_list['second_cat_code'] = $hm_item_cat_list[$hm_item_list['item_id']]['second_cat_code'];
+                    $hm_item_list['second_cat_name'] = $hm_item_cat_list[$hm_item_list['item_id']]['second_cat_name'];
+                    $hm_item_list['four_cat_code'] = $hm_item_cat_list[$hm_item_list['item_id']]['four_cat_code'];
+                    $hm_item_list['four_cat_name'] = $hm_item_cat_list[$hm_item_list['item_id']]['four_cat_name'];
+                }
+            }
         }
         
         $itemsList = $this->formatExportItemList($itemsList['list']);
-       
+
         // 开始导出
         $objWriter = kernel::single('importexport_type_writer');
         $objWriter->writeDocument($itemsList);
@@ -75,10 +91,12 @@ class topshop_item_export {
                 'cat_name_l2' => app::get('topshop')->_('二级类目'),
                 'cat_name_l3' => app::get('topshop')->_('三级类目'),
                 'shop_CatName'=> app::get('topshop')->_('店铺分类'),
+                'item_id' => app::get('topshop')->_('商品Id'),
                 'title' => app::get('topshop')->_('商品标题'),
                 'sub_title' => app::get('topshop')->_('商品副标题'),
                 'brand_name' => app::get('topshop')->_('品牌'),
                 'bn' => app::get('topshop')->_('商品货号'),
+                'material_code' => app::get('topshop')->_('物料编码'),
                 'barcode' => app::get('topshop')->_('条形码'),
                 'platfrom' => app::get('topshop')->_('发布平台'),
                 'price' => app::get('topshop')->_('销售价'),
@@ -91,6 +109,10 @@ class topshop_item_export {
                 'unit' => app::get('topshop')->_('计价单位'),
                 'dlytmpl_name' => app::get('topshop')->_('运费模板'),
                 'spec_info' => app::get('topshop')->_('规格值'),
+                'second_cat_code' => app::get('topshop')->_('惠民二级分类编码'),
+                'second_cat_name' => app::get('topshop')->_('惠民二级分类名称'),
+                'four_cat_code' => app::get('topshop')->_('惠民四级分类名称'),
+                'four_cat_name' => app::get('topshop')->_('惠民四级分类名称'),
         ];
     }
     
@@ -110,7 +132,7 @@ class topshop_item_export {
         $itemIds = array_column($itemList, 'item_id');
         $tmp = array_bind_key($itemList, 'item_id');
         $skuParams['item_id'] = implode(',', $itemIds);
-        $skuParams['fields'] = 'sku_id,item_id,title,bn,price,cost_price,mkt_price,barcode,weight,spec_info,cat_id,brand_id,shop_cat_id,store';
+        $skuParams['fields'] = 'sku_id,item_id,title,bn,price,cost_price,mkt_price,barcode,weight,spec_info,cat_id,brand_id,shop_cat_id,store,material_code';
         $skuParams['page_size'] = 1000;
         $itemsSku = app::get('topshop')->rpcCall('sku.search', $skuParams);
        
@@ -220,7 +242,7 @@ class topshop_item_export {
             ];
             $val['sub_stock_store'] = $sub_stock[$val['sub_stock']];
             unset($val['sub_stock']);
-            unset($val['item_id']);
+//            unset($val['item_id']);
             unset($val['shop_id']);
             unset($val['store']);
             unset($val['freez']);

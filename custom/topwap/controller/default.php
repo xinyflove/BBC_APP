@@ -10,6 +10,9 @@ class topwap_ctl_default extends topwap_controller
 {
     public function index()
     {
+        $redirect_url = url::action('topwap_ctl_tvshopping@index');
+        header("Location: ".$redirect_url);
+        exit();
         $GLOBALS['runtime']['path'][] = array('title'=>app::get('topwap')->_('首页〉'),'link'=>kernel::base_url(1));
         /*add_start_gurundong_20171026*/
         /*猜你喜欢额外js所需的html结构加载*/

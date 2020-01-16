@@ -1,0 +1,59 @@
+
+<{css app="topwap" src="benefit/lib/ago/style.min.css"}>
+<{css app="topwap" src="benefit/lib/ago/newtv.min.css"}>
+<{css app="topwap" src="benefit/lib/public.min.css"}>
+<{css app="topwap" src="benefit/lib/mescroll/mescroll.min.css"}>
+<{css app="topwap" src="benefit/css/member.min.css"}>
+<{css app="topwap" src="benefit/css/cashgift.min.css"}>
+
+<div class="m-lm-cashgift " id="">
+    <header class="nav-sticky">
+        <a href="javascript: history.go(-1);"></a>
+        <h1>兑换礼金</h1>
+    </header>
+	<div class="m-lm-bindCash">
+        <form class="register_acount_form form-container" action="<{url action=topwap_ctl_member_lijin@doExchange}>" method="post">
+
+            <p class="bindCash-title">卡号:</p>
+            <div class="bindCash-into">
+                <input type="number" placeholder="请输入卡号" name="card_id">
+            </div>
+
+            <p class="bindCash-title">密码:</p>
+            <div class="bindCash-into">
+                <input type="password" placeholder="请输入密码" name="exchange_password">
+            </div>
+            <div class="bindCash-btn">
+                    <button type="button" class="submit_button" id="">点击兑换</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+  $('.submit_button').on('tap', function() {
+      _this = this;
+
+    if($(_this).hasClass('disabled')){
+        return false;
+    }
+
+    $(_this).addClass('disabled');
+
+    var form = $(_this).closest("form");
+    $.post(form.attr('action'), form.serialize(), function(rs) {
+
+      if (rs.error) {
+        shopex.alert(rs.message);
+      } else if(rs.success) {
+        shopex.alert(rs.message);
+      }
+
+      if (rs.redirect) {
+          location.href = rs.redirect;
+      }
+      $(_this).removeClass('disabled');
+
+    })
+  });
+</script>

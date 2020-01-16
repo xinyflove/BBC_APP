@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="/app/topmaker/statics/ticket/lib/common/public.css">
+    <link rel="stylesheet" href="/app/topmaker/statics/ticket/lib/ydui/css/ydui.css">
+    <link rel="stylesheet" href="/app/topmaker/statics/ticket/css/bindcard.css">
+    <title>银行卡</title>
+    <script src="/app/topmaker/statics/ticket/lib/common/flexible.js"></script>
+</head>
+<body>
+    
+    <div class="bindcard">
+        <p class="bindcard-title">请输入持卡人本人银行卡</p>
+        <div class="m-cell">
+            <div class="cell-item">
+                <div class="cell-left">持卡人</div>
+                <div class="cell-right"><input type="text" name="name" class="cell-input" placeholder="请输入持卡人姓名" autocomplete="off" value='<{$info.name}>'/></div>
+            </div>
+            <div class="cell-item">
+                <div class="cell-left">卡号</div>
+                <div class="cell-right"><input type="number" name="card_number" pattern="[0-9]*" class="cell-input" placeholder="请输入卡号" autocomplete="off" value="<{$info.card_number}>"/></div>
+            </div>
+            <div class="cell-item">
+                <div class="cell-left">银行名称</div>
+                <div class="cell-right"><input type="text" name="bank_name" class="cell-input" placeholder="请输入银行名称" autocomplete="off" value="<{$info.bank_name}>"/></div>
+            </div>
+        </div>
+        <div class="bindcard-btn">
+            <a id="bind" href="javascript:;" class="btn btn-danger">确认</a>
+        </div>
+    </div>
+    
+    <script src="/app/topmaker/statics/ticket/lib/jquery/jquery-3.3.0.min.js"></script>
+    <script src="/app/topmaker/statics/ticket/lib/ydui/js/ydui.js"></script>
+    <script src="/app/topmaker/statics/ticket/js/model.js"></script>
+	<script src="/app/topmaker/statics/lib/layui/layui.all.js"></script>
+    <script>
+    $('#bind').on('click', function () {
+        var name = $('[name="name"]').val();
+        if(name == '')
+        {
+            layer.msg('请输入姓名');
+            return false;
+        }
+        var card_number = $('[name="card_number"]').val();
+        if(card_number == '')
+        {
+            layer.msg('请输入银行卡号');
+            return false;
+        }
+        var bank_name = $('[name="bank_name"]').val();
+        if(bank_name == '')
+        {
+            layer.msg('请输入银行名称');
+            return false;
+        }
+		var backurl="<{$backurl}>";
+        var data = {
+            bank_name:bank_name,
+            name:name,
+            card_number:card_number,
+			backurl:backurl,
+        };
+
+        var index = layer.load(1, {
+            shade: [0.1,'#fff'] //0.1透明度的白色背景
+        });
+
+        $.ajax({
+            type: "POST",
+            url: '<{url action=topmaker_ctl_cash@bind}>',
+            data: data,
+            dataType: "json",
+            success: function(rs) {
+                layer.msg(rs.message);
+                if(rs.success) {
+                    setTimeout(function(){
+                        window.location.href=rs.redirect;
+                    }, 500);
+                }
+                layer.close(index);
+            },
+            error: function() {
+                layer.close(index);
+                layer.msg('绑定失败');
+            }
+        });
+    });
+
+
+	</script>
+</body>
+</html>

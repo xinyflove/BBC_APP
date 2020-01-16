@@ -51,7 +51,7 @@
 				<{/if}>
 				<{if $voucher.status=='WAIT_WRITE_OFF' && $status == 0}>
 				<!--未使用+未核销-->
-				<img data-voucher-code="<{$voucher.voucher_code}>" src="/app/topwap/statics/static/img/voucher_ewm.png" class="voucher_ewm">
+				<img data-voucher-code="<{$voucher.voucher_code}>" src="/app/topwap/statics/static/img/voucher_ewm.png" class="voucher_ewm" <{if $voucher.confirm_type==2}>data-voucher-logo="/app/topwap/statics/static/img/voucher_logo2.png"<{else}>data-voucher-logo="/app/topwap/statics/static/img/voucher_logo1.png"<{/if}>>
 				<{/if}>
 			</dd>
 		</dl>

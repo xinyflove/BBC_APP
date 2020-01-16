@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="/app/topmaker/statics/ticket/lib/common/public.css">
+    <link rel="stylesheet" href="/app/topmaker/statics/ticket/lib/ydui/css/ydui.css">
+    <link rel="stylesheet" href="/app/topmaker/statics/ticket/css/earnings.css">
+    <title>收益</title>
+    <script src="/app/topmaker/statics/ticket/lib/common/flexible.js"></script>
+</head>
+<body>
+    
+    <div class="earnings">
+        <div class="earnings-top">
+            <div class="content">
+                <div class="content-out">
+                    <p class="title">累计佣金（元）</p>
+                    <p class="price1"><{$total_com|cur}></p>
+                    <p class="price2">可提现佣金<{$cash_com|cur}></p>
+                    <a href="<{url action=topmaker_ctl_cash@addCash}>" class="btn">提现</a>
+                </div>
+            </div>
+        </div>
+        <div class="m-cell">
+            <a href="<{url action=topmaker_ctl_commission@commissionList}>" class="cell-item">
+                <div class="cell-left">佣金明细</div>
+                <div class="cell-right cell-arrow"></div>
+            </a>
+            <a href="<{url action=topmaker_ctl_cash@index}>" class="cell-item">
+                <div class="cell-left">提现流水</div>
+                <div class="cell-right cell-arrow"></div>
+            </a>
+            <a href="<{url action=topmaker_ctl_cash@bindbank}>" class="cell-item">
+                <div class="cell-left">绑定银行卡</div>
+                <div class="cell-right cell-arrow"></div>
+            </a>
+        </div>
+    </div>
+    
+    <script src="/app/topmaker/statics/ticket/lib/jquery/jquery-3.3.0.min.js"></script>
+    <script src="/app/topmaker/statics/ticket/lib/ydui/js/ydui.js"></script>
+    <script src="/app/topmaker/statics/ticket/js/model.js"></script>
+    
+</body>
+</html>

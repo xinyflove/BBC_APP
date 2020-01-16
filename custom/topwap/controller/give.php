@@ -42,6 +42,43 @@ class topwap_ctl_give extends topwap_controller
 		//echo "<pre>";print_r($voucher);die();
         return $this->page('topwap/give/index.html', $pagedata);
 	}
+	
+	/**
+	* 发送验证码的逻辑
+	* author by wanghaichao
+	* date 2019/10/14
+	*/
+    public function sendVcode()
+    {
+        $postdata = utils::_filter_input(input::get());
+        $validator = validator::make(
+            [$postdata['uname']],['required|mobile'],['您的手机号不能为空!|请输入正确的手机号码']
+        );
+
+        if ($validator->fails())
+        {
+            $messages = $validator->messagesInfo();
+            // $url = url::action('topwap_ctl_passport@goFindPwd');
+            foreach( $messages as $error )
+            {
+                return $this->splash('error',null,$error[0]);
+            }
+        }
+
+        // if( ! $_SESSION['topapi'.$postdata['uname']] )
+        // {
+        //     return $this->splash('error',$url,'页面已过期，请重新验证手机号');
+        // }
+
+        try {
+            kernel::single('topwap_passport')->sendVcode($postdata['uname'],$postdata['type']);
+        } catch(Exception $e) {
+            $msg = $e->getMessage();
+            return $this->splash('error',null,$msg);
+        }
+        return $this->splash('success',null,"验证码发送成功");
+    }
+
 
 	/* action_name (par1, par2, par3)
 	* 领取卡券的逻辑

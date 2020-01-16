@@ -18,6 +18,22 @@
   <form  action="<{url action=topshop_ctl_account_supplier@save}>" method="post" class="form-horizontal" data-validate-onsuccess="ajaxSubmit" id="form_delivery" role="form">
     <input type="hidden" name="supplier_id" value="<{$supplier_id}>">
     <div class="panel-body">
+      <{if $is_hm_shop}>
+      <div class="form-group">
+        <label class="col-sm-2 control-label" >审核状态：</label>
+        <div class="col-sm-4">
+          <input type="text"  <{if $is_audit=='PASS'}>
+          value="已通过"
+            <{elseif $is_audit=='REJECTED'}>
+            value="已拒绝"
+            <{elseif $is_audit=='PENDING'}>
+            value="未审核"
+            <{elseif $is_audit=='FIRST_TRIAL'}>
+             value="初审通过"
+            <{/if}> class="form-control" readonly="readonly">
+        </div>
+      </div>
+      <{/if}>
       <div class="form-group">
         <label class="col-sm-2 control-label" ><span class="txt-required">*</span>用户名：</label>
         <div class="col-sm-4">
@@ -64,6 +80,19 @@
             </div>
             <{/if}>
 		<{/if}>
+      <{if $is_hm_shop}>
+        <div class="form-group">
+          <label for="" class="col-sm-2 control-label"><span class="txt-required">*</span>商户类别：</label>
+          <div class="col-sm-3">
+            <select name="hm_supplier_cate_id" required  id="hm_supplier_cate_id" class="form-control">
+              <{foreach from=$hm_cate_list item=cate_list}>
+                  <option value="<{$cate_list.shopCategoryId}>"  data-name="<{$cate_list.shopCategoryName}>" <{if $hm_supplier_info.hm_cate_id == $cate_list.shopCategoryId}>selected<{/if}>><{$cate_list.shopCategoryName}></option>
+              <{/foreach}>
+            </select>
+          </div>
+          <input type="hidden" name="hm_supplier_cate_name" id="hm_supplier_cate_name" value="<{$hm_supplier_info.hm_cate_name}>"/>
+        </div>
+      <{/if}>
       <!--<div class="form-group">
         <label class="col-sm-2 control-label" >供应商码：</label>
         <div class="col-sm-4">
@@ -79,6 +108,27 @@
       </div>
 
       <div class="form-group">
+        <label class="col-sm-2 control-label" ><span class="txt-required">*</span>开户行：</label>
+        <div class="col-sm-4">
+          <input  name='deposit_bank' type='text' value="<{$deposit_bank}>" placeholder="开户行" required maxlength="255" class="form-control" >
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="col-sm-2 control-label" ><span class="txt-required">*</span>银行卡号：</label>
+        <div class="col-sm-4">
+          <input  name='card_number' type='number' value="<{$card_number}>" placeholder="银行卡号" required maxlength="255" class="form-control" >
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="col-sm-2 control-label" ><span class="txt-required">*</span>纳税人识别号：</label>
+        <div class="col-sm-4">
+          <input  name='registration_number' type='text' value="<{$registration_number}>" placeholder="纳税人识别号" required maxlength="255" class="form-control" >
+        </div>
+      </div>
+
+      <div class="form-group">
         <label class="col-sm-2 control-label" ><span class="txt-required">*</span>联系电话：</label>
         <div class="col-sm-4">
           <input type="text" name="mobile" value="<{$mobile}>" class="form-control" placeholder="电话号" maxlength="100" required  <{if !$supplier_id}>data-validate-remote-url="<{url action=topshop_ctl_passport@supplier_isExists type=mobile}>"  data-validate-remote-message="此手机号已被注册过，请换一个重试"<{/if}>>
@@ -90,7 +140,20 @@
           <input type="email" name="email" value="<{$email}>" class="form-control" placeholder="最多50个字符" maxlength="50"  <{if !$supplier_id}> data-validate-remote-url="<{url action=topshop_ctl_passport@supplier_isExists type=email}>"  data-validate-remote-message="此邮箱已被注册过，请换一个重试" <{/if}>>
         </div>
       </div>
-
+      <{if $is_hm_shop}>
+      <div class="form-group">
+        <label class="col-sm-2 control-label" >选择省市区</label>
+        <div class="col-sm-4">
+          <input name='district' type='text' id="district" readonly value="<{$hm_supplier_info.district}>" placeholder="省市区代码" required class="form-control" >
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-sm-2 control-label" >省市区</label>
+        <div class="col-sm-4">
+          <input name='district_name' type='text' id="district_name" readonly value="<{$hm_supplier_info.district_name}>" placeholder="省市区名称" required class="form-control" >
+        </div>
+      </div>
+      <{/if}>
       <div class="form-group">
         <label class="col-sm-2 control-label" ><span class="txt-required">*</span>地址：</label>
         <div class="col-sm-4">
@@ -186,6 +249,14 @@
 
     <div class="modal-footer text-center">
       <button type="submit" class="btn btn-primary btn-flat"><{t}>保存<{/t}></button>
+      <{if $supplier_id && $is_hm_shop && !$is_hm_supplier}>
+      <{if ((($is_audit == 'PENDING' ||  $is_audit == 'REJECTED') && $seller_id != '64') || ($is_audit == 'FIRST_TRIAL' && $seller_id == '64'))}>
+      <button type="button" id="audit" class="btn btn-primary btn-flat"><{t}>审核通过<{/t}></button>
+      <{/if}>
+      <{if (($is_audit == 'PENDING' && $seller_id != '64') || ($is_audit == 'FIRST_TRIAL' && $seller_id == '64'))}>
+      <button type="button" id="reject" class="btn btn-primary btn-flat"><{t}>不通过<{/t}></button>
+      <{/if}>
+      <{/if}>
     </div>
 
   </form>
@@ -214,6 +285,47 @@
 	$(".agent_sign input[type=radio][value=0]").click(function(){
 		$('.unified_money').addClass('hidden');
 	});
-}); 
+});
+
+  $('#hm_supplier_cate_id').change(function() {
+      var hm_supplier_cate_name = $('#hm_supplier_cate_id option:selected') .data('name');
+      $('#hm_supplier_cate_name').val(hm_supplier_cate_name);
+  })
+
+  $('#audit').click(function() {
+      var operate_data = {
+          'supplier_id': '<{$supplier_id}>',
+          'is_reject': 0
+      };
+      supplierOperate(operate_data);
+  });
+
+  $('#reject').click(function() {
+      var operate_data = {
+              'supplier_id': '<{$supplier_id}>',
+              'is_reject': 1
+          };
+      supplierOperate(operate_data);
+  });
+
+  function supplierOperate(operate_data) {
+      $.ajax({
+          type:'post',
+          data:operate_data,
+          url:"<{url action=topshop_ctl_account_supplier@auditSupplier}>",
+          dataType:'json',
+          success:function(res) {
+              if(res.success) {
+                  $('#messagebox').message(res.message, 'success');
+                  location.href = res.redirect;
+              } else {
+                  $('#messagebox').message(res.message);
+              }
+          },
+          error:function() {
+              $('#messagebox').message('失败');
+          }
+      })
+  }
 
 </script>

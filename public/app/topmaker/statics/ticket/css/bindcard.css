@@ -1,0 +1,26 @@
+.bindcard {
+  width: 100%;
+  height: 100%;
+  background: #f5f5f5;
+}
+.bindcard .bindcard-title {
+  width: 100%;
+  height: auto;
+  padding: 0.3rem;
+  color: #666;
+  font-size: 0.24rem;
+}
+.bindcard .cell-left {
+  width: 1.6rem;
+}
+.bindcard .bindcard-btn {
+  width: 100%;
+  height: auto;
+  padding: 0 0.3rem;
+  margin-top: 0.85rem;
+}
+.bindcard .bindcard-btn .btn {
+  width: 100%;
+  height: 0.8rem;
+  line-height: 0.8rem;
+}

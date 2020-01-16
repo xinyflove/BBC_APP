@@ -9,10 +9,29 @@
     <link rel="stylesheet" href="/app/topmaker/statics/lib/common/public.css">
     <link rel="stylesheet" href="/app/topmaker/statics/css/styleSheet.css">
     <title><{$topmaker.contentTitle}></title>
+    <style type="text/css">
+        .logos{
+            width:1.35rem;
+            height: 1.38rem;
+            margin:0.94rem auto 0;
+        }
+        .login-img {
+            height: 1.92rem;
+        }
+        .users{
+            width:4.41rem;
+            height: 1.22rem;
+            position:absolute;
+            bottom:0.7rem;
+            left:50%;
+            transform: translate(-50%,0);
+        }
+    </style>
 </head>
 
 <body>
 <div class="m-hacker-login">
+    <img src="/app/topmaker/statics/images/login/logos.jpg" alt="" class="logos">
     <div class="login-img">
         <img src="/app/topmaker/statics/images/login/logo.png" alt="">
     </div>
@@ -29,8 +48,12 @@
         </div>
     </div>
     <div class="login-btn">
-        <p>确认</p>
+        <p>登录</p>
     </div>
+    <div class="login-join">
+        <a href="<{url action=topmaker_ctl_passport@signup}>">成为创客</a>
+    </div>
+    <img src="/app/topmaker/statics/images/login/users.jpg" alt="" class="users">
 </div>
 
 <script src="/app/topmaker/statics/lib/jquery/jquery-3.2.1.js"></script>
@@ -85,6 +108,7 @@
 </script>
 <script>
     var third = eval('('+'<{$thirdData}>'+')');
+	var type="<{$type}>";
     $('.login-btn').on('click', function () {
         var login_account = $('[name="login_account"]').val();
         if(login_account == '') {
@@ -96,7 +120,7 @@
             layer.msg('请输入密码');
             return false;
         }
-        var data = {login_account:login_account, login_password:login_password};
+        var data = {login_account:login_account, login_password:login_password,type:type};
         if(third != '') data.third = third;
 
         var index = layer.load(1, {

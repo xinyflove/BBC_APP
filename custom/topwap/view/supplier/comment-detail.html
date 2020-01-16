@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>详情</title>
+    <{css src="debug/style.css" app="topwap"}>
+    <{css src="milier/dist/style.css" app="topwap"}>
+    <{css src="milier/css/index.css" app="topwap"}>
+    <{css src="milier/dist/comment_detail.css?201906141615" app="topwap"}>
+</head>
+
+<body>
+    <div class="m-ml-newDetails mescroll" id="mescroll">
+        <div class="m-ml-newDetails-banner">
+            <div class="swiper-container banner-container">
+                <div class="swiper-wrapper">
+                    <!-- <div class="swiper-slide">
+                        <img src="../img/details/banner.png" alt="">
+                    </div>
+                    <div class="swiper-slide">
+                        <img src="../img/95821018590679456.png" alt="">
+                    </div>
+                    <div class="swiper-slide">
+                        <img src="../img/4.jpg" alt="">
+                    </div> -->
+                </div>
+                <div class="swiper-pagination banner-pagination"></div>
+            </div>
+        </div>
+        <div class="m-ml-newDetails-topcomment">
+            <div class="topcomment-msg">
+                <div class="msg-headimg">
+                    <img src="../img/man.png" alt="">
+                </div>
+                <div class="msg-right">
+                    <p class="name">立志认真写评价</p>
+                    <p class="time">9月18日 13:22</p>
+                </div>
+            </div>
+            <div class="topcomment-text">
+                <p>好吃好吃，再来一份</p>
+            </div>
+            <p class="topcomment-like"><img src="<{resource app='topwap' path='/images/milier/zan0.png'}>" alt="" class="img1"><img src="../img/zan1.png" alt="" class="img2"><span>31</span></p>
+            <p class="topcomment-look">浏览：<span>1.1万</span></p>
+
+        </div>
+        <div class="m-ml-newDetails-position">
+            <div class="positon-icon">
+
+                <img src="<{resource app='topwap' path='/images/milier/details/icon_shop.png'}>" alt="">
+            </div>
+            <div class="position-text">
+                <p>福海棠凉茶</p >
+                <span>青岛市市南区香港中路378号</span>
+            </div>
+        </div>
+        <div class="m-ml-newDetails-comment">
+            <p class="title">评论<span>（ <i>10</i> ）</span></p>
+            <div class="into">
+                <{if $headImgUrl}>
+                <img src="<{$headImgUrl}>" alt="">
+                <{else}>
+                <img src="<{resource app='topwap' path='/images/milier/details/user_headimg.png'}>" alt="">
+                <{/if}>
+                <input type="text" placeholder="快来写下你的评论吧" id="keyword">
+                <p>发送</p>
+            </div>
+            <ul class="list">
+                <!-- <li>
+                    <div class="list-msg">
+                        <div class="msg-headimg">
+                            <img src="../img/man.png" alt="">
+                        </div>
+                        <div class="msg-right">
+                            <p class="name">立志认真写评价</p>
+                            <p class="time">9月18日 13:22</p>
+                        </div>
+                        <img src="../img/zan0.png" alt="" class="like">
+                    </div>
+                    <div class="list-text">
+                        <p>好吃好吃，再来一份</p>
+                    </div>
+                </li> -->
+            </ul>
+        </div>
+    </div>
+    <{script app="topwap" src="milier/dist/public.js" }>
+    <{script src="shopex.js" app="topwap"}>
+    <script>
+
+        function timeC(sj) {
+            var now = new Date(sj * 1000);
+            var year = now.getFullYear();
+            var month = now.getMonth() + 1;
+            var date = now.getDate();
+            var hour = now.getHours();
+            var minute = now.getMinutes() < 10 ? '0' + now.getMinutes() : now.getMinutes();
+            var second = now.getSeconds();
+            return year + "年" + month + "月" + date + "日" + "   " + hour + ":" + minute;
+        }
+        $(function () {
+            var ua = navigator.userAgent.toLocaleLowerCase();
+            var swiperStr = '';
+            var listStr = '';
+            $.ajax({
+                type: "get",
+                url: "<{url action=topwap_ctl_supplier_comment@getCommentData}>",
+                data: {
+                    comment_id: '<{$commentId}>'
+                },
+                dataType: "json",
+                async: false,
+                success: function (res) {
+                    console.log(res)
+                    //轮播
+                    for (var s = 0; s < res.pic.length; s++) {
+                        swiperStr += '<div class="swiper-slide">';
+                        swiperStr += '<img src="' + res.pic[s].image_url + '" alt="">';
+                        swiperStr += '</div>';
+                    }
+                    //评论列表
+                    if (res.subComment.length > 0) {
+                        for (var i = 0; i < res.subComment.length; i++) {
+                            listStr += '<li>'
+                            listStr += '<div class="list-msg">'
+                            listStr += '<div class="msg-headimg">'
+                            //listStr += '<img src="'+  res.subComment[i].headimg_url.headimg_url+'" alt="">'
+                            if(res.subComment[i].headimg_url.headimg_url){
+                                listStr += '<img src="' + res.subComment[i].headimg_url.headimg_url + '" alt="">'
+                            }else{
+                                //默认图
+                                listStr += '<img src="' +"<{resource app='topwap' path='/images/milier/details/user_headimg.png'}>"+ '" alt="">'
+                            }
+                            listStr += '</div>'
+                            listStr += '<div class="msg-right">'
+                            listStr += '<p class="name">' + res.subComment[i].user_name + '</p>'
+                            listStr += '<p class="time">' + timeC(res.subComment[i].write_time) + '</p>'
+                            listStr += '</div>'
+                            listStr += '</div>'
+                            listStr += '<div class="list-text">'
+                            listStr += '<p>' + res.subComment[i].description + '</p>'
+                            listStr += '</div>'
+                            listStr += '</li>'
+                        }
+                    }
+                    $('.m-ml-newDetails-comment .list').append(listStr);
+                    $('.banner-container .swiper-wrapper').append(swiperStr);
+                    $('.topcomment-msg .msg-right .time').text(timeC(res.write_time));
+                    $('.topcomment-msg .msg-right .name').text(res.user_name);
+                    $('.topcomment-text p').text(res.description);
+                    $('.m-ml-newDetails-comment .title span i').text(res.subComment.length);
+                    $('.topcomment-msg .msg-headimg img').attr('src',res.headimg_url.headimg_url);
+                    $('.topcomment-like span').text(res.thumbs_up);
+                    $('.topcomment-look span').text(res.page_view);
+                    $('.position-text p').text(res.shop_name);
+                    $('.position-text span').text(res.shop_addr);
+                }
+            });
+            //轮播
+            var indexBanner = new Swiper('.banner-container', {
+                observer: true,
+                observeParents: true,
+                slidesPerView: "auto",
+                autoplay: true,
+                pagination: {
+                    el: '.banner-pagination',
+                    type: 'fraction',
+                },
+            });
+            $.ajax({
+                type: "get",
+                url: "<{url action=topwap_ctl_supplier_comment@updatePageView}>",
+                data: {
+                    comment_id: '<{$commentId}>'
+                },
+                dataType: "json",
+                async: false,
+                success: function (res) {
+                    console.log(res)
+
+                }
+            });
+            //点赞
+            $('.topcomment-like img').on('click', function () {
+                $.ajax({
+                    type: "get",
+                    url: "<{url action=topwap_ctl_supplier_comment@updateThumbsup}>",
+                    data: {
+                        comment_id: '<{$commentId}>'
+                    },
+                    dataType: "json",
+                    async: false,
+                    success: function (res) {
+                        // $('.topcomment-like .img1').hide();
+                        $('.topcomment-like span').text(Number($('.topcomment-like span').text())+1);
+                    }
+                });
+            });
+            //追加评论
+            $("#keyword").on('keypress', function (e) {
+                var keycode = e.keyCode;
+                var keyword = $(this).val();
+                if (keycode == '13') {
+                    e.preventDefault();
+                    commentReply();
+                }
+            });
+            $('.m-ml-newDetails-comment .into p').on('click',function(){
+                commentReply();
+            });
+            function commentReply() {
+                $.ajax({
+                    type: "post",
+                    url: "<{url action=topwap_ctl_supplier_comment@saveCommentReply}>",
+                    data: {
+                        comment_id: '<{$commentId}>',
+                        description: $('#keyword').val(),
+                        user_name: '<{$userName}>',
+                        user_id: '<{$userId}>'
+                    },
+                    dataType: "json",
+                    async: false,
+                    success: function (r) {
+                        if (r.error) {
+                            if(r.redirect) {
+                                shopex.alert(r.message)
+                                setTimeout(function() {
+                                    window.location.href = r.redirect;
+                                }, 1500);
+                            }
+                        } else {
+                            $('#keyword').val('');
+                            $('.m-ml-newDetails-comment .list').html('');
+                            listStr = '';
+                            $.ajax({
+                                type: "get",
+                                url: "<{url action=topwap_ctl_supplier_comment@getCommentData}>",
+                                data: {
+                                    comment_id: '<{$commentId}>'
+                                },
+                                dataType: "json",
+                                async: false,
+                                success: function (res) {
+                                    if (res.subComment.length > 0) {
+                                        for (var i = 0; i < res.subComment.length; i++) {
+                                            listStr += '<li>'
+                                            listStr += '<div class="list-msg">'
+                                            listStr += '<div class="msg-headimg">'
+                                            if(res.subComment[i].headimg_url.headimg_url){
+                                                listStr += '<img src="' + res.subComment[i].headimg_url.headimg_url + '" alt="">'
+                                            }else{
+                                                //默认图
+                                                listStr += '<img src="' +"<{resource app='topwap' path='/images/milier/details/user_headimg.png'}>"+ '" alt="">'
+                                            }
+                                            listStr += '</div>'
+                                            listStr += '<div class="msg-right">'
+                                            listStr += '<p class="name">' + res.subComment[i].user_name + '</p>'
+                                            listStr += '<p class="time">' + timeC(res.subComment[i].write_time) + '</p>'
+                                            listStr += '</div>'
+                                            //listStr += '<img src="../img/zan0.png" alt="" class="like">'
+                                            listStr += '</div>'
+                                            listStr += '<div class="list-text">'
+                                            listStr += '<p>' + res.subComment[i].description + '</p>'
+                                            listStr += '</div>'
+                                            listStr += '</li>'
+                                        }
+                                    }
+                                    $('.m-ml-newDetails-comment .list').append(listStr);
+                                    $('.m-ml-newDetails-comment .title span i').text(res.subComment.length);
+                                }
+                            });
+                        }
+                    },
+                    error:function(e){
+                        console.log(e)
+                    },
+
+                });
+
+            }
+        })
+    </script>
+</body>
+
+</html>

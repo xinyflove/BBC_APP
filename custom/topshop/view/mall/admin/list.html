@@ -14,6 +14,10 @@
                     <label>商品名称：</label>
                     <input type="text" name="title" class="form-control" <{if $filter['title']}> value="<{$filter['title']|escape:"html"}>" <{/if}> placeholder="请输入 ...">
                 </div>
+                <div class="form-group">
+                    <label>供货店铺名称：</label>
+                    <input type="text" name="supply_shop_name" class="form-control" <{if $filter['supply_shop_name']}> value="<{$filter['supply_shop_name']|escape:"html"}>" <{/if}> placeholder="请输入 ...">
+                </div>
             </div>
             <!-- /.box-body -->
             <div class="box-footer">

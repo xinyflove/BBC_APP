@@ -35,8 +35,7 @@ class topshop_ctl_trade_dev extends topshop_controller{
         } elseif ($method == 'billing2') {
             //2017-11-21当天起，银联商务支付手续费用为千分之6
             $curDateStart = strtotime(date("Y-m-d", time()));
-            $curDateStart = 1542124801;
-            $ongoingData = 1542124800;// date('Y-m-d H:i:s',1511193600)=2017-11-21 00:00:00
+            $ongoingData = 1543420800;// date('Y-m-d H:i:s',1511193600)=2017-11-21 00:00:00
             while ($ongoingData < $curDateStart) {
                 $filter = array(
                     'time_start' => $ongoingData,
@@ -163,18 +162,114 @@ class topshop_ctl_trade_dev extends topshop_controller{
             die;
 //######金蝶凭证处理########################################################################
         } elseif ($method == 'kingdee_trade') {
-            $fields = "tid,shop_id,pay_type,created_time,pay_time,receiver_name,receiver_mobile,receiver_address,orders.*";
-            $tradeInfo = app::get('sysclearing')->rpcCall('trade.get',array('tid' => '2513744000030080','fields' => $fields));
+            $fields = "tid,shop_id,pay_type,trade_from,created_time,pay_time,receiver_name,receiver_mobile,receiver_address,orders.*";
+            $tradeInfo = app::get('sysclearing')->rpcCall('trade.get',array('tid' => '2532573000159521','fields' => $fields));
             $tradeInfo['push_type'] = 'SEND_GOODS';
             $trade_result = kernel::single('sysclearing_kingdeetrade')->generate($tradeInfo);
             exit('金蝶销售出库单生成处理完毕');
             die;
-        }elseif ($method == 'kingdeedata') {
+        }elseif ($method == 'kingdee_refund') {
+            $tid = '2532784000089559';
+            $tid = '2537746000030087';
+//            $filter['push_status'] = 'SAVE_FALSE';
+            if($tid > 0)
+            {
+                $filter['tid'] = $tid;
+            }
+            $kingdeeTradeModel = app::get('systrade')->model('kingdee_trade');
+            $save_false_info = $kingdeeTradeModel->getList('*',$filter);
+            foreach($save_false_info as $info)
+            {
+                if($info['push_type'] === 'SEND_GOODS' || $info['push_type'] === 'EXCHANGING_SEND_GOODS')
+                {
+                    continue;
+                }
+
+                $tid = $info['tid'];
+                $push_type = $info['push_type'];
+                $oid = $info['oid'];
+                $fields = "tid,shop_id,pay_type,trade_from,created_time,receiver_name,receiver_mobile,receiver_address,orders.*";
+                $refund_filter = ['tid' => $tid,'fields' => $fields];
+                if($oid) $refund_filter['oid'] = $oid;
+
+                $refund_data = app::get('sysaftersales')->rpcCall('trade.get',$refund_filter);
+
+                if($push_type === 'EXCHANGING_GOODS')
+                {
+                    $return_type = 'EXCHANGING_GOODS';
+                }
+                else
+                {
+                    $return_type = 'REFUND_GOODS';
+                }
+
+                $refund_data['refund_time']  = time();
+                $refund_data['return_type']  = $return_type;
+                $refund_data['push_type']    = $push_type;
+                $refund_data['shop_id']      = $info['shop_id'];
+                $refund_data['oid']          = $oid;
+
+                kernel::single('sysclearing_kingdeerefund')->generate($refund_data);
+            }
+            exit('金蝶销售退货单生成处理完毕');
+            die;
+        } elseif ($method == 'kingdee_repush') {
+            $curDateStart = time();
+            $ongoingData = 1566835200;
+            $filter['created_time|bthan'] = $ongoingData;
+            $filter['created_time|lthan'] = $curDateStart;
+            $filter['push_status'] = 'SAVE_FALSE';
+            $kingdeeTradeModel = app::get('systrade')->model('kingdee_trade');
+            $save_false_info = $kingdeeTradeModel->getList('*',$filter);
+            foreach($save_false_info as $info)
+            {
+                if(in_array($info['push_type'],['SEND_GOODS','EXCHANGING_SEND_GOODS']))
+                {
+                    $fields = "tid,shop_id,pay_type,trade_from,created_time,pay_time,receiver_name,receiver_mobile,receiver_address,orders.*";
+                    $tradeInfo = app::get('sysclearing')->rpcCall('trade.get',array('tid' => $info['tid'],'fields' => $fields));
+                    $tradeInfo['push_type'] = $info['push_type'];
+                    $tradeInfo['primary_id'] = $info['id'];
+                    $tradeInfo['repush_time'] = $info['created_time'];
+                    kernel::single('sysclearing_kingdeetrade')->generate($tradeInfo);
+                }
+                else
+                {
+                    $tid = $info['tid'];
+                    $push_type = $info['push_type'];
+                    $oid = $info['oid'];
+                    $fields = "tid,shop_id,pay_type,trade_from,created_time,receiver_name,receiver_mobile,receiver_address,orders.*";
+                    $refund_filter = ['tid' => $tid,'fields' => $fields];
+                    if($oid) $refund_filter['oid'] = $oid;
+
+                    $refund_data = app::get('sysaftersales')->rpcCall('trade.get',$refund_filter);
+
+                    if($push_type === 'EXCHANGING_GOODS')
+                    {
+                        $return_type = 'EXCHANGING_GOODS';
+                    }
+                    else
+                    {
+                        $return_type = 'REFUND_GOODS';
+                    }
+
+                    $refund_data['refund_time']  = $info['created_time'];
+                    $refund_data['return_type']  = $return_type;
+                    $refund_data['push_type']    = $push_type;
+                    $refund_data['shop_id']      = $info['shop_id'];
+                    $refund_data['oid']          = $oid;
+                    $refund_data['primary_id']   = $info['id'];
+
+                    kernel::single('sysclearing_kingdeerefund')->generate($refund_data);
+                }
+            }
+            exit('失败的金蝶销售出库及退货单生成处理完毕');
+            die;
+        } elseif ($method == 'kingdeedata') {
             $curDateStart = strtotime(date("Y-m-d", time()));
             //$ongoingData=1509465600;//2017-11-01 00:00:00
             //$ongoingData=1512057600;//2017-12-01 00:00:00
             //$ongoingData=1513785600;//2017-12-01 00:00:00
-            $ongoingData = 1539100800;//2018-5-25 00:00:00
+            $ongoingData = 1548691200;//2018-5-25 00:00:00
             while ($ongoingData < $curDateStart) {
                 $filter = array(
                     'time_start' => $ongoingData,
@@ -187,34 +282,59 @@ class topshop_ctl_trade_dev extends topshop_controller{
             die;
         } elseif ($method == 'kingdeedatabyshopid') {
             $curDateStart = strtotime(date("Y-m-d", time()));
-            $curDateStart = 1542124801;
-            $ongoingData = 1533052800;
+            $ongoingData = 1557158400;
+            $source_house = input::get('source_house');
+
             while ($ongoingData < $curDateStart) {
                 $filter = array(
                     'time_start' => $ongoingData,
                     'time_end' => $ongoingData + 86399,
                     'shop_id' => '38',
                 );
+                if($source_house) {
+                    $filter['deal_type'] = 'agency';
+                    $filter['source_house'] = $source_house;
+                }
                 kernel::single('sysclearing_tasks_kingdeedata')->exec($filter);
                 $ongoingData += 86400;
+            }
+            exit('金蝶凭证数据整理完毕');
+            die;
+        }elseif ($method == 'kingdeedatabysupplier_type') {
+            $start_time = input::get('start_time');
+            $end_time = input::get('end_time');
+            $supplier_type = input::get('supplier_type', 3);
+            $supplier_id = input::get('supplier_id', 38);
+            while ($start_time < $end_time) {
+                $filter = array(
+                    'time_start' => $start_time,
+                    'time_end' => $start_time + 86399,
+                    'supplier_type' => $supplier_type,
+                    'supplier_id' => $supplier_id,
+                );
+                kernel::single('sysclearing_tasks_kingdeedata')->exec($filter);
+                $start_time += 86400;
             }
             exit('金蝶凭证数据整理完毕');
             die;
         }
         elseif ($method == 'kingdee') {
 
-            $curDateStart = strtotime(date("Y-m-d", time()));
-            //$ongoingData = 1509465600;//2017-10-30
-            $ongoingData = 1542124800;//2018-11-14
+            $ongoingData = input::get('start_time');
+            $curDateStart = input::get('end_time');
             while ($ongoingData < $curDateStart) {
                 $filter['time'] = $ongoingData;
                 kernel::single('sysclearing_tasks_kingdee')->exec($filter);
                 $ongoingData += 86400;
             }
-            exit('金蝶凭证生成处理完毕');
+            exit('金蝶凭证推送处理完毕');
             die;
-
-        } elseif ($method == 'butterfly') {
+        } elseif ($method == 'kingdee_invoice') {
+            $trade_result = kernel::single('sysclearing_kingdeeinvoice')->invalidInvoice('2532403000080080');
+//            $trade_result = kernel::single('sysclearing_kingdeeinvoice')->push();
+            die;
+        }
+        elseif ($method == 'butterfly') {
 
             kernel::single('sysclearing_kingdee')->pushButterFly();
             exit('金蝴蝶凭证生成处理完毕');
@@ -301,7 +421,7 @@ class topshop_ctl_trade_dev extends topshop_controller{
         }
         elseif($method == 'tempCreateVoucher')//生成核销券
         {
-//            $tids = ['2314770000215910','2314771000124571'];
+//            $tids = ['2586354000080827'];
 //            $temp_voucher_model = kernel::single('systrade_api_trade_payFinish');
 //            foreach($tids as $tid)
 //            {
@@ -351,6 +471,109 @@ class topshop_ctl_trade_dev extends topshop_controller{
                 $ongoingData += 86400;
             }
             exit('商品出库分析完毕');
+            die;
+        }
+        elseif($method == 'trade_event_close')
+        {
+            return;
+            $tids = [];
+            $data['push_type'] = 'CANCEL_GOODS_BEFORE_PAY';
+            foreach($tids as $tid)
+            {
+                kernel::single('sysaftersales_events_listeners_kingdeeRefund')->handle($tid,'38',null,$data);
+            }
+            die;
+            $test = ['sdfs'=>'4554644'];
+            unset($test['sdfs']);
+            print_r($test);die;
+        }elseif($method == 'deliverAfter'){
+            $shop_id = input::get('shop_id');
+            $logi_no = input::get('logi_no');
+            $logistics_plug = kernel::single('syslogistics_logistics_logistics', $shop_id);
+
+            $aggregation = app::get('syslogistics')->model('delivery_aggregation')->getRow('status, delivery_type, tids, shop_id, init_shop_id, corp_code', ['logi_no' => $logi_no, 'shop_id' => $shop_id]);
+            $params = [
+                'memo' => "程序自动处理货到付款订单",
+                'op_time' => time(),
+                'tids' => $aggregation['tids'],
+                'init_shop_id' => $aggregation['init_shop_id'],
+            ];
+
+            if($aggregation['delivery_type'] == 'SEND_GOODS'){
+                // 确认投递后操作
+                $logistics_plug->sendGoodsDeliverAfter($aggregation['corp_code'], $logi_no, 'succ', $params);
+                // 售后换货单以送货完成为标准
+            }elseif($aggregation['delivery_type'] == 'EXCHANGING_GOODS'){
+                // 确认投递后操作
+                $logistics_plug->exchangingGoodsDeliverAfter($aggregation['corp_code'], $logi_no, 'succ', $params);
+            }elseif($aggregation['delivery_type'] == 'REFUND_GOODS'){
+                $logistics_plug->refundGoodsDeliverAfter($aggregation['corp_code'], $logi_no, 'succ', $params);
+            }
+        } elseif($method === 'get_supplier_sn') {
+            $kingdeeSupplierModel = kernel::single('sysclearing_kingdeeSupplier');
+            $supplier_params['FUseOrgId'] = 227509;
+            $supplier_params['FNumber'] = 'DSGW00035';
+            $supplier_query_res = $kingdeeSupplierModel->queryInfo($supplier_params);
+            dump($supplier_query_res);die;
+        } elseif($method === 'kingdee_test') {
+            $kingdeeBaseModel = kernel::single('sysclearing_kingdeebase');
+            $document_type = 'BD_STOCK';
+            $data['fields']    = 'FName,FNumber,FStockId';//因金蝶返回信息没有对应字段，因此字段顺序不能改变 否则会造成数据出错
+            $data['order_by']  = '';
+            $data['top_row_count'] = 0;
+            $data['start_row']     = 0;
+            $data['limit']        = 0;
+
+//            $document_type = 'STK_Inventory';
+//            $data['fields']    = 'FMaterialId,FBaseQty,FStockId';//因金蝶返回信息没有对应字段，因此字段顺序不能改变 否则会造成数据出错
+//            $data['order_by']  = '';
+//            $data['top_row_count'] = 0;
+//            $data['start_row']     = 0;
+//            $data['limit']        = 0;
+//            $data['filter']    = 'FStockId in(252983,248465)';
+
+            $data_model = $kingdeeBaseModel->getDocumentInquiryModel($data, $document_type);
+            $return_data = $kingdeeBaseModel->kingdeeQuery($data_model);
+            echo "<pre>";
+            print_r($return_data);die;
+        } elseif($method === '') {
+            try {
+//                $trade_data = app::get('systrade')->model('trade')->getRow('*', ['tid'=>'2563507000070080']);
+//                unset($trade_data['tid']);
+//                $order_data = app::get('systrade')->model('order')->getRow('*', ['tid'=>'2563507000070080']);
+//                unset($order_data['tid']);
+//                unset($order_data['oid']);
+//                $tradeNo = kernel::single('systrade_data_trade_create');
+//                for($i=1;$i<=467;$i++) {
+//                    $insert_id = 0;
+//                    $tid = $tradeNo->genId(1);
+//                    $trade_data['tid'] = $tid;
+//                    $insert_id = app::get('systrade')->model('trade')->insert($trade_data);
+//                    $oid = $tradeNo->genId(1, false);
+//                    $order_data['tid'] = $insert_id;
+//                    $order_data['oid'] = $oid;
+//                    app::get('systrade')->model('order')->insert($order_data);
+//                }
+//                echo '插入数据完成';die;
+
+
+                $trade_list = app::get('systrade')->model('trade')->getList('tid, shop_id, payment',['created_time' => '1568608861']);
+                foreach($trade_list as $list) {
+                    if($list['shop_id'] != 14 || $list['payment'] != 0.1) {
+                        continue;
+                    }
+                    $test_tid = $list['tid'];
+                    $invoice_data['invoice_type'] = 'normal';
+                    $invoice_data['tid'] = $test_tid;
+                    $invoice_data['invoice_name'] = '杨鑫';
+                    $invoice_data['contact_way'] = '18561863696';
+                    $invoice_data['registration_number'] = '370782199511110058';
+                    $invoice_result = kernel::single('sysclearing_kingdeeinvoice')->createInvoice($invoice_data);
+                    app::get('systrade')->model('trade')->update(['created_time' => 1], ['tid' => $test_tid]);
+                }
+            } catch(Exception $e) {
+                echo $e->getMessage();
+            }
             die;
         }
     }

@@ -23,6 +23,7 @@ return  array(
             'in_list' => true,
             'default_in_list' => true,
             'order' => 1,
+            'searchtype' => 'has',
         ),
         'login_password'=> array(
             'type' => 'string',

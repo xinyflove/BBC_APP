@@ -86,18 +86,20 @@
           </div>
           <{/if}>
 
-          <div class="form-group">
+          <!--<div class="form-group">
             <label><{t}>主持人佣金<{/t}>：</label>
             <input type="text" name="maker_rate" class="form-control" value="<{$shop.maker_rate}>" >
             <span class="help-block"><small>请填写小于100的正数,此处是比例</small></span>
-          </div>
+          </div>-->
           <!--add_20171109_by_xinyufeng_start-->
           <div class="form-group">
             <label><{t}>显示库存方式<{/t}>：</label>
-            <input type="radio" name="show_stock_way" value="1" <{if $shop.show_stock_way == 1}>checked<{/if}>>
-            剩余n件
-            <input type="radio" name="show_stock_way" value="2" <{if $shop.show_stock_way == 2}>checked<{/if}>>
-            销量n件
+            <label><input type="radio" name="show_stock_way" value="1" <{if $shop.show_stock_way == 1}>checked<{/if}>>
+            剩余n件</label>
+            <label><input type="radio" name="show_stock_way" value="2" <{if $shop.show_stock_way == 2}>checked<{/if}>>
+            销量n件</label>
+            <label><input type="radio" name="show_stock_way" value="3" <{if $shop.show_stock_way == 3}>checked<{/if}>>
+            不显示</label>
           </div>
           <!--add_20171109_by_xinyufeng_end-->
 		  

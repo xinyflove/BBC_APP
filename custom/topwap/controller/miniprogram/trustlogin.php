@@ -111,12 +111,18 @@ class topwap_ctl_miniprogram_trustlogin extends topwap_controller
             // 增加客户手机信息的留存
             if( !app::get('sysconf')->getConf('user.account.register.multipletype') )
             {
-                //if(!preg_match("/^1[34578]{1}[0-9]{9}$/", $loginName))
-                if(!preg_match("/^((13[0-9])|(14[5,7])|(15[0-3,5-9])|(17[0,3,5-8])|(18[0-9])|166|198|199|(147))\\d{8}$/", $loginName))
+                $validator = validator::make(
+                    [$loginName],['required|mobile'],['您的手机号不能为空!|请输入正确的手机号码']
+                );
+                if ($validator->fails())
                 {
-                    $msg = app::get('topwap')->_("请输入正确的手机号码");
-                    throw new \LogicException($msg);
+                    $messages = $validator->messagesInfo();
+                    foreach( $messages as $error )
+                    {
+                        throw new \LogicException($error[0]);
+                    }
                 }
+
             }
 
             $vcodeData=userVcode::verify($vcode,$loginName,$sendType);

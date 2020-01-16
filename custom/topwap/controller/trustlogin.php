@@ -113,10 +113,18 @@ class topwap_ctl_trustlogin extends topwap_controller{
 
         if( !app::get('sysconf')->getConf('user.account.register.multipletype') )
         {
-            if(!preg_match("/^1[34578]{1}[0-9]{9}$/", $loginName))
+            $validator = validator::make(
+                [$loginName],['required|mobile'],['您的手机号不能为空!|请输入正确的手机号码']
+            );
+
+            if ($validator->fails())
             {
-                $msg = app::get('topwap')->_("请输入正确的手机号码");
-                return $this->splash('error', null, $msg, true);
+                $messages = $validator->messagesInfo();
+                // $url = url::action('topwap_ctl_passport@goFindPwd');
+                foreach( $messages as $error )
+                {
+                    return $this->splash('error', null, $error[0], true);
+                }
             }
         }
 
@@ -132,7 +140,7 @@ class topwap_ctl_trustlogin extends topwap_controller{
         $vcodeData=userVcode::verify($vcode,$loginName,$sendType);
         if(!$vcodeData)
         {
-            $msg = app::get('topwap')->_('验证码填写错误') ;
+            $msg = app::get('topwap')->_('短信验证码填写错误') ;
             return $this->splash('error', null, $msg, true);
         }
 
@@ -204,10 +212,18 @@ class topwap_ctl_trustlogin extends topwap_controller{
         // 增加客户手机信息的留存
         if( !app::get('sysconf')->getConf('user.account.register.multipletype') )
         {
-            if(!preg_match("/^1[34578]{1}[0-9]{9}$/", $loginName))
+            $validator = validator::make(
+                [$loginName],['required|mobile'],['您的手机号不能为空!|请输入正确的手机号码']
+            );
+
+            if ($validator->fails())
             {
-                $msg = app::get('topwap')->_("请输入正确的手机号码");
-                return $this->splash('error', null, $msg, true);
+                $messages = $validator->messagesInfo();
+                // $url = url::action('topwap_ctl_passport@goFindPwd');
+                foreach( $messages as $error )
+                {
+                    return $this->splash('error', null, $error[0], true);
+                }
             }
         }
 
@@ -239,7 +255,7 @@ class topwap_ctl_trustlogin extends topwap_controller{
         $vcodeData=userVcode::verify($vcode,$loginName,$sendType);
         if(!$vcodeData)
         {
-            $msg = app::get('topwap')->_('验证码填写错误') ;
+            $msg = app::get('topwap')->_('短信验证码填写错误') ;
             return $this->splash('error', null, $msg, true);
         }
 
@@ -304,6 +320,17 @@ class topwap_ctl_trustlogin extends topwap_controller{
             {
                 return $this->splash('error',null,$error[0]);
             }
+        }
+        // 图片验证码
+        $verifyCode = $postdata['verifycode'];
+        // 图片验证码类型
+        $verifyKey =  $postdata['vcodekey'];
+
+
+        if( empty($verifyKey) || empty($verifyCode) || !base_vcode::verify($verifyKey, $verifyCode))
+        {
+            $msg = app::get('topwap')->_('图片验证码填写错误') ;
+            return $this->splash('error', null, $msg, true);
         }
 
         // if( ! $_SESSION['topapi'.$postdata['uname']] )

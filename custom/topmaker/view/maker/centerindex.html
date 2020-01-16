@@ -15,43 +15,45 @@
     <div class="index-head">
         <div class="index-head-content">
             <div>
-                <img src="<{$seller.avatar|storager}>" alt="">
+                <img <{if $seller.avatar}>src="<{$seller.avatar|storager}>"<{else}> src="/app/topmaker/statics/images/gener/headI.png"<{/if}> alt="">
+
             </div>
-            <p>主持人：<{$seller.name}> （<{$seller.shop_name}>）</p>
+            <p>创客姓名：<{$seller.name}> <br>绑定店铺：<{$seller.shop_name}></p>
+            <a href="javascript:;" class="index-change">切换账号</a>
         </div>
     </div>
     <div class="index-draw">
         <div class="index-draw-left">
             <p class="left-title">成功提现佣金<img src="/app/topmaker/statics/images/index/icon_m.png" alt=""></p>
-            <p class="left-num">￥8,290.00</p>
+            <p class="left-num"><{$commission.has_com|cur}></p>
         </div>
         <div class="index-draw-right">
             <p class="right-title">可提现佣金<img src="/app/topmaker/statics/images/index/icon_m.png" alt=""></p>
-            <p class="right-num">￥529.00</p>
+            <p class="right-num"><{$commission.cash_com|cur}></p>
         </div>
     </div>
     <ul class="index-data">
         <li>
-            <a href="#">
-                <p>￥8319</p>
+            <a href="<{$commission_url}>">
+                <p><{$seller_commission_count|cur}></p>
                 <span>累计佣金</span>
             </a>
         </li>
         <li>
-            <a href="./todayVisitor.html">
-                <p>1350</p>
+            <a href="<{$my_shop_analyze}>">
+                <p><{$today_visit}></p>
                 <span>今日访客</span>
             </a>
         </li>
         <li>
-            <a href="./todayVisitor.html">
-                <p>20000</p>
+            <a href="<{$my_shop_analyze}>">
+                <p><{$trade.total}></p>
                 <span>历史订单</span>
             </a>
         </li>
     </ul>
     <div class="index-btn">
-        <a href="">
+        <a href="<{$my_shop_url}>">
             <div>
                 <img src="/app/topmaker/statics/images/index/icon_d.png" alt="">
             </div>
@@ -60,15 +62,15 @@
     <div class="index-list">
         <ul>
             <li>
-                <a href="#">
+                <a href="<{$commission_url}>">
                     <div>
                         <img src="/app/topmaker/statics/images/index/icon1.png" alt="">
                     </div>
-                    <p>分销佣金</p>
+                    <p>创客收益</p><!--分销佣金->创客收益-->
                 </a>
             </li>
             <li>
-                <a href="<{$my_shop_url}>">
+                <a href="<{$commission_list_url}>">
                     <div>
                         <img src="/app/topmaker/statics/images/index/icon2.png" alt="">
                     </div>
@@ -76,7 +78,7 @@
                 </a>
             </li>
             <li>
-                <a href="./withdraw.html">
+                <a href="<{$my_withdraw_url}>">
                     <div>
                         <img src="/app/topmaker/statics/images/index/icon3.png" alt="">
                     </div>
@@ -84,7 +86,7 @@
                 </a>
             </li>
             <li>
-                <a href="./gener.html">
+                <a href="<{$my_shop_qrcode_url}>">
                     <div>
                         <img src="/app/topmaker/statics/images/index/icon4.png" alt="">
                     </div>
@@ -110,11 +112,37 @@
         </ul>
     </div>
 </div>
+
+<div class="model hide">
+    <div class="pop-up">
+        <h2>提示</h2>
+        <div class="notice">确认切换账号？</div>
+        <ul>
+            <li>
+                <div class="cancel">取消</div>
+            </li>
+            <li>
+                <div class="commit">确认</div>
+            </li>
+        </ul>
+    </div>
+
+</div>
+
 <script src="/app/topmaker/statics/lib/common/flexible.js"></script>
 <script src="/app/topmaker/statics/lib/jquery/jquery-3.2.1.js"></script>
 
 <script>
-
+    $('.index-head .index-change').click(function () {
+        $('.model').removeClass('hide');
+    });
+    $('.model .commit').click(function () {
+        window.location.href = '<{url action=topmaker_ctl_passport@logout}>';
+        $('.model').addClass('hide');
+    });
+    $('.pop-up .cancel').on('click', function () {
+        $('.model').addClass('hide');
+    });
 </script>
 </body>
 

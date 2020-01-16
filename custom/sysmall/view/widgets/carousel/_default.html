@@ -1,0 +1,16 @@
+<{if $widget.params.pic}>
+<div class="pc-choose-swiper">
+    <div class="swiper-container choose-swiper-container">
+        <div class="swiper-wrapper">
+            <{foreach from=$widget.params.pic item=pic}>
+            <div class="swiper-slide">
+                <a href="<{$pic.url}>">
+                    <img src="<{$pic.link}>" alt="">
+                </a>
+            </div>
+            <{/foreach}>
+        </div>
+        <div class="pagination inner-pagination"></div>
+    </div>
+</div>
+<{/if}>

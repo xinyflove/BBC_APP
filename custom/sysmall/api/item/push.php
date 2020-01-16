@@ -23,10 +23,10 @@ class sysmall_api_item_push{
         $return['params'] = array(
             'item_id' => ['type'=>'int','valid'=>'required','description'=>'商品id','example'=>'2','default'=>''],
             'shop_id' => ['type'=>'int','valid'=>'required','description'=>'店铺id','example'=>'2','default'=>''],
+            'sale_type' => ['type'=>'int','valid'=>'required','description'=>'销售类型','example'=>'0','default'=>''],
             'fields' => ['type'=>'field_list','valid'=>'','description'=>'要获取的商品字段集','example'=>'title,item_store.store,item_status.approve_status','default'=>'*'],
         );
-
-        // $return['extendsFields'] = ['item_desc','item_count','item_store','item_status','sku','item_nature','spec_index','promotion'];
+        
         return $return;
     }
 
@@ -35,7 +35,7 @@ class sysmall_api_item_push{
         /*add_by_xinyufeng_2018-06-22_start*/
         // 判断原始商品是否上架和是否有供货价
         $initParams['item_id'] = $params['item_id'];
-        $initParams['fields'] = "supply_price,sysitem_item_status.approve_status";
+        $initParams['fields'] = "title,supply_price,sysitem_item_status.approve_status";
         $initItem = app::get('sysitem')->rpcCall('item.get', $initParams);//获取原始商品详情数据
         if( empty($initItem) )
         {
@@ -43,11 +43,13 @@ class sysmall_api_item_push{
         }
         if( $initItem['approve_status'] != 'onsale' )
         {
-            throw new LogicException('请先上架商品！');
+            if(!app::get('sysconf')->getConf('shop.goods.examine')){// 没有开启商品审核
+                throw new LogicException("请先上架商品 [{$initItem['title']}] ！");
+            }
         }
         if( !intval($initItem['supply_price']) )
         {
-            throw new LogicException('请完善商品供货价数据！');
+            //throw new LogicException("请完善商品 [{$initItem['title']}] 供货价数据！");
         }
 
         $itemSkuMdl = app::get('sysitem')->model('sku');
@@ -58,19 +60,31 @@ class sysmall_api_item_push{
         $initItemSku = $itemSkuMdl->getRow('sku_id', $skuFilter);
         if( !empty($initItemSku) )
         {
-            throw new LogicException('请完善商品sku供货价数据！');
+            //throw new LogicException("请完善商品 [{$initItem['title']}] sku供货价数据！");
         }
         /*add_by_xinyufeng_2018-06-22_end*/
 
         $mallItemModel = app::get('sysmall')->model('item');
-        $itemInfo = $mallItemModel->getRow('item_id', ['item_id' => $params['item_id']]);
+        $itemInfo = $mallItemModel->getRow('item_id, status', ['item_id' => $params['item_id']]);
         $data['item_id'] = $params['item_id'];
         $data['shop_id'] = $params['shop_id'];
-        $data['status'] = app::get('sysmall')->getConf('sysmall.setting.goods_check') == 'true' ? 'pending' : 'onsale';
-        $data['reason'] = '';
+        if(!app::get('sysconf')->getConf('shop.goods.examine')){// 没有开启商品审核
+            $data['status'] = app::get('sysmall')->getConf('sysmall.setting.goods_check') == 'true' ? 'pending' : 'onsale';
+        }else{
+            $data['status'] = 'instock';
+        }
+        $data['reason'] = $data['status'] == 'onsale' ? '平台默认审核通过' : '';
         $data['deleted'] = 0;
+        $data['sale_type'] = $params['sale_type'];
         if($itemInfo){
             // 更新
+            if($itemInfo['status'] != 'instock')
+            {
+                if(!app::get('sysconf')->getConf('shop.goods.examine')) {// 没有开启商品审核
+                    throw new LogicException("商品 [{$initItem['title']}] 已推送！");
+                }
+            }
+
             $res = kernel::single('sysmall_data_item')->update($data, $msg);
             if($res)
             {

@@ -50,7 +50,7 @@ class topshop_ctl_shop_dlytmpl extends topshop_controller {
         {
             $params['template_id'] = $template_id;
             $params['shop_id'] = $this->shopId;
-            $params['fields'] = "template_id,name,modifie_time,status,fee_conf,free_conf,is_free,protect,protect_rate,minprice,valuation";
+            $params['fields'] = "template_id,name,modifie_time,status,fee_conf,free_conf,is_free,protect,protect_rate,minprice,valuation,area_conf";
             $data = app::get('topshop')->rpcCall('logistics.dlytmpl.get',$params);
             if($data['valuation']=='1'){
                 $data['byweight']['fee_conf'] = $data['fee_conf'];
@@ -66,6 +66,7 @@ class topshop_ctl_shop_dlytmpl extends topshop_controller {
             unset($data['fee_conf']);
             unset($data['free_conf']);
             $pagedata['tmplData'] = $data;
+            
             $this->contentHeaderTitle = app::get('topshop')->_('编辑运费模板');
         }
 
@@ -126,6 +127,13 @@ class topshop_ctl_shop_dlytmpl extends topshop_controller {
                     $params['free_conf'] = '';
                 }
             }
+
+            /*指定售卖地区开始*/
+            if(!$params['area_conf'])
+            {
+                $params['area_conf'] = '';
+            }
+            /*指定售卖地区结束*/
 
             if( $params['template_id'] )
             {

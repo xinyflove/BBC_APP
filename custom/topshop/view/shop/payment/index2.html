@@ -84,6 +84,14 @@
                 <a href="#" data-seller-id="" data-toggle="modal" data-target="#miniservicepayapi">配置</a>&nbsp;&nbsp;
             </td>
         </tr>
+
+        <tr>
+            <td>微信企业付款到个人钱包</td>
+            <td><{if $payment['wxEnterprisePayment']['open']==1}><span class='label label-success'>已启用</span><{else}><span class='label label-danger'>未启用</span><{/if}></td>
+            <td>
+                <a href="#" data-seller-id="" data-toggle="modal" data-target="#wxEnterprisePayment">配置</a>&nbsp;&nbsp;
+            </td>
+        </tr>
       </tbody>
     </table>
   </div>
@@ -510,7 +518,82 @@
             </form>
         </div>
     </div>
-</div>
+  </div>
+    <!-- 微信企业付款到个人钱包 Modal -->
+  <div class="modal fade" id="wxEnterprisePayment" tabindex="-1" role="dialog" aria-labelledby="wxEnterprisePayment">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myModalLabel">微信企业付款到个人钱包</h4>
+        </div>
+        <form  action="<{url action=topshop_ctl_shop_payment@savePayment}>" method="post" class="form-horizontal" data-validate-onsuccess="ajaxSubmit" id="form_delivery" role="form">
+          <div class="modal-body">
+
+            <div class="form-group">
+              <label class="col-sm-4 control-label" >商户号(Mch_Id)：</label>
+              <div class="col-sm-6">
+                    <input type="text" name="payment[wxEnterprisePayment][mchid]" class="form-control" value="<{$payment['wxEnterprisePayment']['mchid']}>"/>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-4 control-label" >商户号密钥(key)：</label>
+                <div class="col-sm-6">
+                      <input type="text" name="payment[wxEnterprisePayment][key]" class="form-control" value="<{$payment['wxEnterprisePayment']['key']}>"/>
+                  </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-sm-4 control-label" >证书文件（apiclient_cert）：</label>
+              <div class="col-sm-6">
+                <!-- <span class="logo_name">证书文件</span> -->
+                <div class="file-container" style="display:inline-block;position:relative;overflow: hidden;vertical-align:middle">
+                    <button class="btn btn-success fileinput-button" type="button">上传</button>
+                    <input type="file" accept=".pem,.p12,.pfx,.cer" data-name="wxEnterprisePayment_apiclient_cert_file" onchange="ajaxUpload(this)" style="position:absolute;top:0;left:0;font-size:34px; opacity:0">
+                </div>
+                <span id="filename">
+                  <span><{if $payment['wxEnterprisePayment']['apiclient_cert_file']}>已上传<{else}>未上传<{/if}></span>
+                  <input type="hidden" class="wxEnterprisePayment_apiclient_cert_file" name="payment[wxEnterprisePayment][apiclient_cert_file]" value="<{$payment['wxEnterprisePayment']['apiclient_cert_file']}>" />
+                </span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-sm-4 control-label" >证书文件（apiclient_key）：</label>
+              <div class="col-sm-6">
+                <!-- <span class="logo_name">证书文件</span> -->
+                <div class="file-container" style="display:inline-block;position:relative;overflow: hidden;vertical-align:middle">
+                    <button class="btn btn-success fileinput-button" type="button">上传</button>
+                    <input type="file" accept=".pem,.p12,.pfx,.cer" data-name="wxEnterprisePayment_apiclient_key_file" onchange="ajaxUpload(this)" style="position:absolute;top:0;left:0;font-size:34px; opacity:0">
+                </div>
+                <span id="filename">
+                    <span><{if $payment['wxEnterprisePayment']['apiclient_key_file']}>已上传<{else}>未上传<{/if}></span>
+                  <input type="hidden" class="wxEnterprisePayment_apiclient_key_file" name="payment[wxEnterprisePayment][apiclient_key_file]" value="<{$payment['wxEnterprisePayment']['apiclient_key_file']}>" />
+                </span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="col-sm-4 control-label" >是否启用：</label>
+              <div class="col-sm-6">
+                    <div class="checkbox">
+                            <label>
+                                <input type="checkbox" class="js-switch" name="payment[wxEnterprisePayment][open]"  value="1" <{if $payment['wxEnterprisePayment']['open']==1}> checked <{/if}> /> 启用
+                            </label>
+                    </div>
+              </div>
+            </div>
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            <button type="submit" class="btn btn-primary">保存</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 
   <script>
 
@@ -537,6 +620,37 @@
       });
     }
     // 上传证书
+    // function ajaxUpload(file){
+    //   var data = new FormData();
+    //   // data.append('a_id', model.a_id);
+    //   data.append('name', $(file).data('name'));
+    //   // data.append('sort', model.sort);
+    //   if($(file)[0].files[0] == 'undefined') {
+    //     return;
+    //   }
+    //   data.append('file', $(file)[0].files[0]);
+    //   $.ajax({
+    //       url: '<{url action=topshop_ctl_shop_payment@upload_cert}>',
+    //       type: 'POST',
+    //       data: data,
+    //       dataType: 'json',
+    //       processData: false, // 告诉jQuery不要去处理发送的数据
+    //       contentType: false, // 告诉jQuery不要去设置Content-Type请求头
+    //       success: function (returndata) {
+    //                   // alert(returndata);
+    //                   if(returndata.error){
+    //                       alert(returndata.message);
+    //                       return;
+    //                   }
+    //                   $('.' + $(file).data('name')).val(returndata.filename);
+    //               },
+    //       error: function (returndata) {
+    //           alert('上传失败！');
+    //       }
+    //   });
+    // };
+
+    // 上传证书
     function ajaxUpload(file){
       var data = new FormData();
       // data.append('a_id', model.a_id);
@@ -553,16 +667,20 @@
           dataType: 'json',
           processData: false, // 告诉jQuery不要去处理发送的数据
           contentType: false, // 告诉jQuery不要去设置Content-Type请求头
-          success: function (returndata) {
-                      // alert(returndata);
-                      if(returndata.error){
-                          alert(returndata.message);
-                          return;
-                      }
-                      $('.' + $(file).data('name')).val(returndata.filename);
+          success: function (rs) {
+                    if(rs.error) {
+                        $('#messagebox').message(rs.message);
+                        $('.' + $(file).data('name')).prev().text("上传失败");
+                        return;
+                    }
+                    if(rs.success) {
+                        $('#messagebox').message('上传成功', 'success');
+                        $('.' + $(file).data('name')).val(rs.message.fileName);
+                        $('.' + $(file).data('name')).prev().text("上传成功");
+                    }
                   },
           error: function (returndata) {
-              alert('上传失败！');
+              $('#messagebox').message('上传失败！');
           }
       });
     };

@@ -28,7 +28,7 @@ if (iswechat) {
           imgUrl: $('.header-logo a img').attr('src'),*/
           title:'<{$weixin.shareTitle}>',
           desc: '<{$weixin.descContent}>',
-          link: '<{$weixin.linelink}>',
+          link: '<{$weixin.linelink}><{if !empty($seller_id)}>&seller_id=<{$seller_id}><{/if}>',
           imgUrl: '<{$weixin.imgUrl}>',
           success: function () {
             if(typeof onMenuShare_collback == 'function'){

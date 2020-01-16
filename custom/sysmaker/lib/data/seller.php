@@ -8,6 +8,7 @@ class sysmaker_data_seller {
 
     public $sellerModel = null;
     public $accountModel = null;
+    private $__pInfo = array();
 
     public function __construct()
     {
@@ -45,6 +46,15 @@ class sysmaker_data_seller {
 
                 $accountData['login_password'] = hash::make($data['login_password']);
                 $accountData['created_time'] = $time;
+                if(app::get('sysmall')->getConf('sysmall.setting.hosts_check') == 'true')
+                {
+                    $accountData['status'] = 'pending';
+                }
+                else
+                {
+                    $accountData['status'] = 'success';
+                    $accountData['reason'] = '平台自动审核通过';
+                }
                 $sellerId = $this->accountModel->insert($accountData);
                 if(!$sellerId)
                 {
@@ -52,6 +62,16 @@ class sysmaker_data_seller {
                 }
 
                 $sellerData['seller_id'] = $sellerId;
+                $sellerData['id_card_no'] = $data['id_card_no'];
+                $sellerData['registered'] = $data['registered'];
+                $sellerData['pid'] = $data['pid'];
+				/*add_2019/8/9_by_wanghaichao_start*/
+				//添加身份证正反面
+				$sellerData['front_img']=$data['front_img'];
+				$sellerData['reverse_img']=$data['reverse_img'];
+				$sellerData['cart_number']=$data['cart_number'];
+				/*add_2019/8/9_by_wanghaichao_end*/
+				
                 $id = $this->sellerModel->insert($sellerData);
                 if(!$id)
                 {
@@ -60,7 +80,7 @@ class sysmaker_data_seller {
 
                 if($data['shop_id'])
                 {
-                    $bindData = array('seller_id'=>$sellerId, 'shop_id'=>$data['shop_id']);
+                    $bindData = array('seller_id'=>$sellerId, 'shop_id'=>$data['shop_id'], 'group_id'=>$data['group_id']);
                     $bool = $this->addBindShop($bindData, $msg);
                     if(!$bool)
                     {
@@ -92,6 +112,7 @@ class sysmaker_data_seller {
                         {
                             throw new \LogicException($msg);
                         }
+                        makerAuth::setTrustId($trustId);
                     }
                 }
             }
@@ -174,9 +195,11 @@ class sysmaker_data_seller {
             $objMdlRelShop = app::get('sysmaker')->model('shop_rel_seller');
             $objMdlRelShop->delete($filter);
 
+            $created_time = time();
             foreach ($data['shop'] as $shop)
             {
                 $shop['seller_id'] = $data['seller_id'];
+                $shop['created_time'] = $created_time;
                 // 2.新增新数据
                 $r = $objMdlRelShop->insert($shop);
                 if(!$r)
@@ -210,7 +233,9 @@ class sysmaker_data_seller {
         }
 
         $objMdlRelShop = app::get('sysmaker')->model('shop_rel_seller');
+        $data['status'] = 'pending';
         $data['created_time'] = time();
+        empty($data['group_id']) && $data['group_id'] = 0;
         $r = $objMdlRelShop->insert($data);
 
         if(!$r)
@@ -270,6 +295,123 @@ class sysmaker_data_seller {
             return true;
         }
 
+        return false;
+    }
+
+    /**
+     * 获取商家店铺信息
+     *
+     * @param $sellerId
+     * @return mixed
+     */
+    public function getSellerInfo($sellerId)
+    {
+        if (empty($sellerId)) {
+            throw new LogicException('参数seller_id不能为空');
+        }
+        $fields = '*';
+        $filter['seller_id'] = $sellerId;
+        $seller = $this->sellerModel->getRow($fields, $filter);
+        return $seller;
+    }
+
+    /**
+     * 主持人是否存在
+     *
+     * @param $sellerId
+     * @return bool
+     * @author zhangshu
+     * @date 2018/11/22
+     */
+    public function isSellerExist($sellerId)
+    {
+        if (empty($sellerId)) {
+            throw new LogicException('参数seller_id不能为空');
+        }
+        $filter['seller_id'] = $sellerId;
+        $count = $this->sellerModel->count($filter);
+        return $count > 0 ? true : false;
+    }
+
+    /**
+     * 删除创客帐号等信息
+     * @param $filter
+     * @return bool
+     */
+    public function delete($filter)
+    {
+        if( empty($filter['seller_id']) )
+        {
+            throw new \LogicException('参数seller_id不为空');
+            return false;
+        }
+        if( is_object($filter['seller_id']) )
+        {
+            throw new \LogicException('参数seller_id类型错误');
+            return false;
+        }
+        if( !is_array($filter['seller_id']) )
+        {
+            $filter['seller_id'] = array($filter['seller_id']);
+        }
+
+        $filter = array('seller_id|in' => $filter['seller_id']);
+        $res = $this->accountModel->delete($filter);
+        if(!$res)
+        {
+            throw new \LogicException('删除用户帐号失败');
+            return false;
+        }
+        $res = $this->sellerModel->delete($filter);
+        if(!$res)
+        {
+            throw new \LogicException('删除用户帐号信息失败');
+            return false;
+        }
+        $shoprelsellerMdl = app::get('sysmaker')->model('shop_rel_seller');
+        $shoprelsellerMdl->delete($filter);
+        $selleritemMdl = app::get('sysmaker')->model('seller_item');
+        $selleritemMdl->delete($filter);
+        
+        return true;
+    }
+
+    /**
+     * 获取推荐人名字
+     * @param $pid
+     * @return mixed|string
+     */
+    public function getPName($pid)
+    {
+        if($pid)
+        {
+            if(!$this->__pInfo[$pid])
+            {
+                $pinfo = $this->sellerModel->getRow('name', array('seller_id'=>$pid));
+                if(!$pinfo) return '';
+                $this->__pInfo[$pid] = $pinfo['name'];
+            }
+            return $this->__pInfo[$pid];
+        }
+        return '';
+    }
+
+    /**
+     * 通过手机号获取推荐人id
+     * @param $mobile
+     * @return bool
+     */
+    public function getPIdByMobile($mobile)
+    {
+        if($mobile)
+        {
+            $pinfo = $this->sellerModel->getRow('seller_id', array('mobile'=>$mobile));
+            if($pinfo)
+            {
+                return $pinfo['seller_id'];
+            }
+        }
+        
         return false;
     }
 }

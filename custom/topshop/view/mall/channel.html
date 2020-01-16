@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="/app/topshop/mall/statics/lib/common/public.css">
+    <link rel="stylesheet" href="/app/topshop/mall/statics/css/styleSheet.css">
+    <!-- <link rel="stylesheet" href="../css/choose.css"> -->
+    <link rel="stylesheet" href="/app/topshop/mall/statics/lib/swiper2/idangerous.swiper.css">
+    <link rel="stylesheet" href="/app/topshop/mall/statics/lib/swiper2/idangerous.swiper.scrollbar.css">
+    <title>广电优选</title>
+    <!--[if lte IE 8]>
+	<script>
+		alert("请使用高版本浏览器或者谷歌浏览器体验最佳效果")
+	</script>
+      <![endif]-->
+    <style>
+        .pc-index-container .new-recommend-container{
+            margin-top: 0;
+        }
+        .pc-choose-titleFixed{
+            width: auto;
+            top: 220px;
+        }
+        .pc-index-TitleFixed ul li:first-child{
+            height: auto;
+        }
+        .pc-choose-titleFixed ul li{
+            height: auto;
+            line-height: normal;
+        }
+        .pc-choose-titleFixed ul li a{
+            padding: 8px 5px;
+        }
+        .pc-choose-container .floor .public-list .list li .goods-img img{
+            width: 80%;
+            height: 80%;
+            min-height: 80%;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 顶部 -->
+    <div id="header">
+        <{include file="topshop/mall/header.html"}>
+    </div>
+
+    <div class="pc-index-container pc-choose-container">
+
+        <{if $widget_instance}>
+        <{foreach from=$widget_instance item=widget key=key}>
+        <{include file=$widget.template_path}>
+        <{/foreach}>
+        <{/if}>
+
+        <{if $widget_instance}>
+        <div class="pc-index-TitleFixed pc-choose-titleFixed">
+            <ul>
+                <{foreach from=$widget_instance item=widget}>
+                <{if $widget.params && $widget.widget == 'channel_floor'}>
+                <li>
+                    <a href="#<{$widget.widgets_id}>"><{$widget.params.floorname}></a>
+                </li>
+                <{/if}>
+                <{/foreach}>
+            </ul>
+            <div id="goToTop">返回顶部</div>
+        </div>
+        <{/if}>
+
+        <{include file="topshop/mall/footer.html"}>
+
+    </div>
+    <script src="/app/topshop/mall/statics/lib/jquery/jquery-3.3.0.min.js"></script>
+    <script src="/app/topshop/mall/statics/lib/swiper2/idangerous.swiper.min.js"></script>
+    <script src="/app/topshop/mall/statics/lib/swiper2/idangerous.swiper.scrollbar-2.1.js"></script>
+    <script src="/app/topshop/mall/statics/lib/jquery/jquery.fly.js"></script>
+    <script src="/app/topshop/mall/statics/lib/jquery/jquery.lazyload.js"></script>
+    <script src="/app/topshop/mall/statics/js/common.js"></script>
+    <script src="/app/topshop/mall/statics/lib/layui/layui.all.js"></script>
+    <script type="text/javascript">
+        var mySwiper1 = new Swiper('.choose-swiper-container', {
+            autoplay: 2000,//可选选项，自动滑动
+            loop: true,
+            pagination: '.inner-pagination',
+            paginationClickable: true,
+            autoplayDisableOnInteraction: false
+        });
+        $('.inner-container .arrow-left').on('click', function (e) {
+            e.preventDefault();
+            mySwiper1.swipePrev();
+        })
+        $('.inner-container .arrow-right').on('click', function (e) {
+            e.preventDefault();
+            mySwiper1.swipeNext();
+        })
+        var mySwiper2 = new Swiper('.recommend-swiper', {
+            scrollbar: {
+                container: '.swiper-scrollbar',
+                hide: false,
+                dragSize: 185,
+            }
+        });
+        $('.new-recommend-container .arrow-left').on('click', function (e) {
+            e.preventDefault();
+            mySwiper2.swipePrev();
+        })
+        $('.new-recommend-container .arrow-right').on('click', function (e) {
+            e.preventDefault();
+            mySwiper2.swipeNext();
+        })
+        $(".pc-index-TitleFixed > ul > li > a").click(function () {
+            $('html,body').animate({
+                scrollTop: $($(this).attr("href")).offset().top + $("body").scrollTop() + "px"
+            }, 500)
+            return false;
+        });
+        var floorArr = [];
+        $(".floor").each(function () {
+            let everyTop = $(this).offset().top;    //每个div距离页面顶部的距离。
+            floorArr.push(everyTop);
+            console.log(floorArr);
+        })
+        $('body').on("scroll", scrollMove);
+        function scrollMove() {
+            //滚动条滚动的距离
+            var scrollTop = $('body').scrollTop() + 100;
+            var index = 0;
+            for (var i = 0; i < floorArr.length; i++) {
+                var now = floorArr[i];    //当前楼层距离顶部的距离
+                var next = floorArr[i + 1];    //下一楼层距离顶部的距离。
+                if (scrollTop >= now && scrollTop < next) {
+                    index = i;
+                } else if (scrollTop >= floorArr[floorArr.length - 1]) {
+                    index = floorArr.length - 1;
+                }
+            }
+            console.log(index);
+            $(".pc-index-TitleFixed > ul > li > a").removeClass("active");
+            $(".pc-index-TitleFixed > ul > li").eq(index).children('a').addClass("active");
+        }
+        $('#goToTop').click(function () {
+            $('html,body').animate({
+                scrollTop: 0
+            }, 500)
+        });
+        //返回顶部
+        $('.totop').click(function () {
+            $('html,body').animate({
+                scrollTop: 0
+            }, 300)
+        });
+        //滚动top按钮显示消失
+        $('body').scroll(function () {
+            if ($('body').scrollTop() > window.screen.availHeight) {
+                $('.totop').fadeIn();
+            } else {
+                $('.totop').fadeOut();
+            }
+        });
+        //添加购物车效果
+        var flyer = null
+        var e = null
+        var offset_tar = null
+        function fly(id) {
+            flyer.animate({
+                bottom: '60px'
+            });
+            setTimeout(function () {
+                flyer.fly({
+                    start: {
+                        left: e.clientX,
+                        top: e.clientY - 70
+                    },
+                    end: {
+                        left: offset_tar.left,
+                        top: offset_tar.top,
+                        width: 0,
+                        height: 0
+                    },
+                    onEnd: function () {
+                        flyer.remove();
+                    }
+                });
+                pullItem(id);
+                // $('#scrollTop .shopcart i').text(Number($('#scrollTop .shopcart i').text()) + 1);
+            }, 300)
+        }
+        $('.putaway').click(function (event) {
+            var _this = this;
+            offset_tar = $('#scrollTop').position();
+            e = event;
+            console.log($(this).siblings().find('img'));
+            flyer = $(this).siblings().find('img').clone().css({ "width": '50px', "height": "50px", 'position': "absolute", "bottom": 0, "zIndex": 9999999 });
+            $(this).children('i').after(flyer);
+            var id = $(_this).data('id');
+            fly(id);
+        });
+
+        function pullItem(id) {
+            if(id == '' || id == 0) {
+                layer.msg('请选择要拉取的商品');
+                return;
+            }
+
+            $.post('<{url action=topshop_ctl_mall_item@pullItem}>', 'item_id='+id, function(rs){
+                layer.msg(rs.message);
+                if(rs.error) {
+                    return;
+                }
+                if(rs.success) {
+                    var count = $('#scrollTop').find('.count').html();
+                    count++;
+                    $('.count').html(count);
+                    setTimeout(function(){window.location.reload();}, 800);
+                }
+            });
+        }
+
+    </script>
+</body>
+
+</html>

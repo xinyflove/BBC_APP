@@ -48,21 +48,29 @@ class topwap_wechat_wechat{
         return $result['openid'];
     }
 
-    // 判断是否来自微信浏览器
+    /**
+     * 判断是否来自微信浏览器
+     *
+     * @return void
+     * @Author 王衍生 50634235@qq.com
+     */
     public function from_weixin() {
-        if ( strpos($_SERVER['HTTP_USER_AGENT'], 'MicroMessenger') !== false ) {
+        if ( stripos($_SERVER['HTTP_USER_AGENT'], 'MicroMessenger') !== false ) {
             return true;
         }
         return false;
     }
 
-    // 判断是否来自小程序
-    public static function form_mini()
+    /**
+     * 判断是否来自小程序
+     *
+     * @return void
+     * @Author 王衍生 50634235@qq.com
+     */
+    public static function from_mini()
     {
-        if ( strpos($_SERVER['HTTP_USER_AGENT'], 'MicroMessenger') !== false ) {
-            if( strpos($_SERVER['HTTP_USER_AGENT'], 'miniprogram') !== false || strpos($_SERVER['HTTP_USER_AGENT'], 'miniProgram') !== false ){
+        if ( stripos($_SERVER['HTTP_USER_AGENT'], 'miniProgram') !== false ) {
                 return true;
-            }
         }
         return false;
     }

@@ -1,0 +1,116 @@
+
+  <div class="modal-dialog" role="document" style="width:100%;">
+    <div class="modal-content">
+      <div class="modal-header">
+       <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>-->
+        <h4 class="modal-title" id="myModalLabel">修改页面配置</h4>
+      </div>
+      <form  action="<{url action=topshop_ctl_tvshopping_wapdecorate@updatePage}>" method="post" class="form-horizontal" data-validate-onsuccess="ajaxSubmit" id="form_delivery" role="form">
+        <div class="modal-body">
+         <input type="hidden" name="id" value="<{$page.id}>">
+          <div class="form-group">
+            <label class="col-sm-4 control-label" >页面名称：</label>
+			<div class="col-sm-6">
+				<input type="text" name="name" class="form-control" value="<{$page.name}>">
+			</div>
+            <!--<div class="col-sm-6">
+
+				<label><input class="status" type="radio" name="status" value="success" checked>通过</label>
+
+				<label><input class="status" type="radio" name="status" value="refuse">拒绝</label>
+            </div>-->
+          </div>
+		  
+          <div class="form-group">
+            <label class="col-sm-4 control-label" >页面类型：</label>
+			<div class="col-sm-6">
+				<input type="text" name="page_type" class="form-control" value="<{$page.page_type}>">
+				<span></span>
+			</div>
+		  </div>
+
+          <div class="form-group">
+            <label class="col-sm-4 control-label" >页面背景色：</label>
+			<div class="col-sm-2">
+				<input type="color" name="bg_color" class="form-control" value="<{$page.bg_color}>" style="padding-right:12px">
+				<span></span>
+			</div>
+		  </div>
+		  
+          <div class="form-group">
+            <label class="col-sm-4 control-label" >页面按钮颜色：</label>
+			<div class="col-sm-2">
+				<input type="color" name="button_color" class="form-control" style="padding-right:12px" value="<{$page.button_color}>">
+				<span></span>
+			</div>
+		  </div>
+		
+
+          <div class="form-group">
+            <label class="col-sm-4 control-label" >分享logo：</label>
+			<div class="col-sm-4">
+				<div class="multiple-item" style="position:relative">
+					<div class="multiple-del glyphicon glyphicon-remove-circle removeImg" style="position: absolute;left: 60px;top: -5px;z-index: 999;"></div>
+					<a class="select-image" data-toggle="modal" href="<{url action=topshop_ctl_shop_image@loadImageModal}>" data-target="#gallery_modal">
+						<input class="sharelogo" type="hidden" name="sharelogo" value="">
+						<div class="img-put">
+							<img  class=""  src="<{$page.sharelogo}>">
+							<i class="glyphicon glyphicon-picture"></i>
+						</div>
+					</a>
+				</div>
+				<span class="help-block">分享logo大小:70px*70px;。</span>
+			</div>
+		  </div>
+
+          <div class="form-group">
+            <label class="col-sm-4 control-label" >分享标题：</label>
+			<div class="col-sm-6">
+				<input type="text" name="sharetitle" class="form-control" style="padding-right:12px" value="<{$page.sharetitle}>">
+				<span></span>
+			</div>
+		  </div>
+
+          <div class="form-group">
+            <label class="col-sm-4 control-label" >分享描述：</label>
+			<div class="col-sm-6">
+				<textarea name="sharedesc" class="form-control"><{$page.sharedesc}></textarea>
+			</div>
+		  </div>
+
+          <!--<div class="form-group">
+            <label class="col-sm-4 control-label" >拒绝原因：</label>
+            <div class="col-sm-6">
+				<textarea name="reason" class="form-control"></textarea>
+            </div>
+          </div>-->
+
+        </div>
+        <div class="modal-footer" style="text-align:center">
+         <!-- <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>-->
+          <button type="submit" class="btn btn-primary">保存</button>
+        </div>
+      </form>
+    </div>
+  </div>
+<script>
+function ajaxSubmit (e) {
+  var form = e.target;
+  e.preventDefault();
+  $.post(form.action, $(form).serialize(), function(rs) {
+    if(rs.error) {
+      $('#messagebox').message(rs.message);
+      return;
+    }
+    if(rs.success) {
+      $('#messagebox').message(rs.message, 'success');
+		window.location.href=rs.redirect;
+    }
+	
+	//window.location.reload();
+    //if(rs.redirect) {
+    //  location.href = rs.redirect;
+    //}	
+  });
+}
+</script>

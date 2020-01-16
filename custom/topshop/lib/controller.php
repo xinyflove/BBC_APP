@@ -14,7 +14,9 @@ class topshop_controller extends base_routing_controller
      */
     public $nomenu = false;
     public $isLm = false;
-
+    public $isHmShop = false;
+    public $loginSupplierId = 0;
+    
     public function __construct($app)
     {
         pamAccount::setAuthType('sysshop');
@@ -30,7 +32,7 @@ class topshop_controller extends base_routing_controller
         $actionArr = explode('@',$action);
         if( $actionArr['0'] != 'topshop_ctl_passport' )
         {
-            if( !$this->shopId &&  !in_array($actionArr[0], ['topshop_ctl_register', 'topshop_ctl_enterapply', 'topshop_ctl_find', 'topshop_ctl_register', 'topshop_ctl_shopexnode']) )
+            if( !$this->shopId &&  !in_array($actionArr[0], ['topshop_ctl_register', 'topshop_ctl_enterapply', 'topshop_ctl_find', 'topshop_ctl_shopexnode', 'topshop_ctl_huiminSupplierRegister']) )
             {
                 redirect::action('topshop_ctl_register@enterAgreementPage')->send();exit;
             }
@@ -53,6 +55,13 @@ class topshop_controller extends base_routing_controller
         {
             $this->isLm = true;
         }
+        //判断是否是惠民店铺
+        $hm_shop_id = app::get('sysshop')->getConf('sysshop.hmshopping.shop_id');
+        if($this->shopId == $hm_shop_id)
+        {
+            $this->isHmShop = true;
+        }
+        $this->loginSupplierId = $this->checkHuiminSupplierLogin();
     }
 
     /**
@@ -122,7 +131,12 @@ class topshop_controller extends base_routing_controller
                 $sellerData['role_name'] = $roleInfo['role_name'];
             }
         }
-
+        //判断如果为惠民供应商登陆，则将登陆信息替换为惠民供应商的信息
+        if($this->checkHuiminSupplierLogin()) {
+            $supplier_data = $this->getSupplierInfo();
+            $sellerData = array_merge($sellerData, $supplier_data);
+            $topshopPageParams['is_hm_supplier'] = true;
+        }
         $topshopPageParams['seller'] = $sellerData;
         $pagedata['shopId'] = $this->shopId;
         $topshopPageParams['path'] = $this->runtimePath;//设置面包屑
@@ -182,6 +196,27 @@ class topshop_controller extends base_routing_controller
         return view::make($this->tmplName, $pagedata);
     }
 
+    /**
+     * @return mixed
+     * 获取供应商
+     *
+     */
+    public function getSupplierInfo()
+    {
+        $supplier_id = $_SESSION['huimin_supplier_id'];
+        $objMdlSupplier = app::get('sysshop')->model('supplier');
+        $supplier_info = $objMdlSupplier->getRow('*', ['supplier_id' => $supplier_id]);
+
+        $seller_data['login_account'] = $supplier_info['login_account'];
+        $seller_data['login_password'] = $supplier_info['login_password '];
+        $seller_data['mobile'] = $supplier_info['mobile'];
+        $seller_data['email'] = $supplier_info['email'];
+        $seller_data['name'] = $supplier_info['supplier_name'];
+        $seller_data['shoptype'] = '惠民活动商户';
+
+        return $seller_data;
+    }
+
     public function set_tmpl($tmpl)
     {
         $tmplName = 'topshop/tmpl/'.$tmpl.'.html';
@@ -217,8 +252,32 @@ class topshop_controller extends base_routing_controller
             unset($shopMenu['live']);
         }
         // 王衍生-2018/08/20-end
+        if(!$this->isLm)
+        {
+            unset($shopMenu['jinwanda']);
+        }
+
+        $is_hm_supplier = $this->checkHuiminSupplierLogin();
+        if($is_hm_supplier) {
+            $hm_permission = config::get('hmpermission');
+            $hm_supplier_permission = $hm_permission['supplier'];
+            $allow_main_menu = [];
+            $allow_menu_route = [];
+            foreach($hm_supplier_permission as $key=>$hsp) {
+                array_push($allow_main_menu, $key);
+                $allow_menu_route = array_merge($allow_menu_route, $hsp['menu']);
+            }
+        }
+
         foreach( (array)$shopMenu as $menu => $row )
         {
+            //如果是惠民供应商登陆，则只保留允许的主菜单
+            if($is_hm_supplier) {
+                if(!in_array($menu, $allow_main_menu)) {
+                    unset($shopMenu[$menu]);
+                    continue;
+                }
+            }
             //不需要显示菜单
             if($menu=='offline'){
                 if($this->shopInfo['offline']=='on'){
@@ -236,9 +295,17 @@ class topshop_controller extends base_routing_controller
                 $navbar[$menu]['default'] = ($row['action'] == $defaultActionName && $navbar[$menu]);
                 unset($navbar[$menu]['menu']);
             }
-
             foreach( (array)$row['menu'] as $k=>$params )
             {
+				/*add_2018/12/5_by_wanghaichao_start*/
+				//判断是否需要开启黑名单功能
+				if($this->shopInfo['blacklist']=='off'){
+					if(strpos($params['action'],'topshop_ctl_account_blacklist')!==false){
+						$params['display']=false;
+					}
+				}
+				/*add_2018/12/5_by_wanghaichao_end*/
+
                 //判断是否安装财务
                 if(!app::get('sysfinance')->is_installed() && strstr($params['action'], 'guaranteeMoney_list'))
                 {
@@ -285,6 +352,30 @@ class topshop_controller extends base_routing_controller
                 {
                     $params['display'] = false;
                 }
+                //判断如果不是惠民供应商登陆，把归属惠民供应商的菜单隐藏
+                if(!$is_hm_supplier && $params['shop_belong'] && $params['shop_belong'] == 'HMSUPPLIER')
+                {
+                    $params['display'] = false;
+                }
+                //如果是惠民供货商，则将不相关路由隐藏掉
+                if($is_hm_supplier) {
+                    if(!in_array($params['as'], $allow_menu_route)) {
+                        $params['display'] = false;
+                    }
+                }
+				
+				/*add_2019/8/8_by_wanghaichao_start*/
+				if($this->shopId!=46){
+					if($params['action']=='topshop_ctl_shop_setting@bgqr' || $params['action']=='topshop_ctl_clearing_settlement@ticketSellerBill'){
+						$params['display']=false;
+					}
+				}else{
+					if($params['action']=='topshop_ctl_clearing_settlement@sellerDetail'){
+						$params['display']=false;
+					}
+				}
+				/*add_2019/8/8_by_wanghaichao_end*/
+				
 
                 //! $currentPermission 店主 或者子账号有该菜单权限
                 if( !$currentPermission || (in_array($params['as'],$currentPermission) ))
@@ -304,6 +395,7 @@ class topshop_controller extends base_routing_controller
                 }
             }
         }
+
         return $navbar;
     }
 
@@ -368,4 +460,8 @@ class topshop_controller extends base_routing_controller
         return $str1;
     }
 
+    public function checkHuiminSupplierLogin()
+    {
+        return (pamAccount::check() && $_SESSION['huimin_supplier_id']) ? $_SESSION['huimin_supplier_id'] : 0;
+    }
 }

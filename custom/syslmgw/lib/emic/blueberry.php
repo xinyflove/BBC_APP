@@ -109,6 +109,7 @@ class syslmgw_emic_blueberry extends syslmgw_emic_controller
                 $shop['today_total'] = array_key_exists($shop['shop_id'], $todayTradeLists) ? $todayTradeLists[$shop['shop_id']]['total'] : '0.00';
         }
 
+        // return $shops;
         return $this->rsplash('200', $shops, '请求成功');
     }
 	/*
@@ -119,48 +120,9 @@ class syslmgw_emic_blueberry extends syslmgw_emic_controller
      */
     public function platform_stats()
     {
-        $objTrade = app::get('systrade')->model('trade');
-		//总的交易额和总的下单量
-        $filter = array(
-            'status' => array('WAIT_SELLER_SEND_GOODS', 'WAIT_BUYER_CONFIRM_GOODS', 'TRADE_FINISHED', 'WRITE_PARTIAL', 'PARTIAL_SHIPMENT', 'WAIT_WRITE_OFF'),
-            'cancel_status' => array('NO_APPLY_CANCEL', 'FAILS'),
-            'shop_id|noequal' => 9
-        );
-        $total = $objTrade->getRow("sum(payment) as total, count(tid) as count", $filter);
-
-        $start_time = input::get('start_time');
-        $end_time = input::get('end_time');
-
-        if ($start_time && $end_time) {
-            $today_filter = array(
-                'status' => array('WAIT_SELLER_SEND_GOODS', 'WAIT_BUYER_CONFIRM_GOODS', 'TRADE_FINISHED', 'WRITE_PARTIAL', 'PARTIAL_SHIPMENT', 'WAIT_WRITE_OFF','HAS_OVERDUE'),
-                //'cancel_status' => array('NO_APPLY_CANCEL', 'FAILS'),
-                'shop_id|noequal' => 9,
-                'created_time|than' => strtotime($start_time),
-                'created_time|lthan' => strtotime($end_time),
-            );
-        } else {
-            $time = time();
-            $today_filter = array(
-                'status' => array('WAIT_SELLER_SEND_GOODS', 'WAIT_BUYER_CONFIRM_GOODS', 'TRADE_FINISHED', 'WRITE_PARTIAL', 'PARTIAL_SHIPMENT', 'WAIT_WRITE_OFF','HAS_OVERDUE'),
-                //'cancel_status' => array('NO_APPLY_CANCEL', 'FAILS'),
-                'shop_id|noequal' => 9,
-                'created_time|than' => strtotime(date('Y-m-d 00:00:00', $time)),
-                'created_time|lthan' => strtotime(date('Y-m-d 23:59:59', $time)),
-            );
-        }
-        $today = $objTrade->getRow("sum(payment) as total, count(tid) as count", $today_filter);
-
-        //
-        $total['total'] = str_pad(ceil($total['total']), 8, '0', STR_PAD_LEFT);
-        $total['count'] = str_pad($total['count'], 8, '0', STR_PAD_LEFT);
-        $today['total'] = str_pad(ceil($today['total']), 8, '0', STR_PAD_LEFT);
-        $today['count'] = str_pad($today['count'], 8, '0', STR_PAD_LEFT);
-
-        $data = [
-            'total' => $total,
-            'today' => $today
-        ];
+        $blueberry = kernel::single('syslmgw_blueberry');
+        $data = $blueberry->platform_stats();
+        // return $data;
         return $this->rsplash('200', $data, '请求成功');
     }
 
@@ -172,48 +134,9 @@ class syslmgw_emic_blueberry extends syslmgw_emic_controller
      */
     public function signup_stats()
     {
-        $start_time = input::get('start_time');
-        if($start_time){
-            $start_time = strtotime(date("Y-m-d", $start_time));
-        }else{
-            $start_time = strtotime(date("Y-m-d"));
-        }
-        $select = "count(id) AS total";
-        $end_time = $start_time + 24 * 3600;
-        $count = [];
-        for($start = $start_time; $start < $end_time; $start = $end){
-            // if($start > time()){
-            //     break;
-            // }
-            $end = $start + 3600 * 4;
-            $where = "create_time >= {$start} AND create_time < {$end}";
-            $queryBuilder = db::connection()->createQueryBuilder();
-            $group_total = $queryBuilder->select($select)
-            ->from('sysuser_thirdpartyinfo')
-            ->where($where)
-            ->execute()->fetchAll();
-
-            $key = date("H:i", $start) . '-' . date("H:i", $end);
-            $count[$key] = $group_total[0]['total'] ? : 0;
-        }
-
-        $where = "create_time >= {$start_time} AND create_time < {$end_time}";
-        $queryBuilder = db::connection()->createQueryBuilder();
-        $interval_total = $queryBuilder->select($select)
-        ->from('sysuser_thirdpartyinfo')
-        ->where($where)
-        ->execute()->fetchAll();
-
-        $queryBuilder = db::connection()->createQueryBuilder();
-        $total = $queryBuilder->select($select)
-        ->from('sysuser_thirdpartyinfo')
-        ->execute()->fetchAll();
-
-        $data = [
-            'group_total' => $count,
-            'interval_total' => $interval_total[0]['total'] ? : 0,
-            'total' => $total[0]['total'] ? : 0,
-        ];
+        $blueberry = kernel::single('syslmgw_blueberry');
+        $data = $blueberry->signup_stats();
+        // return $data;
         return $this->rsplash('200', $data, '请求成功');
     }
 
@@ -225,132 +148,10 @@ class syslmgw_emic_blueberry extends syslmgw_emic_controller
      */
     public function qingdao_stats()
     {
-        $start_time = input::get('start_time');
-        $end_time = input::get('end_time');
-
-        if(!$start_time || !$end_time){
-            $start_time = strtotime(date("Y-m-d",time()));
-            // $start_time = strtotime("2018-10-15");
-            $end_time = $start_time + 3600 * 24;
-        }
-
-        $select = "t.receiver_district AS district, COUNT(t.tid) AS count, SUM(t.payment) AS total";
-
-        $where = "t.status IN  ('WAIT_SELLER_SEND_GOODS','WAIT_WRITE_OFF','WAIT_BUYER_CONFIRM_GOODS','TRADE_FINISHED','WRITE_PARTIAL','PARTIAL_SHIPMENT') AND t.cancel_status IN ('NO_APPLY_CANCEL','FAILS') AND t.shop_id != 9 AND t.receiver_city = '青岛市' AND t.created_time > {$start_time} AND t.created_time <= {$end_time}";
-
-        $queryBuilder = db::connection()->createQueryBuilder();
-        // var_dump(db::connection());exit;
-        $groupTotalTrade = $queryBuilder->select($select)
-        ->from('systrade_trade', 't')
-        ->where($where)
-        ->groupBy('t.receiver_district')
-        // ->orderBy('count', 'DESC')
-        // ->setFirstResult($offset)
-        // ->setMaxResults($limit)
-        ->execute()->fetchAll();
-        // jj($groupTotalTrade);
-        $select = "COUNT(t.tid) AS count, SUM(t.payment) AS total";
-
-        $where = "t.status IN  ('WAIT_SELLER_SEND_GOODS','WAIT_WRITE_OFF','WAIT_BUYER_CONFIRM_GOODS','TRADE_FINISHED','WRITE_PARTIAL','PARTIAL_SHIPMENT') AND t.cancel_status IN ('NO_APPLY_CANCEL','FAILS') AND t.shop_id != 9 AND t.receiver_city = '青岛市' AND t.created_time > {$start_time} AND t.created_time <= {$end_time}";
-
-        $queryBuilder = db::connection()->createQueryBuilder();
-        // var_dump(db::connection());exit;
-        $totalTrade = $queryBuilder->select($select)
-        ->from('systrade_trade', 't')
-        ->where($where)
-        ->execute()->fetchAll();
-
-        $districts = [
-            [
-                'district' => '市南区',
-                'count' => 0,
-            ],
-            [
-                'district' => '市北区',
-                'count' => 0,
-            ],
-            // [
-            //     'district' => '四方区',
-            //     'count' => 0,
-            // ],
-            [
-                'district' => '黄岛区',
-                'count' => 0,
-            ],
-            [
-                'district' => '崂山区',
-                'count' => 0,
-            ],
-            [
-                'district' => '李沧区',
-                'count' => 0,
-            ],
-            [
-                'district' => '城阳区',
-                'count' => 0,
-            ],
-            // [
-            //     'district' => '开发区',
-            //     'count' => 0,
-            // ],
-            [
-                'district' => '胶州市',
-                'count' => 0,
-            ],
-            [
-                'district' => '即墨区',
-                'count' => 0,
-            ],
-            [
-                'district' => '平度市',
-                'count' => 0,
-            ],
-            // [
-            //     'district' => '胶南市',
-            //     'count' => 0,
-            // ],
-            [
-                'district' => '莱西市',
-                'count' => 0,
-            ],
-        ];
-
-        if($groupTotalTrade){
-            foreach ($groupTotalTrade as $value) {
-                if($value['count']){
-
-                    foreach ($districts as &$district) {
-                        if($district['district'] === $value['district']){
-                            $district['count'] += $value['count'];
-                            break;
-                        }elseif(($district['district'] == '市北区') && ($value['district'] == '四方区')){
-                            $district['count'] += $value['count'];
-                            break;
-                        }elseif(($district['district'] == '黄岛区') && ($value['district'] == '开发区')){
-                            $district['count'] += $value['count'];
-                            break;
-                        }elseif(($district['district'] == '黄岛区') && ($value['district'] == '胶南市')){
-                            $district['count'] += $value['count'];
-                            break;
-                        }elseif(($district['district'] == '即墨区') && ($value['district'] == '即墨市')){
-                            $district['count'] += $value['count'];
-                            break;
-                        }
-                    }
-
-                }
-            }
-
-        }
-
-        array_multisort(array_column($districts, 'count'), SORT_DESC,  $districts);
-
-        $data = [
-            'districts' => $districts,
-            'count' =>$totalTrade[0]['count'] ? : 0,
-        ];
-
+        $blueberry = kernel::single('syslmgw_blueberry');
+        $data = $blueberry->qingdao_stats();
         return $this->rsplash('200', $data, '请求成功');
+
     }
 
     /**
@@ -397,6 +198,7 @@ class syslmgw_emic_blueberry extends syslmgw_emic_controller
             'total' =>$count[0]['total'] ? : 0,
         ];
 
+        // return $data;
         return $this->rsplash('200', $data, '请求成功');
     }
 
@@ -422,32 +224,9 @@ class syslmgw_emic_blueberry extends syslmgw_emic_controller
      */
     public function order_location_stats()
     {
-        $start_time = input::get('start_time');
-        $end_time = input::get('end_time');
-
-        if(!$start_time || !$end_time){
-            $start_time = strtotime(date("Y-m-d",time()));
-            $end_time = $start_time + 3600 * 24;
-        }
-
-        $tradeList = app::get('systrade')->model('trade')->getList('tid, receiver_state, receiver_city, receiver_district, receiver_address', ['shop_id|noequal' => 9, 'status' => ['WAIT_SELLER_SEND_GOODS', 'WAIT_BUYER_CONFIRM_GOODS', 'TRADE_FINISHED', 'WRITE_PARTIAL', 'PARTIAL_SHIPMENT', 'WAIT_WRITE_OFF'], 'cancel_status' => ['NO_APPLY_CANCEL', 'FAILS'], 'receiver_city' => '青岛市', 'created_time|bthan' => $start_time, 'created_time|sthan' => $end_time], 0, -1, 'created_time DESC');
-
-        foreach ($tradeList as $k=>&$value) {
-
-			if($value['receiver_district']=='四方区' || $value['receiver_district']=='市北区'){
-				$value['receiver_district']='市北区';
-			}elseif($value['receiver_district']=='即墨市'){
-				$value['receiver_district']='即墨区';
-			}elseif($value['receiver_district']=='胶南市' || $value['receiver_district']=='开发区' || $value['receiver_district']=='黄岛区'){
-				$value['receiver_district']='黄岛区';
-			}
-			$value['receiver'] = $value['receiver_state'] . $value['receiver_city'] . $value['receiver_district'] . $value['receiver_address'];
-
-			$addr[$k]=$value['receiver_state'] . $value['receiver_city'] . $value['receiver_district'];
-		}
-
-		$data['addr']=array_values(array_unique($addr));
-		$data['tradeList']=$tradeList;
+        $blueberry = kernel::single('syslmgw_blueberry');
+        $data = $blueberry->order_location_stats();
+        // return $data;
         return $this->rsplash('200', $data, '请求成功');
     }
     /**
@@ -458,33 +237,9 @@ class syslmgw_emic_blueberry extends syslmgw_emic_controller
      */
     public function access_stats()
     {
-        $start_time = input::get('start_time');
-        $end_time = input::get('end_time');
-
-        if(!$start_time || !$end_time){
-            $start_time = 19700101;
-            $end_time = date('Ymd');
-        }
-
-        $shop_data = $this->get_shops();
-        $shop_ids_str = implode(',', array_column($shop_data, 'shop_id'));
-
-        $queryBuilder = db::connection()->createQueryBuilder();
-        $where = "t.shop_id in ({$shop_ids_str}) AND t.timesig >= {$start_time} AND t.timesig <= {$end_time}";
-
-        $shop_access = $queryBuilder->select('t.shop_id, s.shop_name, sum(t.pv_count) as pv, sum(t.visitor_count) as uv')
-            ->from('statistic_trend', 't')
-            ->leftJoin('t', 'sysshop_shop', 's', 's.shop_id = t.shop_id')
-            ->where($where)
-            ->groupBy('t.shop_id')
-            ->orderBy('pv', 'DESC')
-            ->execute()->fetchAll();
-
-        $data = [
-            'shop' => array_slice($shop_access, 0, 12),
-            'pv' => array_sum(array_column($shop_access, 'pv')),
-            'uv' => array_sum(array_column($shop_access, 'uv')),
-        ];
+        $blueberry = kernel::single('syslmgw_blueberry');
+        $data = $blueberry->access_stats();
+        // return $data;
         return $this->rsplash('200', $data, '请求成功');
     }
 
@@ -505,25 +260,9 @@ class syslmgw_emic_blueberry extends syslmgw_emic_controller
 	* date 2018/10/31
 	*/
 	public function userCount(){
-		$time=time();
-		$total=app::get('sysuser')->model('thirdpartyinfo')->getRow('count(id) as total');
-
-		//本月数据
-		$start_time=strtotime(date('Y-m-01',$time));
-		$end_time=$time;
-		$params['create_time|bthan']=$start_time;
-		$params['create_time|sthan']=$end_time;
-		$thisMonth=app::get('sysuser')->model('thirdpartyinfo')->getRow('count(id) as total',$params);
-		//上月数据
-
-		$s_start_time= strtotime(date('Y-m-01') . ' -1 month');
-		$s_end_time=strtotime(date('Y-m-t 23:59:59', strtotime(date('Y-m-01') . ' -1 month')));
-		$params['create_time|bthan']=$s_start_time;
-		$params['create_time|sthan']=$s_end_time;
-		$lastMonth=app::get('sysuser')->model('thirdpartyinfo')->getRow('count(id) as total',$params);
-		$data['total']=$total['total'];
-		$data['thisMonth']=$thisMonth['total'];
-		$data['lastMonth']=$lastMonth['total'];
+        $blueberry = kernel::single('syslmgw_blueberry');
+        $data = $blueberry->userCount();
+        // return $data;
         return $this->rsplash('200', $data, '请求成功');
 	}
 

@@ -59,6 +59,47 @@ class ljstore_app_giftlist extends ljstore_app_controller {
 			return false;
 		}
 	}
+	
+	/**
+	* 用户核销礼品
+	* author by wanghaichao
+	* date 2020/1/2
+	*/
+	public function write(){
+		$params['gift_gain_id']=input::get('gift_gain_id');
+		$mobile=input::get('mobile');
+		if (empty($params['gift_gain_id'])){
+			$this->splash('30001','参数错误');
+		}
+		if(empty($mobile)){
+			$this->splash('30002','手机号不能为空');
+		}
+		$params['user_id']=$this->getUserId($mobile);
+		if(!$params['user_id']){
+            $this->splash('30003','用户不存在');
+		}
+		$objMdlGift=app::get('sysactivityvote')->model('gift_gain');
+		$row=$objMdlGift->getRow('gift_gain_id,status',$params);
+		if (empty($row)){
+			$this->splash('30006','没有这条记录');
+		}
+		if ($row['status']!=0){
+            $this->splash('30004','已经使用过');
+		}
+		$update['status']=1;
+		$update['used_time']=time();
+		$update['write_type']='SELF';//自己核销
+		$res=$objMdlGift->update($update,$params);
+		//echo "<pre>";print_R($res);die();
+		if ($res){
+			$this->splash('200','使用成功');
+		}else{
+			$this->splash('30005','使用失败,请稍后尝试');
+		}
+	}
+
+
+
 }
 
 

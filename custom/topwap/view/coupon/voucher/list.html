@@ -367,7 +367,7 @@ mark,.shopex-segmented-control.shopex-segmented-control-inverted .shopex-control
 <section class="tv-ticket-dialog">
 	<div class="cd-popup" id="dialog">
 		<div class="cd-popup-container cd-popup-container1">
-			<div id="code_ewm" style="padding:50px;">
+			<div id="code_ewm" style="text-align: center;margin-top: 50px;">
 			</div>
 			<!--<img id="code_ewm" src="/app/topwap/statics/static/img/ewm.png"/>-->
 		</div>
@@ -377,22 +377,27 @@ mark,.shopex-segmented-control.shopex-segmented-control-inverted .shopex-control
 <img src="/app/topwap/statics/static/img/share.png" style="width:100%;">
 </div>
 <script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
-<script src="/app/topwap/statics/static/js/jquery.qrcode.min.js"></script>
+<!--<script src="/app/topwap/statics/static/js/jquery.qrcode.min.js"></script>-->
+<script src="/app/topwap/statics/scripts/jquery-2.1.4.min.js"></script>
+<script src="/app/topwap/statics/static/js/jquery.qrcode.js"></script>
+<script src="/app/topwap/statics/static/js/utf.js"></script>
 <script>
 
 	//打开窗口
 	$('body').on('tap','.voucher_ewm', function(event) {
 		var voucher_code=$(this).attr('data-voucher-code');
+		var voucher_logo=$(this).attr('data-voucher-logo');
 		var that=$(this);
 		//alert(voucher_code);
 		
 		$('#code_ewm').empty();
 		
 		$('#code_ewm').qrcode({
-			render: "table",
+			render: "canvas", //canvas
 			width: 100,
 			height:100,
 			text: voucher_code,
+			src: voucher_logo,
 		});
 		event.preventDefault();
 		$('.cd-popup').addClass('is-visible1');
@@ -429,7 +434,7 @@ function toUtf8(str) {
     	}   
     }   
     return out;   
-}  
+}
 
 	//关闭窗口
 	$('.cd-popup').on('touchstart', function(event) {
@@ -650,7 +655,8 @@ function toUtf8(str) {
             dataType: 'json',
             data: {
               's': status,
-              'pages': num
+              'pages': num,
+              'confirm_type': '<{$confirm_type}>',
             },
             success: function(rs) {
               console.log(rs);

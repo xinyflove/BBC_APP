@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="/app/topmaker/statics/ticket/lib/common/public.css">
+    <link rel="stylesheet" href="/app/topmaker/statics/ticket/lib/ydui/css/ydui.css">
+    <link rel="stylesheet" href="/app/topmaker/statics/ticket/css/postregist.css">
+    <title>注册</title>
+    <script src="/app/topmaker/statics/ticket/lib/common/flexible.js"></script>
+</head>
+<body>
+
+    <div class="login">
+        <div class="logo">
+            <img src="/app/topmaker/statics/ticket/images/tvlogo.png" alt="">
+        </div>
+        <input type="hidden" name="mcode_type" value="signup">
+        <div class="into">
+            <div class="into-item">
+                <input type="text" name="name" placeholder="请输入姓名">
+            </div>
+            <div class="into-item">
+                <input type="number" name="login_name" placeholder="请输入手机号">
+            </div>
+            <div class="into-item">
+                <input type="text" name="cart_number" placeholder="请输入车牌号">
+            </div>
+            <div class="into-item code">
+                <input class="code" type="text" name="mcode" placeholder="请输入验证码">
+                <div class="codeBox send_vcode">获取验证码</div>
+                <div class="codeBox into-input-wait" style="display:none">正在获取120s</div>
+            </div>
+            <div class="into-item">
+                <input type="password" name="login_password" placeholder="请设置密码">
+            </div>
+			<input type="hidden" name="shop_id" value='46'>
+        </div>
+        <div class="login-btn">
+            <h2>上传您的相关证件</h2>
+            <div class="fileBox">
+                <div id="zhengmianImg" class="fileBox-left">
+                    <img id="zhengmiansrc" alt="">
+					<input type="hidden" id="zhengmianinput" name="front_img">
+					<div class="images-uploader-headimgs">
+						<input id="zhengmian" type="file"  name="pic[]" multiple accept="image/*" data-size="<{$env.config.image.uploadedFileMaxSize}>" data-max="5" data-remote="<{url action=toputil_ctl_image@uploadImages from=ticket type=idcard}>">
+					</div>
+                </div>
+                <div class="fileBox-right">
+					<div id="fanmianImg" class="fileBox-right">
+						<img id="fanmiansrc" alt="">
+						<input type="hidden" id="fanmianinput" name="reverse_img">
+						<div class="images-uploader-idfan">
+							<input id="fanmian" type="file"  name="pic[]" multiple accept="image/*" data-size="<{$env.config.image.uploadedFileMaxSize}>" data-max="5" data-remote="<{url action=toputil_ctl_image@uploadImages from=ticket type=idcard}>">
+						</div>
+					</div>
+                </div>
+            </div>
+        </div>
+        <div class="login-btn">
+            <a id="signUpBtn" href="javascript:;" class="btn">注册</a>
+        </div>
+        <p class="toreg">已有账号？返回<a href="<{url action=topmaker_ctl_passport@signin type=ticket}>">登录</a></p>
+    </div>
+    
+    <script src="/app/topmaker/statics/ticket/lib/jquery/jquery-3.3.0.min.js"></script>
+    <script src="/app/topmaker/statics/ticket/js/model.js"></script>
+	<script src="/app/topmaker/statics/lib/layui/layui.all.js"></script>
+
+	<{script src="uploader.js" app="site"}>
+    <script>
+		
+    $(function () {
+        //获取验证码
+
+        $('.send_vcode').on('click', function (e) {
+            var mcode_type = $('[name="mcode_type"]').val();
+            var mobile = $('[name="login_name"]').val();
+
+            sendVerify(this, 'mobile='+mobile+'&type=' + mcode_type);
+        });
+    });
+    // 发送验证码
+    function sendVerify(el, data) {
+        var url = "<{url action=topmaker_ctl_passport@sendVcode}>";
+
+        var time = null;
+        var num = 120;
+        $(el).hide();
+        $('.into-input-wait').css('display', 'inline-block');
+        time = setInterval(function () {
+            num--;
+            $('.into-input-wait').text("正在获取" + num + "s");
+            if (num < 0) {
+                clearInterval(time);
+                $('.into-input-wait').hide();
+                $('.into-input-wait').text('正在获取120s')
+                $('.send_vcode').show();
+                $('.send_vcode').text('重新获取');
+            }
+        }, 1000);
+
+        $.post(url, data, function(rs) {
+            if(rs.error) {
+                layer.msg(rs.message);
+                clearInterval(time);
+                $('.into-input-wait').hide();
+                $('.into-input-wait').text('正在获取120s')
+                $('.send_vcode').show();
+                $('.send_vcode').text('重新获取');
+            }
+        });
+    }
+        //获取验证码
+    /*    var time = 120;
+        $(".codeBox").on("click",function(){
+            var setTimeInter = setInterval(function(){
+                if(time<=0){
+                    window.clearInterval(setTimeInter); 
+                    $(".codeBox").html("重新获取");
+                    time=120;
+                }else{
+                    time-=1
+                    $(".codeBox").html(time+"s后重新获取")
+                }
+            },1000)
+        });*/
+        // 正面照
+            //$("#zhengmianImg").on("click",function(e){
+                /*var file = this.files[0];//获取文件信息
+                if (window.FileReader){
+                    var reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    //监听文件读取结束后事件    
+                    reader.onloadend = function (e) {
+                        $(".fileBox-left").addClass("filebg")
+                        $(".zhengmianImg").attr("src",e.target.result)
+                        
+                    };
+                }*/
+				//alert(123);
+				//$('#zhengmian').click();
+            //});
+
+	$(function () {
+        var uploader_headimg = $('.images-uploader-headimgs');
+        uploader_headimg.AjaxFileUpload({
+            onComplete: function(rs, element) {
+                if (rs.error) {
+                    return alert(rs.message);
+                }
+                var data = $.makeArray(rs.data);
+                var url =  data[0].t_url;
+                $('#zhengmiansrc').attr('src',url);
+				$('#zhengmianinput').val(url);
+            }
+        });
+    });
+	$(function () {
+			var uploader_headimg = $('.images-uploader-idfan');
+			uploader_headimg.AjaxFileUpload({
+				onComplete: function(rs, element) {
+					if (rs.error) {
+						return alert(rs.message);
+					}
+					var data = $.makeArray(rs.data);
+					var url =  data[0].t_url;
+					$('#fanmiansrc').attr('src',url);
+					$('#fanmianinput').val(url);
+				}
+			});
+		});
+
+	// 背面照
+	/*$("#fanmian").on("change",function(e){
+			var file = this.files[0];//获取文件信息
+			if (window.FileReader){
+				var reader = new FileReader();
+				reader.readAsDataURL(file);
+				//监听文件读取结束后事件    
+				reader.onloadend = function (e) {
+					$(".fileBox-right").addClass("filebg")
+					$(".fanmianImg").attr("src",e.target.result)
+					
+				};
+			}
+		})*/
+
+	var third = eval('('+'<{$thirdData}>'+')');
+    $('#signUpBtn').on('click', function () {
+        var mcode_type = $('[name="mcode_type"]').val();
+        var name = $('[name="name"]').val();
+        if(name == '')
+        {
+            layer.msg('请输入姓名');
+            return false;
+        }
+        var login_name = $('[name="login_name"]').val();
+        if(login_name == '')
+        {
+            layer.msg('请输入手机号');
+            return false;
+        }
+        var mcode = $('[name="mcode"]').val();
+        if(mcode == '')
+        {
+            layer.msg('请输入验证码');
+            return false;
+        }
+        var login_password = $('[name="login_password"]').val();
+        if(login_password == '')
+        {
+            layer.msg('请输入登录密码');
+            return false;
+        }
+        /*var id_card_no = $('[name="id_card_no"]').val();
+        if(id_card_no == '')
+        {
+            layer.msg('请输入身份证号');
+            return false;
+        }*/
+       // var registered = $('[name="registered"]').val();
+        /*if(registered == '')
+        {
+            layer.msg('请选择户口所在地');
+            return false;
+        }*/
+        var pmobile = $('[name="pmobile"]').val();
+        var shop_id = $('[name="shop_id"]').val();
+		var front_img = $('[name="front_img"]').val();
+		var reverse_img = $('[name="reverse_img"]').val();
+		var cart_number=$('[name="cart_number"]').val();
+		if(front_img==''){
+            layer.msg('请上传身份证正面照');
+            return false;
+		}
+		if(reverse_img==''){
+            layer.msg('请上传身份证反面照');
+            return false;
+		}
+        if(shop_id == '' || shop_id == 0)
+        {
+            layer.msg('请选择店铺');
+            return false;
+        }
+		if (cart_number=='')
+		{
+            layer.msg('请输入车牌号');
+            return false;
+		}
+
+        var data = {
+            mcode_type:mcode_type,
+            name:name,
+            login_name:login_name,
+            login_password:login_password,
+            shop_id:shop_id,
+            mcode:mcode,
+			front_img:front_img,
+			reverse_img:reverse_img,
+			cart_number:cart_number,
+			type:"ticket",
+            //id_card_no:id_card_no,
+            //registered:registered,
+            //pmobile:pmobile
+        };
+        if(third != '') data.third = third;
+
+        var index = layer.load(1, {
+            shade: [0.1,'#fff'] //0.1透明度的白色背景
+        });
+
+        $.ajax({
+            type: "POST",
+            url: '<{url action=topmaker_ctl_passport@create}>',
+            data: data,
+            dataType: "json",
+            success: function(rs) {
+                layer.msg(rs.message);
+                if(rs.success) {
+                    setTimeout(function(){
+                        window.location.href=rs.redirect;
+                    }, 500);
+                }
+                layer.close(index);
+            },
+            error: function() {
+                layer.close(index);
+                layer.msg('注册失败，请重试');
+            }
+        });
+    });
+
+
+    </script>
+    
+</body>
+</html>

@@ -118,7 +118,13 @@ class topshop_ctl_item_importexport extends topshop_controller {
                 'page_no' =>intval($exportPage),
                 'page_size' => intval($exportLimit),
         );
-        
+        //如果惠民供应商登陆，只能筛选本供应商的商品
+        $hm_supplier_id = $is_hm_supplier = $this->checkHuiminSupplierLogin();
+        if($hm_supplier_id) {
+            $params['supplier_id'] = $hm_supplier_id;
+            $params['is_hm_supplier'] = $is_hm_supplier;
+        }
+
         if($filter['use_platform'] >= 0)
         {
             $params['use_platform'] = $filter['use_platform'];

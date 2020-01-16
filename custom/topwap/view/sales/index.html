@@ -154,7 +154,15 @@
                                         <div class="amount">
                                             <{$item.price|cur}>&nbsp;<{if intval($item.mkt_price)}><del><{$item.mkt_price|cur}></del><{/if}>
                                         </div>
-                                        <div class="purchased"><{t}>销量<{/t}><{$item.paid_quantity}><{t}>件<{/t}></div>
+										
+										  <{if $shopdata.show_stock_way ==1}>
+										  <div class="purchased"><{t}>剩余<{/t}><{$item.realStore}>件</div>
+										  <{elseif $shopdata.show_stock_way ==2}>
+										  <div class="purchased"><{t}>销量<{/t}><{$item.paid_quantity}>件</div>
+										  <{else}>
+										  <div class="purchased"></div>
+										  <{/if}>
+                                        <!--<div class="purchased"><{t}>销量<{/t}><{$item.paid_quantity}><{t}>件<{/t}></div>-->
                                     </div>
                                     <{if $item.promotion || $item.gift}>
                                     <div class="tags-group">

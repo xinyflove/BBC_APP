@@ -208,13 +208,24 @@ $('#payment_btn').on('tap',function(){
     }, 'div');
     document.querySelector('.shopex-popup-input input').type = 'password';
   } else {
-    var ua = window.navigator.userAgent.toLowerCase();
-    // if(ua.match(/MicroMessenger/i) == 'micromessenger'){
-      var postUrl = $('#dopay_form').attr('action');
-      postUrl = postUrl + '?' + $('#dopay_form').serialize();
-      $('#dopay_form').attr('action', postUrl);
-    // }
-    $('#dopay_form').submit();
+    var ua=window.navigator.userAgent;
+    var miniProgram=/miniProgram/i;
+    // 如果是在小程序中
+    if(miniProgram.test(ua)){
+        var redirect_url = encodeURIComponent("<{url action=topwap_ctl_paycenter@finish payment_id=$trades.payment_id}>");
+        var do_payment_url = encodeURIComponent("<{url route='wap.mini.payment' from_mini='platform'}>");
+        // var do_payment_url = encodeURIComponent("<{url action=topwap_ctl_paycenter@miniDoPayment}>");
+        var url = '/pages/selectPay/selectPay?s=<{$sess_id}>&payment_id=<{$trades.payment_id}>&money=<{$trades.cur_money}>&tids=<{$tids}>&redirect_url=' + redirect_url + '&do_payment_url=' + do_payment_url;
+        wx.miniProgram.reLaunch({url});
+    }else{
+        // var micromessenger = /micromessenger/i;
+        // if(micromessenger.test(ua)){
+        var postUrl = $('#dopay_form').attr('action');
+        postUrl = postUrl + '?' + $('#dopay_form').serialize();
+        $('#dopay_form').attr('action', postUrl);
+        // }
+        $('#dopay_form').submit();
+    }
   }
 });
   /*add_20170925_by_fanglongji_start*/

@@ -26,7 +26,13 @@ class sysmall_data_widgets
         $restult = [];
         foreach ($winfo as $widget)
         {
-            $restult[] = $this->getWidgetsInfo($widget['widgets_id']);
+            if ($widget['widget'] == 'new_products') {
+                $restult[] = $this->getWidgetsInfo($widget['widgets_id']);
+            } else if ($widget['widget'] == 'channel_floor') {
+                $restult[] = $this->getWidgetsInfo($widget['widgets_id'], 5);
+            } else {
+                $restult[] = $this->getWidgetsInfo($widget['widgets_id'], 8);
+            }
         }
 
         if (!empty($restult))
@@ -72,40 +78,57 @@ class sysmall_data_widgets
     /**
      * 获取组件详细信息
      *
-     * @param $widget
-     * @param $tmpl
+     * @param $widgetId
+     * @param $limit
      * @return mixed
      */
-    public function getWidgetsInfo($widgetId)
+    public function getWidgetsInfo($widgetId, $itemLimit = 10)
     {
         $objMdlWidgetsInstance = app::get('sysmall')->model('widgets_instance');
         $db = app::get('base')->database();
         $qb = $db->createQueryBuilder();
 
         $winfo = $objMdlWidgetsInstance->getRow('*', ['widgets_id' => $widgetId]);
-        $winfo['template_path'] = 'sysmall/widgets/'.$winfo['widget'].'/_default.html';
-        $winfo['params']['item_info'] = [];
+        $winfo['template_path'] = 'sysmall/widgets/' .$winfo['widget'].'/_default.html';
 
         if (!empty($winfo['params']))
         {
-            $fields = 'm_item.*, item.item_id, item.title, shop.shop_name, item.image_default_id, (store.store-store.freez) AS sell_out, FORMAT(price, 2) as price, FORMAT(supply_price, 2) as supply_price, FORMAT((price - supply_price)/price*100,1) AS profit';
+            $winfo['params']['item_info'] = [];
+
+            if (!empty($winfo['params']['shop_id']))
+            {
+                $winfo['params']['shop_link'] = url::action('topshop_ctl_mall_shop@index', ['shop_id' => $winfo['params']['shop_id']]);
+            }
+
+            $fields = 'm_item.*, item.item_id, item.title, shop.shop_name, item.image_default_id, (store.store-store.freez) AS real_store, FORMAT(price, 2) as price, FORMAT(supply_price, 2) as supply_price, FORMAT((price - supply_price)/price*100,1) AS profit';
             $qb->select($fields)
                 ->from('sysmall_item', 'm_item')
                 ->leftJoin('m_item', 'sysitem_item', 'item', 'm_item.item_id=item.item_id')
                 ->leftJoin('item', 'sysshop_shop', 'shop', 'item.shop_id=shop.shop_id')
                 ->leftJoin('item', 'sysitem_item_store', 'store', 'item.item_id=store.item_id');
-            if ($winfo['params']['select_item_type'] == 2)
+            if ($winfo['params']['select_item_type'] == 2 && $winfo['params']['item'])
             {
                 $mall_item_ids = implode(',', $winfo['params']['item']);
                 $qb->where("m_item.mall_item_id in ({$mall_item_ids})");
+
+                if (!empty($winfo['params']['shop_id']))
+                {
+                    $qb->andWhere("item.shop_id = " . $winfo['params']['shop_id']);
+                }
                 $winfo['params']['item_info'] = $qb->execute()->fetchAll();
             }
             else if ($winfo['params']['select_item_type'] == 1)
             {
                 $qb->where("m_item.deleted = '0'")
-                    ->andWhere("m_item.status = 'onsale'");
+                    ->andWhere("m_item.status = 'onsale'")
+                    ->andWhere("m_item.sale_type = '0'");
+                
+                if (!empty($winfo['params']['shop_id']))
+                {
+                    $qb->andWhere("item.shop_id = " . $winfo['params']['shop_id']);
+                }
                 $winfo['params']['item_info'] = $qb->setFirstResult(0)
-                    ->setMaxResults(8)
+                    ->setMaxResults($itemLimit)
                     ->orderBy('m_item.modified_time', 'desc')
                     ->execute()->fetchAll();
             }

@@ -37,7 +37,7 @@ class topwap_ctl_tvshopping extends topwap_controller{
     {
         $platform = 'wap';
         $page_type = input::get('page_type','home');
-        $obj_pages = kernel::single('topshop_tvshopping_pages');
+        $obj_pages = kernel::single('topshop_tvshopping_pages',$this->shop_id);
         $pages_type = $obj_pages->pages_type[$platform];
         if(!array_key_exists($page_type, $pages_type))
         {
@@ -49,7 +49,10 @@ class topwap_ctl_tvshopping extends topwap_controller{
 
         $obj_widgets = kernel::single('topshop_tvshopping_widgets');
         $widgets = $obj_widgets->getUsedWidgets($this->shop_id, $page_type, $platform);
-
+		/*add_2018/11/22_by_wanghaichao_start*/
+		//页面的设置项
+		$pagedata['setting']=app::get('sysshop')->model('pagetype')->getRow('*',array('shop_id'=>$this->shop_id,'page_type'=>$page_type));
+		/*add_2018/11/22_by_wanghaichao_end*/
         foreach ($widgets as $key => $widget)
         {
             if(!$this->objWidgets[$widget['widgets_type']])
@@ -61,6 +64,7 @@ class topwap_ctl_tvshopping extends topwap_controller{
             unset($widget['params']);
 			$params['shop_id']=$this->shop_id;
             $datas = $this->objWidgets[$widget['widgets_type']]->makeParams($params);
+
             $output['setting'] = array_merge($widget, $params);
             $output['datas'] = $datas;
             $pagedata['widget_html'] .= view::make($widget['template_path'], $output)->render();
@@ -68,13 +72,13 @@ class topwap_ctl_tvshopping extends topwap_controller{
         $pagedata['shopinfo'] = $this->shop_setting;
 		$pagedata['title']=$pagedata['shopinfo']['shop_name'];
         // 店铺分类
-		
+
 		$extsetting=$this->__getExtSetting($this->shop_id);
 
-		$weixin['imgUrl']= base_storager::modifier($pagedata['shopinfo']['shop_logo']);
-		$weixin['linelink']= url::action("topwap_ctl_tvshopping@index",array('shop_id'=>$this->shop_id));
-		$weixin['shareTitle']=$extsetting['params']['share']['shopcenter_title'];
-		$weixin['descContent']=$extsetting['params']['share']['shopcenter_describe'];
+		$weixin['imgUrl']= base_storager::modifier($pagedata['setting']['sharelogo'])?base_storager::modifier($pagedata['setting']['sharelogo']):base_storager::modifier($pagedata['shopinfo']['shop_logo']);
+		$weixin['linelink']= url::action("topwap_ctl_tvshopping@index",array('shop_id'=>$this->shop_id,'page_type'=>$page_type));
+		$weixin['shareTitle']=$pagedata['setting']['sharetitle']?$pagedata['setting']['sharetitle']:$extsetting['params']['share']['shopcenter_title'];
+		$weixin['descContent']=$pagedata['setting']['sharedesc']?$pagedata['setting']['sharedesc']:$extsetting['params']['share']['shopcenter_describe'];
 		$pagedata['weixin']=$weixin;
 		/*add_2017/9/27_by_wanghaichao_end*/
 		/*add_2018/6/28_by_wanghaichao_start*/
@@ -91,7 +95,12 @@ class topwap_ctl_tvshopping extends topwap_controller{
             }
         }
 		$pagedata['shopId']=$this->shop_id;
-        return view::make('topshop/tvshopping/pages/'. $page_type .'.html', $pagedata);
+
+		if($page_type=='home' || $page_type=='qtv_live'){
+			return view::make('topshop/tvshopping/pages/'. $page_type .'.html', $pagedata);
+		}else{
+			return view::make('topshop/tvshopping/pages/default.html', $pagedata);
+		}
     }
 
     /**
@@ -270,7 +279,7 @@ class topwap_ctl_tvshopping extends topwap_controller{
 				$v['price']=$activityItem['activity_price'];
 				//$v['activity_tag']=$activityItem['activity_tag'];
 			}
-			$v['image_default_id']=base_storager::modifier($v['image_default_id'], 't');
+			$v['image_default_id']=base_storager::modifier($v['image_default_id'], 'm');
 			$v['url']=url::action('topwap_ctl_item_detail@index',array('item_id'=>$v['item_id']));
 			$v['price'] = "￥".number_format($v['price'], 2, '.', '');
 			//$price_arr = explode('.', $v['price']);

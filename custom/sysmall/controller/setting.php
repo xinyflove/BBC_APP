@@ -19,6 +19,7 @@ class sysmall_ctl_setting extends desktop_controller{
             app::get('sysmall')->setConf('sysmall.setting.goods_check',$_POST['goods_check']);
             app::get('sysmall')->setConf('sysmall.setting.modify_price',$_POST['modify_price']);
             app::get('sysmall')->setConf('sysmall.setting.cate_permission',$_POST['cate_permission']);
+            app::get('sysmall')->setConf('sysmall.setting.check_invoice',$_POST['check_invoice']);
 
 
             /*优选商城主持人账号是否需要审核2018-10-29 jiangyunhan start*/
@@ -29,6 +30,7 @@ class sysmall_ctl_setting extends desktop_controller{
         $pagedata['goods_check'] = app::get('sysmall')->getConf('sysmall.setting.goods_check');
         $pagedata['modify_price'] = app::get('sysmall')->getConf('sysmall.setting.modify_price');
         $pagedata['cate_permission'] = app::get('sysmall')->getConf('sysmall.setting.cate_permission');
+        $pagedata['check_invoice'] = app::get('sysmall')->getConf('sysmall.setting.check_invoice');
         /*优选商城主持人账号是否需要审核2018-10-29 jiangyunhan start*/
         $pagedata['hosts_check'] = app::get('sysmall')->getConf('sysmall.setting.hosts_check');
         /*优选商城主持人账号是否需要审核2018-10-29 jiangyunhan end*/

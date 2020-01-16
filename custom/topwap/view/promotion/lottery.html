@@ -22,11 +22,13 @@
 body{
     /* height: 100%; */
     background: #82dff8;
+    background: url(<{$basic_conf.index_bg_img}>) no-repeat;
+    background-size: 100% 100%;
 }
 .prize_link {
-width: 100%;
-height: 30px;
-/* text-align: right; */
+    width: 100%;
+    height: 30px;
+    /* text-align: right; */
     padding: 5px 10px;
     font-size: 15px;
 
@@ -50,6 +52,8 @@ height: 30px;
     color: #6d2512;
     text-align: center;
     margin-bottom: 0px;
+    /* 转盘与顶部 */
+    height: <{$basic_conf.turnplate_top|default:50}>px;
 }
 .lotter-wrap .title h1 {
     font-size: 30px;
@@ -93,7 +97,8 @@ height: 30px;
 }
 .lotter-wrap .rule-content {
     position: relative;
-    background: #fff8c2;
+    /* background: #fff8c2; */
+    background: rgba(255, 248, 194, 0.5);
     border-radius: 5px;
     /* padding: 35px 30px 20px; */
     width: 85%;
@@ -133,10 +138,11 @@ height: 30px;
 }
 .lotter-wrap .prize-result {
     padding: 0;
-    background: #fff8c2;
+    /* background: #fff8c2; */
+    background: rgba(255,248,194,0.5);
     border-radius: 5px;
     text-align: center;
-    width: 80%;
+    width: 85%;
     margin: 0 auto;
 
 }
@@ -153,7 +159,7 @@ height: 30px;
 }
 .lotter-wrap .chance span {
     display: inline-block;
-    padding: 1px 15px;
+    /* padding: 1px 15px; */
     /* border: 1px solid #ff9140; */
     margin: 0 5px;
 }
@@ -167,14 +173,19 @@ height: 30px;
 
 .banner .turnplate {
     display: block;
-    width: 100%;
+    /* width: 100%; */
+    width: 320px;
+    height: 320px;
     position: relative;
-    background: url(/app/topwap/statics/images/turnplate-bg.png);
+    /* background: url(/app/topwap/statics/images/turnplate-bg.png); */
+    background: url(<{$basic_conf.turnplate_bg_img}>) no-repeat;
     background-size: 100% 100%;
+    margin: auto;
 }
 
 .banner .turnplate canvas.item {
     width: 100%;
+    height: 100%;
 }
 
 .banner .turnplate img.pointer {
@@ -203,16 +214,28 @@ height: 30px;
 					</a>
 			</div>
 		<section class="title">
-			<h1><span class="title-before">幸运大转盘</span><span class="title-after">抽奖活动</span></h1>
-			<p class="dirscript"></p>
+			<!-- <h1><span class="title-before">幸运大转盘</span><span class="title-after">抽奖活动</span></h1>
+			<p class="dirscript"></p> -->
 		</section>
 		<section class="lotter-content clearfix">
-			<div class="prize-rule">
+			<div class="prize-box">
+					<!--转盘-->
+				   <div class="banner">
+					   <div class="turnplate">
+						   <canvas class="item" id="wheelcanvas" width="422px" height="422px">
+						   </canvas>
+						   <{*img src="turnplate-pointer.png" class="pointer" app="topwap"*}>
+						   <img src="<{$basic_conf.turnplate_pointer_img}>" class="pointer">
+					   </div>
+				   </div>
+			</div>
+
+            <div class="prize-rule">
 				<div class="prize-result">
                     <{if !is_null($take_limit) || !is_null($today_take_limit)}>
                     <div class="chance">
                         <{if !is_null($take_limit) && !is_null($today_take_limit)}>
-                        您共还有<span class="take_limit"><{$take_limit}></span>次抽奖机会，今天还有<span class="today_take_limit lotter-limit"><{$today_take_limit}></span>次抽奖机会。
+                        共有<span class="take_limit"><{$take_limit}></span>次抽奖机会，今天还有<span class="today_take_limit lotter-limit"><{$today_take_limit}></span>次机会。
 
                         <{elseif !is_null($take_limit)}>
                         您共还有<span class="take_limit lotter-limit"><{$take_limit}></span>次抽奖机会。
@@ -232,18 +255,7 @@ height: 30px;
 					</p>
 					<{/if}>
 				</div>
-			</div>
-
-			<div class="prize-box">
-					<!--转盘-->
-				   <div class="banner">
-					   <div class="turnplate">
-						   <canvas class="item" id="wheelcanvas" width="422px" height="422px">
-						   </canvas>
-						   <{img src="turnplate-pointer.png" class="pointer" app="topwap"}>
-					   </div>
-				   </div>
-			</div>
+            </div>
 
             <div class="rule-content">
                 <div class="prize_link">
@@ -313,7 +325,9 @@ $(document).ready(function(){
 	readyTurnplate(restaraunts, colors, '<{url action=topwap_ctl_lottery@getPrize}>', {"lottery_id": + lotterId , "last_modified_time": + last_modified_time }, $('.lotter-limit'), region, nextpage, saveUrl);
 });
 window.onload = function(){
-	drawRouletteWheel();
+    // 奖品名称字体颜色
+    var prize_font_color = '<{$basic_conf.prize_font_color}>';
+	drawRouletteWheel(prize_font_color);
     // 兑换抽奖机会
 	$('.action-exchange').on('click', function() {
 		var limit = $.trim($('.pointer').text());
@@ -340,6 +354,8 @@ window.onload = function(){
 	});
 }
 var onMenuShare_collback = function () {
+    // 暂停分享获得抽奖次数
+    return false;
     var lotterId = $('input[name="lotterid"]').val();
     $.post('<{url action=topwap_ctl_lottery@onMenuShareCollback}>', {'lottery_id':lotterId}, function(rs){
         if(rs.error) {

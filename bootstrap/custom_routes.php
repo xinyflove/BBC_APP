@@ -524,6 +524,14 @@ route::group(array('middleware' => ['theme_middleware_preview', 'base_middleware
  });
 /*
 |--------------------------------------------------------------------------
+| 惠民电商平台
+|--------------------------------------------------------------------------
+*/
+route::group(['prefix'=>'hm_active'],function (){
+    route::get('index.html', ['uses' => '']);  #米粒儿线下店网站首页
+});
+/*
+|--------------------------------------------------------------------------
 | 呼叫中心平台
 |--------------------------------------------------------------------------
 */
@@ -555,6 +563,9 @@ route::group(array('prefix' => 'call_center','middleware' => ['topc_middleware_c
         route::get('call_trade_refund_apply.html', ['as' => 'call.trade.refund.apply', 'uses' => 'topc_ctl_callCenter_trade@tradeRefundApply']);
         route::post('call_trade_refund_apply_commit.html', ['as' => 'call.trade.refund.apply.commit', 'uses' => 'topc_ctl_callCenter_trade@commitAftersalesApply']);
         route::post('call_trade_edit_receive_address.html', ['as' => 'call.trade.edit.receive.address', 'uses' => 'topc_ctl_callCenter_placeOrder@editReceiveAddress']);
+
+        route::post('call_trade_track.html', ['as' => 'call.trade.track', 'uses' => 'topc_ctl_callCenter_trade@ajaxGetTrack']);
+
     });
     //测试相关
 //    route::group(array(), function() {
@@ -570,6 +581,13 @@ route::group(array('prefix' => 'call_center','middleware' => ['topc_middleware_c
     route::group(array(), function() {
         route::match(['GET','POST'],'call_item_add.html', ['as' => 'call.item.add', 'uses' => 'topc_ctl_callCenter_item@ajaxItemList']);
         route::match(['GET','POST'],'call_item_checked.html', ['as' => 'call.item.checked', 'uses' => 'topc_ctl_callCenter_item@getCheckedSku']);
+        route::match(['GET','POST'],'call_exchange_shopping_code.html', ['as' => 'call.exchange.shopping.code', 'uses' => 'topc_ctl_callCenter_item@exchangeShoppingCode']);
+        route::match(['GET','POST'],'call_exchange_shopping_code_cancel.html', ['as' => 'call.exchange.shopping.code.cancel', 'uses' => 'topc_ctl_callCenter_item@exchangeShoppingCodeCancel']);
+    });
+    //发票相关
+    route::group(array(), function() {
+        route::match(['POST'],'trade_invoice_create.html', ['as' => 'call.trade.invoice.create', 'uses' => 'topc_ctl_callCenter_trade@ajaxTradeInvoiceCreate']);
+        route::match(['GET'],'trade_invoice.html', ['as' => 'call.trade.invoice', 'uses' => 'topc_ctl_callCenter_trade@ajaxTradeInvoice']);
     });
 });
 
@@ -885,6 +903,11 @@ route::group(array('prefix' => 'wap', 'middleware' => ['theme_middleware_preview
     route::match(['GET','POST'],'live-hot-ajax.html', [ 'as' => 'live.hot.ajax.list', 'uses' => 'topwap_ctl_item_livehot@ajaxGetItemList' ]);
     //首页电视购物
     route::get('mall.html', [ 'uses' => 'topwap_ctl_mall@index' ]);
+	/*add_2019/8/2_by_wanghaichao_start*/
+	
+    route::get('notify.html', [ 'uses' => 'topwap_ctl_mall@notify']);
+	/*add_2019/8/2_by_wanghaichao_end*/
+	
     route::match(['GET','POST'],'mall-goods.html', [ 'as' => 'mall.goods.list', 'uses' => 'topwap_ctl_item_mallgoods@index' ]);
     route::match(['GET','POST'],'mall-goods-ajax.html', [ 'as' => 'mall.goods.ajax.list', 'uses' => 'topwap_ctl_item_mallgoods@ajaxGetItemList' ]);
     /*add_20171018_by_fanglongji_end*/
@@ -915,6 +938,30 @@ route::group(array('prefix' => 'wap', 'middleware' => ['theme_middleware_preview
     });
     route::group(['middleware'=>'statistic_middleware_configLogin'],function (){
         route::get('statistic-house-weforms.html',['as'=>'statistic.order.weforms','uses'=>'statistic_ctl_house@weforms']);
+		/*add_2019/4/18_by_wanghaichao_start*/
+		#实时播出监控
+        route::get('statistic-house-broadcast.html',['as'=>'statistic.order.broadcast','uses'=>'statistic_ctl_house@broadcast']);
+		#销售实时分析
+        route::get('statistic-house-sale.html',['as'=>'statistic.order.sale','uses'=>'statistic_ctl_house@sale']);
+		#坐席实时监控
+        route::get('statistic-house-seat.html',['as'=>'statistic.order.seat','uses'=>'statistic_ctl_house@seat']);
+		#坐席监控接口
+        route::get('statistic-house-ajaxSeat.html',['as'=>'statistic.order.ajaxSeat','uses'=>'statistic_ctl_house@ajaxSeat']);
+		#销售实时监控接口
+        route::get('statistic-house-ajaxSale.html',['as'=>'statistic.order.ajaxSale','uses'=>'statistic_ctl_house@ajaxSale']);
+		#销售趋势接口
+        route::get('statistic-house-ajaxSaleTrend.html',['as'=>'statistic.order.ajaxSaleTrend','uses'=>'statistic_ctl_house@ajaxSaleTrend']);
+
+		/*add_2019/4/18_by_wanghaichao_end*/
+
+		/*add_2019/5/14_by_wanghaichao_start*/
+		route::get('statistic-house-ajaxSeatLineData.html',['as'=>'statistic.order.ajaxSeatLineData','uses'=>'statistic_ctl_house@ajaxSeatLineData']);
+
+		route::get('statistic-house-itemDetail.html',['as'=>'statistic.order.itemDetail','uses'=>'statistic_ctl_house@itemDetail']);
+		route::get('statistic-house-ajaxGetItemDetail.html',['as'=>'statistic.order.ajaxGetItemDetail','uses'=>'statistic_ctl_house@ajaxGetItemDetail']);
+		/*add_2019/5/14_by_wanghaichao_end*/
+
+
         route::get('statistic-house-ajaxGetOrder.html',['as'=>'statistic.order.weforms','uses'=>'statistic_ctl_house@ajaxGetOrder']);   #页面首次获取信息
         route::get('statistic-house-ajaxSearchData.html',['as'=>'statistic.order.weforms','uses'=>'statistic_ctl_house@ajaxSearchData']);   #页面筛选信息
         route::get('statistic-house-ajaxGetOrderTrend.html',['as'=>'statistic.order.ajaxGetOrderTrend','uses'=>'statistic_ctl_house@ajaxGetOrderTrend']);   #统计折线图信息
@@ -922,6 +969,8 @@ route::group(array('prefix' => 'wap', 'middleware' => ['theme_middleware_preview
         route::get('statistic-house-brokenline.html',['as'=>'statistic.order.brokenline','uses'=>'statistic_ctl_house@brokenline']);   #折线图信息
         route::get('statistic-house-logout.html',['as'=>'statistic.order.logout','uses'=>'statistic_ctl_house@logout']);
     });
+	#实时播出监控接口
+    route::get('statistic-house-ajaxBroadcast.html',['as'=>'statistic.order.ajaxBroadcast','uses'=>'statistic_ctl_house@ajaxBroadcast']);
     route::post('statistic-house-dologin.html',['as'=>'statistic.order.dologin','uses'=>'statistic_ctl_house@dologin']);
     route::get('statistic-house-ceshi.html',['as'=>'statistic.order.ceshi','uses'=>'statistic_ctl_house@ceshi']);
     /* add_end_gurundong_2017/11/8 */
@@ -1068,6 +1117,8 @@ route::group(array('prefix' => 'wap', 'middleware' => ['theme_middleware_preview
         // 会员优惠券
         route::get('member-couponList.html', [ 'uses' => 'topwap_ctl_member_coupon@index' ]);
         route::get('member-ajaxcouponList.html', [ 'uses' => 'topwap_ctl_member_coupon@ajaxCouponList' ]);
+        // 文惠券 惠民优惠券
+        route::get('member-huiminCouponList.html', [ 'uses' => 'topwap_ctl_member_coupon@huimin_index' ]);
 
         // 会员红包
         route::get('memeber-hongbaoList.html', [ 'uses' => 'topwap_ctl_member_hongbao@index' ]);
@@ -1183,6 +1234,8 @@ route::group(array('prefix' => 'wap', 'middleware' => ['theme_middleware_preview
 
         route::match(array('GET', 'POST'),'member-lijin-index.html', [ 'uses' => 'topwap_ctl_member_lijin@index' ]);
         route::match(array('GET', 'POST'),'member-lijin-log.html', [ 'uses' => 'topwap_ctl_member_lijin@ajaxLijin' ]);
+        route::match(array('GET', 'POST'),'member-lijin-cardExchange.html', [ 'uses' => 'topwap_ctl_member_lijin@cardExchangeLijin' ]);
+        route::match(array('POST'),'member-lijin-doExchange.html', [ 'uses' => 'topwap_ctl_member_lijin@doExchange' ]);
 
     });
     /*add_2018/03/05_by_fanglongji_start*/
@@ -1204,9 +1257,19 @@ route::group(array('prefix' => 'wap', 'middleware' => ['theme_middleware_preview
     /*add_2018/03/05_by_fanglongji_end*/
     /*add_2017/11/24_by_wanghaichao_start*/
 	route::get('give.html', [ 'uses' => 'topwap_ctl_give@index' ]);  //卡券领取页面
+	route::post('give_send.html', [ 'uses' => 'topwap_ctl_give@sendVcode' ]);  //发送验证码
 	route::match(array('GET', 'POST'),'getVoucher.html', [ 'uses' => 'topwap_ctl_give@getVoucher' ]);  //卡券领取逻辑
 	/*add_2017/11/24_by_wanghaichao_end*/
 
+    route::group(array('prefix' => 'kingdee'), function() {
+        //获取
+        route::match(array('GET', 'POST'),'invoice_info.html', [ 'uses' => 'topwap_ctl_kingdee_invoice@invoiceInfo' ]);    //金蝶开票信息页面
+        route::match(array('GET'),'invoice_success.html', [ 'uses' => 'topwap_ctl_kingdee_invoice@invoiceSuccess' ]);    //金蝶开票成功
+        route::match(array('POST'),'invoice_submit.html', [ 'uses' => 'topwap_ctl_kingdee_invoice@invoiceSubmit' ]);    //金蝶开票
+    });
+
+
+    route::get('gd.html', [ 'as' => 'promotion.item', 'uses' => 'topwap_ctl_gd@index' ]);
 
     // 促销商品列表页
     route::get('promotion-item.html', [ 'as' => 'promotion.item', 'uses' => 'topwap_ctl_promotion@getPromotionItem' ]);
@@ -1296,6 +1359,8 @@ route::group(array('prefix' => 'wap', 'middleware' => ['theme_middleware_preview
     route::post('do-payment.html', [ 'uses' => 'topwap_ctl_paycenter@dopayment' ]);
     // 此路由微信H5支付后get刷新支付请求 特殊处理 其它此路由post请求请看上面的设置
     // route::get('do-payment.html', [ 'uses' => 'topwap_ctl_paycenter@finish' ]);
+    // 小程序支付
+    route::get('mini_do_payment.html',[ 'as'=>'wap.mini.payment', 'uses' => 'topwap_ctl_paycenter@miniDoPayment']);
 
     route::get('finish.html', [ 'uses' => 'topwap_ctl_paycenter@finish' ]);
     //临时测试路由
@@ -1443,7 +1508,12 @@ route::group(array('prefix' => 'wap', 'middleware' => ['theme_middleware_preview
     /*add_2018-11-16_by_zhangshu_start*/
     route::get('maker-item-list.html', ['uses' => 'topwap_ctl_maker_index@ajaxGetSellerItemList']); #创客店铺首页ajax获取商品
     /*add_2018-11-16_by_zhangshu_end*/
-    
+	/*add_2019/8/6_by_wanghaichao_start*/
+	//票务系统创客商品首页
+	route::get('ticket-maker.html', [ 'uses' => 'topwap_ctl_maker_index@tickethome']);  #创客店铺首页
+	route::post('ajax-ticket-getitem.html', [ 'uses' => 'topwap_ctl_maker_index@ajaxGetTicketHomeItem']);  #创客店铺首页
+	/*add_2019/8/6_by_wanghaichao_end*/
+	
 	//所有米粒前台路由
 	route::group(['prefix'=>'rice'],function (){
         /*add_2018-05-15_by_jiangyunhan_start*/
@@ -1473,6 +1543,17 @@ route::group(array('prefix' => 'wap', 'middleware' => ['theme_middleware_preview
         route::get('buyer_detail.html', [ 'uses' => 'topwap_ctl_supplier_buyer@buyerDetail']);  #买手首页
         route::get('buyer_list.html', [ 'uses' => 'topwap_ctl_supplier_buyer@ajaxGetBuyerList']);  #买手列表
         route::get('buyer_laud.html', [ 'uses' => 'topwap_ctl_supplier_buyer@laud']);  #买手点赞
+        /*add_2019-04-03_by_zhangshu_start*/
+        route::get('supplier/comment.html', [ 'uses' => 'topwap_ctl_supplier_comment@comment']);
+        route::post('supplier/comment-save.html', [ 'uses' => 'topwap_ctl_supplier_comment@saveComment']);
+        route::get('supplier/comment-detail.html', [ 'uses' => 'topwap_ctl_supplier_comment@detail']);
+        route::post('supplier/comment-reply-save.html', [ 'uses' => 'topwap_ctl_supplier_comment@saveCommentReply']);
+        route::get('supplier/comment-pageview-update.html', [ 'uses' => 'topwap_ctl_supplier_comment@updatePageView']);
+        route::get('supplier/comment-thumbsup-update.html', [ 'uses' => 'topwap_ctl_supplier_comment@updateThumbsup']);
+        route::get('supplier/comment-get.html', [ 'uses' => 'topwap_ctl_supplier_comment@getCommentData']);
+        route::get('supplier/comment-list.html', [ 'uses' => 'topwap_ctl_supplier_comment@getCommentList']);
+        route::get('supplier/user-comment-count.html', [ 'uses' => 'topwap_ctl_supplier_comment@getUserCommentCount']);
+        /*add_2019-04-03_by_zhangshu_end*/
     });
 	//所有米粒小程序路由
     route::group(['prefix'=>'miniprogram'],function(){
@@ -1549,7 +1630,13 @@ route::group(array('prefix' => 'wap', 'middleware' => ['theme_middleware_preview
 |--------------------------------------------------------------------------
 */
 
-//商家入驻
+route::get('/hm_active/index.html',  [ 'as' => 'topshop.huimin.supplier.login.page', 'uses' => 'topshop_ctl_passport@huiminSupplierLoginPage' ]);
+route::post('/hm_active/index.html',  [ 'as' => 'topshop.huimin.supplier.login', 'uses' => 'topshop_ctl_passport@huiminSupplierLogin' ]);
+
+route::get('/hm_active/supplier/register.html',  [ 'as' => 'topshop.huimin.supplier.register.page', 'uses' => 'topshop_ctl_passport@huiminSupplierRegisterPage' ]);
+route::post('/hm_active/supplier/register.html',  [ 'as' => 'topshop.huimin.supplier.register', 'uses' => 'topshop_ctl_passport@huiminSupplierRegisterCreate' ]);
+
+// 商家入驻
 route::group(array('prefix' => 'shop/register'), function() {
     //注册检查手机号
     route::get('signCheckPhone.html',  [ 'as' => 'topshop.register.signCheckPhonePage',              'uses' => 'topshop_ctl_register@signCheckPhonePage' ]);
@@ -1672,6 +1759,9 @@ route::group(array('prefix' => 'shop','middleware' => 'topshop_middleware_permis
 
         route::post('trade/muumi/updateLogistic.html', [ 'as' => 'topshop.trade.muumi.updateLogistic', 'uses' => 'topshop_ctl_trade_muumi_flow@updateLogistic' ]);
 
+        route::get('trade/toLogisticsPage.html', [ 'as' => 'topshop.trade.to.logistics.page', 'uses' => 'topshop_ctl_trade_flow@pushTradetoLogisticsPage']);
+        route::post('trade/toLogistics.html', [ 'as' => 'topshop.trade.to.logistics', 'uses' => 'topshop_ctl_trade_flow@pushTradetoLogistics']);
+
         route::get('trade/toHub.html', [ 'as' => 'topshop.trade.toHub', 'uses' => 'topshop_ctl_trade_flow@toHub']);
 
         // 王衍生-2018/07/04-end
@@ -1701,6 +1791,9 @@ route::group(array('prefix' => 'shop','middleware' => 'topshop_middleware_permis
     route::get('exportitemsettledetail.html', [ 'as' => 'toputil.exportitemsettledetail', 'uses' => 'topshop_ctl_exporttrade@exportItemSettleDetail' ]);
     route::get('exportsuppliersettle.html', [ 'as' => 'toputil.exportsuppliersettledetail', 'uses' => 'topshop_ctl_exporttrade@exportSupplierSettleDetail' ]);
     route::get('exportbillsettle.html', [ 'as' => 'toputil.exportbillsettledetail', 'uses' => 'topshop_ctl_exporttrade@exportBillSettleDetail' ]);
+
+    route::get('exportaftersales.html', [ 'as' => 'toputil.exportaftersales.view', 'uses' => 'topshop_ctl_exportaftersales@view' ]);
+    route::post('exportaftersales.html', [ 'as' => 'toputil.exportaftersales.do', 'uses' => 'topshop_ctl_exportaftersales@export' ]);
     #导入物流单号
     route::get('import.html', [ 'as' => 'toputil.import.view', 'uses' => 'topshop_ctl_import@view' ]);
     route::post('import.html', [ 'as' => 'toputil.import.do', 'uses' => 'topshop_ctl_import@import' ]);
@@ -1712,6 +1805,11 @@ route::group(array('prefix' => 'shop','middleware' => 'topshop_middleware_permis
     route::post('uploadCsvFile.html',['as'=>'toputil.uploadcsvfile','uses'=>'topshop_ctl_import@uploadCsvFile']);
     route::get('virtual-trade-list.html',['as'=>'topshop.vtrade.list','uses'=>'topshop_ctl_trade_voucher@search']);
     route::post('virtual-trade-list.html',['as'=>'topshop.vtrade.list','uses'=>'topshop_ctl_trade_voucher@search']);
+
+    route::get('exportpushtrade.html', [ 'as' => 'toputil.exporttrade.pushview', 'uses' => 'topshop_ctl_exporttrade@pushview' ]);
+    route::post('exportpushetrade.html', [ 'as' => 'toputil.exporttrade.do', 'uses' => 'topshop_ctl_exporttrade@pushexport' ]);
+    route::get('exporttradeorderpush.html', [ 'as' => 'toputil.exporttrade.vieworder', 'uses' => 'topshop_ctl_exporttrade@pushvieworder' ]);
+    route::post('pushorderexport.html', [ 'as' => 'toputil.exporttrade.vieworder', 'uses' => 'topshop_ctl_exporttrade@pushexportOrder' ]);
     /*add_20170923_by_wudi_end*/
 	/*add_2018/7/6_by_wanghaichao_start*/
 	//集采商城的明细,主持人的明细导出等
@@ -1719,6 +1817,10 @@ route::group(array('prefix' => 'shop','middleware' => 'topshop_middleware_permis
 	route::get('exportbillpulldetail.html', [ 'as' => 'toputil.exportbillpulldetail', 'uses' => 'topshop_ctl_exporttrade@exportBillPullDetail' ]);
 	route::get('exportbillsellerdetail.html', [ 'as' => 'toputil.exportbillsellerdetail', 'uses' => 'topshop_ctl_exporttrade@exportBillSellerDetail' ]);
 	/*add_2018/7/6_by_wanghaichao_end*/
+	/*add_2019/8/8_by_wanghaichao_start*/
+	route::get('exportticketbillsellerdetail.html', [ 'as' => 'toputil.exportticketbillsellerdetail', 'uses' => 'topshop_ctl_exporttrade@exportTicketBillSellerDetail' ]);
+	/*add_2019/8/8_by_wanghaichao_end*/
+	
     // 王衍生-2018/07/03-start
     route::match(array('GET', 'POST'),'/muumi/trade/search.html', [ 'uses' => 'topshop_ctl_trade_muumi_list@search']);
     // 王衍生-2018/07/03-end
@@ -1791,11 +1893,15 @@ route::group(array('prefix' => 'shop','middleware' => 'topshop_middleware_permis
     // 推送按钮链接
     route::post('mall/ajax/push_item.html', ['uses' => 'topshop_ctl_mall_item@pushItem']);
     // 回撤按钮链接
-    route::post('mall/ajax/delete_item.html', ['uses' => 'topshop_ctl_mall_item@deleteItem']);
+    route::post('mall/ajax/withdraw.html', ['uses' => 'topshop_ctl_mall_item@withdraw']);
 	// 拉取按钮链接
     route::post('mall/ajax/pull_item.html', ['uses' => 'topshop_ctl_mall_item@pullItem']);
 	// 更新代售商品按钮链接
     route::post('mall/ajax/update_item.html', ['uses' => 'topshop_ctl_mall_item@updateItem']);
+    /* add_2018/11/27_by_zhangshu_start*/
+    // 频道自选
+    route::get('mall/channel.html', ['as' => 'topshop.mall.channel', 'uses' => 'topshop_ctl_mall_channel@index']);
+    /* add_2018/11/27_by_zhangshu_end*/
 	// 选货商城(广电优选)结束
 
     $menus = config::get('shop');
@@ -1843,6 +1949,7 @@ route::group(array('prefix' => 'shop', 'middleware' => 'topshop_middleware_redir
 route::group(array('prefix' => 'utils'), function() {
     # 系统分类
     route::post('syscat.html', [ 'as' => 'toputil.syscat', 'uses' => 'toputil_ctl_syscat@getChildrenCatList' ]);
+    route::post('hm/syscat.html', [ 'as' => 'toputil.hm.syscat', 'uses' => 'toputil_ctl_syscat@getHmChildrenCatList' ]);
     route::get('vcode.html', [ 'as' => 'toputil.vcode', 'uses' => 'toputil_ctl_vcode@gen_vcode' ]);
     route::post('util/upload_images.html', [ 'as' => 'toputil.uploadImages', 'uses' => 'toputil_ctl_image@uploadImages' ]);
     route::get('util/item_pic.html', [ 'as' => 'toputil.getDefaultItemPic', 'uses' => 'toputil_ctl_image@getItemPic' ]);
@@ -1887,6 +1994,9 @@ route::match(array('GET', 'POST', 'PUT', 'DELETE'), 'wap/lease-wxservicepayapi.h
 route::match(array('GET', 'POST'), 'wxserviceh5pay.html', ['uses' => 'topwap_ctl_wechat@wxserviceh5pay']);
 // 微信非服务商H5支付异步通知
 route::match(array('GET', 'POST'), 'wxh5pay.html', ['uses' => 'topwap_ctl_wechat@wxh5pay']);
+
+// 接收第三方物流消息通知 目前只有城通在用
+route::match(array('GET', 'POST'), 'logistics/api/request.html', ['uses' => 'topapi_ctl_shop_logistics@receive_request']);
 
 //电商大数据与呼叫中心数据面板
 route::group(array('prefix' => 'shop/panel_data'), function() {
@@ -2011,8 +2121,7 @@ route::group(array('prefix' => 'store','middleware' => 'topstore_middleware_perm
 |--------------------------------------------------------------------------
 */
 route::group(array('prefix' => 'maker','middleware' => 'topmaker_middleware_permission'), function() {
-    # 首页(创客中心)
-    route::get('/', ['as' => 'topmaker.home', 'uses' => 'topmaker_ctl_index@index']);
+
 	# 登录页面
 	route::get('passport/signin.html', ['as' => 'topmaker.signin', 'uses' => 'topmaker_ctl_passport@signin', 'middleware' => 'topmaker_middleware_redirectIfAuthenticated']);
 	# 登录验证
@@ -2031,17 +2140,24 @@ route::group(array('prefix' => 'maker','middleware' => 'topmaker_middleware_perm
 	route::get('trustlogin/callbacksignin.html', ['as' => 'topmaker.trustlogin.callbacksignin', 'uses' => 'topmaker_ctl_trustlogin@callbackSignIn']);
 	# 注册页面-微信回调函数
 	route::get('trustlogin/callbacksignup.html', ['as' => 'topmaker.trustlogin.callbacksignup', 'uses' => 'topmaker_ctl_trustlogin@callbackSignUp']);
+	# 获取组织列表数据
+	route::post('passport/getgrouplistdata.html', ['as' => 'topmaker.getgrouplistdata', 'uses' => 'topmaker_ctl_passport@getGroupListData']);
 
     # 佣金明细列表
     route::get('commission/list.html', ['as' => 'topmaker.commission.list', 'uses' => 'topmaker_ctl_commission@listData']);
     route::get('commission/list-ajax.html', ['as' => 'topmaker.commission.list.ajax', 'uses' => 'topmaker_ctl_commission@ajaxGetListData']);
     # 佣金详情
     route::get('commission/detail.html', ['as' => 'topmaker.commission.detail', 'uses' => 'topmaker_ctl_commission@detail']);
-	/*add_2018/11/19_by_wanghaichao_start*/
+
+    /*add_2018/11/19_by_wanghaichao_start*/
 	#分销佣金
-	route::get('commission/statistic.html', ['as' => 'topmaker.commission.statistic', 'uses' => 'topmaker_ctl_commission@statistic']);
+	route::get('statistic.html', ['as' => 'topmaker.commission.statistic', 'uses' => 'topmaker_ctl_commission@statistic']);
+	route::get('cash.html', ['as' => 'topmaker.commission.cash', 'uses' => 'topmaker_ctl_commission@cash']);
+	route::post('getCashList.html', ['as' => 'topmaker.commission.getCashList', 'uses' => 'topmaker_ctl_commission@getCashList']);
+	route::get('analyze.html', ['as' => 'topmaker.commission.analyze', 'uses' => 'topmaker_ctl_commission@analyze']);
+	route::post('ajaxStatics.html', ['as' => 'topmaker.commission.ajaxStatics', 'uses' => 'topmaker_ctl_commission@ajaxStatics']);
 	/*add_2018/11/19_by_wanghaichao_end*/
-	
+
 
 
 
@@ -2049,17 +2165,39 @@ route::group(array('prefix' => 'maker','middleware' => 'topmaker_middleware_perm
     route::get('set-maker.html', [ 'uses' => 'topmaker_ctl_setting@indexMaker']);  #创客店铺设置页面
     route::post('save-setmaker.html', [ 'uses' => 'topmaker_ctl_setting@saveMaker' ]);#创客店铺设置页面保存逻辑
 
-    route::get('maker-home.html', [ 'uses' => 'topmaker_ctl_center@index']);  #创客中心页面
+    route::get('maker-home.html', ['as' => 'topmaker.home', 'uses' => 'topmaker_ctl_index@index']);  #创客中心首页
 
     route::get('maker-goods.html', [ 'uses' => 'topmaker_ctl_goods@index']);  #创客自选商品列表页面
 
     route::get('maker-goods-ajax.html', [ 'uses' => 'topmaker_ctl_goods@indexAjax']);  #创客自选商品列表ajax获取数据
 
 
-    route::post('maker-goods-save.html', [ 'uses' => 'topmaker_ctl_goods@saveGoods']);  #创客自选商品保存逻辑
+
+    route::get('maker-goods-save.html', [ 'uses' => 'topmaker_ctl_goods@saveOrDelGood']);  #创客自选商品保存逻辑
 
 
     route::get('maker-goods-delete.html', [ 'uses' => 'topmaker_ctl_goods@delGoods']);  #创客自选商品删除逻辑
+    route::get('maker-goods-select.html', [ 'uses' => 'topmaker_ctl_goods@goodsSelect']);  #创客自选商品选择页面
     /*add_2018-11-14_by_jiangyunhan_end*/
+	/*add_2019/8/3_by_wanghaichao_start*/
+    route::get('ticket-home.html', ['as' => 'topmaker.ticket.home', 'uses' => 'topmaker_ctl_index@ticketindex']);  #电视塔创客中心首页
+    route::get('ticket-commission-list.html', ['as' => 'topmaker.ticket.commission', 'uses' => 'topmaker_ctl_commission@commissionList']);  #电视塔佣金列表页面
+	route::get('ticket-cash.html', ['as' => 'topmaker.ticket.cash', 'uses' => 'topmaker_ctl_cash@index']);  #电视塔提现页面
+	route::get('ticket-cash-bindbank.html', ['as' => 'topmaker.ticket.bindbank', 'uses' => 'topmaker_ctl_cash@bindbank']);  #电视塔绑定银行卡页面
+	route::post('ticket-cash-bind.html', ['as' => 'topmaker.ticket.bind', 'uses' => 'topmaker_ctl_cash@bind']);  #电视塔绑定银行卡功能
+	route::match(array('GET', 'POST'),'ticket-cash-ajaxlist.html', ['as' => 'topmaker.ticket.ajaxlist', 'uses' => 'topmaker_ctl_cash@ajaxGetCashList']);  #获取提现列表
+	route::match(array('GET', 'POST'),'ticket-commission-ajaxlist.html', ['as' => 'topmaker.ticket.commission.ajaxlist', 'uses' => 'topmaker_ctl_commission@ajaxTicketCommissionList']);  #获取电视塔佣金列表
+	route::get('ticket-cash-addcash.html', ['as' => 'topmaker.ticket.addcash', 'uses' => 'topmaker_ctl_cash@addCash']);  #提现页面
+	route::post('ticket-cash-save.html', ['as' => 'topmaker.ticket.save', 'uses' => 'topmaker_ctl_cash@save']);  #保存提现
+	route::get('passport/ticket-upuserinfo.html', ['as' => 'topmaker.ticket.upuserinfo', 'uses' => 'topmaker_ctl_passport@upuserinfo']);  #修改师傅信息
+	route::post('ticket-userinfo-save.html', ['as' => 'topmaker.ticket.save', 'uses' => 'topmaker_ctl_passport@updateuserinfo']);  #保存师傅信息
+	/*add_2019/8/3_by_wanghaichao_end*/
+	
 });
+
+route::group(array('prefix' => 'maker'), function() {
+	# 推广二维码
+    route::get('share.html', ['as' => 'topmaker.share', 'uses' => 'topmaker_ctl_index@share']);
+});
+
 /*add_2018-11-14_by_xinyufeng_end*/

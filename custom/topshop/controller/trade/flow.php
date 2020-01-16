@@ -182,6 +182,79 @@ class topshop_ctl_trade_flow extends topshop_controller{
     }
 
     /**
+     * 显示推送订单到物流页面
+     *
+     * @return void
+     * @Author 王衍生 50634235@qq.com
+     */
+    public function pushTradetoLogisticsPage()
+    {
+        // $req = kernel::single('syslogistics_tasks_jingdongdeliveryConfirmation');
+        // $req->exec();
+
+        $pagedata['tid'] = input::get('tid');
+        return $this->page('topshop/trade/pushTradetoLogistics.html', $pagedata);
+    }
+
+    /**
+     * 推送订单到物流
+     *
+     * @return void
+     * @Author 王衍生 50634235@qq.com
+     */
+    public function pushTradetoLogistics()
+    {
+        try{
+            $tids = trim(input::get('tids'));
+            if(empty($tids)){
+                throw new LogicException('订单号不能为空！');
+            }
+            $tids = explode("\r\n", $tids);//"<br />"作为分隔切成数组
+            $tids = array_filter($tids);
+            foreach ($tids as $value) {
+                if(!preg_match('/^\d+$/', $value)){
+                    throw new LogicException('订单号必须为数字！');
+                }
+            }
+            if(count($tids) > 10){
+                throw new LogicException('一次最多推送10个订单！');
+            }
+            $tids = implode(',', $tids);
+
+            $tv_shop_id = app::get('sysshop')->getConf('sysshop.tvshopping.shop_id');
+
+            // $where = "t.status = 'WAIT_SELLER_SEND_GOODS' and t.cancel_status in ('NO_APPLY_CANCEL', 'FAILS') and t.is_virtual = 0 and (t.shop_id = {$tv_shop_id} or o.init_shop_id = {$tv_shop_id})  and t.tid in ({$tids}) and o.source_house = 'CALL_CENTER_HOUSE' and t.shipping_type = 'express' and i.operate_type != 'SUPPLIER_DELIVERY'";
+            $where = "t.tid in ({$tids})";
+
+            $trades = kernel::single('syslogistics_logistics')->pushLogisticsTradeDataDispose($where);
+            $error_message = '';
+            foreach ($trades as $value) {
+                try {
+                    $logistics_plug = kernel::single('syslogistics_logistics_logistics', $value['init_shop_id'] ? : $value['shop_id']);
+
+                    $logistics_plug->push_trade($value);
+                } catch (Exception $e) {
+                    $message = $e->getMessage();
+                    logger::info('pushTradetoLogistics:error-' . $message);
+
+                    $value['tids_arr'] = array_keys($value['trade']);
+                    $tid = implode(',', $value['tids_arr']);
+                    $error_message .= "<br>{$tid}" . $message;
+                }
+            }
+
+            if($error_message){
+                throw new LogicException($error_message);
+            }
+
+        }catch (Exception $e)
+        {
+            return $this->splash('error', null, $e->getMessage(), true);
+        }
+
+        return $this->splash('success', null, '推送成功', true);
+    }
+    /**
      * 对指定订单进行推送
      *
      * @return void

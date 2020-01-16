@@ -23,9 +23,14 @@ class topmaker_middleware_permission {
                     'redirect' => url::action('topmaker_ctl_passport@signin'),
                 ));
             }
-
-            //跳转登录页面
-            return redirect::action('topmaker_ctl_passport@signin');
+			$routeAs_arr=explode('.',$routeAs);
+			if(in_array('ticket',$routeAs_arr) || input::get('type')=='ticket'){
+				//跳转登录页面
+				return redirect::action('topmaker_ctl_passport@signin',array('type'=>'ticket'));
+			}else{
+				//跳转登录页面
+				return redirect::action('topmaker_ctl_passport@signin');
+			}
         }
         //如果没有登录 && 不是非登陆权限 结束
         

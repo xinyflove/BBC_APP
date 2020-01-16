@@ -1,0 +1,56 @@
+<!--add_20171026_by_fanglongji_start-->
+<style>
+  .logo_block{display:inline-block;margin-right:10px;}
+  .logo_name{font-size:13px;width: 100%;}
+</style>
+<!--add_20171026_by_fanglongji_start-->
+<form  action="<{url action=topshop_ctl_shop_setting@saveSetting}>" method="post" data-validate-onsuccess="ajaxSubmit" role="form">
+  <div class="box box-default">
+    <!--<div class="box-header with-border">
+      <h3 class="box-title"><a href="<{url subdomain=$shop.subdomain action=topc_ctl_shopcenter@index shop_id=$shop.shop_id}>" target="_blank"><{t}><{$shop.shop_id|shopname}><{/t}></a></h3>
+    </div>-->
+    <div class="box-body">
+      <{if $shop.shop_id}><input type="hidden" name="shop_id" value="<{$shop.shop_id}>"><{/if}>
+      <div class="row">
+          <div class="form-group">
+            <label class="col-sm-4 control-label" style="text-align:right;line-height:40px"><{t}>创客佣金<{/t}>：</label>
+			<div class="col-sm-4">
+            <input type="text" name="maker_rate" class="form-control col-sm-4" value="<{$shop.maker_rate}>" >
+            <span class="help-block"><small>请填写小于100的正数,此处是比例</small></span>
+			</div>
+          </div>
+		  
+      </div>
+    </div>
+    <div class="box-footer" style="text-align:center">
+      <button type="submit" class="btn btn-primary" style="padding:12px 44px;">保存</button>
+    </div>
+  </div>
+</form>
+
+<script>
+  function ajaxSubmit (e) {
+    var form = e.target;
+    e.preventDefault();
+    $.post(form.action, $(form).serialize(), function(rs) {
+      if(rs.error) {
+        $('#messagebox').message(rs.message);
+        return;
+      }
+      if(rs.success) {
+        $('#messagebox').message(rs.message, 'success');
+		window.location.reload();
+      }
+      //if(rs.redirect) {
+     //   setTimeout(function(){location.href=rs.redirect;}, 800);
+    //  }
+    });
+  }
+</script>
+<script>
+  $(document).ready(
+    function() {
+      $(".sidebar .sidebar-menu li a i.glyphicon").eq(1).removeClass("glyphicon-list-alt").addClass("glyphicon-cog");
+    }
+  );
+</script>

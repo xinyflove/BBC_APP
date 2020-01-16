@@ -33,6 +33,36 @@
                 </div>
             </div>
         </div>
+        <{if $is_hm_shop}>
+        <div class="panel-heading">
+            <h4>惠民产品信息</h4>
+            <div>
+        <span class="hm-act-handle pull-left text-light-blue">
+          <span></span>
+        </span>
+                <button type="button" data-toggle="modal" data-target="#hmCatDialog" class="btn btn-default btn-sm">选择惠民商品分类</button>
+                <label  data-toggle="tooltip" data-placement="top" title="每个商品必须选择一个平台的叶子节点分类(选到最后一个分类)"><i class="fa fa-question-circle text-aqua"></i></label>
+                <span class="brandErr"></span>
+                <div id="hmCatDialog" class="modal fade">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">关闭</span></button>
+                                <h4 class="modal-title">选择惠民商品分类</h4>
+                            </div>
+                            <div class="modal-body">
+                                <{input type="hm_category" name="item[hm_cat_id]" is_hm=1 shop_id=$shopId value=$item.hm_cat_id callback="hmCategoryCallback"}>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary" <{if !$item.item_id}>disabled<{/if}>>保存</button>
+                                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <{/if}>
         <div class="panel-body hide">
             <div class="col-md-11">
                 <{if $item.approve_status != "pending"}>
@@ -60,7 +90,7 @@
                             <span class="label label-info">标题广告语</span>
                         </div>
 
-                        <div class="form-group">
+                        <div class="form-group <{$hm_hidden_class}>">
                             <label for="" class="col-sm-2 control-label"><span class="txt-required">*</span> 是否为平台供货：</label>
                             <div class="col-sm-3">
                                 <{if $accounting_type=='thirdparty'}>
@@ -77,7 +107,7 @@
                             </div>
                             <span class="label label-danger">保存后不能修改，请谨慎填写，如有疑问，请联系电商公司确认，以免导致结算有误</span>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group <{$hm_hidden_class}>">
                             <label for="" class="col-sm-2 control-label"></label>
                             <div class="col-sm-10"><span class="help-block">如为店铺自营产品，请为店铺创建供应商账号，供应商名称形式为“店铺名称（自营）”，公司名称请按照实际情况填写</span></div>
                         </div>
@@ -89,8 +119,11 @@
                             <div class="col-sm-3">
                                 <select name="item[source_house]" required class="form-control">
                                     <option value='OTHER_HOUSE' <{if $item.source_house=='OTHER_HOUSE'}>selected<{/if}>>其他</option>
-                                    <option value='ONLINE_HOUSE' <{if $item.source_house=='ONLINE_HOUSE'}>selected<{/if}>>电视购物线上仓</option>
                                     <option value='CALL_CENTER_HOUSE' <{if $item.source_house=='CALL_CENTER_HOUSE'}>selected<{/if}>>蓝莓购物总仓</option>
+                                    <option value='KZZ_HOUSE' <{if $item.source_house=='KZZ_HOUSE'}>selected<{/if}>>酷蜘蛛总仓</option>
+                                    <option value='VIRTUAL_HOUSE' <{if $item.source_house=='VIRTUAL_HOUSE'}>selected<{/if}>>虚拟卡券仓</option>
+                                    <option value='ONLINE_HOUSE' <{if $item.source_house=='ONLINE_HOUSE'}>selected<{/if}>>电视购物线上仓</option>
+                                    <option value='THIRD_HOUSE' <{if $item.source_house=='THIRD_HOUSE'}>selected<{/if}>>第三方仓库</option>
                                 </select>
                             </div>
                             <span class="label label-danger">蓝莓购物以外的商品默认使用其他</span>
@@ -102,9 +135,23 @@
                                     <option value='OTHER_TYPE' <{if $item.operate_type=='OTHER_TYPE'}>selected<{/if}>>其他</option>
                                     <option value='DISTRIBUTE' <{if $item.operate_type=='DISTRIBUTE'}>selected<{/if}>>经销</option>
                                     <option value='SALE_BY_PROXY' <{if $item.operate_type=='SALE_BY_PROXY'}>selected<{/if}>>代销</option>
+                                    <option value='SUPPLIER_DELIVERY' <{if $item.operate_type=='SUPPLIER_DELIVERY'}>selected<{/if}>>供应商发货</option>
                                 </select>
                             </div>
                             <span class="label label-danger">蓝莓购物以外的商品默认使用其他</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="" class="col-sm-2 control-label">是否代销结算：</label>
+                            <div class="col-sm-10">
+                                <input class="consign_settlement" type="radio" name="item[consign_settlement]" value="0" <{if $item.consign_settlement != 1}>checked<{/if}>> 否
+                                <input class="consign_settlement" type="radio" name="item[consign_settlement]" value="1" <{if $item.consign_settlement == 1}>checked<{/if}>> 是
+                            </div>
+                        </div>
+                        <div class="form-group consign_ratio" <{if $item.consign_settlement != 1}>style="display:none;"<{/if}>>
+                            <label for="" class="col-sm-2 control-label">代销比例：</label>
+                            <div class="col-sm-3">
+                                <input type="number" name="item[consign_ratio]" value="<{$item.consign_ratio}>" min="0" max="100" class="form-control" maxlength="50">
+                            </div>
                         </div>
                         <{/if}>
 
@@ -112,7 +159,7 @@
                         <div class="form-group">
                             <label for="" class="col-sm-2 control-label"><span class="txt-required">*</span> 选择供应商：</label>
                             <div class="col-sm-3">
-                                <button type="button" data-toggle="modal" data-target="#supplierDialog" class="btn btn-default btn-sm btn-brand">供应商</button>&nbsp;&nbsp;<span class="supplier-choose-txt" data-id=""><{$item.supplier_name}></span>
+                                <button type="button" data-toggle="modal" data-target="#supplierDialog" class="btn btn-default btn-sm btn-brand" <{if $is_hm_supplier}> disabled<{/if}> >供应商</button>&nbsp;&nbsp;<span class="supplier-choose-txt" data-id=""><{$item.supplier_name}></span>
                                 <{include file="topshop/item/supplier.html"}>
                                 <input type="hidden" name="item[supplier_id]" value="<{$item.supplier_id}>" />
                             </div>
@@ -146,7 +193,8 @@
                         <div class="form-group confirm_type" <{if $is_virtual==1}><{else}>style="display:none" <{/if}>>
 							<label for="" class="col-sm-2 control-label">虚拟商品核销方式：</label>
 							<div class="col-sm-10">
-								<input class="confirm_type-input" type="radio" name="item[confirm_type]" value="0" <{if $item.confirm_type == 0}>checked="checked"<{/if}><{if isset($item.confirm_type)}>disabled<{/if}>> 扫码核销
+								<input class="confirm_type-input" type="radio" name="item[confirm_type]" value="0" <{if $item.confirm_type == 0}>checked="checked"<{/if}><{if isset($item.confirm_type)}>disabled<{/if}>> 限量购核销
+								<input class="confirm_type-input" type="radio" name="item[confirm_type]" value="2" <{if $item.confirm_type == 2}>checked="checked"<{/if}><{if isset($item.confirm_type)}>disabled<{/if}>> 折扣券核销
 								<input class="confirm_type-input" type="radio" name="item[confirm_type]" value="1" <{if $item.confirm_type == 1}>checked="checked"<{/if}><{if isset($item.confirm_type)}>disabled<{/if}>> 支付核销
 							</div>
 						</div>
@@ -267,7 +315,7 @@
 					<!--add_2018/10/9_by_wanghaichao_end-->
 					<hr>
 
-	<div class="form-group">
+	<div class="form-group <{$hm_hidden_class}>">
         <label for="" class="col-sm-2 control-label">是否为跨境商品：</label>
         <div class="col-sm-10">
             <input class="is_cross" type="radio" name="item[is_cross]" value="1" <{if $item.is_cross == 1}>checked<{/if}>> 是
@@ -617,7 +665,7 @@
         </div>
         <div class="td">
             <div class="spec-tree" style="overflow:scroll;">
-                <table cellspacing="0" cellpadding="0" border="0" class="table table-bordered" id="goods-table" style="min-width: 1200px;">
+                <table cellspacing="0" cellpadding="0" border="0" class="table table-bordered" id="goods-table" style="min-width: 1500px;">
                     <thead>
                     <tr class="small">
                         <!-- ------加判断是不是虚拟商品----- -->
@@ -625,20 +673,26 @@
                         <th class="no-virtual" style="width:8%;">重量(千克[kg])</th>
                         <{/if}>
                         <!-- ---------------- -->
-                        <th style="width:10%;">标准售价(元)<span class="text-danger">*</span><i  data-toggle="tooltip" data-placement="top" title="多规格时，标准价要介于SKU最低和价最高价之间；无规格时就是真实售价"><i class="fa fa-question-circle text-aqua"></i></i></th>
-                        <th style="width:10%;">原价(元)</th>
-                        <th style="width:10%;">成本价(元)</th>
+                        <th style="width:8%;">标准售价(元)<span class="text-danger">*</span><i  data-toggle="tooltip" data-placement="top" title="多规格时，标准价要介于SKU最低和价最高价之间；无规格时就是真实售价"><i class="fa fa-question-circle text-aqua"></i></i></th>
+                        <th style="width:8%;">原价(元)</th>
+                        <th style="width:8%;">成本价(元)</th>
                         <!--add_20170927_by_王衍生_start-->
-                        <th style="width:10%;">广电优选供货价</th>
+                        <{if !$is_hm_shop}>
+                        <th style="width:8%;">广电优选供货价</th>
                         <!--add_20170927_by_王衍生_end-->
-                        <th style="width:10%; <{if !$item || ($item.is_bank && $item.only_bank)}>display:none;<{/if}>" class="bank_price" >银行卡价(元)</th>
-                        <th style="width:8%;">库存(件)<span class="text-danger">*</span></th>
-                        <th style="width:13%;">商品货号</th>
-                        <th style="width:13%;">商家条形码</th>
+                        <th style="width:6%;">创客佣金比例</th>
+                        <th style="width:6%;">协会佣金比例</th>
+                        <th style="width:8%; <{if !$item || ($item.is_bank && $item.only_bank)}>display:none;<{/if}>" class="bank_price" >银行卡价(元)</th>
+                        <{/if}>
+                        <th style="width:7%;">库存(件)<span class="text-danger">*</span></th>
+                        <th style="width:10%;">商品货号</th>
+                        <th style="width:10%;">商家条形码</th>
                         <!--add_20170927_by_fanglongji_start-->
                         <{if $is_lm}>
-                        <th style="width:8%;">物料编码</th>
-                        <th style="width:8%;">保质期（天）</th>
+                        <th style="width:10%;">物料编码</th>
+                        <th style="width:5%;">保质期（天）</th>
+                        <th style="width:8%;">内码</th>
+                        <th style="width:8%;">内码数量</th>
                         <{/if}>
                         <th style="width:8%;">服务费率（%）</th>
                         <!--add_20170927_by_fanglongji_end-->
@@ -673,14 +727,24 @@
                             <input type="number" name="item[cost_price]" value="<{$item.cost_price}>" class="form-control cost_price" maxlength="13" min="0" data-validate-numeric="true">
                         </td>
                         <!--add_20170927_by_王衍生_start-->
+                        <{if !$is_hm_shop}>
                         <td>
                             <input type="number" name="item[supply_price]" value="<{$item.supply_price}>" maxlength="30" class="form-control supply_price">
                         </td>
                         <!--add_20170927_by_王衍生_end-->
+                        <td>
+                            <input type="number" name="item[maker_ratio]" value="<{$item.maker_ratio}>" min="0" max="100" class="form-control maker_ratio"><span class="small">比例值为0-100</span>
+                        </td>
+						
+                        <td>
+                            <input type="number" name="item[group_ratio]" value="<{$item.group_ratio}>" min="0" max="100" class="form-control group_ratio"><span class="small">比例值为0-100</span>
+                        </td>
+					
                         <!--add_2017/12/12_by_wanghaichao_start-->
                         <td class="bank_price" <{if !$item || ($item.is_bank && $item.only_bank)}>style="display:none;"<{/if}>>
                         <input type="number" name="item[bank_price]" value="<{$item.bank_price}>" class="form-control bank_price" maxlength="13" min="0" data-validate-numeric="true">
                         </td>
+                        <{/if}>
                         <!--add_2017/12/12_by_wanghaichao_end-->
                         <td nowrap>
                             <div class="form-group has-feedback small" style="margin: 0;">
@@ -703,6 +767,12 @@
                         </td>
                         <td>
                             <input type="text"  name="item[shelf_life]" value="<{$item.shelf_life}>" maxlength="30" class="form-control shelf_life">
+                        </td>
+                        <td>
+                            <input type="text"  name="item[inner_code]" value="<{$item.inner_code}>" maxlength="30" class="form-control inner_code">
+                        </td>
+                        <td>
+                            <input type="number"  name="item[inner_num]" value="<{$item.inner_num|default:'0'}>" required min="0" class="form-control inner_num">
                         </td>
                         <{/if}>
                         <td>
@@ -761,6 +831,12 @@
                 <input type="number" value="{supply_price}" class="form-control supply_price" name="{idx}[supply_price]">
                 </td>
                 <!--add_20170927_by_王衍生_end-->
+                <td>
+                <input type="number" value="{maker_ratio}" class="form-control maker_ratio" name="{idx}[maker_ratio]">
+                </td>
+                <td>
+                <input type="number" value="{group_ratio}" class="form-control group_ratio" name="{idx}[group_ratio]">
+                </td>
                 <!--add_2017/12/11_by_wanghaichao_start-->
               <td class="bank_price" <{if !$item || ($item.is_bank && $item.only_bank)}>style="display:none;"<{/if}>>
                 <input type="number" value="{bank_price}" class="form-control bank_price" name="{idx}[bank_price]">
@@ -785,6 +861,12 @@
               <td>
                 <input type="text"  value="{shelf_life}" class="form-control shelf_life" name="{idx}[shelf_life]">
               </td>
+              <td>
+                <input type="text"  value="{inner_code}" class="form-control inner_code" name="{idx}[inner_code]">
+              </td>
+              <td>
+                <input type="number"  value="{inner_num}" class="form-control inner_num" required min="0" name="{idx}[inner_num]">
+              </td>
               <{/if}>
               <td>
                 <input type="text" readonly="readonly" value="{service_rates}" class="form-control service_rates" name="{idx}[service_rates]">
@@ -804,6 +886,8 @@
                     <!--add_2018/6/11_by_王衍生_start-->
                     <div class="col-sm-2" style="width:10%; padding: 0 5px 5px 0;"><input type="number" name="spec_supply_price" class="form-control" placeholder="广电优选供货价"></div>
                     <!--add_2018/6/11_by_王衍生_start-->
+                    <div class="col-sm-2" style="width:10%; padding: 0 5px 5px 0;"><input type="number" name="spec_maker_ratio" class="form-control" placeholder="创客佣金比例"></div>
+                    <div class="col-sm-2" style="width:10%; padding: 0 5px 5px 0;"><input type="number" name="spec_group_ratio" class="form-control" placeholder="协会佣金比例"></div>
                     <!--add_2017/12/11_by_wanghaichao_start-->
                     <div class="col-sm-2 bank_price" style="width:10%; padding: 0 5px 5px 0;<{if !$item || ($item.is_bank && $item.only_bank)}>display:none;<{/if}>"><input type="number" name="spec_bank_price" class="form-control" placeholder="银行卡价"></div>
                     <!--add_2017/12/11_by_wanghaichao_end-->
@@ -817,6 +901,8 @@
                     <{if $is_lm}>
                     <div class="col-sm-2" style="width:10%; padding: 0 5px 10px 0;"><input type="text"  name="spec_material_code" class="form-control" placeholder="物料编码"></div>
                     <div class="col-sm-2" style="width:10%; padding: 0 5px 10px 0;"><input type="text"  name="spec_shelf_life" class="form-control" placeholder="保质期"></div>
+                    <div class="col-sm-2" style="width:10%; padding: 0 5px 10px 0;"><input type="text"  name="spec_inner_code" class="form-control" placeholder="内码"></div>
+                    <div class="col-sm-2" style="width:10%; padding: 0 5px 10px 0;"><input type="number"  name="spec_inner_num" class="form-control" placeholder="内码数量"></div>
                     <{/if}>
                     <div class="col-sm-2" style="width:10%; padding: 0 5px 10px 0;"><input type="text" readonly="readonly" name="spec_service_rates" class="form-control" placeholder="服务费率"></div>
                     <!--add_20170927_by_fanglongji_end-->
@@ -828,20 +914,24 @@
                     <thead>
                     <tr>
                         <th style="width: 8%;">规格值</th>
-                        <th style="width:10%;">销售价 <span class="text-danger">*</span></th>
-                        <th style="width:10%;">原价</th>
-                        <th style="width:10%;">成本价</th>
-                        <th style="width:10%;">广电优选供货价</th>
+                        <th style="width:6%;">销售价 <span class="text-danger">*</span></th>
+                        <th style="width:6%;">原价</th>
+                        <th style="width:6%;">成本价</th>
+                        <th style="width:6%;">广电优选供货价</th>
+                        <th style="width:8%;">创客佣金比例</th>
+                        <th style="width:8%;">协会佣金比例</th>
                         <!--add_2017/12/11_by_wanghaichao_start-->
-                        <th class="bank_price" style="width:10%;<{if !$item || ($item.is_bank && $item.only_bank)}>display:none;<{/if}>">银行卡价</th>
+                        <th class="bank_price" style="width:6%;<{if !$item || ($item.is_bank && $item.only_bank)}>display:none;<{/if}>">银行卡价</th>
                         <!--add_2017/12/11_by_wanghaichao_end-->
-                        <th style="width:8%;">库存 <span class="text-danger">*</span></th>
+                        <th style="width:6%;">库存 <span class="text-danger">*</span></th>
                         <th style="width:13%;">商品货号</th>
                         <th style="width:13%;">条形码</th>
                         <!--add_20170927_by_fanglongji_start-->
                         <{if $is_lm}>
                         <th style="width:8%;">物料编码</th>
-                        <th style="width:8%;">保质期（天）</th>
+                        <th style="width:6%;">保质期（天）</th>
+                        <th style="width:10%;">内码</th>
+                        <th style="width:8%;">内码数量</th>
                         <{/if}>
                         <th style="width:8%;">服务费率（%）</th>
                         <!--add_20170927_by_fanglongji_end-->
@@ -920,7 +1010,11 @@
                         <{/foreach}>
                     </select>
                 </div>
-                <span class="label label-info">还没有店铺分类？点击</span> <a href="<{url action=topshop_ctl_item_cat@index}>" target="_blank"> 添加店铺分类</a>
+                <{if $is_hm_supplier}>
+                    <span class="label label-info ">还没有店铺分类？联系平台管理员添加</span>
+                <{else}>
+                    <span class="label label-info">还没有店铺分类？点击</span> <a href="<{url action=topshop_ctl_item_cat@index}>" target="_blank"> 添加店铺分类</a>
+                <{/if}>
             </div>
         </div>
     </div>
@@ -945,7 +1039,11 @@
                         <!--<{/foreach}>-->
                     <!--</select>-->
                 </div>
-                <span class="label label-info">还没有运费模板？点击</span> <a href="<{url action=topshop_ctl_shop_dlytmpl@index}>" target="_blank"> 添加运费模板</a>
+                <{if $is_hm_supplier}>
+                    <span class="label label-info ">还没有运费模板？联系平台管理员添加</span>
+                <{else}>
+                    <span class="label label-info ">还没有运费模板？点击</span> <a href="<{url action=topshop_ctl_shop_dlytmpl@index}>" target="_blank"> 添加运费模板</a>
+                <{/if}>
             </div>
         </div>
     </div>
@@ -959,7 +1057,7 @@
         </div>
         <div class="panel-body">
             <div class="form-group">
-                <label for="" class="col-sm-2 control-label"><span class="txt-required">*</span> 收入类型：</label>
+                <label for="" class="col-sm-2 control-label"><span class="txt-required">*</span> 一般纳税人收入类型：</label>
                 <div class="col-sm-4">
                     <select name="item[incoming_type]" required class="form-control" <{if $item.incoming_type}>disabled<{/if}>>
                     <option value="" ><{t}>请选择<{/t}></option>
@@ -970,6 +1068,26 @@
                 </div>
                 <span class="label label-danger">保存后不能修改，请谨慎填写，如有疑问，请联系电商公司确认，以免导致结算有误</span>
             </div>
+            <{if $is_lm}>
+            <div class="form-group">
+                <label for="" class="col-sm-2 control-label"><span class="txt-required">*</span> 金蝶推送税率：</label>
+                <div class="col-sm-4">
+                    <select name="item[kingdee_incoming_type]" required class="form-control" <{if $item.kingdee_incoming_type}>disabled<{/if}>>
+                    <option value="" ><{t}>请选择<{/t}></option>
+                    <{foreach from=$taxrate item=rate key=key}>
+                    <option value="<{$key}>" <{if $item.kingdee_incoming_type==$key}>selected<{/if}>><{$rate.src}></option>
+                    <{/foreach}>
+                    </select>
+                </div>
+                <span class="label label-danger">保存后不能修改，请谨慎填写</span>
+            </div>
+            <div class="form-group">
+                <label for="" class="col-sm-3 control-label"><span class="txt-required">*</span> 税收分组编码：</label>
+                <div class="form-inline col-sm-2 right45">
+                    <input type="text" name="item[tax_block_code]" value="<{$item.tax_block_code}>" required class="form-control" >
+                </div>
+            </div>
+            <{/if}>
         </div>
     </div>
     </div>
@@ -1032,6 +1150,10 @@
         $('#catDialog').find('.btn-primary').prop('disabled', option.hasChild ? true : false);
     }
 
+    function hmCategoryCallback (instance, option) {
+        $('#hmCatDialog').find('.btn-primary').prop('disabled', option.hasChild ? true : false);
+    }
+
     $('.rich-editor').summernote({
         height: 400,
         tabsize: 2,
@@ -1072,9 +1194,25 @@
         });
     }
 
+    $('#hmCatDialog').find('.btn-primary').on('click', function(e) {
+        var dialog = $('#hmCatDialog .hm-cat-select').data('_catselect_');
+        var hmCatId = dialog.selectedParam.val();
+
+        if(hmCatId) {
+            $('.hm-act-handle span').text(dialog.selectedList.text());
+            $('.hm-act-handle input').val(hmCatId);
+        }
+        if(dialog.selectedParam.val() == '') {
+            return $('#messagebox').message('请先选择一个类目');
+        }
+        $('.hm-act-handle span').text(dialog.selectedList.text());
+        $('.hm-act-handle input').val(hmCatId);
+        $('#hmCatDialog').modal('hide');
+    }).trigger('click');
+
     var catId = 0;
     $('#catDialog').find('.btn-primary').on('click', function(e) {
-        var dialog = $('.cat-select').data('_catselect_');
+        var dialog = $('#catDialog .cat-select').data('_catselect_');
         catId = dialog.selectedParam.val();
         if(catId) {
             $('.act-handle span').text(dialog.selectedList.text());
@@ -1420,6 +1558,8 @@
                 var specBarcode = $.trim($('input[name="spec_barcode"]').val());
                 /*add_20170927_by_fanglongji_start*/
                 var specShelfLife = $.trim($('input[name="spec_shelf_life"]').val());
+                var specInnerCode = $.trim($('input[name="spec_inner_code"]').val());
+                var specInnerNum = $.trim($('input[name="spec_inner_num"]').val());
                 var specServiceRates = $.trim($('input[name="spec_service_rates"]').val());
                 /*add_20170927_by_fanglongji_end*/
                 /*add_2017/12/11_by_wanghaichao_start*/
@@ -1429,6 +1569,8 @@
                 var specMaterialCode = $.trim($('input[name="spec_material_code"]').val());
                 var specSupplyPrice = $.trim($('input[name="spec_supply_price"]').val());
                 /*add_2017/12/11_by_王衍生_end*/
+                var specMakerRatio = $.trim($('input[name="spec_maker_ratio"]').val());
+                var specGroupRatio = $.trim($('input[name="spec_group_ratio"]').val());
                 if(specPrice != ''){
                     $('.goods-spec').find('input[name$="[price]"]').each(function(){
                         $(this).val(specPrice);
@@ -1479,6 +1621,20 @@
                     });
                     $('input[name="spec_shelf_life"]').val('');
                 }
+                if(specInnerCode != ''){
+                    $('.goods-spec').find('input[name$="[inner_code]"]').each(function(){
+                        $(this).val(specInnerCode);
+                        $(this).trigger('change');
+                    });
+                    $('input[name="spec_inner_code"]').val('');
+                }
+                if(specInnerNum != ''){
+                    $('.goods-spec').find('input[name$="[inner_num]"]').each(function(){
+                        $(this).val(specInnerNum);
+                        $(this).trigger('change');
+                    });
+                    $('input[name="spec_inner_num"]').val('');
+                }
                 if(specServiceRates != ''){
                     $('.goods-spec').find('input[name$="[service_rates]"]').each(function(){
                         $(this).val(specServiceRates);
@@ -1512,6 +1668,21 @@
                     $('input[name="spec_supply_price"]').val('');
                 }
                 /*add_2017/12/11_by_王衍生_end*/
+                if(specMakerRatio!= ''){
+                    $('.goods-spec').find('input[name$="[maker_ratio]"]').each(function(){
+                        $(this).val(specMakerRatio);
+                        $(this).trigger('change');
+                    });
+                    $('input[name="spec_maker_ratio"]').val('');
+                }
+				
+                if(specGroupRatio!= ''){
+                    $('.goods-spec').find('input[name$="[group_ratio]"]').each(function(){
+                        $(this).val(specGroupRatio);
+                        $(this).trigger('change');
+                    });
+                    $('input[name="spec_group_ratio"]').val('');
+                }
                 setTotalStore();
             });
             $(document.body).on('click', '.save-action', function(e) {
@@ -1762,7 +1933,7 @@
             table.appendTo(this.specIMG.eq(i).empty());
             html = null;
         },
-        props: ['sku_id', 'price','mkt_price','cost_price','supply_price','bank_price','store', 'bn', 'barcode', 'freez', 'specMaterialCode', 'shelf_life', 'material_code'],
+        props: ['sku_id', 'price','mkt_price','cost_price','supply_price','maker_ratio','group_ratio','bank_price','store', 'bn', 'barcode', 'freez', 'specMaterialCode', 'shelf_life', 'material_code','inner_code','inner_num'],
         processProducts: function(arr, index, length, id, name, value, pvid) {
             var self = this, specid = {}, spec_name = [arr[index].name], specvalue = {}, specpvid={}, sname, spec_id = arr[index].id, uid;
             if(name) {
@@ -2347,5 +2518,15 @@
 		$(this).removeData('bs.modal');
 	});
     /*add_2018/10/9_by_wanghaichao_end*/
-
+    $('.consign_settlement').click(function() {
+        var is_show = $(this).val();
+        if(is_show == 1)
+        {
+            $('.consign_ratio').show();
+        }
+        else
+        {
+            $('.consign_ratio').hide();
+        }
+    })
 </script>

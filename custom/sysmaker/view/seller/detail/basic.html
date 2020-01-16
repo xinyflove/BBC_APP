@@ -11,7 +11,19 @@
                 <td><{$data.mobile}></td>
             </tr>
             <tr>
-                <th><label><{t}>店铺名称：<{/t}></label></th>
+                <th><label><{t}>身份证号：<{/t}></label></th>
+                <td><{$data.id_card_no}></td>
+                <th><label><{t}>户口所在地：<{/t}></label></th>
+                <td><{$data.registered}></td>
+            </tr>
+            <tr>
+                <th><label><{t}>推荐人：<{/t}></label></th>
+                <td><{$data.pname|escape:'html'}></td>
+                <th><label><{t}>推荐人ID：<{/t}></label></th>
+                <td><{$data.pid}></td>
+            </tr>
+            <tr>
+                <th><label><{t}>创客店铺名称：<{/t}></label></th>
                 <td><{$data.shop_name}></td>
             </tr>
         </table>

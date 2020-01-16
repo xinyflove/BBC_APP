@@ -32,7 +32,9 @@
                             <div class="floridian">
                                 <{if $iteminfo.shop_id == $login_shop.shop_id}>
                                 <img src="/app/topshop/mall/statics/images/details/shop.png" alt="">
-                                <{elseif $iteminfo.sell_out <= 0}>
+                                <{elseif $iteminfo.status != 'onsale'}>
+                                <img src="/app/topshop/mall/statics/images/details/instock.png" alt="">
+                                <{elseif $iteminfo.real_store <= 0}>
                                 <img src="/app/topshop/mall/statics/images/details/floridian.png" alt="">
                                 <{elseif in_array($iteminfo.item_id, $initItemsId)}>
                                 <img src="/app/topshop/mall/statics/images/details/opt.png" alt="">
@@ -42,13 +44,16 @@
 
                         <{if $iteminfo.shop_id == $login_shop.shop_id}>
                         <div class="oversale"><i></i>本店铺商品</div>
-                        <{elseif $iteminfo.sell_out <= 0}>
+                        <{elseif $iteminfo.status != 'onsale'}>
+                        <div class="oversale"><i></i>已下架</div>
+                        <{elseif $iteminfo.real_store <= 0}>
                         <div class="oversale"><i></i>已售罄</div>
                         <{elseif in_array($iteminfo.item_id, $initItemsId)}>
                         <div class="oversale"><i></i>已优选</div>
                         <{else}>
                         <div class="putaway" data-id="<{$iteminfo.item_id}>">
-                            <a href="#"><i></i>优选上架</a>
+                            <a href="#"><i></i>优选上架
+                            </a>
                         </div>
                         <{/if}>
 

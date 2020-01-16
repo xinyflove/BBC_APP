@@ -29,13 +29,18 @@ class sysmall_data_list {
         $filter = $params['filter'];
 
         $where = $this->__filterWhere($filter);
-        
+        if($filter['shop_id'])
+        {
+            $where .= " AND item.shop_id = '{$filter['shop_id']}'";
+        }
+
         $sql = 'SELECT COUNT(m_item.item_id) AS count';
         $sql .= ' FROM sysmall_item m_item';
         $sql .= ' LEFT JOIN sysitem_item AS item ON item.item_id = m_item.item_id';
-        $sql .= ' WHERE m_item.status = "onsale" AND m_item.deleted = "0"';
+        $sql .= ' WHERE m_item.deleted = "0"';
+        if(!empty($filter['status'])) $sql .= ' AND m_item.status = "'.$filter['status'].'"';
         $sql .= $where;
-        
+
         $db = app::get('base')->database();
         $count = $db->fetchColumn($sql);
 
@@ -63,17 +68,28 @@ class sysmall_data_list {
 
         $where = $this->__filterWhere($filter);
 
-        $baseFields = ' SELECT CASE WHEN item.init_item_id > 0 THEN item.init_item_id ELSE item.item_id END item_id';
-        $fields = $baseFields . ', item.title, item.image_default_id, item.price, item.supply_price,item.created_time,item.shop_id,m_item.modified_time, count.paid_quantity, shop.shop_name, ROUND((item.price-item.supply_price)/item.price*100,1) AS profit, (store.store-store.freez) AS sell_out';
+        $baseFields = ' SELECT CASE WHEN item.init_item_id > 0 THEN item.init_item_id ELSE item.item_id END item_id, count.paid_quantity,m_item.modified_time';
+        if(empty($params['fields'])) $params['fields'] = 'item.title, item.image_default_id, item.price, item.supply_price,item.created_time,item.shop_id, shop.shop_name, ROUND((item.price-item.supply_price)/item.price*100,1) AS profit, (store.store-store.freez) AS real_store';
         $sql = 'SELECT sub.*, sum(sub.paid_quantity) AS all_paid_quantity';
+        $fields = $baseFields . ', ' . $params['fields'];
         $sql .= ' FROM ( ' . $fields;
         $sql .= ' FROM sysitem_item item';
         $sql .= ' LEFT JOIN sysitem_item_count AS count ON count.item_id = item.item_id';
         $sql .= ' LEFT JOIN sysshop_shop AS shop ON shop.shop_id = item.shop_id';
         $sql .= ' LEFT JOIN sysitem_item_store AS store ON store.item_id = item.item_id';
         $sql .= ' LEFT JOIN sysmall_item AS m_item ON m_item.item_id = item.item_id';
-        $sql .= ' WHERE (item.item_id IN ( SELECT item_id FROM sysmall_item WHERE status = "onsale" AND deleted = "0" )';
-        $sql .= ' OR item.init_item_id IN ( SELECT item_id FROM sysmall_item WHERE status = "onsale" AND deleted = "0" ))';
+        $_sub_sql = empty($filter['status']) ? '' : ' AND status = "'.$filter['status'].'"';
+        if(empty($filter['shop_id']))
+        {
+            $sql .= ' WHERE (item.item_id IN ( SELECT item_id FROM sysmall_item WHERE deleted = "0" '.$_sub_sql.' )';
+            $sql .= ' OR item.init_item_id IN ( SELECT item_id FROM sysmall_item WHERE deleted = "0" '.$_sub_sql.' ))';
+        }
+        else
+        {
+            $sql .= ' WHERE (item.item_id IN ( SELECT item_id FROM sysmall_item WHERE deleted = "0" AND shop_id = "'.$filter['shop_id'].'" '.$_sub_sql.' )';
+            $sql .= ' OR item.init_item_id IN ( SELECT item_id FROM sysmall_item WHERE deleted = "0" AND shop_id = "'.$filter['shop_id'].'" '.$_sub_sql.' ))';
+        }
+
         $sql .= $where;
         $sql .= ' ORDER BY item.item_id ASC';
         $sql .= ' ) AS sub';
@@ -194,6 +210,21 @@ class sysmall_data_list {
         {
             $qb->andWhere("item.title LIKE '%{$filter['title']}%'");
         }
+        if($filter['supply_shop_name'])
+        {
+            $shopMdl = app::get('sysshop')->model('shop');
+            $shopList = $shopMdl->getList('shop_id', array('shop_name|has'=>$filter['supply_shop_name']));
+            if($shopList)
+            {
+                $shopIds = implode(',', array_column($shopList, 'shop_id'));
+                $qb->andWhere("item.init_shop_id IN ({$shopIds})");
+            }
+            else
+            {
+                $qb->andWhere("item.init_shop_id = 0");
+            }
+        }
+
         $res = $qb->execute()->fetch();
 
         return $res['count'];
@@ -244,6 +275,20 @@ class sysmall_data_list {
         {
             $qb->andWhere("item.title LIKE '%{$filter['title']}%'");
         }
+        if($filter['supply_shop_name'])
+        {
+            $shopMdl = app::get('sysshop')->model('shop');
+            $shopList = $shopMdl->getList('shop_id', array('shop_name|has'=>$filter['supply_shop_name']));
+            if($shopList)
+            {
+                $shopIds = implode(',', array_column($shopList, 'shop_id'));
+                $qb->andWhere("item.init_shop_id IN ({$shopIds})");
+            }
+            else
+            {
+                $qb->andWhere("item.init_shop_id = 0");
+            }
+        }
         $list = $qb->setFirstResult($offset)
             ->setMaxResults($limit)
             ->orderBy($orderByArr[0], $orderByArr[1])->execute()->fetchAll();
@@ -254,10 +299,7 @@ class sysmall_data_list {
     private function __filterWhere($filter)
     {
         $where = '';
-        if($filter['shop_id'])
-        {
-            $where .= " AND item.shop_id = '{$filter['shop_id']}'";
-        }
+
         if(isset($filter['title']))
         {
             $where .= " AND item.title LIKE '%{$filter['title']}%'";
@@ -270,7 +312,16 @@ class sysmall_data_list {
         {
             $where .= " AND item.brand_id = '{$filter['brand_id']}'";
         }
-
+        if(isset($filter['sale_type']))
+        {
+            $where .= " AND m_item.sale_type = '{$filter['sale_type']}'";
+        }
+		if(isset($filter['shop_id'])){
+            $where .= " AND m_item.shop_id = '{$filter['shop_id']}'";
+		}
+		if(isset($filter['item_id'])){
+            $where .= " AND m_item.item_id IN ({$filter['item_id']})";
+		}
         return $where;
     }
 }

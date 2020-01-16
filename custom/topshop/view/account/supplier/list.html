@@ -77,10 +77,17 @@
             已拒绝
             <{elseif $item.is_audit=='PENDING'}>
             未审核
+            <{elseif $item.is_audit=='FIRST_TRIAL'}>
+            初审通过
             <{/if}>
           </td>
 		  <td>
 			<a href="<{url action=topshop_ctl_account_supplier@edit supplier_id=$item.supplier_id}>">编辑</a>&nbsp;
+            <{if $is_hm_shop}>
+              <{if !$item.is_synced}>
+              <a href="javascript:void(0)" class="sync_to_hm" data-supplier_id="<{$item.supplier_id}>">同步至惠民</a>&nbsp;
+              <{/if}>
+            <{/if}>
             <{if $item.is_audit == 'PASS'}>
 			<{if $item.agent_sign ==1 && $shopInfo.offline == "on"}>
 			<a href="<{url action=topshop_ctl_account_supplier@agentShopList supplier_id=$item.supplier_id}>">线下店管理</a>&nbsp;
@@ -148,6 +155,27 @@
       $('#supplier_name').val('');
       $('#company_name').val('');
       $('#mobile').val('');
+  });
+  //同步商户信息
+  $('.sync_to_hm').click(function() {
+      var supplier_id = $(this).data('supplier_id');
+      $.ajax({
+          url : "<{url action=topshop_ctl_account_supplier@singleSyncToHm}>",
+          dataType: 'json',
+          data:{supplier_id :supplier_id},
+          type:'post',
+          success:function(res) {
+              if(res.success) {
+                  $('#messagebox').message(res.message, 'success');
+                  location.reload();
+              } else {
+                  $('#messagebox').message(res.message);
+              }
+          },
+          error:function() {
+              $('#messagebox').message('失败');
+          }
+      })
   });
 
   $('#modifyAccountShopPwd').on('show.bs.modal', function (event) {

@@ -333,7 +333,8 @@
             <{include file="topwap/cart/checkout/shop_cart.html"}>
           </section>
           <!--modified_201711111122_by_wudi_start:hide invoice action-->
-          <section class="shopex-input-group integral-use" style="height:0;" >
+          <{if $is_lm}>
+          <section class="shopex-input-group integral-use">
             <section class="section-white">
               <ul class="function-list">
                 <li class="shopex-table-view-cell">
@@ -349,6 +350,7 @@
               </ul>
             </section>
           </section>
+          <{/if}>
           <{if $if_open_point_deduction}>
           <section class="shopex-input-group" style="margin-bottom: 0;">
             <div class="shopex-input-row shopex-checkbox bbc-checkbox">
@@ -391,7 +393,12 @@
               <mark id="op_all_payment"><{$cartInfo.totalCart.totalAfterDiscount|cur}></mark>
             </div>
           </div>
+		  <{if $is_design}>
           <button type="submit" class="action-bar-op-btn">结算</button>
+		  <{else}>
+          <button type="submit" class="action-bar-op-btn" style="background-color:#3e3e3e">结算</button>
+          <!--<p class="action-bar-op-btn btnjs">结算</p>-->
+		  <{/if}>
         </div>
       </section>
     </form>
@@ -414,14 +421,14 @@
           </label>
           <input type="radio" name="pay_type" id="for_payment_online" class="op-choose-payment" value="online" checked>
         </div>
-        <!--{*<div class="shopex-input-row shopex-radio bbc-radio <{if $payType.pay_type == 'offline'}>active<{/if}>">-->
-          <!--<{if $isSelfShop && $ifOpenOffline}>-->
-          <!--<label for="for_payment_offline">-->
-            <!--货到付款-->
-          <!--</label>-->
-          <!--<input type="radio" name="pay_type" id="for_payment_offline" class="op-choose-payment" value="offline" <{if $payType.pay_type == 'offline'}>checked<{/if}>>-->
-          <!--<{/if}>-->
-        <!--</div>*}-->
+        <div class="shopex-input-row shopex-radio bbc-radio <{if $payType.pay_type == 'offline'}>active<{/if}>">
+          <{if $isSelfShop && $ifOpenOffline}>
+          <label for="for_payment_offline">
+            货到付款
+          </label>
+          <input type="radio" name="pay_type" id="for_payment_offline" class="op-choose-payment" value="offline" <{if $payType.pay_type == 'offline'}>checked<{/if}>>
+          <{/if}>
+        </div>
       </div>
       <footer class="action-bar-mini">
         <button type="button" class="action-bar-op-btn shopex-left shopex-action-back act-ok">确定</button>
@@ -662,15 +669,18 @@
           <div class="title-txt"><i class="bbc-icon bbc-icon-invoice fontm"></i> 发票类型</div>
         </div>
         <div id="invoiceType" class="invoice-tab-group content-bottom-padded">
-          <label <% if(invoice_type == 'normal') {%>class="active"<% } %>><input type="radio" name="invoice[invoice_type]" value="normal" class="shopex-hidden op-choose-invoice" <% if(invoice_type == 'normal') {%>checked<% } %>>普通发票</label>
-          <label <% if(invoice_type == 'vat') {%>class="active"<% } %>><input type="radio" name="invoice[invoice_type]" value="vat" class="shopex-hidden op-choose-invoice" <% if(invoice_type == 'vat') {%>checked<% } %>>增值税发票</label>
+          <{*
+          <label <% if(invoice_type == 'normal') {%>class="active"<% } %>><input type="radio" name="invoice[invoice_type]" value="normal" class="shopex-hidden op-choose-invoice" <% if(invoice_type == 'normal') {%>checked<% } %>>普通电子发票</label>
+          *}>
+          <label <% if(invoice_type == 'vat') {%>class="active"<% } %>><input type="radio" name="invoice[invoice_type]" value="vat" class="shopex-hidden op-choose-invoice" <% if(invoice_type == 'vat') {%>checked<% } %>>增值税专票</label>
           <label <% if(invoice_type == 'notuse') {%>class="active"<% } %>><input type="radio" name="invoice[invoice_type]" value="notuse" class="shopex-hidden op-choose-invoice" <% if(invoice_type == 'notuse') {%>checked<% } %>>不需要发票</label>
         </div>
       </section>
       <section class="invoice-content">
+        <{*
         <div class="section-white invoice-content-item" style="display:none;">
           <div class="section-title">
-            <div class="title-txt"><i class="bbc-icon bbc-icon-invoice fontm"></i> 发票抬头</div>
+            <div class="title-txt"><i class="bbc-icon bbc-icon-invoice fontm"></i> 发票抬头类型</div>
           </div>
           <div id="titleType" class="invoice-tab-group content-bottom-padded">
             <label <% if(invoice_title == 'individual' || !invoice_title ) {%>class="active"<% } %>>
@@ -681,15 +691,59 @@
             </label>
           </div>
           <div class="content-bottom-padded">
-            <!-- <div class="section-title">
-              <div class="title-txt">发票抬头</div>
-            </div> -->
-            <p class="content-horizontal-padded">
-              <input type="text" name="invoice[invoice_content]" value="<%= invoice_content %>" placeholder="请输入抬头">
-            </p>
-            <p class="content-horizontal-padded fontS font-gray-20">订单中的商品由入驻商家销售，发票内容由商家决定，由商家开具寄出。</p>
+            <div class="section-white invoice-normal-content-item" <% if(invoice_title == 'unit') {%>style="display: none;"<% } %>>
+                <div class="shopex-input-group">
+                  <div class="shopex-input-row">
+                    <label>姓名</label>
+                    <input type="text" name="invoice[invoice_individual][name]" class="shopex-input-clear" placeholder="请输入姓名" value="<%= invoice_individual.name %>">
+                  </div>
+                  <div class="shopex-input-row">
+                    <label>身份证号</label>
+                    <input type="text" name="invoice[invoice_individual][registration_number]" class="shopex-input-clear" placeholder="请输入身份证号" value="<%= invoice_individual.registration_number %>">
+                  </div>
+                  <div class="shopex-input-row">
+                    <label>手机号</label>
+                    <input type="text" name="invoice[invoice_individual][phone]" class="shopex-input-clear" placeholder="请输入手机号" value="<%= invoice_individual.phone %>">
+                  </div>
+                </div>
+                <div class="content-padded fontS font-gray-20">订单中的商品由入驻商家销售，发票内容由商家决定，由商家开具寄出。</div>
+              </div>
+
+              <div class="section-white invoice-normal-content-item" <% if(invoice_title == 'individual' || !invoice_title ) {%>style="display: none;"<% } %>>
+                <div class="shopex-input-group">
+                  <div class="shopex-input-row">
+                    <label>公司名称</label>
+                    <input type="text" name="invoice[invoice_unit][company_name]" class="shopex-input-clear" placeholder="请输入公司名称" value="<%= invoice_unit.company_name %>">
+                  </div>
+                  <div class="shopex-input-row">
+                    <label>纳税人识别号</label>
+                    <input type="text" name="invoice[invoice_unit][registration_number]" class="shopex-input-clear" placeholder="请输入纳税人识别号" value="<%= invoice_unit.registration_number %>">
+                  </div>
+                  <div class="shopex-input-row">
+                    <label>公司地址</label>
+                    <input type="text" name="invoice[invoice_unit][company_address]" class="shopex-input-clear" placeholder="请输入公司地址" value="<%= invoice_unit.company_address %>">
+                  </div>
+                  <div class="shopex-input-row">
+                    <label>开户银行</label>
+                    <input type="text" name="invoice[invoice_unit][bankname]" class="shopex-input-clear" placeholder="请输入开户银行" value="<%= invoice_unit.bankname %>">
+                  </div>
+                  <div class="shopex-input-row">
+                    <label>银行帐户</label>
+                    <input type="text" name="invoice[invoice_unit][bankaccount]" class="shopex-input-clear" placeholder="请输入开户银行帐号" value="<%= invoice_unit.bankaccount %>">
+                  </div>
+                  <div class="shopex-input-row">
+                    <label>公司电话</label>
+                    <input type="text" name="invoice[invoice_unit][company_phone]" class="shopex-input-clear" placeholder="手机号或带区号的座机号" value="<%= invoice_unit.company_phone %>">
+                  </div>
+                </div>
+                <div class="content-padded fontS font-gray-20">
+                    座机号格式：区号-座机号码-分机号码，以-号分隔，无分机号码可不填。<br>
+                    订单中的商品由入驻商家销售，发票内容由商家决定，由商家开具寄出。
+                </div>
+              </div>
           </div>
         </div>
+        *}>
         <div class="section-white invoice-content-item" style="display: none;">
           <div class="shopex-input-group">
             <div class="shopex-input-row">
@@ -714,10 +768,12 @@
             </div>
             <div class="shopex-input-row">
               <label>公司电话</label>
-              <input type="text" name="invoice[invoice_vat][company_phone]" class="shopex-input-clear" placeholder="请输入公司电话" value="<%= invoice_vat.company_phone %>">
+              <input type="text" name="invoice[invoice_vat][company_phone]" class="shopex-input-clear" placeholder="手机号或带区号的座机号" value="<%= invoice_vat.company_phone %>">
             </div>
           </div>
-          <div class="content-padded fontS font-gray-20">订单中的商品由入驻商家销售，发票内容由商家决定，由商家开具寄出。</div>
+          <div class="content-padded fontS font-gray-20">
+                座机号格式：区号-座机号码-分机号码，以-号分隔，无分机号码可不填。<br>
+                订单中的商品由入驻商家销售，发票内容由商家决定，由商家开具寄出。</div>
         </div>
         <div class="invoice-content-item" style="display: none;"></div>
       </section>
@@ -924,6 +980,12 @@
     if($('#invoice_content').html().trim()) {
       return;
     }
+    if(!invoice.invoice_individual) {
+      invoice.invoice_individual = {};
+    }
+    if(!invoice.invoice_unit) {
+      invoice.invoice_unit = {};
+    }
     if(!invoice.invoice_vat) {
       invoice.invoice_vat = {};
     }
@@ -1022,7 +1084,10 @@
     $(items[index]).show().siblings().hide();
   })
   .on('tap', '#titleType label', function() {
+    var index = $(this).index();
+    var items = $('.invoice-content').find('.invoice-normal-content-item');
     $(this).addClass('active').siblings().removeClass('active');
+    $(items[index]).show().siblings().hide();
   });
 
   $('#voucher').on('tap', '.act-ok', function(e) {
@@ -1106,7 +1171,20 @@ function storeInvoiceInfo() {
     need_invoice: 1,
     invoice_type: element.find('input[name="invoice[invoice_type]"]:checked').val(),
     invoice_title: element.find('input[name="invoice[invoice_title]"]:checked').val(),
-    invoice_content: element.find('input[name="invoice[invoice_content]"]').val(),
+    // invoice_content: element.find('input[name="invoice[invoice_content]"]').val(),
+    invoice_individual: {
+      name: element.find('input[name="invoice[invoice_individual][name]"]').val(),
+      registration_number: element.find('input[name="invoice[invoice_individual][registration_number]"]').val(),
+      phone: element.find('input[name="invoice[invoice_individual][phone]"]').val()
+    },
+    invoice_unit: {
+      company_name: element.find('input[name="invoice[invoice_unit][company_name]"]').val(),
+      registration_number: element.find('input[name="invoice[invoice_unit][registration_number]"]').val(),
+      company_address: element.find('input[name="invoice[invoice_unit][company_address]"]').val(),
+      bankname: element.find('input[name="invoice[invoice_unit][bankname]"]').val(),
+      bankaccount: element.find('input[name="invoice[invoice_unit][bankaccount]"]').val(),
+      company_phone: element.find('input[name="invoice[invoice_unit][company_phone]"]').val()
+    },
     invoice_vat: {
       company_name: element.find('input[name="invoice[invoice_vat][company_name]"]').val(),
       registration_number: element.find('input[name="invoice[invoice_vat][registration_number]"]').val(),
@@ -1270,4 +1348,7 @@ function  getUserLijin(totalPrice, postFee) {
   });
 }
 // 王衍生-2018/09/06-end
+//$("p.btnjs").click(function(){
+//	shopex.toast('商品不在配送范围,请重新选择收货地址');
+//});
 </script>

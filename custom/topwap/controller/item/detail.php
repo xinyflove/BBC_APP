@@ -84,6 +84,13 @@ class topwap_ctl_item_detail extends topwap_controller {
         }
 
         $detailData['valid'] = $this->__checkItemValid($detailData);
+        //第三方发货的不允许在wap端购买
+//        if($detailData['operate_type'] === 'SUPPLIER_DELIVERY') {
+//            $pagedata['error'] = "请拨打96788进行购买";
+//            $pagedata['error_info'] = "此商品请直接拨打<a href='tel:96788'>96788</a>蓝莓购物专线，包邮！货到付款！";
+//            return $this->page('topwap/item/detail/error.html', $pagedata);
+//        }
+
         if($detailData['use_platform'] != 2 && $detailData['use_platform'] != 0)
         {
             $pagedata['error'] = "该商品仅适用于电脑端";
@@ -318,6 +325,22 @@ class topwap_ctl_item_detail extends topwap_controller {
         $baseUrl = $http_type.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
 		$pagedata['signPackage'] = kernel::single('topwap_jssdk')->index($baseUrl);
 		/*add_2018/6/28_by_wanghaichao_end*/
+        //判断蓝莓购物权限
+        $lm_shop_id = app::get('sysshop')->getConf('sysshop.tvshopping.shop_id');
+        $pagedata['is_lm'] = false;
+        if($detailData['shop_id'] == $lm_shop_id)
+        {
+            $pagedata['is_lm'] = true;
+        }
+        $pagedata['operate_type'] = $detailData['operate_type'];
+
+        /*获取商品海报背景图开始*/
+        $extsetting= app::get('topshop')->rpcCall('shop.extsetting.get',array('shop_id'=>$detailData['shop_id'],'use_platform'=>'wap'));
+        $pagedata['maker']['poster_bg_img'] = empty($extsetting['params']['maker']['poster_bg_img']) ? '' : $extsetting['params']['maker']['poster_bg_img'];
+        $qrcode= getQrcodeUri(url::action("topwap_ctl_item_detail@index",array('item_id'=>$itemId, 'seller_id'=>$pagedata['seller_id'])),180);
+        $pagedata['maker']['qrcode'] = $qrcode;
+        /*获取商品海报背景图结束*/
+
         return $this->page('topwap/item/detail/index_01.html', $pagedata);
     }
 

@@ -21,14 +21,16 @@
                 </span>
             </span>
                     <span>售后：
-            <span><{if $item.aftersale}><a style="float:none" class="label label-danger" href="<{url action=topshop_ctl_aftersales@detail bn=$item.aftersale.aftersales_bn}>"><{$progress[$item.aftersale.progress]}></a><{else}>无<{/if}></span>
+            <span><{if $item.aftersale}><a style="float:none" class="label label-danger" href="<{url action=topshop_ctl_aftersalesmuumi@detail bn=$item.aftersale.aftersales_bn}>"><{$progress[$item.aftersale.progress]}></a><{else}>无<{/if}></span>
             </span>
 
+                    <span>代售店铺：<{$item.shop_name}></span>
                 </td>
+				
             </tr>
             <{if $item.payinfo}>
             <tr>
-                <td colspan="5">
+                <td colspan="6">
                     <span>支付单号：<{$item.payinfo.payment_id}></span><span>支付时间：<{$item.pay_time|cdate}></span>
                     <{if $item.cancelinfo}>
                     <span>退款单号：<{$item.cancelinfo.refund_id}></span><span>退款时间：<{$item.cancelinfo.finish_time|cdate}>

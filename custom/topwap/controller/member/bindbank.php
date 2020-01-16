@@ -40,7 +40,7 @@ class topwap_ctl_member_bindbank extends topwap_controller {
 		$memberInfo=$bankMember->getRow('member_id',array('card_number'=>$filter['card_number'],'bank_id'=>$filter['bank_id']));
 
 		if(empty($memberInfo)){
-			return $this->splash('error','','对不起,您还没有权限绑定银行卡!',true);
+			return $this->splash('error','','您输入的卡号不正确!',true);
 		}
 		$bind_filter=array(
 			'card_number'=>$filter['rel_card_number'],
@@ -82,9 +82,9 @@ class topwap_ctl_member_bindbank extends topwap_controller {
 	public function check($post){
 		$filter=array();
 		if($post['card_number']){
-			$post['rel_card_number']=$post['card_number'];
-			$font=substr($post['card_number'],0,6);
-			$last=substr($post['card_number'],-4);
+			$post['rel_card_number']=trim($post['card_number']);
+			$font=substr(trim($post['card_number']),0,6);
+			$last=substr(trim($post['card_number']),-4);
 			$post['card_number']=$font.$last;
 		}
 		unset($post['next_page']);

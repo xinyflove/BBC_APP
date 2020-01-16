@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title><{$setting['name']}></title>
+    <script src="/app/topwap/tvshopping/js/ydui.flexible.js"></script>	
+    <link rel="stylesheet" href="/app/topwap/tvshopping/css/public.css?1532055472">
+    <link rel="stylesheet" href="/app/topwap/tvshopping/css/index_active.css?1532055472">
+</head>
+<{if $setting.button_color}>
+<style>
+.col-2 a button {background:<{$setting.button_color}>}
+.col-3 a button {background:<{$setting.button_color}>}
+</style>
+<{/if}>
+<body <{if $setting.bg_color}>style="background:<{$setting.bg_color}>;"<{/if}>>
+    
+	<{$widget_html}>
+
+<{include file="topwap/index.html"}>
+</body>
+
+<script src="/app/topwap/tvshopping/js/jquery3.3.1.js"></script>
+<{script src="jquery.lazyload.min.js" app="site"}>
+<script>
+
+  // 王衍生-2018/07/06-end
+    $("img.imglazyload").lazyload({
+        placeholder: '<{$env.app.topwap.res_url}>/images/lmlazy.png',
+        effect : "fadeIn",
+	//	container: $("#mescroll"),  // 对某容器中的图片实现效果
+		threshold :800,
+     });
+  
+
+    $(function () {
+        $('.m-animation-out').click(function () {
+            $('.m-animation-title').text('');
+            $('.m-animation-title').animate({
+                'width': 0
+            }, 300);
+            setTimeout(function () {
+                $('.m-animation-back').css({
+                    'visibility': 'visible',
+                    'opacity': 1,
+                    'transform': 'scale(60)'
+                })
+            }, 300);
+            setTimeout(function () {
+                $('.m-animation-content').fadeIn();
+                $('.m-animation-content .content-close').css({
+                    'transform': 'scale(1)'
+                })
+            }, 800)
+        });
+        $('.m-animation-content .content-close').click(function () {
+            $('.m-animation-content').fadeOut();
+            $('.m-animation-content .content-close').css({
+                'transform': 'scale(0)'
+            });
+            setTimeout(function () {
+                $('.m-animation-back').css({
+                    'visibility': 'hidden',
+                    'opacity': 0,
+                    'transform': 'scale(1)'
+                })
+            }, 500);
+            setTimeout(function () {
+                $('.m-animation-title').animate({
+                    'width': '1.3rem'
+                }, 300);
+            },800);
+            setTimeout(function () {
+                $('.m-animation-title').text('活动规则');
+            },1100);
+           
+        })
+    });
+</script>
+
+</html>

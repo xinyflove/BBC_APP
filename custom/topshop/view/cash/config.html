@@ -3,19 +3,10 @@
     <p class="help-block text-center">您现在还没有开通配置此功能的权限，请联系平台管理员进行开通！</p>
 </div>
 <{else}>
+<input type="hidden" name="nav_name" value="config">
 <form  action="<{url action=topshop_ctl_cash_manage@save}>" method="post" class="form-horizontal clearfix" data-validate-onsuccess="ajaxSubmit" role="form">
     <div class="nav-tabs-custom" id="tabs">
-        <ul class="nav nav-tabs" role="tablist">
-            <li role="presentation" class="active">
-                <a href="<{url action=topshop_ctl_cash_manage@config}>">礼金配置</a>
-            </li>
-            <li role="presentation">
-                <a href="">活动列表</a>
-            </li>
-            <li role="presentation" >
-                <a href="<{url action=topshop_ctl_cash_manage@cashChangeLogs}>">礼金统计</a>
-            </li>
-        </ul>
+            <{include file='topshop/cash/nav_list.html'}>
         <div class="tab-content no-padding">
             <input type='hidden' name='id' value="<{$id}>">
 
@@ -100,6 +91,5 @@ $('#is_cash_open').find('input[type=radio]').click(function()
         $('#convert_rate').hide();
     }
 });
-
 
 </script>

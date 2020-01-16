@@ -17,6 +17,7 @@ class topshop_ctl_mall_admin_list extends topshop_ctl_mall_admin_controller {
 
         if($params['title']) $filter['title'] = $params['title'];
         if($params['status']) $filter['status'] = $params['status'];
+        if($params['supply_shop_name']) $filter['supply_shop_name'] = $params['supply_shop_name'];
         $count = $objLibMallList->getMallAgentCount($filter);
 
         if($params['page_size'])
@@ -65,7 +66,7 @@ class topshop_ctl_mall_admin_list extends topshop_ctl_mall_admin_controller {
         $pagedata['return_to_url'] = url::action('topshop_ctl_mall_admin_list@index');
         $pagedata['status'] = $params['status'];
 
-        $this->contentHeaderTitle = app::get('topshop')->_('广电优选商品列表');
+        $this->contentHeaderTitle = app::get('topshop')->_('拉取商品列表');
         return $this->page('topshop/mall/admin/list.html', $pagedata);
     }
 

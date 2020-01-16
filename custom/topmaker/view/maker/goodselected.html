@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="/app/topmaker/statics/lib/common/flexible.js"></script>
+    <!--<link rel="stylesheet" href="../lib/common/public.css">
+    <link rel="stylesheet" href="../css/styleSheet.css">-->
+    <link rel="stylesheet" type="text/css" href="/app/topmaker/statics/lib/common/public.css"  />
+    <link rel="stylesheet" type="text/css" href="/app/topmaker/statics/css/styleSheet.css"  />
+    <title>创客中心-自选商品</title>
+</head>
+<body>
+<div class="choose-goods">
+    <div class="m-hacker-choose-header">
+        <div class="header-left">
+            <img src="/app/topmaker/statics/images/before.png" alt="">
+        </div>
+        <div class="header-mid">
+            <p>自选商品</p>
+        </div>
+        <div class="header-right">
+            <img src="/app/topmaker/statics/images/toindex.png" alt="">
+        </div>
+    </div>
+    <div class="select-goods">
+        选择商品
+        <a class="choose-btn" href="<{url action=topmaker_ctl_goods@goodsSelect}>"><span>+</span>选择</a>
+    </div>
+    <div class="bg"></div>
+    <div id="mescroll" class="mescroll">
+        <ul id="dataList" class="data-list">
+            <!--<{foreach from=$goods_list item=good}>
+            <li>
+                <div class="goods-img">
+                    <img  src="<{$good.image_default_id|storager}>">
+                </div>
+                <div class="goods-des">
+                    <h2><{$good.title}></h2>
+                    <div class="price">供货价:<span>￥<{$good.supply_price}></span></div>
+                    <div class="sale-price">指导售价:￥<{$good.price}></div>
+                </div>
+                <span class="delete">删除</span>
+            </li>
+            <{/foreach}>-->
+        </ul>
+    </div>
+</div>
+<div class="model hide">
+    <div class="pop-up">
+        <h2>提示</h2>
+        <div class="notice">确认删除该商品？</div>
+        <ul>
+            <li>
+                <div class="cancel">取消</div>
+            </li>
+            <li>
+                <div class="commit" id="submitBtn"">确认提交</div>
+            </li>
+        </ul>
+    </div>
+
+</div>
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+<script src="/app/topmaker/statics/lib/mescroll/mescroll.js" type="text/javascript" charset="utf-8"></script>
+<script src="/app/topmaker/statics/lib/layui/layui.all.js"></script>
+<script>
+    $(function(){
+        //初始化首页
+        var mescroll = new MeScroll("mescroll", {
+            up: {
+                callback: upCallback,
+                lazyLoad:{
+                    use:true//启动懒加载
+                },
+                isBounce: false,
+                noMoreSize: 4, //如果列表已无数据,可设置列表的总数量要大于半页才显示无更多数据;避免列表数据过少(比如只有一条数据),显示无更多数据会不好看; 默认5
+                toTop:{ //配置回到顶部按钮
+                    src : "/app/topmaker/statics/images/userCenter/mescroll-totop.png", //默认滚动到1000px显示,可配置offset修改
+                    //html: null, //html标签内容,默认null; 如果同时设置了src,则优先取src
+                    //offset : 1000
+                },
+                clearEmptyId: 'dataList',
+                empty:{ //配置列表无任何数据的提示
+                    icon : "/app/topmaker/statics/images/userCenter/mescroll-empty.png",
+                    tip: "暂无产品", //提示
+                },
+            }
+        });
+        function upCallback(page){
+            getListDataFromNet(page.num, page.size, function(curPageData) {
+                console.log("page.num="+page.num+", page.size="+page.size+", curPageData.length="+curPageData.length);
+                mescroll.endSuccess(curPageData.length);
+                setListData(curPageData);
+                popUpWindows();
+            }, function() {
+                //联网失败的回调,隐藏下拉刷新和上拉加载的状态;
+                mescroll.endErr();
+            });
+        }
+        function getListDataFromNet(pageNum,pageSize,successCallback,errorCallback) {
+            setTimeout(function () {
+                $.ajax({
+                    type: 'GET',
+                    // url: '../data/pdlist1.json',
+                    url: "<{url action=topmaker_ctl_goods@indexAjax}>?num="+pageNum+'&size='+pageSize,
+                    dataType: 'json',
+                    success: function(data){
+                        var listData=[];
+//                        for (var i = (pageNum-1)*pageSize; i < pageNum*pageSize; i++) {
+//                            if(i==data.length) break;
+//                            listData.push(data[i]);
+//                        }
+                        listData=data.goods_list;
+
+                        //回调
+                        successCallback(listData);
+                    },
+                    error: errorCallback
+                });
+            },1000)
+        }
+        function setListData(pageData){
+            console.log(pageData);
+            var listDom=document.getElementById("dataList");
+            for (var i = 0; i < pageData.length; i++) {
+                var pd=pageData[i];
+                var str='<div class="goods-img">';
+                str+='<img  src="../images/userCenter/loading-sq.png" imgurl="'+pd.image_default_id+'">';
+                str+='</div>';
+                str+='<div class="goods-des">';
+                str+='<h2>'+pd.title+'</h2>';
+                str+='<div class="price">供货价:<span>￥'+pd.supply_price+'</span></div>';
+                str+='<div class="sale-price">指导售价:￥'+pd.price+'</div>';
+                str+='</div>';
+                str+='<span class="delete" data-id="'+pd.item_id+'">删除</span>';
+                if(pd.status!='onsale'){
+                    str += '<span class="warn">已下架</span>';
+                }
+                var liDom=document.createElement("li");
+                liDom.innerHTML=str;
+                listDom.appendChild(liDom);
+            }
+        }
+        var removeId;
+        function popUpWindows(){
+            $('#dataList .delete').on('click',function(){
+                $('.model').removeClass('hide');
+                removeId=$(this).attr("data-id");
+
+            });
+            $('.pop-up .cancel').on('click',function(){
+                $('.model').addClass('hide');
+            });
+            $("#submitBtn").on('click',function () {
+                $('.model').addClass('hide');
+                $.ajax({
+                    type: 'GET',
+                    // url: '../data/pdlist1.json',
+                    url: "<{url action=topmaker_ctl_goods@delGoods}>?item_id="+removeId,
+                    dataType: 'json',
+                    success: function(data){
+                        if(data.code){
+                            //alert('删除成功');
+                            layer.msg('删除成功');
+                            window.location.reload()
+
+                        }else{
+                            //alert('删除失败');
+                            layer.msg('删除失败');
+                            window.location.reload()
+                        }
+                    }
+                });
+            })
+        }
+
+    })
+</script>
+<script>
+    //头部跳转页面
+    $('.m-hacker-choose-header .header-left').click(function(){
+        window.location.href = '<{url action=topmaker_ctl_index@index}>';
+    });
+    $('.m-hacker-choose-header .header-right').click(function(){
+        window.location.href = '<{url action=topmaker_ctl_index@index}>';
+    })
+</script>
+</body>
+</html>

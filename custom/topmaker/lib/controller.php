@@ -22,22 +22,32 @@ class topmaker_controller extends base_routing_controller {
         {
             $this->sellerInfo = makerAuth::getSellerData($this->sellerId);
             $_bindShop = app::get('sysmaker')->model('shop_rel_seller')->getList('*', array('seller_id'=>$this->sellerId));
-            if($_bindShop) $this->bindShop = $_bindShop[0];
+            if($_bindShop)
+            {
+                $this->bindShop = $_bindShop[0];
+                $_shopInfo = app::get('sysshop')->model('shop')->getRow('shop_name', array('shop_id'=>$this->bindShop['shop_id']));
+                $this->bindShop['shop_name'] = $_shopInfo['shop_name'];
+            }
         }
 
         $action = route::currentActionName();//当前动作名
         $actionArr = explode('@',$action);
-
         //如果当前控制器不是topmaker_ctl_passport
         if(!in_array($actionArr[0], ['topmaker_ctl_passport','topmaker_ctl_trustlogin']))
         {
-            //如果未登陆 && 非登陆控制器
-            if(!$this->sellerId)
-            {
-                exit('错误！');
-            }
+			/*add_增加判断_by_wanghaichao_start*/
+			if(!($actionArr[0]=='topmaker_ctl_index' && $actionArr[1]=='share')){
+				
+				//如果未登陆 && 非登陆控制器
+				if(!$this->sellerId)
+				{
+					exit('错误！');
+				}
 
-            $this->_checkSellerStatus();
+				$this->_checkSellerStatus();
+			}
+			/*add_增加判断_by_wanghaichao_end*/
+			
         }
 
         // debug模式开启情况下使用系统错误处理
@@ -99,7 +109,13 @@ class topmaker_controller extends base_routing_controller {
      */
     protected function _checkSellerStatus()
     {
-        $url = url::action('topmaker_ctl_passport@makerCheck');
+        $action = route::currentActionName();//当前动作名
+		if($action=='topmaker_ctl_index@ticketindex'){
+			$type='ticket';
+		}else{
+			$type='';
+		}
+        $url = url::action('topmaker_ctl_passport@makerCheck',array('type'=>$type));
 
         if($this->sellerInfo['account']['deleted'])
         {

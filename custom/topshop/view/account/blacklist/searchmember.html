@@ -1,0 +1,45 @@
+<div class="box box-primary">
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th>用户id</th>
+            <th>用户手机号</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <{if $data}>
+        <tbody>
+        <{foreach from=$data item=item}>
+        <tr>
+            <td><{$item.user_id}></td>
+            <td><{$item.mobile}></td>
+            </td>
+            <td class="black_<{$item.user_id}>">
+				<{if $item.black_id}>
+					已被拉黑
+				<{else}>
+				<a href="javascript:;" data-user-id="<{$item.user_id}>" data-mobile="<{$item.mobile}>" data-toggle="modal" data-target="#modifyAccountShopPwd" class="remove text-danger" >拉黑</a>
+				<{/if}>
+            </td>
+        </tr>
+        <{/foreach}>
+        </tbody>
+        <{else}>
+        <tbody id="none_cat">
+        <tr class="none-information">
+            <td colspan="6"><p class="help-block text-center">暂无数据</p></td>
+        </tr>
+        </tbody>
+        <{/if}>
+    </table>
+</div>
+
+<script>
+    $('#modifyAccountShopPwd').on('show.bs.modal', function (event) {
+        var user_id = $(event.relatedTarget).attr("data-user-id");
+        var mobile=$(event.relatedTarget).attr("data-mobile");
+		$(".user-id").val(user_id);
+		$('.user-mobile').val(mobile);
+		$('.reason').val('');
+    })
+</script>

@@ -1,0 +1,150 @@
+
+<form action="<{url action=topshop_ctl_promotion_exchangecode@project_save}>" method="post" class="form-horizontal clearfix" data-validate-onsuccess="ajaxSubmit" role="form">
+  <input type='hidden' name='gift_id' value="<{$gift_id}>">
+  <div class="panel panel-default">
+    <div class="panel-heading">基本信息</div>
+    <div class="panel-body">
+      <div class="form-group">
+        <label for="" class="col-sm-2 control-label">
+          <{t}>方案名称
+          <{/t}>：</label>
+        <div class="col-sm-4">
+          <input type="text" name="project_name" value="<{$project_name}>" class="form-control" placeholder="" maxlength="50" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="" class="col-sm-2 control-label">
+          <{t}>生成卡数量
+          <{/t}>：</label>
+        <div class="col-sm-4">
+          <input type="text" name="total_num" value="<{$total_num}>" class="form-control" placeholder="最多生成200张！" max="200" required>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<div class="panel panel-default select-goods-panel">
+    <div class="panel-heading">设置规则</div>
+    <div class="panel-body">
+      <div class="form-group">
+        <label for="" class="col-sm-2 control-label">
+          <{t}>添加商品
+          <{/t}>：
+        </label>
+        <div class="col-sm-10">
+          <div>
+            <button id="addGiftRule" type="button" class="btn btn-default text-blue select-goods w-auto" data-remote="<{url action=topshop_ctl_selector_sku@loadSelectSkuModal}>" data-modal="#sku_modal" data-item_id="<{$notEndSku}>" data-textcol="title,price" data-view="topshop/promotion/exchangecode/setting.html" data-values='<{$selectorExtendsDataSku}>' data-target="#sku_modal" data-fetchgoods="<{url action=topshop_ctl_selector_sku@formatSelectedSkusRow}>" data-limit="4" >
+              <i class="glyphicon glyphicon-plus"></i>
+              添加系统商品
+            </button>
+            <button type="button" class="btn btn-default text-blue addNonsystemGoods">
+                <i class="glyphicon glyphicon-plus"></i>
+                添加非系统商品
+            </button>
+            <span class="text-orange">*最多添加10件商品</span>
+          </div>
+          <!-- 系统商品展示区 -->
+          <div class="selected-goods-list sku-list col-sm-12">
+          </div>
+          <!-- 非系统商品展示区 -->
+          <div class="no-sku-list col-sm-12" style="padding-top: 10px;">
+          </div>
+        </div>
+      </div>
+      <{*
+      <div class="form-group">
+        <label for="" class="col-sm-2 control-label">
+          <{t}>方案描述
+          <{/t}>：
+        </label>
+        <div class="col-sm-4">
+          <textarea name="gift_desc" rows="4" style="resize: none;" class="form-control" placeholder="赠品活动备注"><{$gift_desc}></textarea>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="" class="col-md-2 control-label">
+          <{t}>方案有效期
+          <{/t}>：</label>
+        <div class="col-sm-4">
+          <div class="input-group input-group-sm">
+            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+            <input type="text" class="form-control pull-right reservation" style="max-width:100%;" readonly name="valid_time" value="<{$valid_time}>">
+          </div>
+        </div>
+      </div>
+      *}>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-4">
+  </div>
+  <div class="col-md-2">
+    <button type="submit" class="btn btn-primary btn-lg btn-block action-save">保存</button>
+  </div>
+  <div class="col-md-2">
+    <a href="<{url action=topshop_ctl_promotion_exchangecode@project_list}>">
+      <button type="button" class="btn btn-default btn-lg btn-block action-cancel">取消</button>
+    </a>
+  </div>
+  <div class="col-md-4">
+  </div>
+</div>
+</form>
+<script>
+  $('.reservation').daterangepicker({
+    "timePicker": true,
+    "opens": "right",
+    "timePicker24Hour": true,
+    "timePickerIncrement": 1,
+    "locale": {
+      "format": "YYYY/MM/DD HH:mm"
+    }
+  });
+
+  function ajaxSubmit(e) {
+    var form = e.target;
+    e.preventDefault();
+    $.post(form.action, $(form).serialize(), function(rs) {
+      if (rs.error) {
+        $('#messagebox').message(rs.message);
+        return;
+      }
+      if (rs.success) {
+        $('#messagebox').message(rs.message, 'success');
+      }
+      if (rs.redirect) {
+        location.href = rs.redirect;
+      }
+    });
+  }
+
+    $('.addNonsystemGoods').click(function(e) {
+        e.preventDefault();
+        $('.no-sku-list').append('\
+            <div class="sku-item col-sm-5" style="padding-top: 10px; ">\
+                <div class="sku-img col-sm-1">\
+                    <span class="glyphicon glyphicon-remove-circle sku-remove"></span>\
+                </div>\
+                <div class="sku-info col-sm-9">\
+                    <div class="form-group">\
+                        <input type="text" name="no_sku_title[]" value="" class="form-control" placeholder="请输入标题" required>\
+                    </div>\
+                    <div class="form-group">\
+                        <input type="text" name="no_spec_info[]" value="" class="form-control" placeholder="请输入规格" required>\
+                    </div>\
+                    <div class="form-group">\
+                        <input type="text" name="no_sku_quantity[]" value="" class="form-control" placeholder="请输入数量" required>\
+                    </div>\
+                    <div class="form-group">\
+                        <input type="text" name="no_sku_weight[]" value="" class="form-control" placeholder="请输入重量，单位kg" required>\
+                    </div>\
+                </div>\
+            </div>\
+        ');
+  });
+
+  // 删除商品
+  $('.select-goods-panel').on('click', '.sku-remove', function() {
+    $(this).parent().parent().remove();
+  });
+</script>

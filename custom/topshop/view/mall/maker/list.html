@@ -1,4 +1,4 @@
-<{*<aside class="control-sidebar control-sidebar-light" style="height: 100%;">
+<aside class="control-sidebar control-sidebar-light" style="height: 100%;">
   <!-- Create the tabs -->
   <ul class="nav nav-tabs nav-justified control-sidebar-tabs">
     <li class=""><a href="#">筛选</a></li>
@@ -6,22 +6,33 @@
   </ul>
   <!-- Tab panes -->
   <div class="tab-content">
-    <form action="<{url action=topshop_ctl_account_supplier@index}>" method="get" id="search-form">
-      <input type="hidden" value="<{$supplier_id}>" name="supplier_id" id="supplier_id">
+    <form action="<{url action=topshop_ctl_mall_maker@index}>" method="get" id="search-form">
+		<input type='hidden' name='seller_id' value='<{$seller_id}>'>
       <div class="box-body">
         <!-- text input -->
         <div class="form-group">
-          <label>供应商名称：</label>
-          <input type="text" id="supplier_name" name="supplier_name" class="form-control" value="<{$supplier_name|escape:"html"}>" placeholder="请输入 ...">
+          <label>创客姓名：</label>
+          <input type="text" id="seller_name" name="seller_name" class="form-control" value="<{$seller_name|escape:"html"}>" placeholder="请输入 ...">
         </div>
+		
         <div class="form-group">
-          <label>公司名称：</label>
-          <input type="text" id="company_name" name="company_name" class="form-control" value="<{$company_name|escape:"html"}>" placeholder="请输入 ...">
+          <label>车牌号：</label>
+          <input type="text" id="cart_number" name="cart_number" class="form-control" value="<{$cart_number|escape:"html"}>" placeholder="请输入 ...">
         </div>
+
         <div class="form-group">
+          <label>审核状态：</label>
+		  <select  class="form-control pull-right" id="status" name="status">
+			<option value="" <{if !$status}>selected<{/if}>>请选择</option>
+			<option value="pending" <{if $status=='pending'}>selected<{/if}>>审核中</option>
+			<option value="success" <{if $status=='success'}>selected<{/if}>>已通过</option>
+			<option value="refuse" <{if $status=='refuse'}>selected<{/if}>>拒绝</option>
+		  </select>
+        </div>
+        <!--<div class="form-group">
           <label>电话：</label>
           <input type="text" id="mobile" name="mobile" class="form-control" value="<{$mobile|escape:"html"}>" placeholder="请输入 ...">
-        </div>
+        </div>-->
       </div>
       <!-- /.box-body -->
       <div class="box-footer">
@@ -31,20 +42,22 @@
       <!-- /.box-footer -->
     </form>
   </div>
-</aside>*}>
+</aside>
 
 
 <div class="box box-primary">
   <div class="mailbox-controls with-border">
-    <a href="<{url action=topshop_ctl_mall_maker@cash seller_id=$seller_id}>" class="btn btn-default btn-sm text-light-blue"><i class="fa fa-plus-square-o"></i>主持人提现</a>
-   <{* <div class="btn-group" style="float:right;">
+    <a href="<{url action=topshop_ctl_mall_maker@cash seller_id=$seller_id}>" class="btn btn-default btn-sm text-light-blue"><i class="fa fa-plus-square-o"></i>创客提现</a>
+    <span class="text-primary">待审核总额：<{$paymentPendingCount|cur}>；已打款总额：<{$paymentSuccessCount|cur}></span>
+
+    <div class="btn-group" style="float:right;">
       <button data-toggle="control-sidebar" class="btn btn-default">
         <div class="text-light-blue">
           <i class="fa fa-search"></i>
           搜索
         </div>
       </button>
-    </div>*}>
+    </div>
   </div>
   <li class="pull-right header">
 
@@ -52,9 +65,16 @@
   <table class="table table-hover">
     <thead>
       <tr>
-        <th>主持人</th>
+        <th>创客姓名</th>
+        <th>手机号</th>
+        <th>车牌号</th>
         <th>提现金额</th>
-        <th>提现时间</th>
+        <th>银行卡信息</th>
+        <th>审核状态</th>
+        <th>提现类型</th>
+        <th>申请时间</th>
+        <th>审核时间</th>
+        <th>打款时间</th>
         <th>备注</th>
         <th>操作</th>
       </tr>
@@ -64,12 +84,23 @@
       <{foreach from=$data item=item}>
 		<tr>
 		  <td><{$item.name}></td>
-          <td><{$item.payment}></td>
+		  <td><{$item.mobile}></td>
+		  <td><{$item.cart_number}></td>
+          <td><{$item.payment|cur}></td>
+          <td><{$item.bank_name}>-<{$item.card_number}>-<{$item.bank_seller_name}></td>
+          <td><{if $item.status=='success'}>通过<{elseif $item.status=='pending'}>审核中<{else}>拒绝<{/if}></td>
+          <td><{$item.type=='sys'?'后台提现':'创客申请'}></td>
           <td><{$item.create_time|date:'Y-m-d H:i:s'}></td>
+          <td><{$item.check_time|date:'Y-m-d H:i:s'}></td>
+          <td><{$item.pay_time|date:'Y-m-d H:i:s'}></td>
 		  <td><{$item.remark}></td>
           <td>
-				操作
-          </td>
+			<{if $item.status=='pending'}>
+				<button type="button" class="btn btn-primary btn-sm" data-cash-id=<{$item.id}> data-toggle="modal" data-target="#modifyAccountShopPwd" style='padding:0 5px'>审核</button>
+			<{else}>
+				<!--已通过-->
+			<{/if}>
+		  </td>
 		</tr>
       <{/foreach}>
     </tbody>
@@ -96,21 +127,31 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">修改子帐号密码</h4>
+        <h4 class="modal-title" id="myModalLabel">提现审核</h4>
       </div>
-      <form  action="<{url action=topshop_ctl_account_supplier@modifyPwd}>" method="post" class="form-horizontal" data-validate-onsuccess="ajaxSubmit" id="form_delivery" role="form">
+      <form  action="<{url action=topshop_ctl_mall_maker@cashAudit}>" method="post" class="form-horizontal" data-validate-onsuccess="ajaxSubmit" id="form_delivery" role="form">
         <div class="modal-body">
-          <input type="hidden" class='supplier-id' name="supplier_id" value="">
+          <input type="hidden" class='cash-id' name="id" value="">
           <div class="form-group">
-            <label class="col-sm-4 control-label" >重置密码：</label>
+            <label class="col-sm-4 control-label" >审核：</label>
             <div class="col-sm-6">
-              <input type="password" name="login_password" class="form-control" placeholder="6-20个字符,不能纯数字,字母" required maxlength="20" data-validate-length-min="6" pattern="^(?!\d+$|[a-zA-Z]+$)[^\u4e00-\u9fa5]*$" data-validate-regexp-message="不能纯数字、字母">
+				<label style='cursor:pointer;margin-right:10px'>通过<input name='status' type='radio' value='success'></label>
+				<label style='cursor:pointer;'>拒绝<input name='status' type='radio' value='refuse'></label>
             </div>
           </div>
+
           <div class="form-group">
-            <label class="col-sm-4 control-label" >确认密码：</label>
+            <label class="col-sm-4 control-label" >结算方式：</label>
             <div class="col-sm-6">
-              <input  name='psw_confirm' type='password' placeholder="确认重置密码" maxlength="20" required data-validate-equalto-field="login_password" data-validate-equalto-message="两次密码输入不一致" class="form-control" >
+				<label style='cursor:pointer;margin-right:10px'>线上付款到微信钱包<input name='settlementType' type='radio' value='1'></label>
+				<label style='cursor:pointer;'>线下付款<input name='settlementType' type='radio' value='2'></label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-4 control-label" >备注：</label>
+            <div class="col-sm-6">
+				<textarea name="remark" style="width:260px;height:80px"></textarea>
             </div>
           </div>
         </div>
@@ -126,15 +167,17 @@
 <script>
 
   $('#reset-form').click(function () {
-      $('#supplier_name').val('');
-      $('#company_name').val('');
-      $('#mobile').val('');
+      $('#seller_name').val('');
+      $('#status').val('');
+      //$('#mobile').val('');
+      $('#cart_number').val('');
   });
 
   $('#modifyAccountShopPwd').on('show.bs.modal', function (event) {
-    var supplier_id = $(event.relatedTarget).attr("data-supplier-id");
-    $(".supplier-id").val(supplier_id);
+    var cash_id = $(event.relatedTarget).attr("data-cash-id");
+    $(".cash-id").val(cash_id);
   })
+
 
 function ajaxSubmit (e) {
   var form = e.target;
@@ -146,6 +189,7 @@ function ajaxSubmit (e) {
     }
     if(rs.success) {
       $('#messagebox').message(rs.message, 'success');
+	  window.location.reload();
     }
     if(rs.redirect) {
       location.href = rs.redirect;

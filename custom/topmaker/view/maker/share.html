@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="<{resource app='topmaker' path='/lib/common/flexible.js'}>"></script>
+    <link rel="stylesheet" href="<{resource app='topmaker' path='/lib/common/public.css'}>">
+    <link rel="stylesheet" href="<{resource app='topmaker' path='/css/styleSheet.css'}>">
+    <title>创客中心-推广二维码</title>
+</head>
+<body>
+<div class="m-hacker-gener">
+    <div class="m-hacker-choose-header">
+        <div class="header-left">
+            <img src="/app/topmaker/statics/images/before.png" alt="">
+        </div>
+        <div class="header-mid">
+            <p>推广二维码</p>
+        </div>
+        <div class="header-right">
+            <img src="/app/topmaker/statics/images/toindex.png" alt="">
+        </div>
+    </div>
+    <div class="gener-content">
+        <div class="gener-content-out">
+            <div class="content-head">
+                <div>
+                    <{if $seller.avatar}>
+                    <img src="<{$seller.avatar|storager:'s'}>" alt="">
+                    <{else}>
+                    <img src="<{resource app='topmaker' path='/images/gener/headI.png'}>" alt="">
+                    <{/if}>
+                </div>
+                <p><{$seller.name}></p>
+            </div>
+            <div class="content-erweima" style="text-align: center;">
+                <div id="qrcode" style="margin: 0 auto;display: inline-block">
+                </div>
+            </div>
+            <p class="content-text">微信扫码 让我们发现更多精彩</p>
+            <div class="content-btn">
+                <p>点击分享</p>
+            </div>
+        </div>
+    </div>
+    <div class="gener-mark">
+        <img src="<{resource app='topmaker' path='/images/gener/warn.png'}>" alt="">
+    </div>
+</div>
+<script src="<{resource app='topmaker' path='/lib/jquery/jquery-3.2.1.js'}>"></script>
+<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+<script src="/app/topwap/statics/static/js/jquery.qrcode.min.js"></script>
+<{include file="topwap/index.html"}>
+<script>
+    $(function(){
+        $('.content-btn p').click(function(){
+            $('.gener-mark').fadeIn();
+        });
+        $('.gener-mark').click(function(){
+            $(this).fadeOut();
+        })
+    })
+    $('#qrcode').qrcode({
+        render: "canvas",
+        width: 170,
+        height:170,
+        text: '<{url action=topwap_ctl_maker_index@home seller_id=$seller.seller_id}>',
+    });
+</script>
+<script>
+    //头部跳转页面
+    $('.m-hacker-choose-header .header-left').click(function(){
+        window.history.back(-1);
+    });
+    $('.m-hacker-choose-header .header-right').click(function(){
+        window.location.href = '<{url action=topmaker_ctl_index@index}>';
+    })
+</script>
+</body>
+</html>

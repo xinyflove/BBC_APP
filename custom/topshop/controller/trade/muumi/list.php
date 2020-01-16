@@ -8,7 +8,7 @@
  */
 
 class topshop_ctl_trade_muumi_list extends topshop_controller{
-    public $limit = 10;
+    public $limit = 15;
 
     /**
      * 商家后台交易管理列表
@@ -69,7 +69,10 @@ class topshop_ctl_trade_muumi_list extends topshop_controller{
         $pagedata['suppliers'] = app::get('topshop')->rpcCall('supplier.shop.list',array('shop_id'=>$this->shopId,'is_audit'=>'PASS'));
         /*add_20170928_by_wudi_end*/
         $this->contentHeaderTitle = app::get('topshop')->_('推送商品订单列表');
-
+		//代售店铺
+		$sql="SELECT sp.shop_id,sp.shop_name FROM sysshop_shop AS sp LEFT JOIN systrade_order AS so ON so.shop_id=sp.shop_id WHERE so.init_shop_id=".$this->shopId." GROUP BY sp.shop_id";
+		$shop=app::get('base')->database()->executeQuery($sql)->fetchAll();
+		$pagedata['shop']=$shop;
         return $this->page('topshop/trade/muumi/list.html', $pagedata);
     }
 
@@ -105,7 +108,6 @@ class topshop_ctl_trade_muumi_list extends topshop_controller{
             'TRADE_CLOSED_BY_SYSTEM' => '已关闭',
             'PARTIAL_SHIPMENT' => '部分发货',
         );
-        $this->contentHeaderTitle = app::get('topshop')->_('订单查询');
         $postFilter = input::get();
         if($postFilter['useSessionFilter'])
         {
@@ -143,6 +145,11 @@ class topshop_ctl_trade_muumi_list extends topshop_controller{
             'pay_type' =>$filter['pay_type'],
             'shipping_type' =>$filter['shipping_type'],
             // 'settlement_status' =>$filter['settlement_status'],
+			/*add_2019/1/9_by_wanghaichao_start*/
+			//zishopid
+			'child_shop_id'=>$filter['shop_id'],
+			/*add_2019/1/9_by_wanghaichao_end*/
+
             'page_no' => intval($page),
             'page_size' =>intval($limit),
             'order_by' =>'created_time desc',
@@ -153,7 +160,7 @@ class topshop_ctl_trade_muumi_list extends topshop_controller{
         );
 
         //显示订单售后状态
-        // $params['is_aftersale'] = true;
+        $params['is_aftersale'] = true;
         $params['shop_id'] = $this->shopId;
 
         $tradeList = app::get('topshop')->rpcCall('trade.get.muumi.trade.list',$params,'seller');
@@ -201,7 +208,6 @@ class topshop_ctl_trade_muumi_list extends topshop_controller{
         $pagedata['deliveryVcode'] = $zitiDeliveryVcode;
         $pagedata['pagers'] = $this->__pager($postFilter,$page,$count);
         // jj($tradeList);
-
         return view::make('topshop/trade/muumi/item.html', $pagedata);
     }
 
@@ -220,7 +226,7 @@ class topshop_ctl_trade_muumi_list extends topshop_controller{
         $postFilter['pages'] = time();
         $total = ceil($count/$this->limit);
         $pagers = array(
-            'link'=>url::action('topshop_ctl_trade_list@search',$postFilter),
+            'link'=>url::action('topshop_ctl_trade_muumi_list@search',$postFilter),
             'current'=>$page,
             'use_app' => 'topshop',
             'total'=>$total,

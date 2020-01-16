@@ -16,63 +16,97 @@ class topshop_ctl_mall_shop extends topshop_mall_controller {
     {
         $objLibMallList = kernel::single('sysmall_data_list');
 
-        $params = input::get();
-        if(!$params['shop_id'])
-        {
-            $url = url::action('topshop_ctl_mall_list@index');
-            header("Location:".$url);exit;
-        }
-        $shop_id = $this->shopId;
-        $pagedata['initItemsId'] = $objLibMallList->getInitItemsId($shop_id);//店铺代售商品id数组
-        $filter = array();
+        $objLibMallList = kernel::single('sysmall_data_list');
 
-        $filter['shop_id'] = $params['shop_id'];
-        if($params['title']) $filter['title'] = $params['title'];
-        $count = $objLibMallList->getMallItemCount($filter);// 列表总数
+        $params = input::get();//var_dump($params);die;
+        // 获取的每页显示数量
+        $params['page_size'] = intval($params['page_size']);
+        $params['page_size'] = $params['page_size'] > 0 ? $params['page_size'] : $this->limit;
 
-        if($params['page_size'])
-        {
-            // 获取的每页显示数量
-            $params['page_size'] = intval($params['page_size']);
-            if($params['page_size'] > 0) $this->limit = $params['page_size'];
-        }
-        $params['pages'] = intval($params['pages']);// 获取当前页面数
-        $params['pages'] = $params['pages'] > 0 ? $params['pages'] : 1;
-        $offset = ($params['pages'] - 1) * $this->limit;
-        $fields = 'item.item_id, item.title, item.image_default_id, item.price, item.cost_price, item.mkt_price, item.supply_price';
-        
-        $pagedata['list'] = $objLibMallList->getMallItemList($fields,$filter,$offset,$this->limit,$params['orderBy']);
+        $mallParams['filter'] = $this->__filter($params);
+        $count = $objLibMallList->getMallItemCount($mallParams);// 列表总数
+        // 列表总数
         $pagedata['count'] = $count;
+        // 过滤条件
 
-        //分页
-        $tmpFilter = $params;
-        unset($tmpFilter['pages']);
-        $pagedata['pagers'] = $this->__pages($params['pages'], $pagedata['count'], $tmpFilter);
+        $pagedata['filter'] = $params;
 
+        $pagedata['filter_json'] = json_encode($pagedata['filter']);
+        // 面包屑数据
+        //$pagedata['breadcrumb'] = $this->__breadcrumb($params);
+        // 过滤条件
+        //$pagedata['screen'] = $this->__screen($params);
+        
+        $commonPageData = $this->_getCommonPageData();
+        $pagedata = array_merge($pagedata, $commonPageData);
+		$pagedata['setting']=app::get('sysshop')->model('mall_setting')->getRow("*",array('shop_id'=>$params['shop_id']));
+		if($pagedata['setting']['items']){
+			$shopParams['filter']['item_id']=$pagedata['setting']['items'];
+            $shopParams['fields'] = 'item.title, item.image_default_id, item.price, item.supply_price,item.created_time,item.shop_id, shop.shop_name, ROUND((item.price-item.supply_price)/item.price*100,1) AS profit, (store.store-store.freez) AS real_store,m_item.status';
+			$pagedata['tj_item'] = $objLibMallList->getMallItemList($shopParams);
+		}
+		$pagedata['setting']['banner']=unserialize($pagedata['setting']['banner']);
+		$pagedata['setting']['ad_pic']=unserialize($pagedata['setting']['ad_pic']);
+		$pagedata['shop_id']=$this->shopId;
+		
+        // 店铺分类
+		//foreach($pagedata['shopcat'] as $shopCatId=>&$row)
+        //{
+        //    if( $row['children'] )
+        //    {
+        //        $row['cat_id'] = $row['cat_id'].','.implode(',', array_column($row['children'], 'cat_id'));
+       //     }
+        //}
+		$title=app::get('sysshop')->model('shop')->getRow('shop_name',array('shop_id'=>$params['shop_id']));
+		$pagedata['title']=$title['shop_name'];
         return $this->page('topshop/mall/shop.html', $pagedata);
     }
 
     /**
-     * 分页处理
-     * @param $current  当前页
-     * @param $total    总页数
-     * @param $filter   查询条件
+     * 列表数据
+     * @return mixed
+     */
+    public function listData()
+    {
+        $objLibMallList = kernel::single('sysmall_data_list');
+
+        $params = input::get();
+        // 获取的每页显示数量
+        $params['page_size'] = intval($params['page_size']);
+        $params['page_size'] = $params['page_size'] > 0 ? $params['page_size'] : $this->limit;
+        // 获取当前页面数
+        $params['pages'] = intval($params['pages']);
+        $params['pages'] = $params['pages'] > 0 ? $params['pages'] : 1;
+
+        $mallParams['filter'] = $this->__filter($params);
+        $mallParams['offset'] = ($params['pages'] - 1) * $params['page_size'];
+        $mallParams['limit'] = $params['page_size'];
+        $mallParams['orderBy'] = $params['orderBy'];
+        // 列表数据
+        $pagedata['list'] = $objLibMallList->getMallItemList($mallParams);
+        //var_dump($pagedata['list']);die;
+        $commonPageData = $this->_getCommonPageData();
+        $pagedata = array_merge($pagedata, $commonPageData);
+		$pagedata['shop_id']=$this->shopId;
+        return $this->page('topshop/mall/list_data.html', $pagedata);
+    }
+
+    /**
+     * 重构条件参数
+     * @param $params
      * @return array
      */
-    private function __pages($current, $total, $filter)
+    private function __filter($params)
     {
-        //处理翻页数据
-        $current = ($current || $current <= 100 ) ? $current : 1;
-        $filter['pages'] = time();
+        $filter = array('sale_type' => 0);// 过滤销售类型
+        $filter['status'] = 'onsale';
+        if(isset($params['title'])) $filter['title'] = $params['title'];
+        if($params['cat_id']) $filter['cat_id'] = $params['cat_id'];
+        if($params['brand_id']) $filter['brand_id'] = $params['brand_id'];
+        if($params['shop_id']) $filter['shop_id'] = $params['shop_id'];
 
-        if( $total > 0 ) $totalPage = ceil($total/$this->limit);
-        $pagers = array(
-            'link'=>url::action('topshop_ctl_mall_shop@index', $filter),
-            'current'=>$current,
-            'total'=>$totalPage,
-            'token'=>time(),
-        );
-        return $pagers;
+        return $filter;
     }
-    
+
+
 }

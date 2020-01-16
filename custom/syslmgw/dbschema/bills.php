@@ -71,6 +71,27 @@ return array(
             'label' => app::get('syslmgw')->_('被叫'),
             'comment' => app::get('syslmgw')->_('被叫'),
         ),
+		/*add__by_wanghaichao_start*/
+		'callerMobile' => array(
+            'type' => 'string',
+            'length' => 50,
+            'default' => '0',
+            'order' => 5,
+            'required' => false,
+            'label' => app::get('syslmgw')->_('主叫分机所绑定的号码'),
+            'comment' => app::get('syslmgw')->_('主叫分机所绑定的号码'),
+        ),
+        'calledMobile' => array(
+            'type' => 'string',
+            'length' => 50,
+            'default' => '0',
+            'order' => 6,
+            'required' => false,
+            'label' => app::get('syslmgw')->_('被叫分机所绑定的号码'),
+            'comment' => app::get('syslmgw')->_('被叫分机所绑定的号码'),
+        ),
+		/*add__by_wanghaichao_end*/
+		
         'userData' => array(
             'type' => 'string',
             'length' => 255,

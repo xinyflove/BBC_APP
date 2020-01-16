@@ -286,7 +286,13 @@ class topshop_ctl_passport extends topshop_controller
 
     public function logout()
     {
+        $is_hm_supplier_login = $this->checkHuiminSupplierLogin();
         pamAccount::logout();
+        //判断如果是惠民供应商登陆，则跳转至供应商登陆页面
+        if($is_hm_supplier_login) {
+            unset($_SESSION['huimin_supplier_id']);
+            return redirect::action('topshop_ctl_passport@huiminSupplierLoginPage');
+        }
         return redirect::action('topshop_ctl_passport@signin');
     }
 
@@ -324,5 +330,97 @@ class topshop_ctl_passport extends topshop_controller
         return $this->splash('success',$url,$msg,true);
     }
 
+    //
+    public function huiminSupplierRegisterPage()
+    {
+        $this->set_tmpl('huiminPage');
+        $pagedata=[];
+        return $this->page('topshop/huimin/register.html', $pagedata);
+    }
+
+    public function huiminSupplierRegisterCreate()
+    {
+        try {
+            $hm_shop_id = app::get('sysshop')->getConf('sysshop.hmshopping.shop_id');
+
+            $params = input::get();
+            $params['shop_id'] = $hm_shop_id;
+            $params['supplier_name'] = '';
+            $params['mobile'] = '';
+            $params['lat'] = '';
+            $params['lon'] = '';
+            $params['sh_phone'] = '';
+            $params['sh_address'] = '';
+            // $params['is_audit'] = 'PASS';
+
+            $objMdlSupplier = app::get('sysshop')->model('supplier');
+            $record = $objMdlSupplier->count(['login_account' => $params['login_account']]);
+            if( $record  )
+            {
+                throw new Exception('已用户名已被占用，请重新填写');
+            }
+            shopAuth::signupSupplier($params, true);
+
+            $url = url::action('topshop_ctl_passport@huiminSupplierLoginPage');
+            return $this->splash('success', $url, '创建成功', true);
+        } catch (Exception $e) {
+            $msg = $e->getMessage();
+            return $this->splash('error', '', $msg, true);
+        }
+    }
+
+    public function huiminSupplierLoginPage()
+    {
+        if($this->checkHuiminSupplierLogin()){
+            return redirect::action('topshop_ctl_index@index');
+        }
+        $this->set_tmpl('huiminPage');
+        $pagedata=[];
+        return $this->page('topshop/huimin/login.html', $pagedata);
+    }
+
+    public function huiminSupplierLogin()
+    {
+        try {
+            $loginName = input::get('login_account');
+            $password = input::get('login_password');
+            if( empty($loginName) )
+            {
+                throw new Exception(app::get('syssupplier')->_('请输入账号'));
+            }
+
+            if( empty($password) )
+            {
+                throw new Exception(app::get('syssupplier')->_('请输入密码'));
+            }
+
+            $filter = ['login_account'=>trim($loginName), 'disabled'=>'0'];
+            $supplier = app::get('sysshop')->model('supplier')->getRow('supplier_id,login_account,login_password', $filter);
+            if(!$supplier || !hash::check($password, $supplier['login_password']))
+            {
+                throw new Exception(app::get('sysuser')->_('用户名或密码错误'));
+            }
+            $hm_shop_id = app::get('sysshop')->getConf('sysshop.hmshopping.shop_id');
+            $seller = app::get('sysshop')->model('seller')->getRow('seller_id', ['shop_id' => $hm_shop_id], 'seller_id asc');
+            if(!$seller){
+                throw new Exception(app::get('syssupplier')->_('数据异常'));
+            }
+
+            $account = app::get('sysshop')->model('account')->getRow('seller_id,login_account', ['seller_id' => $seller['seller_id']]);
+            if(!$account){
+                throw new Exception(app::get('syssupplier')->_('数据异常'));
+            }
+
+            pamAccount::setSession($account['seller_id'], $account['login_account']);
+            $_SESSION['huimin_supplier_id'] = $supplier['supplier_id'];
+            $this->sellerlog("惠民店铺供货商账号登录。账号id：{$supplier['supplier_id']}，账号名：{$supplier['login_account']}");
+
+            $url = url::action('topshop_ctl_account_supplier@hmEdit',['supplier_id' => $supplier['supplier_id']]);
+            return $this->splash('success', $url, '登录成功', true);
+        } catch (Exception $e) {
+            $msg = $e->getMessage();
+            return $this->splash('error', '', $msg, true);
+        }
+    }
 }
 

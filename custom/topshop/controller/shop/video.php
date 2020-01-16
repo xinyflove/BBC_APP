@@ -62,6 +62,11 @@ class topshop_ctl_shop_video extends topshop_controller {
         }
 
         $params['shop_id'] = $this->shopId;
+        //如果是惠民供应商登陆
+        if($hm_supplier_id = $this->checkHuiminSupplierLogin()) {
+            $params['shop_id'] = $hm_supplier_id;
+            $params['target_type'] = 'supplier';
+        }
         $params['page_no'] = intval(input::get('pages',1));
         $params['page_size'] = intval($this->limit);
 		$params['video_type'] = input::get('video_type','item');
@@ -154,6 +159,9 @@ class topshop_ctl_shop_video extends topshop_controller {
         if( input::get('isOnlyShow') )
         {
             $pagedata['isOnlyShow'] = input::get('isOnlyShow');
+        }
+        if($hm_supplier_id = $this->checkHuiminSupplierLogin()) {
+            $pagedata['isOnlyShow'] = 'item';
         }
         return view::make('topshop/shop/video/upload.html', $pagedata);
     }

@@ -75,6 +75,12 @@ class topshop_ctl_account_roles extends topshop_controller {
                 if(!$topshopNewSetup && $openNewAppdecorate !='open'&& $key=='app_decorate'){
                     unset($permission[$k]['group'][$key]);
                 }
+                /*如果电视直播购物开关未开启，直播相关权限不展示 开始 @author:xinyufeng;@time:2019-04-28*/
+                if($k == 'live' && $this->shopInfo['shop_live_switch'] != 'on')
+                {
+                    unset($permission[$k]);
+                }
+                /*如果电视直播购物开关未开启，直播相关权限不展示 结束*/
             }
         }
 

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="/app/topmaker/statics/ticket/css/index.css">
+    <link rel="stylesheet" href="/app/topmaker/statics/ticket/lib/mescroll/mescroll.min.css">
+    <link rel="stylesheet" href="/app/topmaker/statics/ticket/lib/common/public.css">
+    <title>首页</title>
+    <script src="/app/topmaker/statics/ticket/lib/common/flexible.js"></script>
+    <style>
+        .m-index-list ul li .li-img{
+            width: 100%;
+            height: 4rem;
+            position: relative;
+            overflow: hidden;
+            display: block;
+        }
+        .m-index-list ul li .li-img img{
+            width: 100%;
+            height: auto;
+            min-height: 4rem;
+            position: absolute;
+            top:0;
+            left: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="m-index-banner">
+        <img src="/app/topmaker/statics/ticket/images/banner.png" alt="">
+    </div>
+    <div class="m-index-list mescroll" id="mescroll" >
+        <ul id="dataList" class="dataList">
+            <!-- <li>
+                <img src="/app/topmaker/statics/ticket/images/img.png" alt="">
+                <div>
+                    <p>2019青岛白色浪潮国际电子音乐节</p>
+                    <span>¥360</span>
+                </div>
+            </li>
+            <li>
+                <img src="/app/topmaker/statics/ticket/images/img.png" alt="">
+                <div>
+                    <p>2019青岛白色浪潮国际电子音乐节</p>
+                    <span>¥360</span>
+                </div>
+            </li> -->
+        </ul>
+    </div>
+    
+    
+    
+    <script src="/app/topmaker/statics/ticket/lib/jquery/jquery-3.3.0.min.js"></script>
+    <script src="/app/topmaker/statics/ticket/lib/mescroll/mescroll.min.js"></script>
+    <script src="/app/topmaker/statics/ticket/js/model.js"></script>
+    <script>
+    $(function(){
+			//创建MeScroll对象
+			// 加载
+            var mescroll = new MeScroll("mescroll", {
+                down: {
+                    offset: 40
+                },
+                up: {
+                    page: { size: 10 },//每次加载1条数据,模拟loadFull
+                    loadFull: {
+                        use: true, //列表数据过少,不足以滑动触发上拉加载,是否自动加载下一页,直到满屏或者无更多数据为止;默认false,因为可通过调高page.size避免这个情况
+                        delay: 500 //延时执行的毫秒数; 延时是为了保证列表数据或占位的图片都已初始化完成,且下拉刷新上拉加载中区域动画已执行完毕;
+                    },
+                    noMoreSize: 1,
+                    clearEmptyId: "dataList", //1.下拉刷新时会自动先清空此列表,再加入数据; 2.无任何数据时会在此列表自动提示空
+                    callback: getListData //上拉回调,此处可简写; 相当于 callback: function (page) { getListData(page); }
+                }
+            });
+
+            function getListData(page) {
+
+                //console.log("page.num==" + page.num);
+                getListDataFromNet(page.num, page.size, function (data) {
+                    console.log(data.length);
+                    mescroll.endSuccess(data.length);
+                    setListdom(data);
+                }, function () {
+                    mescroll.endErr();
+                })
+            }
+            function setListdom(data) {
+                var str = ''
+                for (var i = 0; i < data.length; i++) {
+                    str += '<li>';
+                    str += '<a href="'+data[i].url+'" class="li-img"><img src="'+data[i].image_default_id+'" alt=""></a>';
+                    str += '<a href="'+data[i].url+'"><div>';
+                    str += '<p>'+data[i].title+'</p>';
+                    str += '<span>¥'+data[i].price+'</span>';
+                    str += '</div></a>';
+                    str += '</li>';
+                }
+                $('#dataList').append(str)
+
+            }
+            function getListDataFromNet(pageNum, pageSize, successCB, errorCB) {
+				var seller_id="<{$seller_id}>";
+                setTimeout(function () {
+                    $.ajax({
+                        type: "post",
+                        url: "<{url action=topwap_ctl_maker_index@ajaxGetTicketHomeItem}>",
+                        async: true,
+						data:{seller_id:seller_id,pages:pageNum,pageSize:pageSize},
+                        dataType: 'json',
+                        success: function (res) {
+                            var listData = res;
+                            //console.log(res.result.commentList.length);
+                            /*if (res.result.commentList != '') {
+                                //此处为模拟接口
+                                for (var i = (pageNum - 1) * pageSize; i < pageNum * pageSize; i++) {
+                                    console.log((i + 1) == res.result.commentList.length);
+                                    console.log(listData)
+                                    if (i == res.result.commentList.length) break;
+                                    listData.push(res.result.commentList[i]);
+                                }
+                                //分页数据可用以下循环
+                                // for (var i = 0; i < res.result.commentList.length; i++) {
+                                //     listData.push(res.result.commentList[i]);
+                                // }
+                            }*/
+							
+                            successCB(listData);
+                        },
+                        error: errorCB
+                    });
+                }, 500)
+            }
+
+        });
+			
+    </script>
+    
+</body>
+</html>

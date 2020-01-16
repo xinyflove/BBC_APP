@@ -15,6 +15,7 @@ return array(
 			'topmaker.send.vcode',	// 发送手机验证码
 			'topmaker.trustlogin.callbacksignin',	// 登录页面-微信回调函数
 			'topmaker.trustlogin.callbacksignup',	// 注册页面-微信回调函数
+			'topmaker.getgrouplistdata',	// 获取组织列表数据
         ]
     ],
     

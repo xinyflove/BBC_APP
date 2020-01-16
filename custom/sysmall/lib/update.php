@@ -111,7 +111,7 @@ class sysmall_update {
 		// 代售商品的成本价 -> 原始商品的供货价
 		$itemInfo['cost_price'] = $itemInfo['supply_price'];
 		$itemInfo['supply_price'] = 0;
-		unset($itemInfo['shop_cat_id'], $initItemInfo);
+		unset($itemInfo['shop_cat_id'], $itemInfo['created_time'], $initItemInfo);
 
 		$filter = array(
 			'item_id' => $item_id,

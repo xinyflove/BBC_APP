@@ -62,6 +62,12 @@ class topshop_ctl_shop_image extends topshop_controller {
         }
 
         $params['shop_id'] = $this->shopId;
+        //如果是惠民供应商登陆
+        if($hm_supplier_id = $this->checkHuiminSupplierLogin()) {
+            $params['shop_id'] = $hm_supplier_id;
+            $params['target_type'] = 'supplier';
+        }
+
         $params['page_no'] = intval(input::get('pages',1));
         $params['page_size'] = intval($this->limit);
 		$params['img_type'] = input::get('img_type','item');
@@ -154,6 +160,9 @@ class topshop_ctl_shop_image extends topshop_controller {
         if( input::get('isOnlyShow') )
         {
             $pagedata['isOnlyShow'] = input::get('isOnlyShow');
+        }
+        if($hm_supplier_id = $this->checkHuiminSupplierLogin()) {
+            $pagedata['isOnlyShow'] = 'item';
         }
         return view::make('topshop/shop/image/upload.html', $pagedata);
     }
@@ -291,8 +300,8 @@ class topshop_ctl_shop_image extends topshop_controller {
         $imageCatName = trim(input::get('image_cat_name'));
         $validator = validator::make(
             array('image_cat_name' => $imageCatName),
-            array('image_cat_name' => 'required|max:10'),
-            array('image_cat_name' => '文件夹名称必填|文件名称不能超过10个字')
+            array('image_cat_name' => 'required|max:30'),
+            array('image_cat_name' => '文件夹名称必填|文件名称不能超过30个字')
         );
         if( $validator->fails() )
         {

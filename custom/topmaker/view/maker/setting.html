@@ -1,72 +1,94 @@
-<style>
-
-    header .icon-func{
-        color: #989898;
-    }
-    .bbc-btn-warning{
-        background-color: #ffac20;
-        border-color: #ffac20;
-    }
- 
-    .set-userimg img{
-        border-radius: 50%;
-        display: block;
-        width: 141px;
-        height: 141px;
-        margin:10px 0;
-        border: 0;
-    }
-    .set-userimg #preview{
-        padding: 0;
-        border: 0;
-        margin: 0 auto;
-    }
-</style>
-<style>
-    .txt{ height:28px; border:1px solid #cdcdcd; width:670px;}
-    .mybtn{ background-color:#FFF; line-height:14px;vertical-align:middle;border:1px solid #CDCDCD;height:30px; width:70px;}
-    .file{ position:absolute; top:0; right:80px; height:24px; filter:alpha(opacity:0);opacity: 0;width:260px }
-</style>
-<header class="page-header">
-    <i class="header-left icon-func bbc-icon bbc-icon-back shopex-action-back"></i>
-    <div class="header-title"></div>
-</header>
-<section class="container set-userimg">
-    <section class="shopex-input-group">
-        <div class="shopex-input-row">
-            <div id="preview">
-
-
-                <input id="edit_maker_name" type="text" name="name"  value="<{$seller.name}>">
-
-
-
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="/app/topmaker/statics/lib/common/flexible.js"></script>
+    <link rel="stylesheet" href="/app/topmaker/statics/lib/common/public.css">
+    <link rel="stylesheet" href="/app/topmaker/statics/css/styleSheet.css">
+    <title>小店设置</title>
+	<style>
+	.distribution-center .distribution-center-list .distribution-center-des .desc {
+	  width: 100%;
+	  height: 100%;
+	  border: 0;
+	  background: #fbfbfb;
+	  vertical-align: top;
+	  outline: none;
+	  color: #ccc;
+	  padding: 10px 0
+	}
+	</style>
+</head>
+<body>
+<div class="distribution-center">
+    <div class="m-hacker-choose-header">
+        <div class="header-left">
+            <img src="/app/topmaker/statics/images/before.png" alt="">
+        </div>
+        <div class="header-mid">
+            <p>小店设置</p>
+        </div>
+        <div class="header-right">
+            <img src="/app/topmaker/statics/images/toindex.png" alt="">
+        </div>
+    </div>
+    <div class="distribution-center-wrap">
+        <div class="distribution-center-list">
+            <div class="distribution-center-tit">名称</div>
+            <div class="distribution-center-des">
+                <input id="edit_maker_name" class="nickname" name="name" type="text" placeholder="填写默认为您的昵称" value="<{$seller.shop_name}>">
+            </div>
+        </div>
+		
+        <div class="distribution-center-list">
+            <div class="distribution-center-tit">图标</div>
+            <div class="distribution-center-des location">
+                <img id="imghead"  <{if $seller.avatar}>src="<{$seller.avatar|storager}>"<{else}> src="/app/topmaker/statics/images/avatar.jpg"<{/if}>  style="width: 0.68rem;height: 0.68rem;margin-top: 0.19rem;">
+                <span class="size">200*200</span>
                 <div class="images-uploader-headimg">
                     <input id="edit_file_headimg" type="file" name="pic[]" multiple accept="image/*" data-size="<{$env.config.image.uploadedFileMaxSize}>" data-max="5" data-remote="<{url action=toputil_ctl_image@uploadImages from=maker type=maker}>" style="display: none">
                 </div>
-                <img id="imghead" src="<{$seller.avatar|storager}>">
-
-
+            </div>
+        </div>
+		
+		<div class="distribution-center-list" style="height: 1.7rem;">
+            <div class="distribution-center-tit">简介</div>
+            <div class="distribution-center-des">
+                <textarea id="edit_maker_description" class="desc" rows="3"  name="description" placeholder="填写小店简介"><{$seller.shop_description}></textarea>
+                <!--<input id="edit_maker_description" class="nickname" name="description" type="text" placeholder="填写小店简介" value="<{$seller.shop_description}>">-->
+            </div>
+        </div>
+		
+        <div class="distribution-center-list distribution-center-signage">
+            <div class="distribution-center-tit">店招</div>
+            <div class="distribution-center-des location">
+                <img id="imgheads" <{if $seller.shop_brand}>src="<{$seller.shop_brand|storager}>"<{else}> src="/app/topmaker/statics/images/shop_brand.jpg"<{/if}>     style="width: 4.72rem;height: 1.64rem;margin-top:0.32rem;">
+                <span class="signage-size">750*260</span>
                 <div class="images-uploader-headimgs">
                     <input id="edit_file_makerbanner" type="file" name="pic[]" multiple accept="image/*" data-size="<{$env.config.image.uploadedFileMaxSize}>" data-max="5" data-remote="<{url action=toputil_ctl_image@uploadImages from=maker type=banner}>" style="display: none">
                 </div>
-                <img id="imgheads" src="<{$seller.shop_brand|storager}>">
             </div>
         </div>
-    </section>
-    <div class="form-group">
-        <input type='hidden' name='textfield' id='textfield' class='txt' />
-        <input type="file" accept="image/*" name="file" class="file" id="file" data-size="20000" />
     </div>
-    <section class="shopex-content-padded form-op-section">
-        <button id="upload" type="button" class="shopex-btn shopex-btn-block shopex-btn-warning bbc-btn-warning">保存</button>
-    </section>
-    <!--</form>-->
-</section>
+    <div class="save">
+        <div id="upload">保存设置</div>
+    </div>
+</div>
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+<script>
+
+
+
+</script>
+
+
+
 <script src="/app/topwap/statics/vote/js/jquery-1.11.3.min.js"></script>
 <link href="/app/topwap/statics/vote/css/dialog.css" rel="stylesheet" media="screen, projection" />
 <script src="/app/topwap/statics/vote/js/dialog.js"></script>
+<script src="/app/topmaker/statics/lib/layui/layui.all.js"></script>
 <{script src="uploader.js" app="site"}>
 <script type="text/javascript">
     $('#imghead').on('click', function() {
@@ -111,11 +133,15 @@
         //shopex.toast('保存成功');
 
         var name = $("#edit_maker_name").val();
-        $.post('<{url action=topmaker_ctl_setting@saveMaker  name=}>'+name,function(rs){
+        var description = $("#edit_maker_description").val();
+        $.post('<{url action=topmaker_ctl_setting@saveMaker  name=}>'+name+'&description='+description,function(rs){
             if(rs.code){
-                alert('保存成功');
+                //alert('保存成功');
+
+                layer.msg('保存成功');
             }else{
-                alert('保存失败，请重试...');
+                //alert('保存失败，请重试...');
+                layer.msg('保存失败，请重试...');
             }
         },'json');
 
@@ -123,3 +149,14 @@
         //window.location.href = '<{url action=topwap_ctl_member@detail}>';
     });
 </script>
+<script>
+    //头部跳转页面
+    $('.m-hacker-choose-header .header-left').click(function(){
+        window.history.back(-1);
+    });
+    $('.m-hacker-choose-header .header-right').click(function(){
+        window.location.href = '<{url action=topmaker_ctl_index@index}>';
+    })
+</script>
+</body>
+</html>

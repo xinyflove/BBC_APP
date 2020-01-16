@@ -380,7 +380,19 @@ class topwap_ctl_member_aftersales extends topwap_ctl_member {
         $filter['oid'] = $oid;
         $filter['fields'] = 'item_id,cat_id,end_time,bn,title,price,num,pic_path,spec_nature_info,gift_data';
         $pagedata['orderInfo'] = app::get('topwap')->rpcCall('trade.order.get',$filter,'buyer');
-		$pagedata['voucher']=app::get('systrade')->model('voucher')->getList('voucher_id,voucher_code',array('oid'=>$oid,'status'=>'WAIT_WRITE_OFF'));
+		$pagedata['voucher']=app::get('systrade')->model('voucher')->getList('voucher_id,voucher_code,ticket_id',array('oid'=>$oid,'status'=>'WAIT_WRITE_OFF'));
+		/*add_2018/12/24_by_wanghaichao_start*/
+		//判断卡券是不是套券
+		foreach($pagedata['voucher'] as $k=>$v){
+			if($v['ticket_id']){
+				$ticket=app::get('sysitem')->model('ticket')->getRow('title',array('id'=>$v['ticket_id']));
+				$pagedata['voucher'][$k]['title']=$ticket['title'];
+			}else{
+				$pagedata['voucher'][$k]['title']=$pagedata['orderInfo']['title'];
+			}
+		}
+		/*add_2018/12/24_by_wanghaichao_end*/
+		
 		$pagedata['tid']=$tid;
 		$pagedata['oid']=$oid;
         return $this->page('topwap/member/aftersales/virtualapply.html' ,$pagedata);

@@ -1,0 +1,138 @@
+.login {
+  width: 100%;
+  height: 100%;
+  background: #fff;
+}
+.login .logo {
+  width: 100%;
+  height: auto;
+  padding: 0.3rem;
+}
+.login .logo img {
+  width: 0.9rem;
+  height: auto;
+  margin: 0 auto;
+}
+.login .into {
+  width: 100%;
+  padding: 0.6rem 0.5rem .3rem;
+}
+.login .into .into-item {
+  width: 100%;
+  height: 0.8rem;
+  border-bottom: 1px solid #eee;
+  position: relative;
+}
+.login .into .into-item input {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  outline: none;
+  font-size: 0.3rem;
+}
+.login .into .into-item .codeBox {
+  position: absolute;
+  top: .2rem;
+  right: 0;
+  width: 2rem;
+  height: .8rem;
+  line-height: .8rem;
+  border: 1px solid #eee;
+  text-align: center;
+}
+.login .into .code {
+  height: 1rem;
+  border: 0;
+  background: url(../images/bg.png) no-repeat left bottom;
+  background-size: 4.2rem 1px;
+}
+.login .login-btn {
+  width: 100%;
+  height: auto;
+  padding: 0 0.5rem;
+  margin-top: 0.25rem;
+}
+.login .login-btn .btn {
+  width: 100%;
+  height: 0.85rem;
+  line-height: 0.85rem;
+  background: #fc8b3b;
+  color: #fff;
+  font-size: 0.3rem;
+}
+.login .login-btn h2 {
+  font-size: 0.3rem;
+  margin: 0;
+}
+.login .login-btn .fileBox {
+  display: flex;
+  justify-content: space-between;
+  margin: 0.3rem 0 .5rem;
+}
+.login .login-btn .fileBox .fileBox-left {
+  position: relative;
+  width: 3.14rem;
+  height: 2.1rem;
+  background: url(../images/photo2.png) no-repeat center;
+  background-size: cover;
+  text-align: center;
+}
+.login .login-btn .fileBox .fileBox-left img {
+  max-width: 100%;
+  max-height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  margin: auto;
+}
+.login .login-btn .fileBox .fileBox-left input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3.14rem;
+  height: 2.1rem;
+  z-index: 9;
+  opacity: 0;
+}
+.login .login-btn .fileBox .fileBox-right {
+  position: relative;
+  width: 3.14rem;
+  height: 2.1rem;
+  background: url(../images/photo1.png) no-repeat center;
+  background-size: cover;
+  text-align: center;
+}
+.login .login-btn .fileBox .fileBox-right img {
+  max-width: 100%;
+  max-height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  margin: auto;
+}
+.login .login-btn .fileBox .fileBox-right input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3.14rem;
+  height: 2.1rem;
+  z-index: 9;
+  opacity: 0;
+}
+.login .login-btn .fileBox .filebg {
+  background: #eee;
+}
+.login .toreg {
+  float: right;
+  margin-right: 0.5rem;
+  color: #999;
+  margin-top: 0.2rem;
+}
+.login .toreg a {
+  color: #f96122;
+  cursor: pointer;
+}

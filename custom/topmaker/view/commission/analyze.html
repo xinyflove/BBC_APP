@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="<{resource app='topmaker' path='/lib/common/flexible.js'}>"></script>
+    <link rel="stylesheet" href="<{resource app='topmaker' path='/lib/common/public.css'}>">
+    <link rel="stylesheet" href="<{resource app='topmaker' path='/css/styleSheet.css'}>">
+    <title>创客中心-数据统计</title>
+</head>
+<body>
+    <div class="m-todayVisitor">
+        <div class="m-hacker-choose-header">
+            <div class="header-left">
+                <img src="/app/topmaker/statics/images/before.png" alt="">
+            </div>
+            <div class="header-mid">
+                <p>数据统计</p>
+            </div>
+            <div class="header-right">
+                <img src="/app/topmaker/statics/images/toindex.png" alt="">
+            </div>
+        </div>
+        <div class = "todayVisitor-time">
+            <input type="month" value="2018年11月" class="todayTime">
+        </div>
+        <div class = "todayVisitor-customer">
+            <h2>订单概况</h2>
+            <ul>
+                <li>
+                    <p><{$trade.today}></p>
+                    <span>本日新增</span>
+                </li>
+                <li>
+                    <p><{$trade.moth}></p>
+                    <span>本月新增</span>
+                </li>
+                <li>
+                    <p><{$trade.total}></p>
+                    <span>累计订单</span>
+                </li>
+            </ul>
+        </div>
+        <div class = "todayVisitor-access">
+            <h2>访问分析</h2>
+            <div class="accessBox" id = "accessBox"></div>
+        </div>
+        <div class = "todayVisitor-sales">
+            <h2>销售分析</h2>
+            <div class="salesBox" id = "salesBox"></div>
+        </div>
+    </div>
+    <link rel="stylesheet" href="<{resource app='topmaker' path='/lib/common/public.css'}>">
+    <link rel="stylesheet" href="<{resource app='topmaker' path='/css/styleSheet.css'}>">
+    <script src="<{resource app='topmaker' path='/lib/jquery/jquery-2.0.1.min.js'}>"></script>
+    <script src="<{resource app='topmaker' path='/lib/echarts/echarts.min.js'}>"></script>
+    <script>
+        var todayVisitor = {
+            data: {
+                visit_day:[<{$visit.days}>],
+				visit_count:[<{$visit.count}>],
+                sales_day:[<{$sales.days}>],
+				sales_payment:[<{$sales.payment}>],
+            },
+            init: function () {
+                this.onload();
+                this.bindEvent();
+            },
+            onload: function () {
+                this.echartsAccess(this.data.visit_day,this.data.visit_count);
+                this.echartsSales(this.data.sales_day,this.data.sales_payment);
+                this.todayTime();
+            },
+            bindEvent: function () {
+        
+            },
+            todayTime:function(){
+                var date = new Date();
+                var y = date.getFullYear(),
+                    m = date.getMonth() + 1;
+                    
+                var time = y + '-' + m 
+
+
+                $(".todayTime").val(time)
+            },
+            echartsAccess:function(days,count){
+                var accessChart = echarts.init(document.getElementById('accessBox'));
+                var option = {
+                    tooltip: {
+                        
+                        trigger: 'axis',
+                        axisPointer: {
+                            type:'line',
+                            lineStyle:{
+                                color:"#fde9ca"
+                            }
+                        },
+                        formatter: "{b}<br/>访问人数 : {c}人"
+                    },
+                    grid: {
+                        top:'12%',
+                        left: '0%',
+                        right: '15%',
+                        bottom: '5%',
+                        containLabel: true
+                    },
+                    xAxis: {
+                        name: '日期',
+                        type: 'category',
+                        axisTick:{       //X轴刻度线
+                            show:false
+                        },
+                        axisLine:{
+                            lineStyle:{
+                                color:"#CCC",
+                                width:1
+                            }
+                        },
+                        axisLabel: {
+                            show: true,
+                            textStyle: {
+                                color: '#000'
+                            }
+                        },
+                        nameTextStyle:{
+                            color:'#000'
+                        },
+                        data: days
+                    },
+                    yAxis: {
+                        name: '人',
+                        type: 'value',
+                        axisTick:{       //X轴刻度线
+                            show:false
+                        },
+                        splitLine: {     //网格线
+                            show: false
+                        },
+                        axisLine:{
+                            lineStyle:{
+                                color:"#CCC",
+                                width:1
+                            }
+                        },
+                        axisLabel: {
+                            show: true,
+                            textStyle: {
+                                color: '#000'
+                            }
+                        },
+                        nameTextStyle:{
+                            color:'#000'
+                        }
+                    },
+                    series: [{
+                        data: count,
+                        type: 'line',
+                        showSymbol: false,
+                        symbol: 'circle',
+                        itemStyle: {
+                            normal: {
+                                color: "#f1924a"
+                            },
+                        },
+                    }]
+                };
+                
+                accessChart.setOption(option);
+            },
+            echartsSales:function(sales_day,sales_payment){
+                var salesChart = echarts.init(document.getElementById('salesBox'));
+                option = {
+                    color: ['#968aff'],
+                    grid: {
+                        top:'12%',
+                        left: '0%',
+                        right: '15%',
+                        bottom: '5%',
+                        containLabel: true
+                    },
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: {
+                            type: 'none'
+                        },
+                        formatter: "{b}<br/>销售额 : {c}元"
+                    },
+                    xAxis : [
+                        {
+                            name:"日期",
+                            type : 'category',
+                            axisTick:{       //X轴刻度线
+                                show:false
+                            },
+                            axisLine:{
+                                lineStyle:{
+                                    color:"#CCC",
+                                    width:1
+                                }
+                            },
+                            axisLabel: {
+                                show: true,
+                                textStyle: {
+                                    color: '#000'
+                                }
+                            },
+                            nameTextStyle:{
+                                color:'#000'
+                            },
+                            data :sales_day,
+                        }
+                    ],
+                    yAxis : [
+                        {
+                            name:"元",
+                            type : 'value',
+                            
+                            axisTick:{       //y轴刻度线
+                                show:false
+                            },
+                            splitLine: {     //网格线
+                                show: false
+                            },
+                            axisLine:{
+                                lineStyle:{
+                                    color:"#CCC",
+                                    width:1
+                                }
+                            },
+                            
+                            nameTextStyle:{
+                                color:'#000'
+                            },
+                            axisLabel: {
+                                show: true,
+                                textStyle: {
+                                    color: '#000'
+                                },
+                                fontSize: 10,
+                                formatter: function(value, index) {
+                                    var unit = parseFloat(value );
+                                    return unit; 
+                                }
+                            }
+                        }
+                    ],
+                    series : [
+                        {
+                            name:'元',
+                            type:'bar',
+                            barWidth: '30%',
+                            data:sales_payment
+                        }
+                    ]
+                };
+                salesChart.setOption(option);
+            }
+        }
+        todayVisitor.init();
+
+		$(".todayVisitor-time").on("change","input",function(){
+			var time=$(this).val();
+			$.ajax({
+				url: '<{url action=topmaker_ctl_commission@ajaxStatics}>',
+				method: 'post',
+				data:{time:time},
+				dataType:'json',
+				success: function(result) {
+					//alert([result.visit.days]);return false;
+					var visitDays=(result.visit.days).split(",");
+			
+					var visitCount=(result.visit.count).split(",");
+					var salesDays=(result.sales.days).split(',');
+					var salesPayment=(result.sales.payment).split(',');
+					
+					todayVisitor.echartsAccess(visitDays,visitCount);
+					todayVisitor.echartsSales(salesDays,salesPayment);
+				},
+				error: function(err) {
+					errorCb(err);
+				}
+			})
+			//todayVisitor.echartsSales();
+		})
+	</script>
+    <script>
+        //头部跳转页面
+        $('.m-hacker-choose-header .header-left').click(function(){
+            window.history.back(-1);
+        });
+        $('.m-hacker-choose-header .header-right').click(function(){
+            window.location.href = '<{url action=topmaker_ctl_index@index}>';
+        })
+    </script>
+</body>
+</html>

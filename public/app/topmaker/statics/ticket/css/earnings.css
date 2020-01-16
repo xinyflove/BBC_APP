@@ -1,0 +1,51 @@
+.earnings {
+  width: 100%;
+  height: 100%;
+  background: #fff;
+}
+.earnings .earnings-top {
+  padding: 0.2rem 0;
+  background: #f5f5f5;
+  height: auto;
+}
+.earnings .earnings-top .content {
+  width: 100%;
+  height: auto;
+  padding: 0.3rem;
+  background: #fff;
+}
+.earnings .earnings-top .content .content-out {
+  width: 100%;
+  height: auto;
+  background: url('../images/background.png') no-repeat center;
+  background-size: 100% 100%;
+  border-radius: 0.2rem;
+  text-align: center;
+  padding: 0.4rem 0;
+}
+.earnings .earnings-top .content .content-out p {
+  color: #fff;
+  margin-bottom: 0.1rem;
+}
+.earnings .earnings-top .content .content-out .title {
+  font-size: 0.3rem;
+}
+.earnings .earnings-top .content .content-out .price1 {
+  font-size: 0.42rem;
+  font-weight: bold;
+}
+.earnings .earnings-top .content .content-out .price2 {
+  font-size: 0.3rem;
+  margin-bottom: 0.3rem;
+}
+.earnings .earnings-top .content .content-out .btn {
+  width: 1.84rem;
+  height: 0.6rem;
+  border-radius: 0.6rem;
+  background: #fff1e4;
+  text-align: center;
+  line-height: 0.6rem;
+  color: #f95a1e;
+  font-size: 0.3rem;
+  cursor: pointer;
+}

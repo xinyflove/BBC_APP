@@ -33,17 +33,19 @@ class foodmap_data_supplier {
      */
     public function getSupplierData($filter=array(), $offset=0, $limit=10, $orderBy=null){
         $data = $this->getCacheSupplierData();
-		$data='';
+		$data = '';
         $apiPrarm = $filter['apiParam'];
         $where = $filter['where'];
 
         $curr_page = $offset + 1;
         if($curr_page == 1 || empty($data)){
-            //$data = $this->getApiSupplierData($apiPrarm);//调用供货商数据接口
-            //echo '<pre>';var_dump($data);die;
             if($this->__useTestData){
                 //测试数据
                 $data = $this->_getApiSupplierTestData();
+            }
+            else
+            {
+                $data = $this->getApiSupplierData($apiPrarm);//调用供货商数据接口
             }
             $this->setCacheSupplierData($data);
         }
@@ -327,7 +329,7 @@ class foodmap_data_supplier {
     {
         $data = array(
             array(
-                'id' => 1,
+                'id' => 1,// 对应 sysshop_supplier 表中的 api_supplier_id,此供货商的必须有在售的虚拟商品
                 'longitude' => '120.410863',
                 'latitude' => '36.08637',
                 'distance' => '423',
@@ -335,7 +337,7 @@ class foodmap_data_supplier {
                 'roleid' => 1,
                 'type' => 'food',
             ),
-         /*   array(
+            array(
                 'id' => 2,
                 'longitude' => '120.410777',
                 'latitude' => '36.08363',
@@ -371,13 +373,13 @@ class foodmap_data_supplier {
                 'roleid' => 5,
                 'type' => 'food',
             ),
-            /*array(
+            array(
                 'shopName' => '青实樱花郡直播',
                 'longitude' => '120.403921',
                 'latitude' => '36.09336',
                 'distance' => '300',
                 'type' => 'live',
-            ),*/
+            ),
         );
 
         return $data;

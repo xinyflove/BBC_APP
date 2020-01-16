@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="/app/topmaker/statics/ticket/css/withdraw.css">
+    <!--<link rel="stylesheet" href="/app/topmaker/statics/ticket/lib/linkage/mobileSelect.css">-->
+    <link rel="stylesheet" href="/app/topmaker/statics/ticket/lib/common/public.css">
+    <title>提现</title>
+    <script src="/app/topmaker/statics/ticket/lib/common/flexible.js"></script>
+</head>
+<body>
+    <div class="header">       
+        <p id="kind"><{$bank.bank_name}>（<{$bank.card_number}>）</p>
+    </div>
+    <div class="contenter"> 
+        <h2>提现金额</h2>
+        <div><span>￥</span><input class="money" type="number"></div>
+        <p>可提现佣金<span><{$cash_com}></span>元</p>
+    </div>
+    <div class="apply">
+        <button class="active">申请提现</button>
+    </div>
+    
+    <script src="/app/topmaker/statics/ticket/lib/jquery/jquery-3.3.0.min.js"></script>
+    <!--<script src="/app/topmaker/statics/ticket/lib/linkage/mobileSelect.js"></script>-->
+	<script src="/app/topmaker/statics/lib/layui/layui.all.js"></script>
+    <script>
+        $(function(){
+			<{if (empty($bank['card_number']))}>
+			layer.confirm('请先绑定银行卡后再申请提现', {
+				  btn: ['去绑定','取消'] //按钮
+				}, function(){
+					window.location.href='<{$bindurl}>';
+				}, function(){
+					window.history.go(-1);
+				});
+			<{/if}>
+
+            /*$(".money").on("change",function(){
+                if($(".money").val()!=""){
+                   $(".apply").find("button").addClass("active")
+                }
+            })*/
+			/*var mobileSelect1 = new MobileSelect({
+                trigger: '#kind',
+                title: '',
+                wheels: [
+                            {data:['周日','周一','周二','周三','周四','周五','周六']}
+                        ],
+                position:[2] //Initialize positioning
+            });*/
+			$('.apply').on('click',function(){
+				var payment=$('.money').val();
+				var data = {
+					payment:payment,
+				};
+				$.ajax({
+					type: "POST",
+					url: '<{url action=topmaker_ctl_cash@save}>',
+					data: data,
+					dataType: "json",
+					success: function(rs) {
+						layer.msg(rs.message);
+						if(rs.success) {
+							setTimeout(function(){
+								window.location.href=rs.redirect;
+							}, 500);
+						}
+						layer.close(index);
+					},
+					error: function() {
+						layer.close(index);
+						layer.msg('申请失败');
+					}
+				});
+			});
+        });
+			
+    </script>
+    
+</body>
+</html>

@@ -32,7 +32,6 @@ class topshop_ctl_mall_list extends topshop_mall_controller {
         $pagedata['breadcrumb'] = $this->__breadcrumb($params);
         // 过滤条件
         $pagedata['screen'] = $this->__screen($params);
-        
         $commonPageData = $this->_getCommonPageData();
         $pagedata = array_merge($pagedata, $commonPageData);
 
@@ -75,10 +74,12 @@ class topshop_ctl_mall_list extends topshop_mall_controller {
      */
     private function __filter($params)
     {
-        $filter = array();
+        $filter = array('sale_type' => 0);// 过滤销售类型
+        $filter['status'] = 'onsale';
         if(isset($params['title'])) $filter['title'] = $params['title'];
         if($params['cat_id']) $filter['cat_id'] = $params['cat_id'];
-        if($params['brand_id']) $filter['brand_id'] = $params['brand_id'];
+        if($params['brand_id']) $filter['brand_id'] = $params['brand_id'];		
+        if($params['shop_id']) $filter['shop_id'] = $params['shop_id'];
 
         return $filter;
     }
@@ -97,8 +98,10 @@ class topshop_ctl_mall_list extends topshop_mall_controller {
         {
             $cat = app::get('topc')->rpcCall('category.cat.get.data',array('cat_id'=>intval($params['cat_id'])));
             $breadcrumb = array(
-                ['url'=>url::action('topshop_ctl_mall_list@index',array('cat_id'=>$cat['lv1']['cat_id'])),'title'=>$cat['lv1']['cat_name']],
-                ['url'=>url::action('topshop_ctl_mall_list@index',array('cat_id'=>$cat['lv2']['cat_id'])),'title'=>$cat['lv2']['cat_name']],
+                //['url'=>url::action('topshop_ctl_mall_list@index',array('cat_id'=>$cat['lv1']['cat_id'])),'title'=>$cat['lv1']['cat_name']],
+                ['url'=>'','title'=>$cat['lv1']['cat_name']],
+                //['url'=>url::action('topshop_ctl_mall_list@index',array('cat_id'=>$cat['lv2']['cat_id'])),'title'=>$cat['lv2']['cat_name']],
+                ['url'=>'','title'=>$cat['lv2']['cat_name']],
                 ['url'=>url::action('topshop_ctl_mall_list@index',array('cat_id'=>$cat['lv3']['cat_id'])),'title'=>$cat['lv3']['cat_name']],
             );
 

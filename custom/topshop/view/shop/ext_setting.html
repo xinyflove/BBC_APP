@@ -112,7 +112,7 @@
     <div class="box-header with-border">
       <!--<h3 class="box-title"><a href="<{url subdomain=$shop.subdomain action=topc_ctl_shopcenter@index shop_id=$shop.shop_id}>" target="_blank"><{t}><{$shop.shop_id|shopname}><{/t}></a></h3>-->
 	  <h3 class="box-title">手机端支付完成图片分享设置</h3>
-	  <a href="/images/voucher/shaer_bg.rar" target="_blank" class="btn btn-primary" style="float:right;">下载背景图模板</a>
+	  <a href="/images/voucher/shaer_bg.rar" target="_blank" class="btn btn-primary btn-sm" style="float:right;">下载背景图模板</a>
     </div>
     <div class="box-body">
       <div class="row">
@@ -170,7 +170,7 @@
     </div>
   </div>
   
-  <div class="box box-default" style="height:403px">
+  <div class="box box-default" style="height:434px">
     <div class="box-header with-border">
       <!--<h3 class="box-title"><a href="<{url subdomain=$shop.subdomain action=topc_ctl_shopcenter@index shop_id=$shop.shop_id}>" target="_blank"><{t}><{$shop.shop_id|shopname}><{/t}></a></h3>-->
 	  <h3 class="box-title">手机端首页/商品详情页分享配置</h3>
@@ -209,6 +209,34 @@
       </div>
     </div>
   </div>
+
+	<!-- add by xinyufeng start -->
+	<div  class="box box-default" style="margin-right:10px">
+		<div class="box-header with-border">
+			<h3 class="box-title">商品海报配置</h3>
+			<a href="/app/topshop/statics/images/goods-poster-tmp.zip" target="_blank" class="btn btn-primary btn-sm" style="float:right;">下载背景图模板</a>
+		</div>
+		<div class="box-body">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="form-group">
+						<label for="" class="col-sm-5 control-label">创客商品海报背景图：</label>
+						<div class="col-sm-5">
+							<a class="select-image" data-toggle="modal" href="<{url action=topshop_ctl_shop_image@loadImageModal}>" data-target="#gallery_modal">
+								<input type="hidden" name="maker[poster_bg_img]" value="<{$setting.maker.poster_bg_img}>">
+								<div class="img-put">
+									<img src="<{$setting.maker.poster_bg_img|storager}>" />
+									<i class="glyphicon glyphicon-picture"></i>
+								</div>
+							</a>
+							<span class="help-block">尺寸标准：750*1066px。</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- add by xinyufeng end -->
 	
   <div class="box box-default" style="width:99%;overflow:hidden;height:50px;min-height:60px;text-align:center;margin-top:-10px">
 	<div class="box-footer">

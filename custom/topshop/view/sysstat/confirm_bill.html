@@ -14,8 +14,15 @@
           </div>
           <a href="javascript:void(0);" id="settle_search" class="btn btn-warning btn-sm">检索</a>
         </div>
+        <div class="pull-left" style="padding-top: 12px">
+          <select name="logistics_customer" id="logistics_customer" class="form-control">
+            <option value="all">全部</option>
+            <option value="JLD">家乐递</option>
+            <option value="JDWL">京东</option>
+          </select>
+        </div>
         <div class="pull-right">
-          <a href="<{url action=topshop_ctl_exporttrade@exportBillSettleDetail timearea=$timearea}>" target="_blank" class="btn btn-default">导出</a>
+          <a href="<{url action=topshop_ctl_exporttrade@exportBillSettleDetail timearea=$timearea logistics_customer=$logistics_customer}>" target="_blank" class="btn btn-default">导出</a>
         </div>
       </div>
       <ul id="myTab" class="nav nav-tabs">
@@ -38,7 +45,7 @@
               <td>供应商</td>
               <td>供应商来源</td>
               <td>商品标题</td>
-              <td>sku描述</td>
+              <td>物流</td>
               <td>收入类型</td>
               <td>税率</td>
               <td>商品价格</td>
@@ -60,7 +67,13 @@
               <td><{$item.supplier_id}></td>
               <td><{$item.supplier_type}></td>
               <td><{$item.title}></td>
-              <td><{$item.spec_nature_info}></td>
+              <td>
+                <{if $item.logistics_customer == 'JLD'}>
+                家乐递
+                <{elseif $item.logistics_customer == 'JDWL'}>
+                京东
+                <{/if}>
+              </td>
               <td><{$item.incoming_type}></td>
               <td><{$item.tax_rate}></td>
               <td><{$item.price}></td>
@@ -93,9 +106,10 @@
     });
     $("#settle_search").click(function() {
         var timearea=$("#timearea").val();
+        var logistics_customer = $("#logistics_customer").find("option:selected").val();
         var settlement_type = $('#settlement_type').val();
         var page_no=$('#page_no').val();
-        window.location.href="<{url action=topshop_ctl_clearing_settlement@billDetail}>?timearea="+timearea;
+        window.location.href="<{url action=topshop_ctl_clearing_settlement@billDetail}>?timearea="+timearea+"&logistics_customer="+logistics_customer;
     });
 
     $(document).ready(

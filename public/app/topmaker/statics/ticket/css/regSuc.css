@@ -1,0 +1,39 @@
+.regSuc {
+  width: 100%;
+  height: 100%;
+  background: #f5f5f5;
+  padding-top: 0.2rem;
+}
+.regSuc .regSuc-out {
+  width: 100%;
+  height: 100%;
+  background: #fff;
+}
+.regSuc .regSuc-out .warn {
+  width: 100%;
+  height: auto;
+  padding: 0.8rem 0;
+}
+.regSuc .regSuc-out .warn img {
+  width: 1.55rem;
+  height: auto;
+  margin: 0 auto;
+}
+.regSuc .regSuc-out .warn p {
+  width: 100%;
+  height: auto;
+  padding: 0.3rem 0;
+  text-align: center;
+  font-size: 0.38rem;
+  color: #f95a1e;
+  font-weight: bold;
+}
+.regSuc .regSuc-out .flow {
+  width: 100%;
+  height: auto;
+  padding: 0 0.5rem;
+}
+.regSuc .regSuc-out .flow img {
+  width: 100%;
+  height: auto;
+}

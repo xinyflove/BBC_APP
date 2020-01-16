@@ -8,6 +8,7 @@
     <title>米粒</title>
     <{css src="milier/dist/style.css" app="topwap"}>
     <{css src="milier/css/index.min.css?201806051509" app="topwap"}>
+    <{css src="milier/css/indexAdd.min.css?201906051509" app="topwap"}>
     <style>
         .mescroll{
             position: fixed;
@@ -27,7 +28,8 @@
             padding-bottom: 10px;
         }
         .m-ml-index-nav .swiper-scrollbar-drag{
-            background: rgb(111, 148, 65);
+            /*background: rgb(111, 148, 65);*/
+            background: #6f9441;
         }
         .m-ml-index-seacrh{}
         .m-ml-index-swiperNew .swiperNew-swiper .swiperNew-container .swiper-wrapper .swiper-slide{
@@ -50,6 +52,15 @@
         .m-ml-index-swiperEle .swiperEle-swiper .swiperEle-container .swiper-wrapper .swiper-slide .swiperEle-slide-title{
             font-size: 12px;
         }
+        .m-ml-index-seacrh .search-input {
+            border: 1px solid #6f9441;
+        }
+        .m-ml-public-title {
+            border-left: 2px solid #6f9441;
+        }
+        .m-ml-index-banner .swiper-container .banner-pagination .swiper-pagination-bullet-active {
+            background: #6f9441;
+        }
     </style>
 </head>
 
@@ -67,7 +78,7 @@
         <div></div>
     </div>
 </div>
-<div class="m-ml-index mescroll" id="mescroll">
+<div class="m-ml-index">
     <{if $widget_instance}>
     <!--挂件模版列表开始-->
     <{foreach from=$widget_instance item=widget key=key}>
@@ -78,7 +89,7 @@
     <{/foreach}>
     <!--挂件模版列表结束-->
     <{/if}>
-    <div class="m-ml-index-fliter">
+    <!--<div class="m-ml-index-fliter">
         <div id="navWarp">
         <ul class="index-fliter-top">
             <{foreach from=$tag_data key=key item=tag_item}>
@@ -95,12 +106,97 @@
             </div>
         <div id="upscrollWarp">
         <ul class="index-fliter-list dataList" id="dataList">
-
         </ul>
             </div>
+    </div>-->
+    <div class="m-ml-listbox">
+        <ul id="m-ml-list"></ul>
+        <div class="loading">加载中...</div>
     </div>
+
+    <div id="goPage" style="z-index: 9;"><a href="<{url action=topwap_ctl_supplier_comment@comment shop_id=$shop_id}>"><img src="/app/topwap/statics/lighticon/img/jiahao.png" alt=""></a></div>
 </div>
 <{script app="topwap" src="milier/dist/public.js" }>
+<script src="https://npmcdn.com/imagesloaded@4.1/imagesloaded.pkgd.js"></script>
+<script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
+<script>
+    var $container = $('#m-ml-list'), page = 1, pagesize = 10, totalPage = 0, isLock = true;
+
+    getNetworkData(page, pagesize);
+
+    function setDom(data) {
+        if (data.length > 0) {
+            $('.loading').show();
+            $container.masonry('reloadItems');
+            var html = '';
+            for (var i = 0; i < data.length; i++) {
+                html += '<li class="item" data-id="'+data[i].comment_id+'"><a href="<{url action=topwap_ctl_supplier_comment@detail}>?comment_id='+data[i].comment_id+'">';
+                if(data[i].pic.image_url){
+                    html += '<img src = "' + data[i].pic.image_url + '" alt = "" >'
+                }else{
+                    html += '<img src = "' + data[i].pic.image_url + '" alt = "" >'
+                }
+
+                html += '<p>' + data[i].description + '</p>'
+                html += '<div class="info">'
+                html += '<div class="avator">'
+                if(data[i].headimg_url.headimg_url){
+                    html += '<img src="'+data[i].headimg_url.headimg_url+'" alt="">'
+                }else{
+                    //默认图
+                    html += '<img src="'+"<{resource app='topwap' path='/images/milier/details/user_headimg.png'}>"+'" alt="">'
+                }
+
+                html += '<span>'+data[i].user_name+'</span>'
+                html += '</div><div class="dianzan" style="display: flex;align-items: center;"><img style="width: 20px;height: 20px;" src="<{resource app="topwap" path="/images/milier/zan0.png"}>" alt="" class="img1">'+data[i].thumbs_up+'</div>'
+                html += '</div></a></li> ';
+            }
+            $boxes = $(html);
+            $container.append($boxes).masonry("appended", $boxes, true);
+            $container.imagesLoaded(function () {
+                $container.masonry();
+                isLock = true;
+                $('.loading').hide();
+            })
+        }
+    }
+    function getNetworkData(page, pagesize) {
+
+        $.ajax({
+//            url: 'http://bbc.dev.tvplaza.cn/wap/rice/supplier/comment-list.html',
+            url: '<{url action=topwap_ctl_supplier_comment@getCommentList}>',
+            type: 'get',
+            data: {
+                page_no: page,
+                page_size: pagesize
+            },
+            dataType: 'json',
+            success: function (result) {
+                // var result = JSON.parse(res);
+                totalPage = result.page_total;
+                console.log(result);
+                setDom(result.data);
+            }
+        })
+    }
+    $(window).scroll(function () {
+        var st = $(this).scrollTop(), ch = $(window).height(), h = $('.m-ml-index').height();
+        var d = parseInt(h - st - 20);
+        if (isLock && d <= ch) {
+            isLock = false;
+            if(page < totalPage){
+                page++;
+                getNetworkData(page, pagesize);
+            } else if(page == totalPage) {
+                page++;
+                getNetworkData(page, pagesize);
+                $('.loading').show().text('没有数据了 ');
+            }else {
+                $('.loading').show().text('没有数据了 ');
+            }
+        }
+    })
+</script>
 <script>
     //搜索框js
     var searchObj = $('#searchWidgetId');

@@ -1,0 +1,208 @@
+<!--搜索框开始-->
+<aside class="control-sidebar control-sidebar-light" style="height: 100%;">
+    <!-- Create the tabs -->
+    <ul class="nav nav-tabs nav-justified control-sidebar-tabs">
+        <li class=""><a href="#">筛选</a></li>
+        <li class=""><a href="#" data-toggle="control-sidebar"><i class="glyphicon glyphicon-remove"></i></a></li>
+    </ul>
+    <!-- Tab panes -->
+    <div class="tab-content">
+        <form action="<{url action=topshop_ctl_mall_admin_pushlist@index}>" method="get" id="search-form">
+            <div class="box-body">
+                <!-- text input -->
+                <div class="form-group">
+                    <label>商品名称：</label>
+                    <input type="text" name="title" class="form-control" <{if $filter['title']}> value="<{$filter['title']|escape:"html"}>" <{/if}> placeholder="请输入 ...">
+                </div>
+            </div>
+            <!-- /.box-body -->
+            <div class="box-footer">
+                <button id="reset-form" type="button" class="btn btn-default">重置</button>
+                <button type="submit" class="btn btn-info pull-right">搜索</button>
+            </div>
+            <!-- /.box-footer -->
+        </form>
+    </div>
+</aside>
+<!--搜索框结束-->
+<!--主内容区开始-->
+<div class="row">
+    <div class="col-xs-12 col-sm-12">
+        <div class="nav-tabs-custom" id="tabs">
+            <!--标签导航开始-->
+            <ul class="nav nav-tabs">
+                <li role="presentation" class="<{if !$filter['status'] }>active<{/if}>">
+                    <a href="<{url action=topshop_ctl_mall_admin_pushlist@index}>">全部</a>
+                </li>
+                <li role="presentation" class="<{if $status=='instock'}>active<{/if}>">
+                    <a href="<{url action=topshop_ctl_mall_admin_pushlist@index status=instock}>">仓库中</a>
+                </li>
+                <li class="pull-right header">
+                    <div class="btn-group">
+                        <button data-toggle="control-sidebar" class="btn btn-default">
+                            <div class="text-light-blue">
+                                <i class="fa fa-search"></i>
+                                搜索
+                            </div>
+                        </button>
+                    </div>
+                </li>
+            </ul>
+            <!--标签导航结束-->
+            <div class="tab-content no-padding clearfix" id="data_node">
+
+                <!--商品列表开始-->
+                <table class="table table-striped">
+                    <tbody>
+                    <tr>
+                        <th class="col-name">商品</th>
+                        <th>销售价</th>
+                        <th>成本价</th>
+                        <th>广电优选供货价</th>
+                        <th>毛利率</th>
+                        <th>库存</th>
+                        <th>销量(包括代售)</th>
+                        <th>销售类型</th>
+                        <th>时间</th>
+                        <th class="text-center" <{if app::get('sysconf')->getConf('shop.goods.examine')}>style="display: none;"<{/if}>>操作</th>
+                    </tr>
+                    <{if $list}>
+
+                    <{foreach from=$list item=item}>
+                    <tr>
+                        <td>
+                            <div class="goods">
+                                <!--进入商品详情页链接-->
+                                <a href="<{url action=topc_ctl_item@index item_id=$item.item_id}>" target="_blank">
+                                    <img src="<{$item.image_default_id|default:$image_default_id.S.default_image|storager:t}>" alt="">
+                                    <{$item.title}>
+                                </a>
+                            </div>
+                            <{if $item.is_virtual}>
+                            <div>
+                                <span class="badge bg-warning">虚拟商品</span>
+                            </div>
+                            <{/if}>
+                            <{if !$item.nospec}>
+                            <br/>
+                            <i class="text-danger">[多规格]</i>
+                            <{/if}>
+                        </td>
+                        <td>
+                            <{$item.price|cur}>
+                        </td>
+                        <td>
+                            <{$item.cost_price|cur}>
+                        </td>
+                        <td>
+                            <{$item.supply_price|cur}>
+                        </td>
+                        <td>
+                            <{$item.profit}>%
+                        </td>
+                        <td>
+                            <{$item.real_store}>
+                        </td>
+                        <td>
+                            <{$item.all_paid_quantity}>
+                        </td>
+                        <td>
+                            <{if $sale_type ==0}>
+                            全部
+                            <{elseif $sale_type ==1}>
+                            仅主持人
+                            <{/if}>
+                        </td>
+                        <td>
+                            <{if $item.created_time}>
+                            <{$item.push_time|cdate:FDATE_STIME}>(推送)
+                            <{/if}>
+                            <br/>
+                            <{if $item.modified_time}>
+                            <{$item.modified_time|cdate:FDATE_STIME}>(修改)
+                            <{/if}>
+                        </td>
+
+                        <td class="text-center" <{if app::get('sysconf')->getConf('shop.goods.examine')}>style="display: none;"<{/if}>>
+                            <{if in_array($item.status, array('instock', 'refuse'))}>
+                            <button type="button" class="btn btn-xs btn-primary" data-item-id="<{$item.item_id}>" data-toggle="modal" data-target="#saleType">
+                                推送
+                            </button>
+                            <{else}>
+                            <button type="button" class="btn btn-xs btn-warning delete-item" data-item-id="<{$item.item_id}>">
+                                回撤
+                            </button>
+                            <{/if}>
+
+                            <{if $item.status == 'pending'}>
+                            <p class="help-block">审核中</p>
+                            <{elseif $item.status == 'onsale'}>
+                            <p class="help-block">销售中</p>
+                            <{elseif $item.status == 'refuse'}>
+                            <p class="help-block">审核驳回
+                                <a tabindex="0" class="" role="button" data-toggle="popover" data-placement="top" data-trigger="focus" title="驳回原因" data-content="<{if empty($item.reason)}>无<{else}><{$item.reason}><{/if}>" data-original-title="Dismissible popover">原因</a>
+                            </p>
+                            <{elseif $item.status == 'instock'}>
+                            <p class="help-block">已下架</p>
+                            <{/if}>
+                        </td>
+                    </tr>
+                    <{/foreach}>
+                    <{else}>
+                    <tr>
+                        <td algin="center" colspan="9">
+                            <p class="help-block text-center">暂无数据</p>
+                        </td>
+                    </tr>
+                    <{/if}>
+                    </tbody>
+                </table>
+                <div class="pull-right">
+                    <{pagers data=$pagers}>
+                    <{if $count > 0 }>
+                    <span class="page-number">共&nbsp;<em class="text-aqua"><{$count}></em>&nbsp;条记录</span>
+                    <{/if}>
+                </div>
+                <!--商品列表结束-->
+            </div>
+            <!-- /.tab-content -->
+        </div>
+        <!-- /.nav-tabs-custom -->
+    </div>
+</div>
+<!--主内容区结束-->
+<{include file="topshop/item/dialog/sale_type.html"}>
+<script type="text/javascript">
+    /*重置按钮*/
+    $('#reset-form').on('click',function(){
+        $('input:visible').val('');
+        $('.select-reset').val(-1);
+    });
+
+    /*商品回撤*/
+    $('.delete-item').on('click',function(){
+        var _this = $(this);
+        var itemIds = new Array();
+
+        Modal.confirm({msg: '确定从选货商城回撤该商品？'}).on(function(e) {
+            if(e==true) {
+                var item_id = _this.data('item-id');
+                $.post('<{url action=topshop_ctl_mall_item@withdraw}>', {item_id:item_id}, function(rs){
+                    if(rs.error) {
+                        $('#messagebox').message(rs.message);
+                        return;
+                    }
+                    if(rs.success) {
+                        $('#messagebox').message(rs.message, 'success');
+                        setTimeout(function(){location.reload();}, 800);
+                    }
+                });
+            }
+        });
+    });
+
+    // 添加弹窗js @auth:xinyufeng
+    $(function () {
+        $("[data-toggle='popover']").popover();
+    });
+</script>

@@ -52,6 +52,7 @@ class topwap_ctl_supplier_index extends topwap_controller {
 
         //获取当前店铺id
         $shop_id = input::get('shop_id', -1);
+
         $pagedata['shop_id'] = $shop_id;
         $fields = 'template_path,widget_type,params,widget_type';
         $filter = array(

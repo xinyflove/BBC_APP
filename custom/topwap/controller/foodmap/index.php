@@ -44,6 +44,7 @@ class topwap_ctl_foodmap_index extends topwap_controller{
 
         $shop_base = app::get('topwap')->rpcCall('shop.get',array('shop_id'=>$params['shop_id'],'fields'=>'api_shop_id'));
         $roleid = $shop_base['api_shop_id'];
+        $roleid = -1;// 测试用
         if(false && empty($roleid)){
             //无接口角色id,无法获取数据
             echo json_encode($datas);

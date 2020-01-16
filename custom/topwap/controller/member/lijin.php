@@ -74,5 +74,60 @@ class topwap_ctl_member_lijin extends topwap_ctl_member {
         return $pagedata;
     }
 
+    public function cardExchangeLijin()
+    {
+        $pagedata['title'] = app::get('topwap')->_('兑换礼金');
+        return $this->page('topwap/member/lijin/cardExchangeLijin.html',$pagedata);
+    }
+
+    public function doExchange()
+    {
+        $post_data = input::get();
+
+        $db = app::get('topwap')->database();
+        $db->beginTransaction();
+
+        try {
+            $cash_card_model = app::get('sysshop')->model('cash_card');
+
+            // 验证卡号
+            $card = $cash_card_model->getRow('*', ['card_id' => $post_data['card_id']]);
+            if(empty($card)){
+                throw new LogicException('卡号或密码错误！');
+            }
+            // 验证密码
+            if($card['exchange_password'] != $post_data['exchange_password']){
+                throw new LogicException('卡号或密码错误！');
+            }
+            // 是否兑换
+            if($card['user_id']){
+                throw new LogicException('此卡已被兑换，请更换卡号。');
+            }
+
+            // 更改为兑换状态
+            $result = $cash_card_model->update(['user_id' => userAuth::id(), 'exchange_time' => time()], ['card_id' => $post_data['card_id'], 'user_id' => 0]);
+            if(!$result){
+                throw new LogicException('系统繁忙，请稍候再试！');
+            }
+
+            $updateParams = array(
+                'shop_id' => $card['shop_id'],
+                'user_id' => userAuth::id(),
+                'type' => 'obtain',
+                'lijin' => $card['value'],
+                'behavior' => '礼金卡兑换',
+                'remark' => "当前礼金来自礼金卡：".$card['card_id'],
+            );
+            // 增加用户礼金
+            app::get('topwap')->rpcCall('user.lijin.update',$updateParams);
+
+            $db->commit();
+        } catch (Exception $e) {
+            $db->rollback();
+            $msg = $e->getMessage();
+            return $this->splash('error', null, $msg, true);
+        }
+        return $this->splash('success', null, "恭喜你，成功兑换{$card['value']}礼金！", true);
+    }
 }
 

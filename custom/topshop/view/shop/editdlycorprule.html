@@ -9,7 +9,7 @@
             <input type="text" name="name" class="form-control" value="<{$corpData.corp_name}>" required maxlength="20" disabled>
           </div>
 
-          <div class="form-group" id="id-valuation"  <{if $corpData.is_free}>style="display:none;"<{/if}>>
+          <div class="form-group" id="id-valuation" <{if $corpData.is_free}>style="display:none;"<{/if}>>
             <label><{t}>计价方式<{/t}>：</label>
             <div class="radio">
               <label>
@@ -24,6 +24,11 @@
               <h5><small>运费模版保存后，计费方式将无法切换！！</small></h5>*}>
             </div>
           </div>
+
+          <{if $is_custom}>
+            <{include file="topshop/shop/dlycorprule/{$is_custom}.html"}>
+          <{/if}>
+
           <{*<div class="form-group">
             <label><{t}>是否启用<{/t}>：</label>
             <div class="radio">
@@ -65,7 +70,7 @@
                 </div>
 
               </div>
-              <div class="well well-sm" style="display:none;">
+              <div class="well well-sm">
                 <h5>为指定地区城市设置运费</h5>
                 <table class="table table-valign-middle bg-white">
                   <colgroup>

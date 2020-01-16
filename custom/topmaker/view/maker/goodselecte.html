@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="/app/topmaker/statics/lib/common/flexible.js"></script>
+    <link rel="stylesheet" href="/app/topmaker/statics/lib/common/public.css">
+    <link rel="stylesheet" href="/app/topmaker/statics/css/styleSheet.css">
+    <title>创客中心-选择商品</title>
+    <style>
+        .m-hacker-choose .goods-wrap .choose-kind li a{
+            display: inline-block;
+            width: 100%;
+            height: 100%;
+    
+        }
+        .m-hacker-choose .goods-wrap .choose-kind .active a{
+            color:#4d9fff;
+        }
+    </style>
+</head>
+
+<body style="overflow: hidden;">
+<div class="m-hacker-choose">
+    <div class="m-hacker-choose-header">
+        <div class="header-left">
+            <img src="/app/topmaker/statics/images/before.png" alt="">
+        </div>
+        <div class="header-mid">
+            <p>选择商品</p>
+        </div>
+        <div class="header-right">
+            <img src="/app/topmaker/statics/images/toindex.png" alt="">
+        </div>
+    </div>
+    <div class="goods-wrap">
+        <ul class="choose-kind">
+            <li <{if ""==$cat_id}>class="active"<{/if}>><a href="<{url action=topmaker_ctl_goods@goodsSelect}>">全部商品</a></li>
+            <{foreach from=$shopCatList item=itemCat}>
+            <li <{if $itemCat.cat_id==$cat_id}>class="active"<{/if}>><a href="<{url action=topmaker_ctl_goods@goodsSelect}>?cat_id=<{$itemCat.cat_id}>"> <{$itemCat.cat_name}></a></li>
+            <{/foreach}>
+
+        </ul>
+        <div class="goods-box">
+            <div class="search">
+                <input type="text" id="search_keyword" value="<{$search_keyword}>" <{if ""==$search_keyword}>placeholder="请输入关键字搜索"<{else}>placeholder="<{$search_keyword}>"<{/if}> />
+                <a href="#" id="search_submit">搜索</a>
+            </div>
+            <div class="goods-list">
+
+                <{foreach from=$goods_list item=itemGood}>
+                <dl>
+                    <dt><img src="<{$itemGood.image_default_id|storager}>" alt=""></dt>
+                    <dd>
+                        <p><{$itemGood.title}></p>
+                        <span>供货价:<i>￥<{$itemGood.supply_price}></i></span>
+                        <small>指导售价:￥<{$itemGood.price}></small>
+
+                        <div <{if in_array($itemGood.item_id,$checked_goods_arr) }>class="choose active"<{else}>class="choose"<{/if}>   data-id="<{$itemGood.item_id}>"></div>
+                    </dd>
+                </dl>
+                <{/foreach}>
+
+            </div>
+        </div>
+    </div>
+    <div class="complete-btn">
+        <button id="complete_submit">完成</button>
+    </div>
+</div>
+</body>
+<script src="/app/topmaker/statics/lib/jquery/jquery-3.2.1.js"></script>
+<script src="/app/topmaker/statics/lib/layui/layui.all.js"></script>
+<script>
+    var z_Event = {
+        eventListen: function () {
+            var _this = this;
+            $('.choose-kind').on('click', 'li', _this.chooseKind);
+            this.chooseGood();
+        },
+        chooseGood: function() {
+            $('.choose').click(function () {
+                if($(this).hasClass('active')){
+                    //删除
+                    $(this).removeClass('active');
+                    item_id = $(this).attr("data-id");
+                    $.ajax({
+                        type: 'GET',
+                        url: "<{url action=topmaker_ctl_goods@saveOrDelGood}>?item_id="+item_id+"&status_flag=del",
+                        dataType: 'json',
+                        success: function(data){
+                            if(data.code){
+                                //alert('删除成功');
+
+                                //window.location.reload()
+
+                            }else{
+                               // alert('删除失败');
+                               //window.location.reload()
+                                $(this).addClass('active');
+                                layer.msg('保存失败，请重试...');
+                            }
+                        }
+                    });
+
+                }else{
+                    //添加
+                    $(this).addClass('active');
+                    item_id = $(this).attr("data-id");
+                    $.ajax({
+                        type: 'GET',
+                        url: "<{url action=topmaker_ctl_goods@saveOrDelGood}>?item_id="+item_id+"&status_flag=add",
+                        dataType: 'json',
+                        success: function(data){
+                            if(data.code){
+                                //alert('添加成功');
+                                $(this).addClass('active');
+                                //window.location.reload()
+
+                            }else{
+                                //alert('添加失败');
+                                //window.location.reload()
+                                layer.msg('保存失败，请重试...');
+                                $(this).removeClass('active');
+                            }
+                        }
+                    });
+
+                }
+
+            })
+        },
+        chooseKind: function () {
+            $(this).addClass('active').siblings('li').removeClass('active');
+        }
+    }
+    z_Event.eventListen();
+</script>
+<script>
+    $('#search_submit').click(function () {
+        //console.log('submit');
+        var url = window.location.href;
+        var search_keyword = $("#search_keyword").val();
+        var url_param = window.location.search;
+        if(url_param==""){
+            window.location.href=url+'?search_keyword='+search_keyword;
+        }else{
+            window.location.href=url+'&search_keyword='+search_keyword;
+        }
+        //
+        //console.log(typeof(url_param));
+    });
+    $("#complete_submit").click(function () {
+        redirect_url="<{url action=topmaker_ctl_goods@index}>";
+        window.location.href=redirect_url;
+    });
+</script>
+<script>
+    //头部跳转页面
+    $('.m-hacker-choose-header .header-left').click(function(){
+        window.location.href = '<{url action=topmaker_ctl_goods@index}>';
+    });
+    $('.m-hacker-choose-header .header-right').click(function(){
+        window.location.href = '<{url action=topmaker_ctl_index@index}>';
+    })
+</script>
+</html>

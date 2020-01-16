@@ -154,7 +154,40 @@ class syslmgw_emic_rice extends syslmgw_emic_controller
 		}
         return $this->rsplash('200',array_values($res),'请求成功!');
 	}
-	
+	/* action_name (par1, par2, par3)
+	* 销量趋势,所有店铺的
+	* author by wanghaichao
+	* date 2019/7/12
+	*/
+	public function salesAll(){		
+		if(input::get('start_time') && input::get('end_time')){		
+			$start_time=strtotime(input::get('start_time'));
+			$end_time=strtotime(input::get('end_time'));
+		}else{
+			$end_time=strtotime(date('Y-m-d 0:0:0',time()));  //结束时间 
+			$start_time=$end_time-24*3600*30;//开始的时间
+		}
+		$params['created_time|bthan']=$start_time;
+		$params['created_time|lthan']=$end_time;
+		//$params['shop_id']=7;
+		$params['status'] = array('WAIT_SELLER_SEND_GOODS', 'WAIT_BUYER_CONFIRM_GOODS', 'TRADE_FINISHED', 'WRITE_PARTIAL', 'PARTIAL_SHIPMENT', 'WAIT_WRITE_OFF','HAS_OVERDUE');
+		$trade=app::get('systrade')->model('trade')->getList('tid,payment,created_time',$params);
+		foreach($trade as $k=>$v){
+			$date=date('m-d',$v['created_time']);
+			$data[$date][]=$v;
+		}
+		foreach($data as $k=>$v){
+			foreach($v as $kk=>$vv){
+				$res[$k]['payment']+=$vv['payment'];
+			}
+			$res[$k]['total']=count($v);
+			$res[$k]['date']=$k;
+		}
+		foreach($res as $k=>&$v){
+			$v['payment']=round(($v['payment']/10000),1);
+		}
+        return $this->rsplash('200',array_values($res),'请求成功!');
+	}
 	/* action_name (par1, par2, par3)
 	* 统计订单数据
 	* author by wanghaichao

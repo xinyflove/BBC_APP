@@ -320,14 +320,23 @@ class syslmgw_emic_callcenter extends syslmgw_emic_controller {
 		//当前的数据
 		$today=app::get('systrade')->model('trade')->getRow('SUM(payment) as total_payment,count(tid) as total',$params);
 
-		$data['total_payment']=round($trade['total_payment']/10000,2);
-		$data['total']=$trade['total'];
-		$data['sale_rate']=round(($trade['total_payment']/$trade['total']),2);
+		//$data['total_payment']=round($trade['total_payment']/10000,2);
+		//$data['total']=$trade['total'];
+		//$data['sale_rate']=round(($trade['total_payment']/$trade['total']),2);
 
-		$data['today_payment']=round($today['total_payment']/10000,2);
-		$data['today_total']=$today['total'];
+		//$data['today_payment']=round($today['total_payment']/10000,2);
+		//$data['today_total']=$today['total'];
+		//$data['today_sale_rate']=round(($today['total_payment']/$today['total']),2);
+
+
+		$data['total_payment']=round($trade['total_payment']/10000,2);                     //累计交易额
+		$data['total']=$trade['total'];                                                                       //累计订单量
+		$data['sale_rate']=round(($trade['total_payment']/$trade['total']),2);                 //客单价
+
+		$data['today_payment']=round(($today['total_payment'])/10000,2);          //今日订单额+
+		//$data['today_total']=$today['total']+50;                                                               //今日订单量+50
+		$data['today_total']=$today['total'];                                                               //今日订单量
 		$data['today_sale_rate']=round(($today['total_payment']/$today['total']),2);
-
 
 		return $this->rsplash('200',$data,'请求成功!');
 	}
@@ -395,7 +404,8 @@ class syslmgw_emic_callcenter extends syslmgw_emic_controller {
 		
 
 
-        $districts = [
+      
+         $districts = [
         '市南区'=>[
                 'district' => '市南区',
                 'count' => 0,
@@ -420,11 +430,12 @@ class syslmgw_emic_callcenter extends syslmgw_emic_controller {
             '李沧区'=>[
                 'district' => '李沧区',
                 'count' => 0,
+				'rate'=>0,
             ],
             '城阳区'=>[
                 'district' => '城阳区',
-                'count' => 0,
-				'rate'=>0,
+                'count' => 1,
+				'rate'=>1,
             ],
             '胶州市'=>[
                 'district' => '胶州市',
@@ -448,9 +459,13 @@ class syslmgw_emic_callcenter extends syslmgw_emic_controller {
             ],
         ];
 		
+		if(empty($trade)){
+			array_multisort(array_column($districts, 'count'), SORT_DESC,  $districts);
+			$this->splash('200', array_values($districts), '请求成功');
+		}
 		foreach($data as $k=>$v){
-			$districts[$k]['count']=count($v);
-			$districts[$k]['rate']=round(($districts[$k]['count']/$limit*100),0);
+			$districts[$k]['count']+=count($v);
+			$districts[$k]['rate']=round(($districts[$k]['count']/20*100),0);
 			$districts[$k]['district']=$k;
 		}
 

@@ -31,7 +31,20 @@ class topwap_ctl_cart extends topwap_controller{
             $params['quantity'] = $quantity ? $quantity : 1; //购买数量，如果已有购买则累加
             $params['sku_id'] = intval(input::get('item.sku_id'));
         }
-
+		/*add_2018/12/5_by_wanghaichao_start*/
+		//判断是不是黑名单用户
+		if(userAuth::check()){
+			$user_id=userAuth::id();
+			$shop_id=$this->getShopId($params['sku_id']);
+			$black = app::get('topwap')->rpcCall('blacklist.user',array('shop_id'=>$shop_id,'user_id'=>$user_id));
+			if($black=='YES'){
+                //$msg = app::get('topwap')->_('您的账户已被限制购买,如有问题请咨询卖家!');
+				//2018/12/6 915提出修改
+				$msg = app::get('topwap')->_('很抱歉，您的账号存在异常');
+                return $this->splash('error',null,$msg,true);
+			}
+		}
+		/*add_2018/12/5_by_wanghaichao_end*/
         try
         {
             $data = kernel::single('topwap_cart')->addCart($params);
@@ -321,4 +334,18 @@ class topwap_ctl_cart extends topwap_controller{
         $msg = view::make('topwap/cart/cart_main.html', $pagedata)->render();
         return $this->splash('success',null,$msg,true);
     }
+	
+	/* action_name (par1, par2, par3)
+	* 根据sku_id获取shop_id
+	* author by wanghaichao
+	* date 2018/12/5
+	*/
+	public function getShopId($sku_id){
+		if(empty($sku_id)){
+			return $_SESSION['shop_id'];
+		}
+		$sku=app::get('sysitem')->model('sku')->getRow('shop_id',array('sku_id'=>$sku_id));
+		return $sku['shop_id'];
+	}
+
 }

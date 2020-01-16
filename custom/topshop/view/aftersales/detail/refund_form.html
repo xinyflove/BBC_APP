@@ -59,8 +59,8 @@
     function ajaxSubmit (e) {
       var form = e.target;
       e.preventDefault();
-      var totalPrice = Number($('#total_price').val()).toFixed(2);
-      var actualRefund = Number($('#actualRefund').val()).toFixed(2);
+      var totalPrice = Number($('#total_price').val());
+      var actualRefund = Number($('#actualRefund').val());
       pointsFee = Number(pointsFee).toFixed(2);
 	  var check_result=$("input[name='check_result']:checked").val();
 	  if(check_result=='true'){

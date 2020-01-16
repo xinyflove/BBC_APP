@@ -1,0 +1,22 @@
+<div class="weeks">
+    <{if $items}>
+    <{foreach from=$items item=item}>
+    <div class="panel panel-default week">
+        <div class="panel-heading">
+            <{$item['day']}>
+        </div>
+        <div class="panel-body">
+            <table class="table table-hover">
+                <{if $item['list']}>
+                <{foreach from=$item['list'] item=live}>
+                <tr><td><a href="<{url action=topshop_ctl_live_live@edit id=$live.live_id}>"><{$live.live_start_time|date_format:'%H:%M'}> - <{$live.live_end_time|date_format:'%H:%M'}> <{$live.title}></a></td></tr>
+                <{/foreach}>
+                <{else}>
+                <tr><td>暂无直播排班</td></tr>
+                <{/if}>
+            </table>
+        </div>
+    </div>
+    <{/foreach}>
+    <{/if}>
+</div>

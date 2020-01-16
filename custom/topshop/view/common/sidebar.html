@@ -49,7 +49,7 @@
             <{/if}>
           </a>
           <{else}>
-          <a href="<{if $row.action}><{url action=$row.action}><{else}>#<{/if}>"><i class="fa fa-circle-o <{if $row.default}>text-aqua<{/if}>"></i> <{$row.label}>
+          <a href="<{if $row.action}><{url action=$row.action}><{else}>#<{/if}>" <{if $row.as == 'topshop.mall.home'}>target="_blank"<{/if}>><i class="fa fa-circle-o <{if $row.default}>text-aqua<{/if}>"></i> <{$row.label}>
             <{if $row.text_icon}>
             <span class="pull-right-container">
               <small class="label pull-right <{$row.bg}>"><{$row.text_icon}></small>

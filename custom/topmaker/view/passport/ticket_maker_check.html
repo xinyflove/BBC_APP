@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="/app/topmaker/statics/ticket/lib/common/public.css">
+    <link rel="stylesheet" href="/app/topmaker/statics/ticket/lib/ydui/css/ydui.css">
+    <link rel="stylesheet" href="/app/topmaker/statics/ticket/css/regSuc.css">
+    <link rel="stylesheet" href="/app/topmaker/statics/ticket/css/postregist.css">
+    <title>流程</title>
+    <script src="/app/topmaker/statics/ticket/lib/common/flexible.js"></script>
+</head>
+<body>
+    
+    <div class="regSuc">
+	
+		<{if $account_status == 'refuse' || $shop_status == 'refuse'}>
+		<div class="regSuc-out">
+			<div class="warn">
+				<img src="/app/topmaker/statics/ticket/images/refuse.png" alt="">
+				<p>审核拒绝</p>
+			</div>
+			<div class="flow">
+				<img src="/app/topmaker/statics/ticket/images/result.png" alt="">
+			</div>
+			<div class="" style="margin-top:50px;padding:0 0.5rem;font-size:20px;color:#f95a1e;font-weight: bold;">
+				拒绝原因:<{$reason}>
+			</div>
+			<div id="" class="login" style="margin-top:50px">
+				<div id="" class="login-btn">
+					<a id="signUpBtn" href="<{url action=topmaker_ctl_passport@upuserinfo}>" class="btn">重新编辑资料</a>
+				</div>
+			</div>
+		</div>
+		<{else}>
+		<div class="regSuc-out">
+			<div class="warn">
+				<img src="/app/topmaker/statics/ticket/images/success.png" alt="">
+				<p>提交成功</p>
+			</div>
+			<div class="flow">
+				<img src="/app/topmaker/statics/ticket/images/water.png" alt="">
+			</div>
+		</div>
+		<{/if}>
+    </div>
+    
+    <script src="/app/topmaker/statics/ticket/lib/jquery/jquery-3.3.0.min.js"></script>
+    <script src="/app/topmaker/statics/ticket/lib/ydui/js/ydui.js"></script>
+    <script src="/app/topmaker/statics/ticket/js/model.js"></script>
+    
+</body>
+</html>

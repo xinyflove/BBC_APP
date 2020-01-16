@@ -16,12 +16,12 @@ class topshop_ctl_tvshopping_wapdecorate extends topshop_controller{
     {
         parent::__construct($app);
         $this->page_type = input::get('page_type','home');
-        $this->obj_pages = kernel::single('topshop_tvshopping_pages');
+        $this->obj_pages = kernel::single('topshop_tvshopping_pages',$this->shopId);
         $this->pages_type = $this->obj_pages->pages_type[$this->platform];
-        if(!array_key_exists($this->page_type, $this->pages_type))
-        {
-            throw new \LogicException("页面类型[{$this->page_type}]不存在.");
-        }
+        //if(!array_key_exists($this->page_type, $this->pages_type))
+        //{
+        //    throw new \LogicException("页面类型[{$this->page_type}]不存在.");
+       // }
         $this->obj_widgets = kernel::single('topshop_tvshopping_widgets');
         $this->widgets = $this->obj_widgets->widgets[$this->platform];
     }
@@ -39,8 +39,10 @@ class topshop_ctl_tvshopping_wapdecorate extends topshop_controller{
         // 获取当前页面类型的页面挂件列表
         $list = $this->obj_widgets->getWidgetsList($this->shopId, $this->page_type, $this->platform);
         $pagedata['list'] = $list;
-
         $this->contentHeaderTitle = app::get('topshop')->_('电视购物wap端装修');
+		if($this->pages_type!='home' || $this->pages_type!='qtv_live'){
+			$pagedata['page']=app::get('sysshop')->model('pagetype')->getRow('*',array('page_type'=>$this->page_type,'shop_id'=>$this->shopId));
+		}
         return $this->page('topshop/tvshopping/wapdecorate/index.html',$pagedata);
     }
 
@@ -71,7 +73,7 @@ class topshop_ctl_tvshopping_wapdecorate extends topshop_controller{
             $pagedata['params'] = $pagedata['setting']['params'];
             $title = '修改';
         }
-		if($widget_type=='aditem' || $widget_type=='itemlist' || $widget_type=='itemRecom' || $widget_type=='floor'){
+		if($widget_type=='aditem' || $widget_type=='itemlist' || $widget_type=='itemRecom' || $widget_type=='floor' || $widget_type=='threelist' || $widget_type=='doublelist'){
 			//echo "<pre>";print_r($pagedata['setting']['item_id']);die();
 			$item_id=array();
 			foreach($pagedata['setting']['item_id'] as $k=>$v){
@@ -102,12 +104,11 @@ class topshop_ctl_tvshopping_wapdecorate extends topshop_controller{
 			}
 		}
 		/*add_2018/8/10_by_wanghaichao_end*/
-		
         $save_data['params'] = $input;
         $save_data['shop_id'] = $this->shopId;
         $save_data['platform'] = $this->platform;
         $save_data['template_path'] = 'topshop/tvshopping/widgets/'.$save_data['widgets_type'].'/default.html';
-        $url = url::action('topshop_ctl_tvshopping_wapdecorate@index');
+        $url = url::action('topshop_ctl_tvshopping_wapdecorate@index',array('page_type'=>$save_data['page_type']));
         $res = $this->obj_widgets->saveWidget($save_data, $msg);
         if(!$res)
         {
@@ -207,4 +208,134 @@ class topshop_ctl_tvshopping_wapdecorate extends topshop_controller{
         $msg = '操作失败';
         return $this->splash('error', null, $msg, true);
     }
+	
+	/*
+	* 保存页面类型
+	* author by wanghaichao
+	* date 2018/11/21
+	*/
+	public function savePageType(){
+		$obj=app::get('sysshop')->model('pagetype');
+		$postdata=input::get();
+		$filter['shop_id']=$this->shopId;
+		$filter['page_type']=$postdata['page_type'];
+		$filter['deleted']=0;
+		$page=$obj->getRow('id',$filter);
+		if($page){
+            $msg = '该页面类型已经存在,请重新添加';
+            return $this->splash('error', null, $msg, true);
+		}
+		$postdata['shop_id']=$this->shopId;
+		$postdata['created_time']=time();
+		$res=$obj->insert($postdata);
+		if($res){
+            $msg = '添加成功';
+			$url = url::action('topshop_ctl_tvshopping_wapdecorate@index',array('page_type'=>$postdata['page_type']));
+            return $this->splash('success', $url, $msg, true);			
+		}
+	}
+	
+	/* action_name (par1, par2, par3)
+	* 删除页面的
+	* author by wanghaichao
+	* date 2018/11/21
+	*/
+	public function deletePage(){
+		$filter['page_type']=input::get('page_type');
+		$filter['shop_id']=$this->shopId;
+		$data['deleted']=1;
+		app::get('sysshop')->model('pagetype')->update($data,$filter);
+		app::get('sysshop')->model('widgets_instance')->update($data,$filter);
+		$msg = '删除成功';
+        $url = url::action('topshop_ctl_tvshopping_wapdecorate@index');
+		return $this->splash('success', $url, $msg, true);			
+	}
+	
+	/* action_name (par1, par2, par3)
+	* 修改页面的
+	* author by wanghaichao
+	* date 2018/11/22
+	*/
+	public function updatePage(){
+		$obj=app::get('sysshop')->model('pagetype');
+		$postdata=input::get();
+		$filter['shop_id']=$this->shopId;
+		$filter['page_type']=$postdata['page_type'];
+		$filter['id|noequal']=$postdata['id'];
+		$filter['deleted']=0;
+		$page=$obj->getRow('id',$filter);
+		$initPage=$obj->getRow('page_type',array('id'=>$postdata['id']));
+		if($page){
+            $msg = '该页面类型已经存在';
+            return $this->splash('error', null, $msg, true);
+		}
+		$res=$obj->save($postdata);// 更新页面表
+		$widget_filter=array('shop_id'=>$this->shopId,'page_type'=>$initPage['page_type']);
+		$widget_data['page_type']=$postdata['page_type'];
+		$widget_data['shop_id']=$this->shopId;
+		$widget=app::get('sysshop')->model('widgets_instance')->update($widget_data,$widget_filter);  //更新挂件表的page_type;
+		if($res){
+			$url = url::action('topshop_ctl_tvshopping_wapdecorate@pagelist');
+			return $this->splash('success', $url, '修改成功', true);			
+		}
+	}
+	
+	/* action_name (par1, par2, par3)
+	* 页面列表
+	* author by wanghaichao
+	* date 2018/11/22
+	*/
+	public function pagelist(){
+		
+        $this->contentHeaderTitle = app::get('topshop')->_('页面列表');
+		$pageObj=app::get('sysshop')->model('pagetype');
+        $params=input::get();
+        $params['shop_id']=$this->shopId;
+		
+        $filter=$params;
+		$filter['deleted']=0;
+        $count=$pageObj->count($filter);
+
+        $page=$params['pages']?$filter['pages']:1;
+
+        $limit=15;
+        $pageTotal=ceil($count/$limit);
+        $currentPage =($pageTotal < $page) ? $pageTotal : $page;
+        $offset = ($currentPage-1) * $limit;
+
+        $params['page_no']=$offset;
+        $params['page_size']=$limit;
+        $params['pages']=time();
+
+        //$data = app::get('topshop')->rpcCall('supplier.shop.list.page', $params);
+			
+        $data = $pageObj->getList('*',$filter,$params['page_no'],$params['page_size']);
+
+        $pagers = array(
+            'link'=>url::action('topshop_ctl_tvshopping_wapdecorate@pagelist',$params),
+            'current'=>$currentPage,
+            'use_app' => 'topshop',
+            'total'=>$pageTotal,
+            'token'=>time(),
+        );
+		$pagedata['pagers']=$pagers;
+        $pagedata['data'] = $data;
+		$pagedata['shop_id']=$this->shopId;
+		$pagedata['pages']=$page;
+		$pagedata['total']=$count+2;
+        return $this->page('topshop/tvshopping/wapdecorate/list.html',$pagedata);
+	}
+
+	/* action_name (par1, par2, par3)
+	* 页面修改
+	* author by wanghaichao
+	* date 2018/11/23
+	*/
+	public function pageEdit(){
+		$id=input::get('id');
+		$pageObj=app::get('sysshop')->model('pagetype');
+		$pagedata['page']=$pageObj->getRow('*',array('id'=>$id));
+        return $this->page('topshop/tvshopping/wapdecorate/pagedit.html',$pagedata);
+	}
+
 }

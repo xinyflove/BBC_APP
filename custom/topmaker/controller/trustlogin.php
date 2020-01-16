@@ -28,6 +28,10 @@ class topmaker_ctl_trustlogin extends topmaker_controller {
      */
     public function callbackSignIn()
     {
+		/*add_2019/8/7_by_wanghaichao_start*/
+		$type=input::get('type');
+		/*add_2019/8/7_by_wanghaichao_end*/
+		
         $thirdData = $this->_getThirdData($msg);
         if(!$thirdData)
         {
@@ -41,7 +45,7 @@ class topmaker_ctl_trustlogin extends topmaker_controller {
             'flag' => $thirdData['flag'],
         );
         // 信任登录信息
-        $trustInfo = $objTrustinfo->getTrustInfoData('seller_id', $filter);
+        $trustInfo = $objTrustinfo->getTrustInfoData('trust_id,seller_id', $filter);
         if($trustInfo)// 允许信任登录
         {
             // 登录用户帐号信息
@@ -50,7 +54,8 @@ class topmaker_ctl_trustlogin extends topmaker_controller {
             if($sellerInfo)
             {
                 pamAccount::setSession($trustInfo['seller_id'], $sellerInfo['login_account']);
-                return redirect::action('topmaker_ctl_passport@signin');
+                makerAuth::setTrustId($trustInfo['trust_id']);
+                return redirect::action('topmaker_ctl_passport@signin',array('type'=>$type));
             }
 
         }
@@ -97,6 +102,9 @@ class topmaker_ctl_trustlogin extends topmaker_controller {
             'country' => $userInfo['country'],
             'province' => $userInfo['province'],
             'city' => $userInfo['city'],
+			/*add_2019/8/7_by_wanghaichao_start*/
+			'type'=>$params['type'],
+			/*add_2019/8/7_by_wanghaichao_end*/
         );
         
         return $thirdData;

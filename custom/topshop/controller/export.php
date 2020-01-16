@@ -61,6 +61,9 @@ class topshop_ctl_export extends topshop_controller{
             $this->sellerlog('导出操作。对应导出model '.$model);
             $model = $app.'_mdl_'.$model;
             $filter['shop_id'] = shopAuth::getShopId();
+            if($this->loginSupplierId){
+                $filter['supplier_id'] = $this->loginSupplierId;
+            }
             try {
                 kernel::single('importexport_export')->fileDownload(input::get('filetype'), $model, input::get('name'), $filter,$orderBy);
             }

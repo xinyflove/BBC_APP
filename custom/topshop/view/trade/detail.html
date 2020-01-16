@@ -175,6 +175,9 @@
             <{if $push_logistics}>
                 <div class="">
                     推送状态：<{$push_logistics.push_logistics}>，<{if $push_logistics.message}>消息：<{$push_logistics.message}><{/if}>
+                    <{if ($push_logistics.status == 'wait_push') && ($trade.status == "WAIT_SELLER_SEND_GOODS")}>
+                        <a href="<{url action=topshop_ctl_trade_flow@pushTradetoLogisticsPage tid=$trade.tid}>" class="btn btn-link">推送至物流</a>
+                    <{/if}>
                 </div>
             <{/if}>
             <div class="table-responsive">
@@ -315,19 +318,27 @@
                     <tbody>
                     <tr>
                         <th style="width:50%"><{t}>发票类型<{/t}>:</th>
-                        <td><{if $trade.invoice_type=='normal'}><{t}>普通发票<{/t}><{elseif $trade.invoice_type=='vat'}><{t}>增值税发票<{/t}><{/if}></td>
+                        <td><{if $trade.invoice_type=='individual'}>个人普通电子发票<{elseif $trade.invoice_type=='unit'}>公司普通电子发票<{elseif $trade.invoice_type=='vat'}>增值税发票<{/if}></td>
                     </tr>
-                    <{if $trade.invoice_type=='normal'}>
+                    <{if $trade.invoice_type=='individual'}>
                     <tr>
-                        <th><{t}>发票抬头<{/t}>:</th>
-                        <td><{if $trade.invoice_name=='individual'}><{t}>个人<{/t}><{else}><{t}>单位<{/t}><{/if}>-<{$trade.invoice_main}></td>
+                            <th><{t}>姓名<{/t}>:</th>
+                            <td><{$trade.invoice_vat_main.name}></td>
+                    </tr>
+                    <tr>
+                            <th><{t}>身份证号<{/t}>:</th>
+                            <td><{$trade.invoice_vat_main.registration_number}></td>
+                    </tr>
+                    <tr>
+                            <th><{t}>手机号码<{/t}>:</th>
+                            <td><{$trade.invoice_vat_main.phone}></td>
                     </tr>
                     <tr>
                         <th><{t}>发票内容<{/t}>:</th>
                         <td><{t}>由商家直接开具<{/t}></td>
                     </tr>
                     <{/if}>
-                    <{if $trade.invoice_type=='vat'}>
+                    <{if $trade.invoice_type=='vat' || $trade.invoice_type=='unit'}>
                     <tr>
                         <th><{t}>公司名<{/t}>:</th>
                         <td><{$trade.invoice_vat_main.company_name}></td>

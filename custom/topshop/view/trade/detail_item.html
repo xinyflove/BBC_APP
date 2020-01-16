@@ -107,7 +107,7 @@
     <!--add_2017-11-14_by_xinyufeng_end-->
   </tr>
   <{if $item.is_virtual == 1}>
-      <{if $item.confirm_type == 0}>
+      <{if $item.confirm_type == 0 || $item.confirm_type == 2}>
         <!--扫码核销方式-->
         <tr class="vouher-<{$item.oid}> table-bordered no-padding">
           <td class="col-md-2 text-center">核销明细</td>

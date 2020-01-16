@@ -261,7 +261,7 @@ class topwap_item_search {
         $searchParams['buildExcerpts'] = false;//是否需要进行高亮显示商品名称		
 		/*modify_2017/9/18by_wanghaichao_start 取出预售时间*/
 		/* $searchParams['fields'] = 'item_id,title,image_default_id,price,sold_quantity,promotion';//需要返回的商品字段*/
-		$searchParams['fields'] = 'item_id,shop_id,title,image_default_id,price,sold_quantity,promotion,sell_time,paid_quantity,store,right_logo,shop_name,shop_mold,mold_log,livehot_img';//需要返回的商品字段
+		$searchParams['fields'] = 'item_id,shop_id,title,image_default_id,price,sold_quantity,promotion,sell_time,paid_quantity,store,right_logo,shop_name,shop_mold,mold_log,livehot_img,init_item_id';//需要返回的商品字段
 		/*modify_2017/9/18_by_wanghaichao_end*/
 		
         return $searchParams;

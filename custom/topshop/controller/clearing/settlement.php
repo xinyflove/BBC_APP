@@ -240,6 +240,11 @@ class topshop_ctl_clearing_settlement extends topshop_controller
             $pagedata['timearea'] = date('Y/m/d', time()-3600*24*7) . '-' . date('Y/m/d', time()-3600*24);
             $postSend['timearea']=$pagedata['timearea'];
         }
+
+        if($postSend['logistics_customer'] != 'all') {
+            $filter['logistics_customer'] = $postSend['logistics_customer'];
+            $pagedata['logistics_customer'] = $postSend['logistics_customer'];
+        }
         $limit = 20;
         $filter['shop_id']=$this->shopId;
         $count=app::get('sysclearing')->model('settlement_billing_detail')->count($filter);
@@ -367,7 +372,7 @@ class topshop_ctl_clearing_settlement extends topshop_controller
 
 
 	/* action_name (par1, par2, par3)
-	* 主持人结算
+	* 创客结算
 	* author by wanghaichao
 	* date 2018/6/26
 	*/
@@ -407,8 +412,7 @@ class topshop_ctl_clearing_settlement extends topshop_controller
 		//$aa->exec();
 
 
-
-        $this->contentHeaderTitle = app::get('topshop')->_('主持人结算明细（以收付款时间进行结算！）');
+        $this->contentHeaderTitle = app::get('topshop')->_('创客结算明细（以收付款时间进行结算！）');
         $postSend=input::get();
         if($postSend['timearea'])
         {
@@ -453,6 +457,7 @@ class topshop_ctl_clearing_settlement extends topshop_controller
             $data[$sk]['trade_type']=$this->__getTradeTypeSrc($sv['trade_type']);
             $data[$sk]['incoming_type']=$this->__getIncomingType($sv['incoming_type']);
 			$data[$sk]['seller_id']=$this->__getSellerName($sv['seller_id']);
+			$data[$sk]['group_name']=$this->__getGroupName($sv['group_id']);
         }
         $pagedata['data']=$data;
         $pagedata['limits'] = $limit;
@@ -470,8 +475,22 @@ class topshop_ctl_clearing_settlement extends topshop_controller
 		$pagedata['find_seller_id']=$postSend['seller_id'];
         return $this->page('topshop/clearing/confirm_seller_detail.html', $pagedata);
 	}
-
 	
+	/**
+	* 获取协会的名称
+	* author by wanghaichao
+	* date 2019/9/10
+	*/
+	public function __getGroupName($group_id){
+		if (empty($group_id) || $group_id==0)
+		{
+			return '--';
+		}
+		$group=app::get('sysmaker')->model('group')->getRow('name',array('group_id'=>$group_id));
+		return $group['name'];
+	}
+
+
 	/* 
 	* 集采商城的结算情况,供货的商城(b)的结算详情
 	* author by wanghaichao
@@ -518,7 +537,7 @@ class topshop_ctl_clearing_settlement extends topshop_controller
         $pagedata['pages'] = $page_no;
         $postSend['pages'] = time();
         $pagedata['pagers'] = array(
-            'link'=>url::action('topshop_ctl_clearing_settlement@sellerDetail',$postSend),
+            'link'=>url::action('topshop_ctl_clearing_settlement@collectionDetail',$postSend),
             'current'=>$page_no,
             'total'=>$totalPage,
             'use_app' => 'topshop',
@@ -584,7 +603,7 @@ class topshop_ctl_clearing_settlement extends topshop_controller
         $pagedata['pages'] = $page_no;
         $postSend['pages'] = time();
         $pagedata['pagers'] = array(
-            'link'=>url::action('topshop_ctl_clearing_settlement@sellerDetail',$postSend),
+            'link'=>url::action('topshop_ctl_clearing_settlement@pullCollectionDetail',$postSend),
             'current'=>$page_no,
             'total'=>$totalPage,
             'use_app' => 'topshop',
@@ -650,7 +669,7 @@ class topshop_ctl_clearing_settlement extends topshop_controller
 	}
 
 	/* action_name (par1, par2, par3)
-	* 获取主持人信息
+	* 获取创客信息
 	* author by wanghaichao
 	* date 2018/11/14
 	*/
@@ -669,13 +688,198 @@ class topshop_ctl_clearing_settlement extends topshop_controller
 	}
 	
 	/* action_name (par1, par2, par3)
-	* 获取主持人姓名
+	* 获取创客姓名
 	* author by wanghaichao
 	* date 2018/11/14
 	*/
 	public function __getSellerName($seller_id){
-		$seller=app::get('sysmaker')->model('seller')->getRow('name',array($seller_id));
+		$seller=app::get('sysmaker')->model('seller')->getRow('name',array('seller_id'=>$seller_id));
 		return $seller['name'];
 	}
+	
+	/**
+	* 票务系统创客结算
+	* author by wanghaichao
+	* date 2019/8/7
+	*/
+	public function ticketSellerBill(){
+        $this->contentHeaderTitle = app::get('topshop')->_('创客结算明细（以核销时间进行结算！）');
+        $postSend=input::get();
+		$filter='1';
+        if($postSend['timearea'])
+        {
+            $pagedata['timearea'] = $postSend['timearea'];
+            $timeArray = explode('-', $postSend['timearea']);
+            $filter.=' and write_time > '.strtotime($timeArray[0]);//开始前一天
+            $filter.=' and write_time <='.(strtotime($timeArray[1]) + 3600*24);//结束后一天
+			
+			
+        }
+        else
+        {
+            $filter.=' and write_time >'.strtotime(date('Y/m/d',time()));//开始前一天
+            $filter.=' and write_time<='.strtotime(date('Y/m/d',time()));//结束后一天
+            $pagedata['timearea'] = date('Y/m/d', time()-3600*24*7) . '-' . date('Y/m/d', time()-3600*24);
+            $postSend['timearea']=$pagedata['timearea'];
+        }
+		//echo "<pre>";print_r($postSend);die();
+		//$filter='';
+        $limit = 20;
+		if($postSend['seller_name']){
+			$filter.=' and b.name="'.$postSend['seller_name'].'"';
+			$pagedata['seller_name']=$postSend['seller_name'];
+		}else{
+			$filter.=' and a.seller_id!=0';
+		}
+		$filter.=' and a.shop_id='.$this->shopId;
+		//echo "<pre>";print_r($filter);die();
+        $countBuilder = db::connection()->createQueryBuilder();
+        $count=$countBuilder->select('count(a.id)')
+            ->from('sysclearing_seller_settlement_billing_detail', 'a')
+            ->leftjoin('a', 'sysmaker_seller', 'b', 'a.seller_id = b.seller_id')
+            ->where($filter)
+            ->execute()->fetchColumn();	
+
+
+
+        //$count=app::get('sysclearing')->model('seller_settlement_billing_detail')->count($filter);
+        $totalPage=ceil($count/$limit);
+        $page_no=$postSend['pages']?$postSend['pages']:1;
+        $offset=($page_no-1)*$limit;
+		
+        $listsBuilder=db::connection()->createQueryBuilder();
+        $data = $listsBuilder->select('a.*')
+            ->from('sysclearing_seller_settlement_billing_detail', 'a')
+            ->leftjoin('a', 'sysmaker_seller', 'b', 'a.seller_id = b.seller_id')
+            ->where($filter)
+            ->setFirstResult($offset)
+            ->setMaxResults($limit)
+             ->execute()->fetchAll();
+
+
+        //$data=app::get('sysclearing')->model('seller_settlement_billing_detail')->getList('*',$filter,$offset,$limit,'write_time');
+        foreach($data as $sk => $sv){
+			$sellerinfo=$this->__getSellerInfo($sv['seller_id']);
+            $data[$sk]['trade_type']=$this->__getTradeTypeSrc($sv['trade_type']);
+			$data[$sk]['seller_id']=$this->__getSellerName($sv['seller_id']);
+			$data[$sk]['cart_number']=$sellerinfo['cart_number'];
+			$data[$sk]['mobile']=$sellerinfo['mobile'];
+        }
+        $pagedata['data']=$data;
+        $pagedata['limits'] = $limit;
+        $pagedata['pages'] = $page_no;
+        $postSend['pages'] = time();
+        $pagedata['pagers'] = array(
+            'link'=>url::action('topshop_ctl_clearing_settlement@ticketSellerBill',$postSend),
+            'current'=>$page_no,
+            'total'=>$totalPage,
+            'use_app' => 'topshop',
+            'token'=>$postSend['pages']
+        );
+		$pagedata['is_compere']=$this->sellerInfo['is_compere'];
+		$pagedata['sellerInfo']=$this->getSellerInfo();
+		$pagedata['find_seller_id']=$postSend['seller_id'];
+		$pagedata['shop_id']=$this->shopId;
+        return $this->page('topshop/clearing/ticket_seller_detail.html', $pagedata);
+	}
+	
+	/**
+	* 根据创客id获取创客的信息
+	* author by wanghaichao
+	* date 2019/8/27
+	*/
+	public function __getSellerInfo($seller_id){
+		$seller=app::get('sysmaker')->model('seller')->getRow('name,cart_number,mobile',array('seller_id'=>$seller_id));
+		return $seller;
+	}
+	
+	/**
+	* 创客佣金结算汇总的
+	* author by wanghaichao
+	* date 2019/9/4
+	*/
+	public function summary(){
+		$this->contentHeaderTitle = app::get('topshop')->_('创客佣金结算汇总');
+        $postSend=input::get();
+        if($postSend['timearea'])
+        {
+            $pagedata['timearea'] = $postSend['timearea'];
+            $timeArray = explode('-', $postSend['timearea']);
+            $filter['created_time|than']  = strtotime($timeArray[0]);//开始前一天
+            $filter['created_time|lthan'] = strtotime($timeArray[1]) + 3600*24;//结束后一天
+        }
+        else
+        {
+            //$filter['created_time|than']  = strtotime(date('Y/m/d',time()));//开始前一天
+            $filter['created_time|lthan'] =time();//结束后一天
+            $pagedata['timearea'] = date('Y/m/d', time()-3600*24*7) . '-' . date('Y/m/d', time()-3600*24);
+            $postSend['timearea']=$pagedata['timearea'];
+        }
+
+		//$filter='';write_time
+        $limit = 20;
+		if($postSend['seller_id']){
+			$filter['seller_id']=$postSend['seller_id'];
+			$filter['shop_id']=$this->shopId;
+		}else{
+			$filter['shop_id']=$this->shopId;
+		}
+		if ($postSend['seller_name'])
+		{
+			$filter['seller_name|has']=$postSend['seller_name'];
+		}
+		if ($postSend['group_name'])
+		{
+			$filter['group_name|has']=$postSend['group_name'];
+		}
+		
+		if ($postSend['type'])
+		{
+			$filter['type']=$postSend['type'];
+		}
+        $count=app::get('sysclearing')->model('summary')->count($filter);
+        $totalPage=ceil($count/$limit);
+        $page_no=$postSend['pages']?$postSend['pages']:1;
+        $offset=($page_no-1)*$limit;
+        $data=app::get('sysclearing')->model('summary')->getList('*',$filter,$offset,$limit,'created_time');
+
+        $pagedata['data']=$data;
+        $pagedata['limits'] = $limit;
+        $pagedata['pages'] = $page_no;
+        $postSend['pages'] = time();
+        $pagedata['pagers'] = array(
+            'link'=>url::action('topshop_ctl_clearing_settlement@summary',$postSend),
+            'current'=>$page_no,
+            'total'=>$totalPage,
+            'use_app' => 'topshop',
+            'token'=>$postSend['pages']
+        );
+		$pagedata['is_compere']=$this->sellerInfo['is_compere'];
+		$pagedata['sellerInfo']=$this->getSellerInfo();
+		$pagedata['find_seller_id']=$postSend['seller_id'];
+		$pagedata['shop_id']=$this->shopId;
+		$pagedata['post']=$postSend;
+        return $this->page('topshop/clearing/summary.html', $pagedata);
+	}
+	
+	/**
+	* 结算汇总中结算功能的
+	* author by wanghaichao
+	* date 2019/9/5
+	*/
+	public function settlement(){
+		$post=input::get();
+		$update['status']=$post['status'];
+		$update['remark']=$post['remark'];
+		$params['id']=$post['summary_id'];
+		$res=app::get('sysclearing')->model('summary')->update($update,$params);
+		if ($res)
+		{
+			return $this->splash('success','','结算成功',true);	
+		}else{
+			return $this->splash('error',''.'结算失败',true);
+		}
+	}
+
 
 }

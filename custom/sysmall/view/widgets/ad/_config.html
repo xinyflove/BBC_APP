@@ -1,0 +1,45 @@
+<h2 class="head-title">频道广告图</h2>
+<div class="tableform cate_item_floor">
+    <div class="widgetconfig">
+        <table width="100%" cellpadding="0" cellspacing="0">
+            <tbody>
+            <tr>
+                <th>
+                    <{t app='sysmall' }>广告图：
+                    <{/t}>
+                </th>
+                <td>
+                    <input name='adimg' class="imgsrc" id="adimg" value="<{$setting.adimg}>">
+                    <input type=button value="<{t app='desktop'}>上传图片<{/t}>" class="uploadbtn" onclick="addPic('adimg')">
+                    <span>(建议图片尺寸：1228px*163px)</span>
+                </td>
+            </tr>
+
+            <tr>
+                <th>
+                    <{t app='sysmall' }>广告图链接：
+                    <{/t}>
+                </th>
+                <td>
+                    <input type="text" name="link" value="<{$setting.link}>">
+                </td>
+            </tr>
+
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+    function addPic(icon) {
+        var goto_url = encodeURIComponent(
+            '<{url route="shopadmin" app="image" ctl="admin_manage" act="image_broswer" type="big"}>');
+        var url = '<{url route="shopadmin" app="desktop" act="alertpages" goto=""}>' + goto_url;
+        Ex_Loader('modedialog', function () {
+            return new imgDialog(url, {
+                onCallback: function (image_id, image_src) {
+                    $(icon).value = image_src;
+                }
+            });
+        });
+    }
+</script>

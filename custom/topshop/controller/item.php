@@ -44,6 +44,17 @@ class topshop_ctl_item extends topshop_controller {
         /*add_2017/9/23_by_wanghaichao_end*/
         $this->contentHeaderTitle = app::get('topshop')->_('添加商品');
 		$pagedata['count']=1;
+        $is_hm_supplier = $hm_supplier_id = $this->checkHuiminSupplierLogin();
+        $hm_hidden_class = '';
+        if($is_hm_supplier) {
+            $hm_hidden_class = 'hidden';
+            $hm_supplier_info = app::get('sysshop')->model('supplier')->getRow('supplier_name, supplier_id',['supplier_id'=>$hm_supplier_id,'is_audit'=>'PASS']);
+            $pagedata['item']['supplier_name'] = $hm_supplier_info['supplier_name'];
+            $pagedata['item']['supplier_id'] = $hm_supplier_info['supplier_id'];
+        }
+		$pagedata['hm_hidden_class']=$hm_hidden_class;
+		$pagedata['is_hm_shop']=$this->isHmShop;
+        $pagedata['is_hm_supplier'] = $is_hm_supplier;
         return $this->page('topshop/item/edit.html', $pagedata);
     }
 
@@ -123,6 +134,14 @@ class topshop_ctl_item extends topshop_controller {
         $params['shop_id'] = $this->shopId;
         $params['fields'] = "*,sku,item_store,item_status,item_count,item_desc,item_nature,spec_index";
         $pagedata['item'] = app::get('topshop')->rpcCall('item.get',$params);
+
+        //如果是惠民店铺，则取出相应的类别
+        if($this->isHmShop) {
+            $hm_cat_model = app::get('sysitem')->model('item_hm_cat');
+            $hm_cat_info = $hm_cat_model->getRow('*', ['item_id' => $itemId]);
+            $hm_cat_id = $hm_cat_info['four_cat_code'];
+            $pagedata['item']['hm_cat_id'] = $hm_cat_id;
+        }
 
         // 商家分类及此商品关联的分类标示selected
         $scparams['shop_id'] = $this->shopId;
@@ -233,6 +252,14 @@ class topshop_ctl_item extends topshop_controller {
 			$pagedata['ticket']=$ticket;
 		}
 		/*add_2018/10/9_by_wanghaichao_end*/
+        $pagedata['is_hm_shop'] = $this->isHmShop;
+        $is_hm_supplier = $this->checkHuiminSupplierLogin();
+        $hm_hidden_class = '';
+        if($is_hm_supplier) {
+            $hm_hidden_class = 'hidden';
+        }
+        $pagedata['hm_hidden_class'] = $hm_hidden_class;
+        $pagedata['is_hm_supplier'] = $is_hm_supplier;
         $this->contentHeaderTitle = app::get('topshop')->_('编辑商品');
         return $this->page('topshop/item/edit.html', $pagedata);
     }
@@ -259,6 +286,7 @@ class topshop_ctl_item extends topshop_controller {
 
         $status = input::get('status',false);
         $pages =  input::get('pages',1);
+        $hm_supplier_id = $is_hm_supplier = $this->checkHuiminSupplierLogin();
         $pagedata['status'] = $status;
         $filter = array(
             'shop_id' => $this->shopId,
@@ -266,6 +294,10 @@ class topshop_ctl_item extends topshop_controller {
             'page_no' =>intval($pages),
             'page_size' => intval($this->limit),
         );
+        //如果是惠民供应商登陆，则只筛选这个供应商的商品
+        if($hm_supplier_id) {
+            $filter['supplier_id'] = $hm_supplier_id;
+        }
         $shopCatId = input::get('shop_cat_id',false);
         if( $shopCatId )
         {
@@ -354,6 +386,9 @@ class topshop_ctl_item extends topshop_controller {
 		$pagedata['seller_id']=$this->sellerId;
 		$pagedata['is_compere']=$this->sellerInfo['is_compere'];
         $pagedata['is_lm'] = $this->isLm;
+        $pagedata['is_hm_shop'] = $this->isHmShop;
+        $pagedata['is_hm_supplier'] = $is_hm_supplier;
+
 		/*add_2018/6/22_by_wanghaichao_end*/
         return $this->page('topshop/item/list.html', $pagedata);
     }
@@ -426,6 +461,11 @@ class topshop_ctl_item extends topshop_controller {
             'page_size' => intval($this->limit),
             'orderBy' =>'modified_time desc',
         );
+        $hm_supplier_id = $this->checkHuiminSupplierLogin();
+        //如果是惠民供应商登陆，则只筛选这个供应商的商品
+        if($hm_supplier_id) {
+            $filter['supplier_id'] = $hm_supplier_id;
+        }
 
         if($filter['use_platform'] >= 0)
         {
@@ -601,6 +641,7 @@ class topshop_ctl_item extends topshop_controller {
 		$pagedata['is_compere']=$this->sellerInfo['is_compere'];
 		/*add_2018/6/22_by_wanghaichao_end*/
 		//echo "<pre>";print_r($pagedata['search_arr']);die();
+        $pagedata['is_lm'] = $this->isLm;
         return $this->page('topshop/item/list.html', $pagedata);
 
     }
@@ -611,8 +652,12 @@ class topshop_ctl_item extends topshop_controller {
         if(empty($postData['item']['item_id'])){
             $itemFrom=$postData['item']['is_clearing'];
         }else{
-            $itemInfo=app::get('sysitem')->model('item')->getRow('is_clearing',array('item_id'=>$postData['item']['item_id']));
+            $itemInfo=app::get('sysitem')->model('item')->getRow('is_clearing, supplier_id',array('item_id'=>$postData['item']['item_id']));
             $itemFrom=$itemInfo['is_clearing'];
+            $hm_supplier_id = $this->checkHuiminSupplierLogin();
+            if($hm_supplier_id && $hm_supplier_id != $itemInfo['supplier_id']) {
+                return $this->splash('error','','只允许更改自己店铺的商品');
+            }
         }
         /*add_201711241355_wudi_start:barcode required*/
         if($itemFrom==1){
@@ -652,18 +697,69 @@ class topshop_ctl_item extends topshop_controller {
             // 格式化参数
             $postData = $this->_formatItemData($postData);
             $result = app::get('topshop')->rpcCall('item.create',$postData);
-            if($result)
+            if($result['res'])
             {
                 $this->sellerlog('保存商品。名称是'.$postData['title']);
                 $url = input::get('return_to_url') ? : url::action('topshop_ctl_item@itemList');
                 $msg = app::get('topshop')->_('保存成功');
 
-                // 下架代售和选货商品
+                //如果是惠民店铺，则存储相关的惠民商品分类信息
+                if($this->isHmShop) {
+                    $hm_four_cat_name = '';
+                    $hm_second_cat_name = '';
+                    $hm_second_cat_code = '';
+                    $hm_four_cat_code = $postData['hm_cat_id'];
+                    $hm_obj = kernel::single('ectools_huimin');
+                    $hm_cat_list = $hm_obj->getItemCateList($this->shopId);
+                    foreach($hm_cat_list as $hcl) {
+                        foreach($hcl['children'] as $child1) {
+                            foreach($child1['children'] as $child2) {
+                                if($child2['code'] == trim($hm_four_cat_code)) {
+                                    $hm_four_cat_name = $child2['sortName'];
+                                    $hm_second_cat_name = $hcl['sortName'];
+                                    $hm_second_cat_code = $hcl['code'];
+                                }
+                            }
+                        }
+                    }
+                    $hm_insert_data['item_id'] = $result['params']['item_id'];
+                    $hm_insert_data['second_cat_code'] = $hm_update_data['second_cat_code'] = $hm_second_cat_code;
+                    $hm_insert_data['second_cat_name'] = $hm_update_data['second_cat_name'] = $hm_second_cat_name;
+                    $hm_insert_data['four_cat_code']   = $hm_update_data['four_cat_code'] = $hm_four_cat_code;
+                    $hm_insert_data['four_cat_name']   = $hm_update_data['four_cat_name'] = $hm_four_cat_name;
+                    $hm_cat_model = app::get('sysitem')->model('item_hm_cat');
+                    $hm_has_count = $hm_cat_model->count(['item_id' => $result['params']['item_id']]);
+                    if($hm_has_count > 0) {
+                        $hm_cat_model->update($hm_update_data, ['item_id' => $result['params']['item_id']]);
+                    } else {
+                        $hm_cat_model->insert($hm_insert_data);
+                    }
+                }
+
+                /*添加商品到广电优选start @auth:xinyfueng;time:2019-02-25*/
+                if(app::get('sysconf')->getConf('shop.goods.examine'))// 如果开启商品审核
+                {
+                    // 如果是实物商品 或 虚拟商品并且开启虚拟商品审核
+                    if($postData['is_virtual'] == '0' || ($postData['is_virtual'] == '1' && app::get('sysitem')->getConf('virtual.goods.check') == 'true'))
+                    {
+                        // 添加or更新商品到广电优选
+                        $apiData['item_id'] = $result['params']['item_id'];
+                        $apiData['shop_id'] = $this->shopId;
+                        $apiData['sale_type'] = 0;
+                        app::get('topshop')->rpcCall('mall.item.push', $apiData);
+                    }
+                }
+                /*添加商品到广电优选end*/
+
+                /*下架代售和优选商品start @auth:xinyfueng;*/
+                // 如果是商品更新则下架代售和优选商品
                 if($postData['item_id'])
                 {
                     app::rpcCall('mall.item.soldout', array('item_id' => $postData['item_id'], 'shop_id' => $postData['shop_id']));
                 }
-
+                /*下架代售和优选商品end*/
+                
+                kernel::single('sysitem_events_listeners_kingdeeMateriel')->handle($result['params']['item_id'],true);
                 return $this->splash('success', $url, $msg, true);
             }
         }
@@ -676,6 +772,11 @@ class topshop_ctl_item extends topshop_controller {
     // 初步判断数据合法性
     private function _checkPost($postData)
     {
+        if($this->isHmShop) {
+            if(empty($postData['hm_cat_id']) || !isset($postData['hm_cat_id'])) {
+                throw new LogicException('惠民商品分类必须选择');
+            }
+        }
         if(empty($postData['item']['supplier_id']) || !isset($postData['item']['supplier_id']))
         {
             throw new LogicException('供货商必填，请选择供货商');
@@ -855,6 +956,7 @@ class topshop_ctl_item extends topshop_controller {
         $data = [];
         $data['shop_id'] = $this->shopId;
         $data['cat_id'] = $postData['cat_id'];
+        $data['hm_cat_id'] = $postData['hm_cat_id'];
         $data['brand_id'] = $postData['item']['brand_id'];
         $data['shop_cat_id'] = implode(',', $postData['item']['shop_cids']);
         $data['title'] = htmlspecialchars($postData['item']['title']);
@@ -866,6 +968,8 @@ class topshop_ctl_item extends topshop_controller {
         $data['mkt_price'] = $postData['item']['mkt_price'] ? : 0;
         // 添加供货价 王衍生
         $data['supply_price'] = $postData['item']['supply_price'] ? : 0;
+        $data['maker_ratio'] = $postData['item']['maker_ratio'] ? : 0;
+        $data['group_ratio'] = $postData['item']['group_ratio'] ? : 0;
         /*add_2017/12/11_by_wanghaichao_start*/
         $data['bank_price'] = $postData['item']['bank_price'] ? : 0;     //银行卡商品价格
         $data['only_bank'] = $postData['item']['only_bank'];  //是否仅限银行卡商品
@@ -1005,7 +1109,13 @@ class topshop_ctl_item extends topshop_controller {
         $data['source_house'] = $postData['item']['source_house'];
         $data['operate_type'] = $postData['item']['operate_type'];
         $data['shelf_life']   = $postData['item']['shelf_life'];
+        $data['inner_code']   = $postData['item']['inner_code'];
+        $data['inner_num']    = $postData['item']['inner_num'];
         $data['material_code']   = $postData['item']['material_code'];
+        $data['consign_ratio']   = $postData['item']['consign_ratio'];
+        $data['consign_settlement']   = $postData['item']['consign_settlement'];
+        $data['kingdee_incoming_type'] = $postData['item']['kingdee_incoming_type'];
+        $data['tax_block_code']   = $postData['item']['tax_block_code'];
         /* add_end_gurundong_2018/01/19 */
 		/*add_2018/10/9_by_wanghaichao_start*/
 		//处理一个虚拟商品生成多个卡券的逻辑
@@ -1033,7 +1143,7 @@ class topshop_ctl_item extends topshop_controller {
 
             /*add_by_xinyufeng_2018-07-04_start*/
             // 获取商品的原始商品id和更新状态
-            $itemInfo = app::get('sysitem')->model('item')->getRow('init_item_id,init_is_change,shop_cat_id', array('item_id'=>$itemId));
+            $itemInfo = app::get('sysitem')->model('item')->getRow('title,init_item_id,init_is_change,shop_cat_id,is_virtual', array('item_id'=>$itemId));
             /*add_by_xinyufeng_2018-07-04_end*/
 
             if($postData['type'] == 'tosale')
@@ -1042,17 +1152,23 @@ class topshop_ctl_item extends topshop_controller {
                 if($itemInfo['init_item_id'])
                 {
                     // 原始商品信息
-                    $mallItem = app::get('sysmall')->model('item')->getRow('status', array('item_id'=>$itemInfo['init_item_id']));
+                    $mallItem = app::get('sysmall')->model('item')->getRow('status,sale_type', array('item_id'=>$itemInfo['init_item_id']));
                     // 判断原始商品是否在售
                     if($mallItem['status'] != 'onsale')
                     {
-                        $msg = app::get('topshop')->_('原始商品未在售');
+                        $msg = app::get('topshop')->_("原始商品 [{$itemInfo['title']}] 未在售");
+                        return $this->splash('error',null,$msg,true);
+                    }
+                    // 判断原始商品是否在售
+                    if($mallItem['sale_type'] != 0)
+                    {
+                        $msg = app::get('topshop')->_("原始商品 [{$itemInfo['title']}] 只允许主持人代售");
                         return $this->splash('error',null,$msg,true);
                     }
                     // 判断原始商品有数据有变化
                     if($itemInfo['init_is_change'] == 1)
                     {
-                        $msg = app::get('topshop')->_('原始商品有数据有变化,请更新');
+                        $msg = app::get('topshop')->_("原始商品 [{$itemInfo['title']}] 有数据有变化,请更新");
                         return $this->splash('error',null,$msg,true);
                     }
                     // 判断代售商品是否有店铺分类
@@ -1070,9 +1186,19 @@ class topshop_ctl_item extends topshop_controller {
                     $msg = app::get('topshop')->_('抱歉，您的店铺处于关闭状态，不能发布(上架)商品');
                     return $this->splash('error',null,$msg,true);
                 }
+                // 如果平台开启商品审核，过滤商品 @auth:xinyufeng;time:2019-02-22
                 if(app::get('sysconf')->getConf('shop.goods.examine')){
-                    $status = 'pending';
-                    $msg = app::get('topshop')->_('提交审核成功');
+                    // 如果是虚拟商品，并且没有开启虚拟商品审核 或 代售商品 直接上架成功
+                    if(($itemInfo['is_virtual'] == '1' && app::get('sysitem')->getConf('virtual.goods.check') == 'false') || $itemInfo['init_item_id'])
+                    {
+                        $status = 'onsale';
+                        $msg = app::get('topshop')->_('上架成功');
+                    }
+                    else
+                    {
+                        $status = 'pending';
+                        $msg = app::get('topshop')->_('提交审核成功');
+                    }
                 }else{
                     $status = 'onsale';
                     $msg = app::get('topshop')->_('上架成功');
@@ -1115,6 +1241,14 @@ class topshop_ctl_item extends topshop_controller {
                 }
             }
             /*add_by_xinyufeng_2018-07-04_end*/
+
+            /*添加商品审核记录开始 @auth:xinyufeng;time:2019-02-25*/
+            if(app::get('sysconf')->getConf('shop.goods.examine') && $status == 'pending' && $itemstatus['approve_status'] != 'onsale')
+            {
+                // 调用添加审核记录接口
+                app::rpcCall('item.check.create', array('item_id' => $itemId, 'shop_id' => $this->shopId));
+            }
+            /*添加商品审核记录结束*/
 
             return $this->splash('success', $url, $msg, true);
         }
@@ -1291,6 +1425,10 @@ class topshop_ctl_item extends topshop_controller {
         $params = [
             'shop_id'=>$this->shopInfo['shop_id']
         ];
+        $is_hm_supplier = $this->checkHuiminSupplierLogin();
+        if($is_hm_supplier) {
+            $params['supplier_id'] = $is_hm_supplier;
+        }
         if(!empty($supplier))
         {
             $params['keyword'] = $supplier;

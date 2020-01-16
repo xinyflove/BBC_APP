@@ -63,6 +63,11 @@
     <div class="goods-search"><input type="text" name="item_title" value="" id="goods-search-key" class="form-control input-sm goods-search-key" placeholder="名称"></div>
     <div class="goods-search"><input type="text" name="item_bn" value="" id="goods-search-bn" class="form-control input-sm goods-search-bn" placeholder="商品货号"></div>
     <div class="goods-search"><input type="text" name="item_brand" value="" id="goods-search-brand" class="form-control input-sm goods-search-brand" placeholder="品牌名称"></div>
+	<!--add_2018/11/29_by_wanghaichao_start-->
+	<!--筛选广电优选的商品-->
+		<input type="hidden" name="item_mall" id="goods-search-mall" value="<{$mall}>">
+	<!--add__by_wanghaichao_end-->
+	
     <button id="search_goods" type="button" class="btn btn-warning btn-sm" data-remote="<{url action=topshop_ctl_selector_item@searchItem limit=$limit}>">搜索</button>
     <button id="check_all" type="button" class="btn btn-info btn-sm">全选当前页</button>
     &nbsp; <a id="uncheck_all" href="#">清空当前页</a>

@@ -21,7 +21,6 @@ class topwap_ctl_member_coupon extends topwap_ctl_member {
         return $this->page('topwap/member/coupon/index.html', $pagedata);
     }
 
-
     public function ajaxCouponList()
     {
         try {
@@ -98,6 +97,32 @@ class topwap_ctl_member_coupon extends topwap_ctl_member {
                 break;
         }
         return $filter['is_valid'];
+    }
+
+    public function huimin_index()
+    {
+        $pagedata['title'] = app::get('topwap')->_('我的文惠券');
+        $is_huimin_user = kernel::single('ectools_huimin')->is_huimin_user(userAuth::getUserMobile());
+        if(!$is_huimin_user){
+            $huimin_shop_id = app::get('sysshop')->getConf('sysshop.hmshopping.shop_id');
+            $couponlist = kernel::single('ectools_huimin')->get_coupon_list(userAuth::getUserMobile());
+            $pagedata['couponlist'] = [];
+            foreach($couponlist as $value){
+                $pagedata['couponlist'][] = [
+                    "coupon_code" => $value['pNo'],
+                    "shop_id" => $huimin_shop_id,
+                    "coupon_id" => $value['pNo'],
+                    "obtain_desc" => $value['description'],
+                    "is_valid" => "1",
+                    "price" => $value['pAmount'],
+                    "canuse_end_time" => $value['efficacyDate'],
+                    "deduct_money" => $value['pAmount'],
+                    "coupon_name" => $value['description'],
+                    "coupon_desc" => $value['description'],
+                ];
+            }
+        }
+        return $this->page('topwap/member/coupon/huimin_index.html', $pagedata);
     }
 }
 

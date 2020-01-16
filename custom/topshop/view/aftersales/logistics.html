@@ -1,24 +1,74 @@
 <{if $info.sendback_data}>
-<div class="form-horizontal">
-  <div class="border-box">
-    <div class="form-group">用户退换货物流信息：</div>
-    <div class="form-group">
-      <span class="order-form-w1">物流公司：</span><{$info.sendback_data.logi_name}>
+    <div class="form-horizontal">
+    <div class="border-box">
+        <div class="form-group">用户退换货物流信息：</div>
+        <div class="form-group">
+        <span class="order-form-w1">物流公司：</span><{$info.sendback_data.logi_name}>
+        </div>
+        <div class="form-group">
+        <span class="order-form-w1">运单号码：</span>
+        <span class="align-adjust-1"><{$info.sendback_data.logi_no}></span>
+        </div>
+        <{if $tracking && $tracking =='true' }>
+        <div class="form-group">
+        <span class="order-form-w1">物流跟踪：</span>
+        <span class="align-adjust-1" id="send_back_track">
+            <span id="click_get_track_back" class="sp-see">点击查看</span>
+        </span>
+        </div>
+        <{/if}>
     </div>
-    <div class="form-group">
-      <span class="order-form-w1">运单号码：</span>
-      <span class="align-adjust-1"><{$info.sendback_data.logi_no}></span>
     </div>
-    <{if $tracking && $tracking =='true' }>
-    <div class="form-group">
-      <span class="order-form-w1">物流跟踪：</span>
-      <span class="align-adjust-1" id="send_back_track">
-        <span id="click_get_track_back" class="sp-see">点击查看</span>
-      </span>
+
+    <{if $info.delivery_aggregation}>
+    <div class="border-box">
+        <div class="form-group">
+                <p class="lead">商家上门取件物流信息：</p>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th>物流公司</th>
+                            <th>物流单号</th>
+                            <th>收件人</th>
+                            <th>建立日期</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                            <{foreach from=$info.delivery_aggregation item=aggregation}>
+                            <div class="logis_detail">
+                                <tbody>
+                                <tr>
+                                    <td>
+                                        <{$aggregation.logi_name}>
+                                    </td>
+                                    <td>
+                                        <{$aggregation.logi_no}>
+                                    </td>
+                                    <td>
+                                        <{$aggregation.receiver_name}>
+                                    </td>
+                                    <td>
+                                        <{$aggregation.create_time|cdate}>
+                                    </td>
+                                    <td>
+                                        <a href="javascript:void(0);" logi_no="<{$aggregation.logi_no}>" corp_code="<{$aggregation.corp_code}>" class="click_get_track" class="sp-see">查看物流</a>
+                                    </td>
+                                </tr>
+                                </tbody>
+                                <tbody class="logistics">
+
+                                </tbody>
+                            </div>
+                            <{/foreach}>
+                    </table>
+                </div>
+        </div>
+        <div class="form-group">
+            <button type="button" class="btn btn-default action-retake-goods">再次发起上门取件</button>
+        </div>
     </div>
     <{/if}>
-  </div>
-</div>
 <{/if}>
 <!-- 换货 -->
 <{if $info.aftersales_type == 'EXCHANGING_GOODS'}>
@@ -164,4 +214,37 @@
       $('#send_track').html(rs);
     });
   });
+
+  $('.click_get_track').click(function (e) {
+        e.preventDefault();
+        var html_object = $(this).parents('tbody').next('tbody')
+        var logi_no = $(this).attr('logi_no');
+        var corp_code = $(this).attr('corp_code');
+        html_object.html('加载中...');
+        $.post('<{url action=topshop_ctl_trade_detail@ajaxGetTrack}>', {'logi_no': logi_no, 'corp_code': corp_code}, function (rs) {
+            if (rs.error) {
+                return $('#messagebox').message(rs.message);
+            }
+            html_object.html(rs);
+        });
+    });
+
+
+    $('.action-retake-goods').on('click',function(){
+        var url = '<{url action=topshop_ctl_aftersales@retakeGoods bn=$info.aftersales_bn}>';
+        Modal.confirm({msg: '确定再次发起上门取件吗？'}).on(function(e) {
+            if(e==true) {
+                $.post(url,'',function(rs){
+                    if(rs.success) {
+                        $('#messagebox').message(rs.message, 'success');
+                        setTimeout(function(){location.reload();}, 500);
+                    }
+                    if(rs.error) {
+                        $('#messagebox').message(rs.message);
+                        return;
+                    }
+                });
+            }
+        });
+    });
 </script>

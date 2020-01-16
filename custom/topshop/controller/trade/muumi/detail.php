@@ -15,7 +15,7 @@ class topshop_ctl_trade_muumi_detail extends topshop_controller{
         /*
             $params['fields'] = "shipping_type,orders.spec_nature_info,user_id,tid,status,payment,points_fee,ziti_addr,ziti_memo,post_fee,pay_type,payed_fee,receiver_state,receiver_city,receiver_district,receiver_address,receiver_zip,trade_memo,shop_memo,receiver_name,receiver_mobile,orders.price,orders.num,orders.title,orders.item_id,orders.pic_path,total_fee,discount_fee,buyer_rate,adjust_fee,orders.total_fee,orders.adjust_fee,created_time,pay_time,consign_time,end_time,shop_id,need_invoice,invoice_name,invoice_type,invoice_main,invoice_vat_main,orders.bn,cancel_reason,orders.refund_fee,orders.aftersales_status,orders.gift_data,is_virtual,orders.is_virtual";
         */
-        $params['fields'] = "logistics.corp_code,logistics.corp_code,logistics.logi_no,logistics.logi_name,logistics.delivery_id,logistics.receiver_name,logistics.t_begin,shipping_type,cancel_status,orders.spec_nature_info,user_id,tid,status,payment,points_fee,ziti_addr,ziti_memo,post_fee,pay_type,payed_fee,receiver_state,receiver_city,receiver_district,receiver_address,receiver_zip,trade_memo,shop_memo,receiver_name,receiver_mobile,orders.price,orders.num,orders.title,orders.item_id,orders.pic_path,total_fee,discount_fee,buyer_rate,adjust_fee,orders.total_fee,orders.adjust_fee,created_time,pay_time,consign_time,end_time,shop_id,need_invoice,invoice_name,invoice_type,invoice_main,invoice_vat_main,orders.bn,cancel_reason,orders.refund_fee,orders.aftersales_status,orders.gift_data,is_virtual,is_cross,identity_card_number,orders.is_virtual,orders.confirm_type,orders.allow_refund,orders.user_id,orders.init_item_id,orders.init_shop_id,orders.cost_price";
+        $params['fields'] = "logistics.corp_code,logistics.corp_code,logistics.logi_no,logistics.logi_name,logistics.delivery_id,logistics.receiver_name,logistics.t_begin,shipping_type,cancel_status,orders.spec_nature_info,user_id,tid,status,payment,points_fee,ziti_addr,ziti_memo,post_fee,pay_type,payed_fee,receiver_state,receiver_city,receiver_district,receiver_address,receiver_zip,trade_memo,shop_memo,receiver_name,receiver_mobile,orders.price,orders.num,orders.title,orders.item_id,orders.pic_path,total_fee,discount_fee,buyer_rate,adjust_fee,orders.total_fee,orders.adjust_fee,created_time,pay_time,consign_time,end_time,shop_id,need_invoice,invoice_name,invoice_type,invoice_main,invoice_vat_main,orders.bn,cancel_reason,orders.refund_fee,orders.aftersales_status,orders.gift_data,is_virtual,is_cross,identity_card_number,orders.is_virtual,orders.confirm_type,orders.allow_refund,orders.user_id,orders.init_item_id,orders.init_shop_id,orders.cost_price,orders.source_house";
         /*modify_20171106_by_fanglongji_end*/
         $tradeInfo = app::get('topshop')->rpcCall('trade.get',$params);
 
@@ -66,7 +66,15 @@ class topshop_ctl_trade_muumi_detail extends topshop_controller{
         $pagedata['seller_role']=$sellerRole['seller_type'];
         /*add_2017-11-17_by_xinyufeng_end*/
 		/*add_2018/6/25_by_wanghaichao_start*/
-		$pagedata['is_compere']=$this->sellerInfo['is_compere'];
+        $pagedata['is_compere']=$this->sellerInfo['is_compere'];
+
+        if(in_array('CALL_CENTER_HOUSE', array_column($tradeInfo['orders'], 'source_house')) && ($tradeInfo['shipping_type'] == 'express')){
+            $aggregation_filter = [
+                'tid' => $params['tid'],
+            ];
+            $aggregation = app::get('sysaftersales')->rpcCall('logistics.push.get.current',$aggregation_filter);
+            $pagedata['push_logistics'] = $aggregation;
+        }
 		/*add_2018/6/25_by_wanghaichao_end*/
         return $this->page('topshop/trade/muumi/detail.html', $pagedata);
     }

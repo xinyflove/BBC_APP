@@ -7,10 +7,21 @@
     <script src="/app/topmaker/statics/lib/common/flexible.js"></script>
     <link rel="stylesheet" href="/app/topmaker/statics/lib/common/public.css">
     <link rel="stylesheet" href="/app/topmaker/statics/css/styleSheet.css">
-    <title>创客中心</title>
+    <title>创客中心-创客收益</title>
 </head>
 <body>
     <div class="m-hacker-center">
+        <div class="m-hacker-choose-header">
+            <div class="header-left">
+                <img src="/app/topmaker/statics/images/before.png" alt="">
+            </div>
+            <div class="header-mid">
+                <p>创客收益</p>
+            </div>
+            <div class="header-right">
+                <img src="/app/topmaker/statics/images/toindex.png" alt="">
+            </div>
+        </div>
         <div class="hacker-box-wrap">
             <div class="hacker-left">
                 <span>累计佣金(元)</span>
@@ -44,5 +55,15 @@
             </li>
         </ul>
     </div>
+    <script src="<{resource app='topmaker' path='/lib/jquery/jquery-3.2.1.js'}>"></script>
+    <script>
+        //头部跳转页面
+        $('.m-hacker-choose-header .header-left').click(function(){
+            window.history.back(-1);
+        });
+        $('.m-hacker-choose-header .header-right').click(function(){
+            window.location.href = '<{url action=topmaker_ctl_index@index}>';
+        })
+    </script>
 </body>
 </html>

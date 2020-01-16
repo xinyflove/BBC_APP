@@ -57,7 +57,7 @@
                                     <{if $cat1.cat_logo}>
                                     <img src="<{$cat1.cat_logo|storager}>" alt="">
                                     <{/if}>
-                                </i><{$cat1.cat_name}><i class="arrows"></i>
+                                </i><span style="display: inline-block;width: 67%;height: 30px;overflow: hidden;position: relative;top: 10px; white-space: nowrap;text-overflow: ellipsis;line-height: 30px;"><{$cat1.cat_name}></span><i class="arrows"></i>
                                 <div class="category-detail-part">
                                     <!--遍历二级菜单start-->
                                     <{foreach from=$cat1.lv2 item=cat2 key=key2}>
@@ -86,8 +86,8 @@
         </div>
 
         <ul class="subnav">
-            <li class="active"><a href="<{url action=topshop_ctl_mall_home@index}>">首页</a></li>
-            <li><a href="javascript:;" style="display: none;">频道自选</a></li>
+            <li class="<{if route::currentRouteName() == 'topshop.mall.home'}>active<{/if}>"><a href="<{url action=topshop_ctl_mall_home@index}>">首页</a></li>
+            <li class="<{if route::currentRouteName() == 'topshop.mall.channel'}>active<{/if}>"><a href="<{url action=topshop_ctl_mall_channel@index}>">频道自选</a></li>
         </ul>
     </div>
 </div>

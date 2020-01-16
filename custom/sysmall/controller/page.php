@@ -16,7 +16,7 @@ class sysmall_ctl_page extends desktop_controller{
     public function index()
     {
         $view = input::get('view','0');
-        $views = ['0'=>'index','1'=>'activityindex'];
+        $views = ['0'=>'index','1'=>'channel'];
         return $this->finder(
             'sysmall_mdl_widgets_instance',
             array(
@@ -39,7 +39,7 @@ class sysmall_ctl_page extends desktop_controller{
         // 修改此顺序或者key的话要同步修改本页面index方法内的$views参数值
         $sub_menu = array(
             '0'=>array('label'=>app::get('sysmall')->_('首页'),'optional'=>false,'filter'=>array('tmpl'=>'index')),
-            // '1'=>array('label'=>app::get('sysmall')->_('活动首页'),'optional'=>false,'filter'=>array('tmpl'=>'activityindex')),
+            '1'=>array('label'=>app::get('sysmall')->_('频道自选'),'optional'=>false,'filter'=>array('tmpl'=>'channel')),
         );
 
         if(isset($_GET['optional_view'])) $sub_menu[$_GET['optional_view']]['optional'] = false;
@@ -79,7 +79,7 @@ class sysmall_ctl_page extends desktop_controller{
         {
             $pagedata['data'] = app::get('sysmall')->model('widgets_instance')->getRow('*', ['widgets_id'=>$widgetsId]);
         }
-        $pagedata['tmpls'] = $this->tmpls;//模板页列表
+        $pagedata['tmpls'] = $this->tmpls[$tmpl];//模板页列表
         $pagedata['widgets'] = $this->widgets;//挂件挂件列表
         return view::make('sysmall/page/tmpl.html', $pagedata);
     }
@@ -92,7 +92,7 @@ class sysmall_ctl_page extends desktop_controller{
         $this->begin();
 
         $post = input::get();
-        if( !in_array($post['tmpl'], array_keys($this->tmpls) ) )
+        if( !in_array($post['tmpl'], array_keys($this->tmpls[$post['tmpl']]) ) )
         {
             $this->end(false, app::get('sysmall')->_('页面不在范围内'));
         }

@@ -43,6 +43,18 @@
                 <{/if}>
             </td>
         </tr><{/if}>
+
+        <{if $item.seller_name}>
+        <tr>
+            <td colspan="5">
+                <span>创客姓名：<{$item.seller_name}></span><span>手机号：<{$item.seller_mobile}></span>
+                <{if $item.seller_cart_number}>
+                <span>车牌号：<{$item.seller_cart_number}></span>
+                <{/if}>
+            </td>
+        </tr>
+		<{/if}>
+
         </thead>
         <tbody>
         <tr>
@@ -128,13 +140,15 @@
 				<{elseif $item.cancel_status == 'REFUND_PROCESS'}>
 				<a href ="<{url action=topshop_ctl_trade_cancel@index tid=$item.tid}>">退款处理</a>
 				<{/if}>
-				<{if $item.cancel_status == 'NO_APPLY_CANCEL'}>
+				<{if $item.cancel_status == 'NO_APPLY_CANCEL' && !$item.exchange_code}>
 				<br><a href="<{url action=topshop_ctl_trade_list@ajaxCloseTrade tid=$item.tid response=html}>" data-toggle="modal" data-target="#orderCancel">取消订单</a>
 				<{/if}>
                 <{elseif $item.status == "WAIT_BUYER_PAY" &&  $item.cancel_status == 'NO_APPLY_CANCEL'}>
+                    <{if !$item.exchange_code}>
                     <div>
                         <a href="<{url action=topshop_ctl_trade_list@ajaxCloseTrade tid=$item.tid response=html}>" class="btn btn-warning" data-toggle="modal" data-target="#orderCancel">取消订单</a>
                     </div>
+                    <{/if}>
 
                     <{if $item.shipping_type!='ziti'}>
                     <div><a href="<{url action=topshop_ctl_trade_list@modifyPrice tid=$item.tid response=html}>" data-toggle="modal" data-target="#orderEdit">修改价格</a></div>
@@ -164,7 +178,9 @@
                     <{elseif $item.pay_type == "offline"}>
                         <{if $item.cancel_status == 'NO_APPLY_CANCEL' || $item.cancel_status == 'FAILS' }>
                             <a href="<{url action=topshop_ctl_trade_list@ajaxFinishTrade tid=$item.tid}>" class="btn btn-primary" data-toggle="modal" data-target="#delivery">付款并收货</a><br>
-                            <a href="<{url action=topshop_ctl_trade_list@ajaxCloseRejection tid=$item.tid response=html}>" data-toggle="modal" data-target="#orderRejection">拒收</a>
+                            <{if !$item.exchange_code}>
+                                <a href="<{url action=topshop_ctl_trade_list@ajaxCloseRejection tid=$item.tid response=html}>" data-toggle="modal" data-target="#orderRejection">拒收</a>
+                            <{/if}>
                             <{if $item.shipping_type =='ziti'}>
                                 <{assign var=tid value=$item.tid}>
                                 <{if $deliveryVcode.$tid }>
@@ -176,7 +192,9 @@
                                     <a href="<{url action=topshop_ctl_trade_list@ajaxSendDeliverySms tid=$item.tid response=html}>" data-toggle="modal" data-target="#sendDeliverySms">发送提货码</a><br>
                                 <{/if}>
                             <{/if}>
-                            <a href="<{url action=topshop_ctl_trade_list@ajaxCloseTrade tid=$item.tid response=html}>" data-toggle="modal" data-target="#orderCancel">取消订单</a>
+                            <{if !$item.exchange_code}>
+                                <a href="<{url action=topshop_ctl_trade_list@ajaxCloseTrade tid=$item.tid response=html}>" data-toggle="modal" data-target="#orderCancel">取消订单</a>
+                            <{/if}>
                             <{elseif $item.cancel_status == 'WAIT_PROCESS'}>
                             <a href ="<{url action=topshop_ctl_trade_cancel@index tid=$item.tid}>">审核取消订单</a>
                         <{/if}>

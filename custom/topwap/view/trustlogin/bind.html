@@ -44,10 +44,10 @@
 <div class="body-padding">
   <header class="page-header">
     <i class="header-left icon-func bbc-icon bbc-icon-back shopex-action-back"></i>
-    <div class="header-title bind_title">绑定已有账号</div>
+    <div class="header-title bind_title">成为新用户</div>
   </header>
   <section class="container">
-    <form id="bind_acount_form" class="form-container" action="<{url action=topwap_ctl_trustlogin@bindExistsUser}>" method="post">
+    <form id="bind_acount_form" class="form-container" action="<{url action=topwap_ctl_trustlogin@bindExistsUser}>" method="post" style="display: none;">
       <input type="hidden" name="vcodekey" value="topwap_signin">
       <input type="hidden" name="flag" value="<{$flag}>">
       <input type="hidden" name="type" value="activation">
@@ -58,17 +58,18 @@
       </div>
       <section class="shopex-input-group">
         <div class="shopex-input-row">
-          <label>账号：</label>
+          <!-- <label>账号：</label> -->
           <input type="text" class="shopex-input-clear" name="uname" placeholder="请输入手机号" required data-caution="请输入手机号">
         </div>
         <div class="shopex-input-row" style="display: none;">
           <label>密码：</label>
           <input type="password" class="shopex-input-password" name="password" placeholder="请输入密码" required data-caution="请输入密码">
         </div>
-        <div class="form-inline" id="bind_vdode" style="display: none;">
+
+        <div class="form-inline" id="bind_vdode">
           <div class="shopex-input-row form-inline-adaptive">
-            <label>验证码：</label>
-            <input type="text" name="verifycode" class="" placeholder="请输入验证码" required data-caution="请输入验证码">
+            <!-- <label>图片验证码：</label> -->
+            <input type="text" name="verifycode" class="" placeholder="请输入图片验证码" required data-caution="请输入图片验证码">
           </div>
           <div class="form-inline-unadaptive">
             <img align="absmiddle" class="auto-change-verify-handle" src="<{url action=toputil_ctl_vcode@gen_vcode key=topwap_signin width=120 height=35}>" alt="" width="100" height="30">
@@ -78,22 +79,22 @@
         <!-- add start 王衍生 20170923 -->
         <div class="form-inline">
           <div class="shopex-input-row form-inline-adaptive">
-            <label>验证码：</label>
+            <!-- <label>验证码：</label> -->
             <input type="text" name="vcode" class="shopex-input-clear" placeholder="请输入短信验证码">
           </div>
           <div class="form-inline-unadaptive">
             <!-- <button type="button" id="" class="shopex-btn shopex-btn-warning shopex-btn-block btn-action send_vcode">发送验证码</button> -->
-            <p class="send_vcode">发送验证码</p>
+            <p class="send_vcode">发送短信验证码</p>
           </div>
         </div>
         <!-- add end 王衍生 20170923 -->
 
       </section>
       <section class="content-horizontal-padded form-op-section">
-        <button type="button" class="shopex-btn shopex-btn-block shopex-btn-warning bbc-btn-warning" id="bind_acount_submit">完成</button>
+        <button type="button" class="shopex-btn shopex-btn-block shopex-btn-warning bbc-btn-warning" id="bind_acount_submit">提交</button>
       </section>
     </form>
-    <form id="new_acount_form" class="form-container" action="<{url action=topwap_ctl_trustlogin@bindSignupUser}>" style="display: none;" method="post">
+    <form id="new_acount_form" class="form-container" action="<{url action=topwap_ctl_trustlogin@bindSignupUser}>" method="post">
       <input type="hidden" name="vcodekey" value="topwap_signin">
       <input type="hidden" name="flag" value="<{$flag}>">
       <input type="hidden" name="type" value="signup">
@@ -105,15 +106,16 @@
       <section class="shopex-input-group">
         <{if $env.conf.sysconf.user.account.register.multipletype}>
         <div class="shopex-input-row">
-          <label>帐号：</label>
+          <!-- <label>帐号：</label> -->
           <input type="text" class="shopex-input-clear" name="pam_account[login_name]" placeholder="请输入用户名或手机号" required data-caution="请输入用户名或手机号">
         </div>
         <{else}>
         <div class="shopex-input-row">
-          <label>手机号：</label>
+          <!-- <label>手机号：</label> -->
           <input type="text" class="shopex-input-clear" name="pam_account[login_name]" placeholder="请输入手机号" maxlength="11" minlenght="11" required data-caution="请输入手机号">
         </div>
         <{/if}>
+
         <div class="shopex-input-row" style="display: none;">
           <label>设置密码：</label>
           <input type="password" class="shopex-input-password" name="pam_account[login_password]" placeholder="请输入新密码，6~20位" required minlength="6" maxlength="20" data-caution="请填写密码，6-20个字符&&输入不正确，最少6个字符&&输入不正确，最多20个字符">
@@ -122,35 +124,37 @@
           <label>确认密码：</label>
           <input type="password" class="shopex-input-password" name="pam_account[psw_confirm]" maxlength="20" placeholder="再次填写密码" required data-equalto="pam_account[login_password]" data-caution="密码与确认密码不相符，请重新填写">
         </div>
-        <div class="form-inline" style="display: none;">
+
+        <div class="form-inline">
           <div class="shopex-input-row form-inline-adaptive">
-            <label>验证码：</label>
-            <input type="text" name="verifycode" class="" placeholder="请输入验证码" required data-caution="请输入验证码">
+            <!-- <label>图片验证码：</label> -->
+            <input type="text" name="verifycode" class="" placeholder="请输入图片验证码" required data-caution="请输入图片验证码">
           </div>
           <div class="form-inline-unadaptive">
             <img align="absmiddle" class="auto-change-verify-handle" src="<{url action=toputil_ctl_vcode@gen_vcode key=topwap_signin width=120 height=35}>" alt="" width="100" height="30">
           </div>
         </div>
+
         <!-- add start 王衍生 20170923 -->
         <div class="form-inline">
           <div class="shopex-input-row form-inline-adaptive">
-            <label>验证码：</label>
-            <input type="text" name="vcode" class="shopex-input-clear" placeholder="请输入短信验证码">
+            <!-- <label>短信验证码：</label> -->
+            <input type="text" name="vcode" class="shopex-input-clear" placeholder="请输入短信验证码" required>
           </div>
           <div class="form-inline-unadaptive">
             <!-- <button type="button" id="" class="shopex-btn shopex-btn-warning shopex-btn-block btn-action send_vcode">发送验证码</button> -->
-            <p class="send_vcode">发送验证码</p>
+            <p class="send_vcode">发送短信验证码</p>
           </div>
         </div>
         <!-- add end 王衍生 20170923 -->
       </section>
       <section class="content-horizontal-padded form-op-section">
-        <button type="button" class="shopex-btn shopex-btn-block shopex-btn-warning bbc-btn-warning" id="new_acount_button">完成</button>
+        <button type="button" class="shopex-btn shopex-btn-block shopex-btn-warning bbc-btn-warning" id="new_acount_button">提交</button>
       </section>
     </form>
     <section class="action-bar content-horizontal-padded" style="position:static;background:none">
-      <button id="new_acount" type="button" class="shopex-btn shopex-btn-block box-item-flex1" onclick="return false;">成为新用户</button>
-      <button id="bind_acount" style="display: none" type="button" class="shopex-btn shopex-btn-block box-item-flex1" onclick="return false;">绑定已有账号</button>
+      <button id="new_acount" style="display: none" type="button" class="shopex-btn shopex-btn-block box-item-flex1" onclick="return false;">成为新用户</button>
+      <button id="bind_acount" type="button" class="shopex-btn shopex-btn-block box-item-flex1" onclick="return false;">绑定已有账号</button>
     </section>
   </section>
 </div>
@@ -229,8 +233,10 @@ $('.send_vcode').on('click', function(e) {
     var uname = current_form.find('input[name=uname]').val();
   }
   var type = current_form.find('input[name=type]').val();
+  var vcodekey = current_form.find('input[name=vcodekey]').val();
+  var verifycode = current_form.find('input[name=verifycode]').val();
   if($(this).hasClass('disabled')) return false;
-  sendVerify(this, 'uname='+uname+'&type=' +type);
+  sendVerify(this, {uname, type, vcodekey, verifycode});
 });
 // 发送验证码
 function sendVerify(el, data) {

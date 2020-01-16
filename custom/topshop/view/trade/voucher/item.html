@@ -18,12 +18,12 @@
         <span>下单时间: <{$item.careated_time|cdate}></span>
         <span>核销状态：
             <span class="red">
-              <{if $item.status == "WAIT_WRITE_OFF"}>
+              <{if $item.status == "HAS_OVERDUE" || $status == 3}>
+              已过期
+              <{elseif $item.status == "WAIT_WRITE_OFF"}>
               未核销
               <{elseif $item.status == "WRITE_FINISHED"}>
               已核销
-              <{elseif $item.status == "HAS_OVERDUE"}>
-              已过期
               <!--add_2017-11-23_by_xinyufeng_start-->
               <{elseif $item.status == "GIVEN"}>
               已赠送
@@ -47,6 +47,16 @@
 
       </td>
     </tr>
+        <{if $item.seller_name}>
+        <tr>
+            <td colspan="6">
+                <span>创客姓名：<{$item.seller_name}></span><span> 手机号：<{$item.seller_mobile}></span>
+                <{if $item.seller_cart_number}>
+                <span> 车牌号：<{$item.seller_cart_number}></span>
+                <{/if}>
+            </td>
+        </tr>
+		<{/if}>
     </thead>
     <tbody>
     <tr>

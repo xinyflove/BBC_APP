@@ -1,0 +1,76 @@
+<{if $widget.params}>
+<div class="choose-container-lanmei floor" id="<{$widget.widgets_id}>">
+    <div class="lanmei-banner public-banner">
+        <a href="<{if $widget.params.link0}><{$widget.params.link0}><{else}><{$widget.params.shop_link}><{/if}>" class="banner1">
+            <img src="<{$widget.params.leftimg|storager:m}>" alt="">
+        </a>
+        <a href="<{$widget.params.link1}>" class="banner2">
+            <img src="<{$widget.params.centerimg|storager:m}>" alt="">
+        </a>
+        <a href="<{$widget.params.link2}>" class="banner3">
+            <img src="<{$widget.params.rightimg|storager:m}>" alt="">
+        </a>
+    </div>
+    <{if $widget.params.item_info}>
+    <div class="public-list">
+        <ul class="list">
+            <{foreach from=$widget.params.item_info item=item}>
+            <li>
+                <a href="<{url action=topshop_ctl_mall_detail@index item_id=$item.item_id}>">
+                    <div class="goods-img"><img class="lazy" data-src="<{$item.image_default_id|storager:m}>" alt=""></div>
+                    <p class="goods-title"><{$item.title}></p>
+                </a>
+
+                <div class="floridian">
+                    <{if $item.shop_id == $login_shop.shop_id}>
+                    <img src="/app/topshop/mall/statics/images/details/shop.png" alt="">
+                    <{elseif $item.status != 'onsale'}>
+                    <img src="/app/topshop/mall/statics/images/details/instock.png" alt="">
+                    <{elseif $item.real_store <= 0}>
+                    <img src="/app/topshop/mall/statics/images/details/floridian.png" alt="">
+                    <{elseif in_array($item.item_id, $initItemsId)}>
+                    <img src="/app/topshop/mall/statics/images/details/opt.png" alt="">
+                    <{/if}>
+                </div>
+
+                <div class="goods-shop"><{$item.shop_name}></div>
+                <div class="goods-trade">
+                    <span>供货价：</span>
+                    <i>¥<{$item.supply_price}></i>
+                </div>
+                <div class="goods-price">
+                    <span>指导售价：</span>
+                    <i>¥<{$item.price}></i>
+                </div>
+
+                <{if $item.shop_id == $login_shop.shop_id}>
+                <div class="chosebtn oversale">本店铺商品</div>
+                <{elseif $item.status != 'onsale'}>
+                <div class="chosebtn oversale">已下架</div>
+                <{elseif $item.real_store <= 0}>
+                <div class="chosebtn oversale">已售罄</div>
+                <{elseif in_array($item.item_id, $initItemsId)}>
+                <div class="chosebtn oversale">已优选</div>
+                <{else}>
+                <div class="chosebtn putaway" data-id="<{$item.item_id}>">
+                    优选上架
+                </div>
+                <{/if}>
+
+                <div class="jiaobiao">
+                    <p><{$item.profit}>%</p>
+                    <span>毛利率</span>
+                </div>
+            </li>
+            <{/foreach}>
+        </ul>
+        <!-- 没有数据显示 -->
+        <div class="pc-list-empty" style="display: none;">
+            <div><img src="/app/topshop/mall/statics/images/list/nodata.png" alt=""></div>
+            <p>未搜索到相关商品</p>
+        </div>
+        <!-- end -->
+    </div>
+    <{/if}>
+</div>
+<{/if}>

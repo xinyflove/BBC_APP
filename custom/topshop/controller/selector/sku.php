@@ -18,7 +18,7 @@ class topshop_ctl_selector_sku extends topshop_controller {
         $textcol = input::get('textcol');
         $ac = input::get('ac');
         $extendView = input::get('view');
-        $searchParams['fields'] = 'sku_id,item_id,title,image_default_id,price,brand_id,spec_info';
+        $searchParams['fields'] = 'sku_id,item_id,title,image_default_id,price,brand_id,spec_info,weight';
         $searchParams['sku_id'] = implode(',', $skuIds);
         $skusList = app::get('topshop')->rpcCall('sku.search', $searchParams);
 

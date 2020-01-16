@@ -19,6 +19,7 @@
         <p>坐等快递小哥送货上门吧！</p>
         <div class="link-block-a">
             <a href="<{url action=topwap_ctl_member_trade@tradeList}>" class="order_repay">查看订单</a>
+			<!--<a href="<{$wx_grant_url}>" class="order_repay">查看通知</a>-->
         </div>
     </div>
 <!--add_20170926_by_fanglongji_end-->
@@ -85,6 +86,7 @@ del_20170926_by_fanglongji_end-->
             </div>
         </div>
       <{/if}>
+		
     <!-- m-tvplazaNew-paySuccess-linkSlot start -->
     <a href="<{url action=topwap_ctl_default@index}>">
         <div class="m-tvplazaNew-paySuccess-linkSlot">
@@ -127,8 +129,27 @@ del_20170926_by_fanglongji_end-->
         </section>
     </section>
 </div>
+
+<{if $payment.status == "succ" || $payment.status == "progress"}>
+<section class="container_startq">
+	<section class="startAnimate" style="background:rgba(0,0,0,0.5)">
+		<a href="<{$wx_grant_url}>">
+			<section class="startAnimateContent" data-img="" style="background: url(<{resource app='topwap' path='/images/notify.png'}>) no-repeat center center;background-size:100% 100%;border-radius:15px;width:68%;height:50%;left:50%;margin-left:-34%;top:50%;margin-top:-50%;">
+					<!--<img src="/app/topwap/statics/static/img/rotate.png" alt="">
+					<span id="s">03s</span>-->
+				<!--<a href="" class="startAnimateContent-linkEnter">查看详情</a>-->
+			</section>
+		</a>
+		<div class="close_start" style="width:2rem;height:2rem;border-radius:5rem;border:2px solid #fff;color:#fff;text-align:center;margin:0 auto;line-height:1.8rem;font-family:'微软雅黑';position: fixed;left: 50%;margin-left: -1rem;top: 78%;z-index: 999999999;">X</div>
+	</section>
+</section>
+<{/if}>
 <!--add_20170926_by_fanglongji_end-->
 <script>
+
+	$('.close_start').on('click',function(){
+		$('.container_startq').hide();
+	});
     /*add_20170930_by_fanglongji_start*/
     function pushHistory() {
         var state = {
@@ -167,6 +188,7 @@ del_20170926_by_fanglongji_end-->
         diff:400
     });
     /*add_20170926_by_fanglongji_end*/
+
   var flag = true;
   var resultid = -1;
   var paymentid = '<{$payment.payment_id}>';

@@ -2,6 +2,7 @@
 <form id="widgetsForm"  method="post" action="?app=sysmall&ctl=widgets&act=save_widgets" class="tableform">
     <input type="hidden" name="widgets_id" value="<{$widgets_id}>">
     <input type="hidden" name="widget" value="<{$widget}>">
+    <input type="hidden" name="tmpl" value="<{$tmpl}>">
     <{include file=$_PAGE_}>
     <div class="table-action">
         <{*button type="submit" id='widgets-form-submit' label="保存"|t:'syscategory'*}>

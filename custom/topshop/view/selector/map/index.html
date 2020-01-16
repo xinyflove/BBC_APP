@@ -54,6 +54,7 @@
   function getDistrict(adcode)
   {
       var district = "";
+      var district_name = "";
       for(var i in area_json)
       {
           var pro_children = area_json[i].children;
@@ -65,6 +66,7 @@
                   if(pro_children[y].id == adcode)
                   {
                       district = area_json[i].id + '/' + pro_children[y].id;
+                      district_name = area_json[i].value + '/' + pro_children[y].value;
                       break;
                   }
               }
@@ -73,12 +75,13 @@
                   if(city_children[p].id == adcode)
                   {
                       district = area_json[i].id + '/' + pro_children[y].id + '/' + city_children[p].id;
+                      district_name = area_json[i].value + '/' + pro_children[y].value + '/' + city_children[p].value;
                       break;
                   }
               }
           }
       }
-      return district;
+      return district + ':'+ district_name;
   }
 
   AMapUI.loadUI(['misc/PositionPicker'], function(PositionPicker) {
@@ -89,8 +92,10 @@
 
       positionPicker.on('success', function(positionResult) {
           var adcode = positionResult.regeocode.addressComponent.adcode;
-          var district = getDistrict(adcode);
-          $('#district').val(district).trigger('input');
+          var district_data = getDistrict(adcode);
+          district_data = district_data.split(':');
+          $('#district').val(district_data[0]).trigger('input');
+          $('#district_name').val(district_data[1]).trigger('input');
           $('#X_coordinate').val(positionResult.position.lng);
           $('#Y_coordinate').val(positionResult.position.lat);
           $('#drag_address').val(positionResult.address);

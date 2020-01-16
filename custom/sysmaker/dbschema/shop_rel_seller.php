@@ -16,6 +16,11 @@ return array(
             'required' => true,
             'comment' => app::get('sysmaker')->_('关联创客id'),
         ),
+        'group_id' => array(
+            'type' => 'table:group',
+            'required' => true,
+            'comment' => app::get('sysmaker')->_('关联组id'),
+        ),
         'status' => array(
             'type' => array(
                 'pending' => app::get('sysmaker')->_('待审核'),

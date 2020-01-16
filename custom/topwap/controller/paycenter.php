@@ -110,10 +110,18 @@ class topwap_ctl_paycenter extends topwap_controller {
         $back_url = url::action('topwap_ctl_member_trade@tradeList');
         $plat_form = 'iswap';
         $keep_way = null;
+        // 如果来自小程序
+        if( kernel::single('topwap_wechat_wechat')->from_mini() ){
+            $keep_way = 'miniservicepayapi';
+            $plat_form = 'is_mini';
+        }
+
         try
         {
             $pagedata = $this->__commonPay($filter, $plat_form, $keep_way);
             $pagedata['back_url'] = $back_url;
+            $pagedata['sess_id'] = kernel::single('base_session')->sess_id();
+
             return $this->page('topwap/payment/index.html', $pagedata);
         }
         catch(Exception $e)
@@ -162,7 +170,7 @@ class topwap_ctl_paycenter extends topwap_controller {
      * @throws Exception
      * 获取支付的共同参数
      */
-    private function __commonPay($filter, $plat_form, $keep_way)
+    private function __commonPay($filter, $plat_form, $keep_way = null)
     {
         if($filter['newtrade'])
         {
@@ -369,6 +377,8 @@ class topwap_ctl_paycenter extends topwap_controller {
     {
         $postdata = input::get();
         $payment = json_decode($postdata['payment'],1);
+        // 来自哪里的小程序 platform：服务商的小程序
+        $payment['from_mini'] = $postdata['from_mini'];
         $payment['deposit_password'] = $postdata['deposit_password'];
         $payment['user_id'] = userAuth::id();
         $payment['platform'] = "wap";
@@ -472,7 +482,7 @@ class topwap_ctl_paycenter extends topwap_controller {
         /*
         $apiParams['fields'] = "tid,payment,payed_fee,hongbao_fee,status,pay_type";
         */
-        $apiParams['fields'] = "tid,payment,payed_fee,hongbao_fee,status,pay_type,shop_id";
+        $apiParams['fields'] = "tid,payment,payed_fee,hongbao_fee,status,pay_type,shop_id,pay_time";
         /*modify_20170926_by_fanglongji_end*/
         $trades = app::get('topc')->rpcCall('trade.get.list',$apiParams);
 
@@ -483,8 +493,12 @@ class topwap_ctl_paycenter extends topwap_controller {
             $hongbaoMoney = ecmath::number_plus(array($hongbaoMoney, $row['hongbao_fee']));
             $tradeTotalPayment = ecmath::number_plus(array($tradeTotalPayment, $row['payment']));
             $shop_id = $row['shop_id'];
+			/*add_2019/8/2_by_wanghaichao_start*/			
+			$this_shop_id=$row['shop_id'];       //本订单的店铺id
+			$tid=$row['tid'];							  //根据订
+			$pay_time=$row['pay_time'];
+			/*add_2019/8/2_by_wanghaichao_end*/
         }
-
         //取出广告相关设置和信息
         $auth_shop_id          = app::get('syspromotion')->getConf('advert.auth.shop.id');
         //如果总后台开启了广告授权的店铺，则选取授权店铺的信息
@@ -548,9 +562,46 @@ class topwap_ctl_paycenter extends topwap_controller {
             $pagedata['pay_finish_banner'] = $advert_info['pay_finish_banner'];
             $pagedata['pay_finish_banner_url'] = $advert_info['pay_finish_banner_url'];
         }
-
+		/*add_2019/8/2_by_wanghaichao_start*/
+		$wx_grant_url=$this->getNotifyUrl($tid,$tradeTotalPayment,$pay_time);
+		$pagedata['this_shop_id']=$this_shop_id;
+		$pagedata['wx_grant_url']=$wx_grant_url;
+		//print_r($wx_grant_url);die();
+		/*add_2019/8/2_by_wanghaichao_end*/
         return $this->page('topwap/payment/finish.html', $pagedata);
     }
+	
+	/**
+	* 获取一次性订阅消息点击链接
+	* author by wanghaichao
+	* date 2019/8/2
+	*/
+	public function getNotifyUrl($tid,$tradeTotalPayment,$pay_time){
+		//$tid=2475624000020090;
+		//$pay_time='1564731052';
+		//$tradeTotalPayment='20.32';
+		$voucher=app::get('systrade')->model('voucher')->getList('voucher_code',array('tid'=>$tid));
+		if($voucher){
+			foreach($voucher as $k=>$v){
+				$voucher_code.=$v['voucher_code'].',';
+			}
+			$voucher_code=substr($voucher_code,0,-1);
+		}else{
+			$voucher_code='';
+		}
+		//echo "<pre>";print_r(substr($voucher_code,0,-1));die();
+		$data['voucher_code']=$voucher_code;
+		$data['tid']=$tid;
+		$data['payment']=$tradeTotalPayment;
+		$data['pay_time']=$pay_time;
+		$appId = app::get('site')->getConf('site.appId');
+		$redirect_url=urlencode(url::action('topwap_ctl_mall@notify',$data));
+		$scene=rand(1,10000);
+		//$wx_grant_url="https://mp.weixin.qq.com/mp/subscribemsg?action=get_confirm&appid={$appId}&scene={$scene}&template_id=EhKzn7g7zFuc1MYaDxDo5jDNNV1OKlDyGLjzNnxKpeE&redirect_url={$redirect_url}#wechat_redirect";
+		$wx_grant_url="https://mp.weixin.qq.com/mp/subscribemsg?action=get_confirm&appid={$appId}&scene={$scene}&template_id=RI7ykqWbQh9523sX1IobfXz7RfVJx358V15b-VeIDd4&redirect_url={$redirect_url}#wechat_redirect";
+		return $wx_grant_url;
+	}
+
     /*
      * 支付核销的无偿券抢购完成界面
      * 2018-02-23
@@ -689,6 +740,13 @@ class topwap_ctl_paycenter extends topwap_controller {
 
         foreach($payments as $paymentKey => $payment)
         {
+            // 平台是否授权and店铺是否开启
+            if($shop_info['mer_collection'] == 'on' && !$shop_payment[$payment['app_id']]['open'])
+            {
+                unset($payments[$paymentKey]);
+                continue;
+            }
+
             //如果传入了仅保留支付方式，则其余方式全部删除
             if(!is_null($keep_way)  && !in_array($payment['app_id'], [$keep_way]))
             {
@@ -696,15 +754,7 @@ class topwap_ctl_paycenter extends topwap_controller {
                 continue;
             }
 
-
             if($payment['app_id'] == 'umspaypub')
-            {
-                unset($payments[$paymentKey]);
-                continue;
-            }
-
-            // 平台是否授权and店铺是否开启
-            if($shop_info['mer_collection'] == 'on' && !$shop_payment[$payment['app_id']]['open'])
             {
                 unset($payments[$paymentKey]);
                 continue;

@@ -20,22 +20,13 @@ class topshop_ctl_trade_voucher extends topshop_controller{
      * @author: shopEx
      * @updater: wudi tvpalza
      * @date: 201707310847,增加虚拟商品核销状态
-     *
+     * @modify: xinyufeng 2020-02-08
      */
     public function index()
     {
+        $objMdlVoucher = app::get('systrade')->model('voucher');
         //订单屏显状态
-        $orderStatusList = array(
-            '0' => '全部',
-            '1' => '未核销',
-            '2' => '已核销',
-            '3' => '已过期',
-            /*add_2017-11-23_by_xinyufeng_start*/
-            '4' => '已赠送',
-            '5' => '退款中',
-            '6' => '已退款'
-            /*add_2017-11-23_by_xinyufeng_end*/
-        );
+        $orderStatusList = $objMdlVoucher::STATUS_INDEX_TITLE_LIST;
 
         $status = (int)input::get('status');
         $status = in_array($status, array_keys($orderStatusList)) ? $status : 0;
@@ -52,21 +43,24 @@ class topshop_ctl_trade_voucher extends topshop_controller{
      * @return mixed
      * @author: wudi tvplaza
      * @date: 201707311530
+     * @modify: xinyufeng 2020-02-08
      */
     public function search()
     {
         $this->contentHeaderTitle = app::get('topshop')->_('虚拟订单查询');
-        $postFilter = input::get();
-        $postFilter['shop_id']=$this->shopId;
+        $params = input::get();
+        $params['shop_id'] = $this->shopId;
+
 		/*add_2018/9/11_by_wanghaichao_start*/
 		//此时必定为核销的,修改input readonly 属性不能传参问题
-		if($postFilter['time_type']=='write'){
-			$postFilter['status']=2;
+		if($params['time_type'] == 'write'){
+            $params['status'] = 2;
 		}
 		/*add_2018/9/11_by_wanghaichao_end*/
-		
-		//echo "<pre>";print_R($postFilter);die();
-        $filter = $this->_checkParams($postFilter);
+        $filter = $this->_checkParams($params);
+        if($this->loginSupplierId){
+            $filter['supplier_id'] = $this->loginSupplierId;
+        }
         $objMdlVoucher=app::get('systrade')->model('voucher');
         $count=$objMdlVoucher->count($filter);
 
@@ -76,12 +70,35 @@ class topshop_ctl_trade_voucher extends topshop_controller{
         $currentPage = ($pageTotal < $page) ? $pageTotal : $page; //防止传入错误页面，返回最后一页信息
         $offset = ($currentPage-1) * $limit;
         $result=$objMdlVoucher->batch_dump($filter,'*','default',$offset,$limit,null);
+		foreach($result as $k=>$v){
+			$seller=$this->getSellerInfo($v['oid']);		
+			$result[$k]['seller_name']=$seller['name'];
+			$result[$k]['seller_cart_number']=$seller['cart_number'];
+			$result[$k]['seller_mobile']=$seller['mobile'];
+		}
+
         $pagedata['image_default_id'] = kernel::single('image_data_image')->getImageSetting('item');
         $pagedata['count']=$count;
         $pagedata['list']=$result;
         $pagedata['pagers']=$this->__pager($filter,$currentPage,$count);
+        $pagedata['status'] = $params['status'];
         return view::make('topshop/trade/voucher/item.html', $pagedata);
     }
+	
+	/**
+	* 根据子订单id获取创客
+	* author by wanghaichao
+	* date 2019/9/10
+	*/
+	public function getSellerInfo($oid){
+		$order=app::get('systrade')->model('order')->getRow('seller_id',array('oid'=>$oid));
+		if (empty($order['seller_id']) || $order['seller_id']==0){
+			return '';
+		}
+		$seller=app::get('sysmaker')->model('seller')->getRow('cart_number,name,mobile',array('seller_id'=>$order['seller_id']));
+		return $seller;
+	}
+
 
     //延长优惠券使用日期
     public function ajaxChangeTime()
@@ -117,7 +134,11 @@ class topshop_ctl_trade_voucher extends topshop_controller{
             $objMdlVoucher=app::get('systrade')->model('voucher');
             if($batch_open == 1)
             {
-                $batch_res = $objMdlVoucher->update(['end_time'=>$endTime],['item_id'=>$item_id, 'shop_id'=>$this->shopId, 'status'=>'WAIT_WRITE_OFF']);
+                $filter = ['item_id'=>$item_id, 'shop_id'=>$this->shopId, 'status'=>'WAIT_WRITE_OFF'];
+                if($this->loginSupplierId){
+                    $filter['supplier_id'] = $this->loginSupplierId;
+                }
+                $batch_res = $objMdlVoucher->update(['end_time'=>$endTime], $filter);
                 if(is_int($batch_res) && $batch_res>0)
                 {
                     return json_encode(['status'=>true,'message'=>'批量修改成功']);
@@ -125,7 +146,11 @@ class topshop_ctl_trade_voucher extends topshop_controller{
             }
             else
             {
-                $res = $objMdlVoucher->update(['end_time'=>$endTime],['voucher_id'=>$id]);
+                $filter = ['voucher_id'=>$id];
+                if($this->loginSupplierId){
+                    $filter['supplier_id'] = $this->loginSupplierId;
+                }
+                $res = $objMdlVoucher->update(['end_time'=>$endTime], $filter);
                 if(is_int($res) && $res>0)
                 {
                     return json_encode(['status'=>true,'message'=>'修改成功']);
@@ -167,72 +192,58 @@ class topshop_ctl_trade_voucher extends topshop_controller{
      * @return mixed
      * @author: wudi tvplaza
      * @date: 201708121755
+     * @modify: xinyufeng 2020-02-08
      */
     private function _checkParams($filter)
     {
-        $statusLUT = array(
-            /*modify_2017-11-23_by_xinyufeng_start*/
-            //'1' => 'WAIT_WRITE_OFF',
-            '1' => array('WAIT_WRITE_OFF', 'GIVING'),
-            /*modify_2017-11-23_by_xinyufeng_end*/
-            '2' => 'WRITE_FINISHED',
-            '3' => 'HAS_OVERDUE',
-            /*add_2017-11-23_by_xinyufeng_start*/
-            '4' => 'GIVEN',//已赠送
-            '5' => 'REFUNDING',//退款中
-            '6' => 'SUCCESS'//已退款
-            /*add_2017-11-23_by_xinyufeng_end*/
-        );
+        // 移除空数据
         foreach($filter as $key=>$value)
         {
-            if(!$value) unset($filter[$key]);
-            if($key=='status' && $value)
+            if (empty($value))
             {
-                if(in_array($value,array_keys($statusLUT)))
-                {
-                    /*modify_2017-11-23_by_xinyufeng_start*/
-                    //$filter['status'] = $statusLUT[$value];
-                    if($value == 1){
-                        $filter['status|in'] = $statusLUT[$value];
-						/*add_2017/11/29_by_wanghaichao_start*/
-						$filter['end_time|bthan']=time();						
-						/*add_2017/11/29_by_wanghaichao_end*/
-                        unset($filter['status']);
-                    }elseif($value==3){		
-						/*add_2017/11/29_by_wanghaichao_start*/
-						//添加对已过期的判断
-						$filter['end_time|sthan']=time();
-						unset($filter['status']);
-						/*add_2017/11/29_by_wanghaichao_end*/
-					}else{
-                        $filter['status'] = $statusLUT[$value];
-                    }
-                    /*modify_2017-11-23_by_xinyufeng_end*/
-                }
+                unset($filter[$key]);
+                continue;
             }
         }
-		/*add_2018/9/11_by_wanghaichao_start*/
-		//修改搜索的时间问题
-		if($filter['time_type']=='write'){
-			$filter['filter_time']=$filter['create_time'];
-		}
-		/*add_2018/9/11_by_wanghaichao_end*/
-        if($filter['filter_time'])
-        {
-            $times = array_filter(explode('-',$filter['filter_time']));
-            if($times){
-                if($filter['time_type']=='write'){
-                    $filter['write_time_start'] = strtotime($times['0']);
-                    $filter['write_time_end'] = strtotime($times['1'])+86400;
-                }else{
-                    $filter['created_time_start'] = strtotime($times['0']);
-                    $filter['created_time_end'] = strtotime($times['1'])+86400;
-                    $filter['status']='WRITE_FINISHED';
-                }
-                unset($filter['create_time']);
-            }
-        }
+
+        $_status = empty($filter['status']) ? 0 : $filter['status'];
+        $_time_type = $filter['time_type'];
+        unset($filter['status']);
         unset($filter['time_type']);
+
+        if ($_time_type == 'write') $_status = 2;// 如果时间类型是核销时间 状态为2
+
+        if ($_status > 0)
+        {
+            $objMdlVoucher = app::get('systrade')->model('voucher');
+            $filter['status|in'] = $objMdlVoucher->getStatusByIndex($_status);
+            switch ($_status)
+            {
+                case 1:// 未核销(在有效期内的 未核销、赠送中)
+                    $filter['end_time|bthan'] = time();// 大于等于当前时间
+                    break;
+                case 3:// 已过期(不在有效期内的 未核销、赠送中、已过期)
+                    $filter['end_time|lthan'] = time();// 小于当前时间
+                    break;
+            }
+        }
+
+        if(!empty($filter['filter_time']))
+        {
+            $time_arr = array_filter(explode('-', $filter['filter_time']));
+            unset($filter['filter_time']);
+            if ($_time_type == 'write')
+            {
+                $filter['write_time_start'] = strtotime($time_arr['0']);
+                $filter['write_time_end'] = strtotime($time_arr['1']) + 86400;
+            }
+            else
+            {
+                $filter['created_time_start'] = strtotime($time_arr['0']);
+                $filter['created_time_end'] = strtotime($time_arr['1']) + 86400;
+            }
+        }
+
         return $filter;
     }
 }

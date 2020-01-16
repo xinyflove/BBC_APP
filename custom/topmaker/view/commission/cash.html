@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="/app/topmaker/statics/lib/common/flexible.js"></script>
+    <link rel="stylesheet" href="/app/topmaker/statics/lib/common/public.css">
+    <link rel="stylesheet" href="/app/topmaker/statics/css/styleSheet.css">
+    <title>创客中心-提现明细</title>
+</head>
+<body>
+    <div class="m-hacker-withdraw">
+        <div class="m-hacker-choose-header">
+            <div class="header-left">
+                <img src="/app/topmaker/statics/images/before.png" alt="">
+            </div>
+            <div class="header-mid">
+                <p>提现明细</p>
+            </div>
+            <div class="header-right">
+                <img src="/app/topmaker/statics/images/toindex.png" alt="">
+            </div>
+        </div>
+        <div class="hacker-box-wrap">
+            <div class="hacker-left">
+                <span>可提现佣金(元)</span>
+                <p><{$cash_com}></p>
+            </div>
+            <div class="hacker-right">
+                <span>已提现佣金(元)</span>
+                <p><{$has_com}></p>
+            </div>
+        </div>
+        <div class="mescroll" id="mescroll">
+        <ul class="hacker-list" id="datalist">
+            <!-- <li class="nodata">
+                <img src="../images/empty.png" alt="">
+                <p>暂无数据</p>
+            </li> -->
+            <!--<li>
+                <div class="left">
+                    <p>系统提现</p>
+                    <span>2018-08-29  13:28:12</span>
+                </div>
+                <div class="right">
+                    <p>提现</p>
+                    <span>-2000</span>
+                </div>
+            </li>
+            <li>
+                <div class="left">
+                    <p>系统提现</p>
+                    <span>2018-08-29  13:28:12</span>
+                </div>
+                <div class="right">
+                    <p>提现</p>
+                    <span>-2000</span>
+                </div>
+            </li>-->
+        </ul>
+    </div>
+    </div>
+</body>
+<script src="/app/topmaker/statics/lib/jquery/jquery-3.2.1.js"></script>
+<script src="/app/topmaker/statics/lib/mescroll/mescroll.min.js"></script>
+<script>
+var mescroll = new MeScroll('mescroll', {
+    down: {
+        isLock: true
+    },
+    up: {
+        page: {
+            num: 0,
+            size: 5
+        },
+        loadFull: {
+            use: true,
+            delay: 500
+        },
+        callback: upCallback
+    }
+})
+function upCallback(page) {
+    getListDataFromNet(page.num,page.size,function(data) {
+        setListData(data,page.num);
+        mescroll.endSuccess(data.length);
+    },function() {
+        mescroll.endErr();
+    })
+}
+function setListData(data,pageNum) {
+    var str = '';
+	if(pageNum==1 && data==''){
+		str='<li class="nodata"><img src="/app/topmaker/statics/images/empty.png" alt=""><p>暂无数据</p></li>';
+	}else{
+		//alert(data.length);return false;
+		for(var i = 0; i < data.length; i++){
+			str += '<li><div class="left">'
+			str += '<p>系统提现</p>'
+			str += '<span>' +data[i].create_time+ '</div>'
+			str += '<div class="right"><p>提现</p><span>' +data[i].payment+ '</span></div>'
+			str += '</li>'
+		}
+	}
+    $('#datalist').append(str);
+}
+function getListDataFromNet( pageNum, pageSize, successCb, errorCb) {
+    console.log(pageNum, pageSize);
+    //setTimeout(function() {
+        $.ajax({
+            url: '<{url action=topmaker_ctl_commission@getCashList}>',
+            method: 'post',
+			data:{pageSize:pageSize,pageNum:pageNum},
+            success: function(result) {
+
+				var list=JSON.parse(result);
+				successCb(list)
+            },
+            error: function(err) {
+                errorCb(err);
+            }
+        })
+    //},2000)
+}
+</script>
+<script>
+    //头部跳转页面
+    $('.m-hacker-choose-header .header-left').click(function(){
+        window.history.back(-1);
+    });
+    $('.m-hacker-choose-header .header-right').click(function(){
+        window.location.href = '<{url action=topmaker_ctl_index@index}>';
+    })
+</script>
+</html>

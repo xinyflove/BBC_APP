@@ -73,6 +73,19 @@
                     <input type="text" name="demand_dir" value="<{$demand_dir}>" class="form-control" placeholder="">
                 </div>
             </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">频道名称：</label>
+                <div class="col-sm-3">
+                    <select name="channel_id" class="form-control" required>
+                        <option value="0">请选择频道</option>
+                        <{foreach from=$channels item=channel key=key}>
+                        <option value="<{$channel.channel_id}>" <{if $channel.channel_id == $channel_id}>selected<{/if}>><{$channel.channel_name}></option>
+                        <{/foreach}>
+                    </select>
+                </div>
+            </div>
+
             <div class="form-group">
                     <label for="" class="col-sm-2 control-label">状态：</label>
                     <div class="col-sm-1">
@@ -104,6 +117,11 @@
             <button type="submit" class="btn btn-info">
                 <{t}>保存<{/t}>
             </button>
+            &nbsp;
+            <a href="<{url action=topshop_ctl_live_channel@index}>" class="btn btn-default">取消</a>
+            <{if $live_id}>
+            <a href="<{url action=topshop_ctl_live_live@delete id=$live_id}>" class="btn btn-danger pull-right remove">删除</a>
+            <{/if}>
         </div>
 
     </form>
@@ -163,4 +181,28 @@
         });
     }
 
+    $('.remove').on('click', function(e) {
+        var _this = $(this);
+        e.preventDefault();
+        Modal.confirm({msg: "确定删除该直播吗？"}).on(function(e) {
+            if(e==true) {
+                var href = _this.attr('href');
+                $.get(href, function(rs) {
+                    if(rs.error) {
+                        $('#messagebox').message(rs.message);
+                        return;
+                    }else{
+                        $('#messagebox').message(rs.message, 'success');
+                    }
+
+                    if(rs.redirect) {
+                        setTimeout(function(){location.href=rs.redirect;}, 800);
+                    }else{
+                        window.location.reload();
+                    }
+
+                });
+            }
+        });
+    });
 </script>

@@ -9,7 +9,19 @@
     <link rel="stylesheet" href="/app/topmaker/statics/lib/layui/css/layui.css">
     <link rel="stylesheet" href="/app/topmaker/statics/lib/common/public.css">
     <link rel="stylesheet" href="/app/topmaker/statics/css/styleSheet.css">
+    <link rel="stylesheet" href="/app/topmaker/statics/css/mobileSelect.css">
     <title><{$topmaker.contentTitle}></title>
+    <style>
+        .m-hacker-applyFor .applyFor-content .applyFor-content-into .into-area{
+            line-height: 0.65rem;
+        }
+        select:disabled
+        {
+            border: 0!important;
+            /*border: 1px solid #dddddd !important;*/
+            /*color: #dddddd !important;*/
+        }
+    </style>
 </head>
 
 <body>
@@ -18,32 +30,48 @@
         <div class="applyFor-content-into">
             <p class="into-title">欢迎加入请填写申请信息</p>
             <input type="hidden" name="mcode_type" value="signup">
-            <input type="text" placeholder="姓名" name="name" class="into-input">
-            <input type="text" placeholder="手机号" name="login_name" class="into-input" maxlength="11" minlenght="11">
+            <input type="text" placeholder="* 姓名" name="name" class="into-input">
+            <input type="text" placeholder="* 手机号" name="login_name" class="into-input" maxlength="11" minlenght="11">
             <div style="width:100%;height:auto;position: relative;">
-                <input type="text" placeholder="输入验证码" name="mcode" class="into-input">
+                <input type="text" placeholder="* 验证码" name="mcode" class="into-input">
                 <p class="into-input-btn send_vcode">获取验证码</p>
                 <p class="into-input-wait">正在获取120s</p>
             </div>
 
-            <input type="text" placeholder="登录密码" name="login_password" class="into-input">
+            <input type="text" placeholder="* 登录密码" name="login_password" class="into-input">
 
-            <select name="shop_id" id="shop_rel" class="into-input">
-                <option value="0">选择店铺</option>
+            <input type="text" placeholder="* 身份证号" name="id_card_no" class="into-input">
+
+            <select name="shop_id" id="shop_rel" class="into-input" disabled>
+                <option value="0">* 选择店铺</option>
                 <{foreach from=$shopList item=item}>
-                <option value="<{$item.shop_id}>"><{$item.shop_name}></option>
+                <option value="<{$item.shop_id}>" <{if $item.shop_id == 41}>selected<{/if}>><{$item.shop_name}></option>
                 <{/foreach}>
             </select>
+
+            <select name="group_id" class="into-input" style="display: none;">
+            </select>
+
+            <div class="into-input into-area">
+                <div id="trigger5">户口所在地</div>
+                <input type="hidden" name="registered" id="cityResultId">
+            </div>
+
+            <input type="tel" placeholder="推荐人手机号" name="pmobile" class="into-input" maxlength="11">
 
             <div class="applyFor-content-btn">
                 <p id="signUpBtn">提交</p>
             </div>
         </div>
 
+        <p style="position: absolute;top: 8px; right: 6px; font-size: 14px; color: #333;">
+            已有账号？<a style="color: #fff;" href="<{url action=topmaker_ctl_passport@signin}>">请登录</a>
+        </p>
     </div>
 </div>
 <script src="/app/topmaker/statics/lib/jquery/jquery-3.2.1.js"></script>
 <script src="/app/topmaker/statics/lib/layui/layui.all.js"></script>
+<script src="/app/topmaker/statics/js/mobileSelect.js"></script>
 <script>
     $(function () {
         //获取验证码
@@ -54,7 +82,7 @@
 
             sendVerify(this, 'mobile='+mobile+'&type=' + mcode_type);
         });
-    })
+    });
 
     // 发送验证码
     function sendVerify(el, data) {
@@ -89,6 +117,7 @@
     }
 </script>
 <script>
+    var RZDS_SHOP_ID = 41;// 日照有礼店铺id
     var third = eval('('+'<{$thirdData}>'+')');
     $('#signUpBtn').on('click', function () {
         var mcode_type = $('[name="mcode_type"]').val();
@@ -116,14 +145,39 @@
             layer.msg('请输入登录密码');
             return false;
         }
+        var id_card_no = $('[name="id_card_no"]').val();
+        if(id_card_no == '')
+        {
+            layer.msg('请输入身份证号');
+            return false;
+        }
         var shop_id = $('[name="shop_id"]').val();
         if(shop_id == '' || shop_id == 0)
         {
             layer.msg('请选择店铺');
             return false;
         }
+        var group_id = $('[name="group_id"]').val();
+        var registered = $('[name="registered"]').val();
+        /*if(registered == '')
+         {
+         layer.msg('请选择户口所在地');
+         return false;
+         }*/
+        var pmobile = $('[name="pmobile"]').val();
 
-        var data = {mcode_type:mcode_type, name:name, login_name:login_name, login_password:login_password, shop_id:shop_id, mcode:mcode};
+        var data = {
+            mcode_type:mcode_type,
+            name:name,
+            login_name:login_name,
+            login_password:login_password,
+            shop_id:shop_id,
+            mcode:mcode,
+            id_card_no:id_card_no,
+            registered:registered,
+            pmobile:pmobile,
+            group_id:group_id
+        };
         if(third != '') data.third = third;
 
         var index = layer.load(1, {
@@ -150,6 +204,84 @@
             }
         });
     });
+</script>
+<script>
+    $(function () {
+        //地区选择
+        var UplinkData = [];
+        var areaStr = '';
+        $.ajax({
+            type: "get",
+            url: "<{$env.base_url}>/app/ectools/statics/scripts/region.json",
+            data: {
+
+            },
+            async:false,
+            dataType: "json",
+            success: function (res) {
+                //console.log(res)
+                UplinkData = res;
+                var mobileSelect5 = new MobileSelect({
+                    trigger: '#trigger5',
+                    title: '地区选择',
+                    wheels: [
+                        { data: UplinkData }
+                    ],
+                    transitionEnd: function (indexArr, data) {
+                        //console.log(data);
+                    },
+                    callback: function (indexArr, data) {
+                        //console.log(data);
+                        if(data.length>2){
+                            areaStr = data[0].value +'/'+data[1].value +'/'+data[2].value +':'+data[0].id +'/'+data[1].id+'/'+data[2].id
+                        }else{
+                            areaStr = data[0].value +'/'+data[1].value +':'+data[0].id +'/'+data[1].id
+                        }
+                        //console.log(areaStr);
+                        $("#cityResultId").val(areaStr);
+                    }
+                });
+            }
+        });
+    });
+</script>
+<script>
+
+    $('[name="shop_id"]').on('change', function () {
+        var shop_id = $(this).val();
+        showGroup(shop_id);
+    });
+
+    var showGroup = function (shop_id) {
+        $('[name="group_id"]').html('').hide();
+        if(shop_id != RZDS_SHOP_ID) return false;
+
+        $.ajax({
+            type: "post",
+            url: "<{$env.base_url}>/maker/passport/getgrouplistdata.html",
+            data: {
+                shop_id
+            },
+            dataType: "json",
+            success: function (res) {
+                var _html = '<option value="0">选择组织</option>';
+                if(res.status)
+                {
+                    var data = res.data;
+                    for (var idx in data)
+                    {
+                        _html += '<option value="'+data[idx].group_id+'">'+data[idx].name+'</option>';
+                    }
+                }
+                $('[name="group_id"]').html(_html).show();
+            }
+        });
+    };
+
+    if($('[name="shop_id"]').val() == RZDS_SHOP_ID)
+    {
+        showGroup($('[name="shop_id"]').val());
+    }
 </script>
 </body>
 

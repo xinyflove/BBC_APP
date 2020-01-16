@@ -22,7 +22,14 @@ class topmaker_ctl_passport extends topmaker_controller {
     public function signin()
     {
         $inputs = input::get();
-        if(empty($inputs['userflag'])) $this->_wechatLogin('topmaker_ctl_trustlogin@callbackSignIn');//处理微信端访问
+		$type=$inputs['type'];
+        $thirdData = $this->_getThirdData($inputs);
+        if(empty($thirdData['userflag']))
+        {
+            $thirdData = array();
+            //处理微信端访问
+            $this->_wechatLogin('topmaker_ctl_trustlogin@callbackSignIn',array('type'=>$type));
+        }
 
         $this->contentHeaderTitle = app::get('topmaker')->_('创客登录');
 
@@ -32,9 +39,15 @@ class topmaker_ctl_passport extends topmaker_controller {
             $pagedata['isShowVcode'] = 'true';
         }
 
-        $pagedata['thirdData'] = json_encode($inputs);
-
-        return $this->page('topmaker/passport/signin.html', $pagedata);
+        $pagedata['thirdData'] = json_encode($thirdData);
+		/*add_2019/8/1_by_wanghaichao_start*/
+		$pagedata['type']=$type;						//通过参数判断加载不同的页面
+		/*add_2019/8/1_by_wanghaichao_end*/
+		if(isset($type) && $type=='ticket'){
+			return $this->page('topmaker/passport/ticket_signin.html', $pagedata);
+		}else{			
+			return $this->page('topmaker/passport/signin.html', $pagedata);
+		}
     }
 
     /**
@@ -113,10 +126,21 @@ class topmaker_ctl_passport extends topmaker_controller {
                         'flag' => $third['flag'],
                     );
                     $trustId = $objTrustinfo->addTrustInfoData($trustData, $msg);
+                    makerAuth::setTrustId($trustId);
                 }
             }
             
+            /*modify_2019/8/1_by_wanghaichao_start*/
+            /*
             $url = url::action('topmaker_ctl_index@index');
+			*/
+			if(input::get('type')=='ticket'){
+				$url = url::action('topmaker_ctl_index@ticketindex');
+			}else{
+				$url = url::action('topmaker_ctl_index@index');
+			}
+            /*modify_2019/8/1_by_wanghaichao_end*/
+            
             $msg = app::get('topmaker')->_('登录成功');
             $this->accountlog('账号登录。账号名是'.input::get('login_account'));
 
@@ -137,7 +161,7 @@ class topmaker_ctl_passport extends topmaker_controller {
      */
     public function logout()
     {
-        pamAccount::logout();
+        makerAuth::logout();
         return redirect::action('topmaker_ctl_passport@signin');
     }
 
@@ -148,10 +172,21 @@ class topmaker_ctl_passport extends topmaker_controller {
     public function signup()
     {
         //如果已登录则退出登录
-        if( pamAccount::check() ) pamAccount::logout();
+        if( pamAccount::check() ) $this->logout();
 
         $inputs = input::get();
-        if(empty($inputs['userflag'])) $this->_wechatLogin('topmaker_ctl_trustlogin@callbackSignUp');//处理微信端访问
+		if(isset($inputs['type']) && $inputs['type']=='ticket'){
+			$type=$inputs['type'];
+		}else{
+			$type='';
+		}
+        $thirdData = $this->_getThirdData($inputs);
+        if(empty($thirdData['userflag']))
+        {
+            $thirdData = array();
+            //处理微信端访问
+            $this->_wechatLogin('topmaker_ctl_trustlogin@callbackSignUp',array('type'=>$type));
+        }
 
         $this->contentHeaderTitle = app::get('topmaker')->_('创客注册');
 
@@ -160,9 +195,18 @@ class topmaker_ctl_passport extends topmaker_controller {
         $shopList = $objShop->fetchListShopInfo('shop_id,shop_name');
         $pagedata['shopList'] = $shopList;
 
-        $pagedata['thirdData'] = json_encode($inputs);
-
-        return $this->page('topmaker/passport/signup.html', $pagedata);
+        $pagedata['thirdData'] = json_encode($thirdData);
+		
+		/*add_2019/8/1_by_wanghaichao_start*/
+		$type=input::get('type');
+		$pagedata['type']=$type;						//通过参数判断加载不同的页面
+		/*add_2019/8/1_by_wanghaichao_end*/
+	
+		if(isset($type) && $type=='ticket'){
+			return $this->page('topmaker/passport/ticket_signup.html',$pagedata);
+		}else{
+			return $this->page('topmaker/passport/signup.html', $pagedata);
+		}
     }
 
     /**
@@ -172,7 +216,7 @@ class topmaker_ctl_passport extends topmaker_controller {
     public function create()
     {
         $pagedata = utils::_filter_input(input::get());
-
+		//echo "<pre>";print_r($pagedata);die();
         try
         {
             // 无需输入确认密码
@@ -182,6 +226,8 @@ class topmaker_ctl_passport extends topmaker_controller {
                     'password' => $pagedata['login_password'],
                     'mcode' => $pagedata['mcode'],
                     'name' => $pagedata['name'],
+                    'id_card_no' => $pagedata['id_card_no'],
+                    //'registered' => $pagedata['registered'],
                     'shop_id' => $pagedata['shop_id'],
                 ],
                 [
@@ -189,6 +235,8 @@ class topmaker_ctl_passport extends topmaker_controller {
                     'password' => 'required|min:6|max:20',
                     'mcode' => 'required',
                     'name' => 'required',
+                    //'id_card_no' => 'required',
+                    //'registered' => 'required',
                     'shop_id' => 'required',
                 ],
                 [
@@ -196,7 +244,9 @@ class topmaker_ctl_passport extends topmaker_controller {
                     'password' => '密码长度不能小于6位!|密码长度不能大于20位!',
                     'mcode' => '请输入验证码!',
                     'name' => '请输姓名!',
-                    'shop_id' => '请输选择店铺!',
+                    //'id_card_no' => '请输身份证号!',
+                    //'registered' => '请选择户口所在地!',
+                    'shop_id' => '请选择店铺!',
                 ]
             );
 
@@ -215,10 +265,40 @@ class topmaker_ctl_passport extends topmaker_controller {
                 throw new \LogicException("该手机号已经被使用");
             }
 
+			if($pagedata['type']=='ticket'){
+				$res=$this->checkcart($pagedata['cart_number']);
+				if($res===false){
+                    throw new \LogicException('请输入青岛地区的车牌号!');
+				}
+				if(empty($pagedata['front_img'])){
+                    throw new \LogicException('请上传身份证正面照!');
+				}
+				if(empty($pagedata['reverse_img'])){
+                    throw new \LogicException('请上传身份证反面面照!');
+				}
+
+			}
+
             $vcodeData = userVcode::verify($pagedata['mcode'], $pagedata['login_name'], $pagedata['mcode_type']);
             if(!$vcodeData)
             {
                 throw new \LogicException('手机验证码填写错误');
+            }
+
+            if(isset($pagedata['id_card_no']) && !empty($pagedata['id_card_no']) && !$this->__check18IDCard($pagedata['id_card_no']))
+            {
+                throw new \LogicException('请输入正确的身份证号');
+            }
+
+            $pid = 0;
+            if($pagedata['pmobile'])
+            {
+                $objSeller = kernel::single('sysmaker_data_seller');
+                $pid = $objSeller->getPIdByMobile($pagedata['pmobile']);
+                if(!$pid)
+                {
+                    throw new \LogicException('推荐人不存在!');
+                }
             }
 
             $signUpData = array(
@@ -226,10 +306,17 @@ class topmaker_ctl_passport extends topmaker_controller {
                 'login_password' => $pagedata['login_password'],
                 'psw_confirm' => $pagedata['login_password'],
                 'name' => $pagedata['name'],
+                'id_card_no' => $pagedata['id_card_no'],
+                'registered' => $pagedata['registered'],
+                'pid' => $pid,
                 'shop_id' => $pagedata['shop_id'],
                 'third' => $pagedata['third'],
+				'front_img'=>$pagedata['front_img'],
+				'reverse_img'=>$pagedata['reverse_img'],
+				'cart_number'=>strtoupper($pagedata['cart_number']),
+				'group_id'=>$pagedata['group_id'],
             );
-            
+
             $sellerId = makerAuth::signUp($signUpData);
         }
         catch(Exception $e)
@@ -237,10 +324,40 @@ class topmaker_ctl_passport extends topmaker_controller {
             $msg = $e->getMessage();
             return $this->splash('error', null, $msg);
         }
-
-        $url = url::action('topmaker_ctl_passport@makerCheck');
+        $url = url::action('topmaker_ctl_passport@makerCheck',array('type'=>$pagedata['type']));
         $msg = '注册成功';
         return $this->splash('success', $url, $msg);
+    }
+
+    private function __check18IDCard($IDCard)
+    {
+        if (strlen($IDCard) != 18)
+        {
+            return false;
+        }
+
+        $IDCardBody = substr($IDCard, 0, 17); //身份证主体
+        $IDCardCode = strtoupper(substr($IDCard, 17, 1)); //身份证最后一位的验证码
+
+        if ($this->__calcIDCardCode($IDCardBody) != $IDCardCode) return false;
+        return true;
+    }
+    private function __calcIDCardCode($IDCardBody)
+    {
+        if (strlen($IDCardBody) != 17) return false;
+
+        //加权因子
+        $factor = array(7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2);
+        //校验码对应值
+        $code = array('1', '0', 'X', '9', '8', '7', '6', '5', '4', '3', '2');
+        $checksum = 0;
+
+        for ($i = 0; $i < strlen($IDCardBody); $i++)
+        {
+            $checksum += substr($IDCardBody, $i, 1) * $factor[$i];
+        }
+
+        return $code[$checksum % 11];
     }
 
     /**
@@ -249,17 +366,32 @@ class topmaker_ctl_passport extends topmaker_controller {
      */
     public function makerCheck()
     {
+		$type=input::get('type');
         if($this->sellerInfo['account']['status'] == 'success' && $this->bindShop['status'] == 'success')
         {
-            return redirect::action('topmaker_ctl_index@index');
-        }
+			if(isset($type) && $type=='ticket'){
+				return redirect::action('topmaker_ctl_index@ticketindex');
+			}else{
+				return redirect::action('topmaker_ctl_index@index');
+			}
+        }elseif($this->bindShop['status']=='refuse'){			//拒绝直接跳转
+			//$this->logout();
+		}
 
         $this->contentHeaderTitle = app::get('topmaker')->_('申请进度');
 
         $pagedata['account_status'] = $this->sellerInfo['account']['status'];
         $pagedata['shop_status'] = $this->bindShop['status'];
-
-        return $this->page('topmaker/passport/maker_check.html', $pagedata);
+		$pagedata['reason']=$this->bindShop['reason'];
+		/*modify_2019/8/5_by_wanghaichao_start*/
+		/*return $this->page('topmaker/passport/maker_check.html', $pagedata);*/
+		if(isset($type) && $type=='ticket'){
+			return $this->page('topmaker/passport/ticket_maker_check.html', $pagedata);
+		}else{
+			return $this->page('topmaker/passport/maker_check.html', $pagedata);
+		}
+		/*modify_2019/8/5_by_wanghaichao_end*/
+		
     }
 
     /**
@@ -299,7 +431,7 @@ class topmaker_ctl_passport extends topmaker_controller {
      * 微信信任登录
      * @param $redirectAction
      */
-    protected function _wechatLogin($redirectAction)
+    protected function _wechatLogin($redirectAction,$params)
     {
         // 判断是否来自微信浏览器
         if(kernel::single('sysmaker_wechat')->from_weixin())
@@ -310,7 +442,7 @@ class topmaker_ctl_passport extends topmaker_controller {
             {
                 $flag = 'wapweixin';
                 // 获取指定的TRUST信息
-                $trustInfo = $makerTrust->getTrustInfo('wap', $redirectAction, $flag);
+                $trustInfo = $makerTrust->getTrustInfo('wap', $redirectAction, $flag,$params);
                 
                 if($trustInfo)
                 {
@@ -320,4 +452,168 @@ class topmaker_ctl_passport extends topmaker_controller {
             }
         }
     }
+
+    /**
+     * 过滤出来信任登录数据
+     * @param $data
+     * @return array
+     */
+    protected function _getThirdData($data)
+    {
+        $thirdData = array(
+            'userflag' => $data['userflag'],
+            'flag' => $data['flag'],
+            'openid' => $data['openid'],
+            'nickname' => $data['nickname'],
+            'sex' => $data['sex'],
+            'figureurl' => $data['figureurl'],
+            'country' => $data['country'],
+            'province' => $data['province'],
+            'city' => $data['city'],
+			/*add_2019/8/1_by_wanghaichao_start*/
+			//通过参数判断加载不同的页面
+			'type'=>$data['type'],
+			/*add_2019/8/1_by_wanghaichao_end*/
+        );
+
+        return $thirdData;
+    }
+	
+	/**
+	* 匹配车牌号
+	* author by wanghaichao
+	* date 2019/8/27
+	*/
+	public function checkcart($cart_number){
+		$regular = "/[鲁]{1}[B,U,b,u]{1}[0-9a-zA-Z]{5}$/u";
+		preg_match($regular, $cart_number, $match);
+		if (isset($match[0])) {
+			return true;
+		}else{
+			return false;
+		}
+
+	}
+
+    /**
+     * 获取组织列表数据
+     * @return string
+     * @author xinyufeng
+     */
+    public function getGroupListData()
+    {
+        $return = array('status'=>false, 'msg'=>'获取失败', 'data'=>array());
+        $shop_id = input::get('shop_id', 0);
+        if(!$shop_id)
+        {
+            return json_encode($return);
+        }
+
+        $groupMdl = app::get('sysmaker')->model('group');
+        $filter['shop_id'] = $shop_id;
+        $data = $groupMdl->getList('group_id, name', $filter);
+        if(empty($data))
+        {
+            return json_encode($return);
+        }
+
+        $return['status'] = true;
+        $return['msg'] = '获取成功';
+        $return['data'] = $data;
+        return json_encode($return);
+    }
+	
+	/**
+	* 修改个人资料的
+	* author by wanghaichao
+	* date 2019/10/25
+	*/
+	public function upuserinfo(){
+		$seller_id=pamAccount::getAccountId();
+		$pagedata=app::get('sysmaker')->model('seller')->getRow('*',array('seller_id'=>$seller_id));
+		return $this->page('topmaker/passport/upuserinfo.html',$pagedata);
+	}
+	
+	/**
+	* 师傅信息保存
+	* author by wanghaichao
+	* date 2019/10/25
+	*/
+	public function updateuserinfo(){
+		$pagedata = utils::_filter_input(input::get());
+
+		$seller_id=pamAccount::getAccountId();
+
+        try
+        {
+            // 无需输入确认密码
+            $validator = validator::make(
+                [
+                    'name' => $pagedata['name'],
+                ],
+                [
+                    'name' => 'required',
+                ],
+                [
+                    'name' => '请输姓名!',
+                ]
+            );
+
+            if ($validator->fails())
+            {
+                $messages = $validator->messagesInfo();
+                foreach( $messages as $error )
+                {
+                    throw new \LogicException($error[0]);
+                }
+            }
+
+            //$sellerBool = makerAuth::isExists($pagedata['login_name'], $type='mobile');
+            //if($sellerBool)
+            //{
+            //    throw new \LogicException("该手机号已经被使用");
+            //}
+
+			$res=$this->checkcart($pagedata['cart_number']);
+			if($res===false){
+				throw new \LogicException('请输入青岛地区的车牌号!');
+			}
+			if(empty($pagedata['front_img'])){
+				throw new \LogicException('请上传身份证正面照!');
+			}
+			if(empty($pagedata['reverse_img'])){
+				throw new \LogicException('请上传身份证反面面照!');
+			}
+
+
+            $signUpData = array(
+                'name' => $pagedata['name'],
+				'front_img'=>$pagedata['front_img'],
+				'reverse_img'=>$pagedata['reverse_img'],
+				'cart_number'=>strtoupper($pagedata['cart_number']),
+            );
+			
+			$db = app::get('sysshop')->database();
+			$db->beginTransaction();
+
+			$p=app::get('sysmaker')->model('seller')->update($signUpData,array('seller_id'=>$seller_id));
+			$s=app::get('sysmaker')->model('shop_rel_seller')->update(array('status'=>'pending'),array('seller_id'=>$seller_id));
+			if ($s && $p)
+			{
+				$db->commit();
+				$return = array('status'=>true, 'message'=>'提交成功,等待审核', 'data'=>array());
+				return json_encode($return);
+			}else{
+				$db->rollback();
+				$return = array('status'=>false, 'message'=>'提交失败,稍后再试', 'data'=>array());
+				return json_encode($return);
+			}
+		} catch(Exception $e)
+        {
+            $msg = $e->getMessage();
+			$return = array('status'=>false, 'message'=>$msg, 'data'=>array());
+			return json_encode($return);
+        }
+	}
+
 }

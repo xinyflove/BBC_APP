@@ -1,0 +1,149 @@
+
+<div class="box box-default">
+  <form  action="<{url action=topshop_ctl_supplier_CommentList@save}>" method="post" class="form-horizontal" data-validate-onsuccess="ajaxSubmit" id="form_delivery" role="form">
+    <input type="hidden" name="comment_id" value="<{$data.comment_id}>">
+    <div class="box-body">
+
+
+    <div class="form-group">
+
+        <label class="col-sm-2 control-label" >店铺名称：</label>
+        <div class="col-sm-3">
+            <input  name='shop_name' type='text' value="<{$data.shop_name}>" placeholder="" required  class="form-control" >
+        </div>
+    </div>
+        <div class="form-group">
+
+            <label class="col-sm-2 control-label" >店铺地址：</label>
+            <div class="col-sm-3">
+                <input  name='shop_addr' type='text' value="<{$data.shop_addr}>" placeholder="" required  class="form-control" >
+            </div>
+        </div>
+        <div class="form-group">
+
+            <label class="col-sm-2 control-label" >用户姓名：</label>
+            <div class="col-sm-3">
+                <{$data.user_name}>
+                <{if $data && empty($data.user_name)}>未填写<{else}><{$data.user_name}><{/if}>
+                <!--<input  name='user_name' type='text' value="<{$data.user_name}>" placeholder="" required  class="form-control" >-->
+            </div>
+        </div>
+        <div class="form-group">
+
+            <label class="col-sm-2 control-label" >用户手机号：</label>
+            <div class="col-sm-3">
+
+                <{if $data && empty($data.user_phone)}>未填写<{else}><{$data.user_phone}><{/if}>
+
+                <!--<input  name='user_phone' type='text' value="<{$data.user_phone}>" placeholder="" required  class="form-control" >-->
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label" >评论文章内容：</label>
+            <div class="col-sm-3">
+                <textarea  name='description'  value="" rows="8"  required  class="form-control" ><{$data.description}></textarea>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-md-2 control-label">审核通过：</label>
+            <div class="col-md-5">
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="status" value="0" <{if $data && $data.status=='0'}>checked<{else}>checked<{/if}>>否</label>
+                    <label>
+                        <input type="radio" name="status" value="1" <{if $data && $data.status=='1'}>checked<{else}><{/if}>>是</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-md-2 control-label">是否置顶：</label>
+            <div class="col-md-5">
+                <div class="radio">
+                    <label>
+                        <input type="radio" name="is_top" value="0" <{if $data && $data.is_top=='0'}>checked<{else}>checked<{/if}>>否</label>
+                    <label>
+                        <input type="radio" name="is_top" value="1" <{if $data && $data.is_top=='1'}>checked<{else}><{/if}>>是</label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+
+            <label class="col-sm-2 control-label" >浏览量：</label>
+            <div class="col-sm-3">
+                <input  name='page_view' type='text' value="<{$data.page_view}>" placeholder="" required  class="form-control" >
+            </div>
+        </div>
+
+
+        <div class="form-group">
+
+            <label class="col-sm-2 control-label" >点赞量：</label>
+            <div class="col-sm-3">
+                <input  name='thumbs_up' type='text' value="<{$data.thumbs_up}>" placeholder="" required  class="form-control" >
+            </div>
+        </div>
+
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label"><{t}>设置评论主图<{/t}>：</label>
+            <div class="col-sm-10">
+                <div class="multiple-upload pro-thumb">
+                    <{foreach from=$data.pic_list item=pic}>
+                    <div class="multiple-item">
+                        <input type="radio" name="top_pic" value="<{$pic.id}>" <{if $pic.is_master_graph == 1}>checked<{/if}>/>
+                        <a class="select-image">
+                            <div class="img-put">
+                                <img src="<{$pic.image_url}>">
+                            </div>
+                        </a>
+                    </div>
+                    <{/foreach}>
+                </div>
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+    <div class="box-footer">
+      <button type="submit" class="btn btn-primary"><{t}>保存<{/t}></button>
+    </div>
+
+  </form>
+</div>
+<style>
+    .multiple-item:first-child:before{
+        content: ""!important;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 1;
+        background-color: #d9534f;
+        padding: 0 3px;
+        line-height: 20px;
+        color: #FFFFFF;
+        font-size: 12px;
+        z-index: 99;
+    }
+</style>
+<script>
+  function ajaxSubmit (e) {
+    var form = e.target;
+    e.preventDefault();
+    $.post(form.action, $(form).serialize(), function(rs) {
+      if(rs.error) {
+        $('#messagebox').message(rs.message);
+        return;
+      }
+      if(rs.success) {
+        $('#messagebox').message(rs.message, 'success');
+      }
+      if(rs.redirect) {
+        location.href = rs.redirect;
+      }
+    });
+  }
+</script>

@@ -21,10 +21,12 @@ class topshop_ctl_mall_detail extends topshop_mall_controller {
         }
 
         $mallItem = app::get('sysmall')->model('item')->getRow('item_id, status, shop_id', array('item_id'=>$itemId));
-        if(!$mallItem || $mallItem['status'] != 'onsale')
+        if(!$mallItem)
         {
-            throw new \InvalidArgumentException('广电优选不存在此商品或商品已下架!');
+            throw new \InvalidArgumentException('广电优选不存在此商品!');
         }
+        // 商品状态
+        $pagedata['status'] =  $mallItem['status'];
         // 是否本店铺商品
         $pagedata['isOwn'] = $mallItem['shop_id'] == $this->shopId ? 1 : 0;
         // 是否已拉取
@@ -117,7 +119,8 @@ class topshop_ctl_mall_detail extends topshop_mall_controller {
     private function __getHotItem()
     {
         $objLibMallList = kernel::single('sysmall_data_list');
-        
+
+        $params['filter']['status'] = 'onsale';
         $params['offset'] = 0;
         $params['limit'] = 5;
         $params['orderBy'] = 'paid_quantity_desc';

@@ -1,0 +1,47 @@
+.m-index-banner {
+  width: 100%;
+  height: 5rem;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 999;
+}
+.m-index-banner img {
+  width: 100%;
+  height: 100%;
+}
+.m-index-list {
+  width: 100%;
+  height: auto;
+  padding: .3rem;
+  position: fixed;
+  top: 0;
+  left: 0;
+  padding-top: 5.3rem;
+}
+.m-index-list ul li {
+  height: auto;
+  width: 100%;
+  background: #F7F7F7;
+  margin-bottom: .3rem;
+}
+.m-index-list ul li img {
+  width: 100%;
+  height: 4rem;
+}
+.m-index-list ul li div {
+  width: 100%;
+  height: .9rem;
+  line-height: .9rem;
+  padding: 0 .20rem;
+  display: flex;
+}
+.m-index-list ul li div p {
+  width: 5.8rem;
+  font-size: .28rem;
+  color: #333;
+}
+.m-index-list ul li div span {
+  font-size: .28rem;
+  color: #ec0000;
+}

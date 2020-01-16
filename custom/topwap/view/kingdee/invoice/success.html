@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>我的发票</title>
+    <{css app="topwap" src="kingdee/public.min.css"}>
+    <{css app="topwap" src="kingdee/myorder.min.css?v=343"}>
+</head>
+<body>
+
+    <div class="m-order-bill">
+       <p class="bill-title">电子发票</p>
+       <ul class="bill-content">
+            <li class="owner">
+                <p>销售方</p>
+                <span>青岛广电传媒电视购物有限公司</span>
+            </li>
+            <li class="oneself">
+                <p>购买方</p>
+                <span><{$data.invoice_name}></span>
+            </li>
+            <li class="code">
+                <p>发票代码</p>
+                <span><{$data.invoice_code}></span>
+            </li>
+            <li class="num">
+                <p>发票号码</p>
+                <span><{$data.invoice_no}></span>
+            </li>
+            <li class="date">
+                <p>开票日期</p>
+                <span><{$data.push_time|cdate:'FDATE'}></span>
+            </li>
+       </ul>
+       <div class="bill-go">
+           <a href="<{$data.pdf_url}>">
+                <p>点击下载发票pdf</p>
+                <!--<img src="./img/more.png" alt="">-->
+           </a>
+       </div>
+    </div>
+
+<{script app="topwap" src="flexible.min.js"}>
+<script src="/app/topshop/mall/statics/lib/jquery/jquery-3.3.0.min.js"></script>
+</body>
+</html>

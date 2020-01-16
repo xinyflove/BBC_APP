@@ -15,7 +15,7 @@ class topshop_ctl_trade_detail extends topshop_controller{
         /*
             $params['fields'] = "shipping_type,orders.spec_nature_info,user_id,tid,status,payment,points_fee,ziti_addr,ziti_memo,post_fee,pay_type,payed_fee,receiver_state,receiver_city,receiver_district,receiver_address,receiver_zip,trade_memo,shop_memo,receiver_name,receiver_mobile,orders.price,orders.num,orders.title,orders.item_id,orders.pic_path,total_fee,discount_fee,buyer_rate,adjust_fee,orders.total_fee,orders.adjust_fee,created_time,pay_time,consign_time,end_time,shop_id,need_invoice,invoice_name,invoice_type,invoice_main,invoice_vat_main,orders.bn,cancel_reason,orders.refund_fee,orders.aftersales_status,orders.gift_data,is_virtual,orders.is_virtual";
         */
-        $params['fields'] = "logistics.corp_code,logistics.corp_code,logistics.logi_no,logistics.logi_name,logistics.delivery_id,logistics.receiver_name,logistics.t_begin,shipping_type,cancel_status,orders.spec_nature_info,user_id,tid,status,payment,points_fee,ziti_addr,ziti_memo,post_fee,pay_type,payed_fee,receiver_state,receiver_city,receiver_district,receiver_address,receiver_zip,trade_memo,shop_memo,receiver_name,receiver_mobile,orders.price,orders.num,orders.title,orders.item_id,orders.pic_path,total_fee,discount_fee,buyer_rate,adjust_fee,orders.total_fee,orders.adjust_fee,created_time,pay_time,consign_time,end_time,shop_id,need_invoice,invoice_name,invoice_type,invoice_main,invoice_vat_main,orders.bn,cancel_reason,orders.refund_fee,orders.aftersales_status,orders.gift_data,is_virtual,is_cross,identity_card_number,seat,orders.is_virtual,orders.confirm_type,orders.init_shop_id,orders.source_house";
+        $params['fields'] = "logistics.corp_code,logistics.corp_code,logistics.logi_no,logistics.logi_name,logistics.delivery_id,logistics.receiver_name,logistics.t_begin,shipping_type,cancel_status,orders.spec_nature_info,user_id,tid,status,payment,points_fee,ziti_addr,ziti_memo,post_fee,pay_type,payed_fee,receiver_state,receiver_city,receiver_district,receiver_address,receiver_zip,trade_memo,shop_memo,receiver_name,receiver_mobile,orders.price,orders.num,orders.title,orders.item_id,orders.pic_path,total_fee,discount_fee,buyer_rate,adjust_fee,orders.total_fee,orders.adjust_fee,created_time,pay_time,consign_time,end_time,shop_id,need_invoice,invoice_name,invoice_type,invoice_main,invoice_vat_main,orders.bn,cancel_reason,orders.refund_fee,orders.aftersales_status,orders.gift_data,is_virtual,is_cross,identity_card_number,seat,channel_id,orders.is_virtual,orders.confirm_type,orders.init_shop_id,orders.source_house";
         /*modify_20171106_by_fanglongji_end*/
         /*add_2017-11-14_by_xinyufeng_start*/
         $params['fields'] .= ',orders.allow_refund,orders.user_id';
@@ -60,10 +60,8 @@ class topshop_ctl_trade_detail extends topshop_controller{
 		/*add_2018/6/25_by_wanghaichao_start*/
 		$pagedata['is_compere']=$this->sellerInfo['is_compere'];
         /*add_2018/6/25_by_wanghaichao_end*/
-
-        $tv_shop_id = app::get('sysshop')->getConf('sysshop.tvshopping.shop_id');
         // jj($tradeInfo);
-        if(($tradeInfo['shop_id'] == $tv_shop_id) && in_array('CALL_CENTER_HOUSE', array_column($tradeInfo['orders'], 'source_house')) && ($tradeInfo['receiver_city'] == '青岛市' && ($tradeInfo['shipping_type'] == 'express'))){
+        if((in_array('CALL_CENTER_HOUSE', array_column($tradeInfo['orders'], 'source_house')) || in_array('KZZ_HOUSE', array_column($tradeInfo['orders'], 'source_house'))) && ($tradeInfo['shipping_type'] == 'express')){
             $aggregation_filter = [
                 'tid' => $params['tid'],
             ];
@@ -117,7 +115,12 @@ class topshop_ctl_trade_detail extends topshop_controller{
         $pagedata = $offline_trade_data;
         return $this->page('topshop/trade/detail_agentprice0.html',$pagedata);
     }
-
+    /**
+     * 异步取得物流轨迹
+     *
+     * @return void
+     * @Author 王衍生 50634235@qq.com
+     */
     public function ajaxGetTrack()
     {
         $postData = input::get();

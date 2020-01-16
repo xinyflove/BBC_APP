@@ -18,11 +18,9 @@
     <div class="text-red"><{$sku.price|cur}></div>
     <div>
     <{if $_input.view}>
-      <{include file=$_input.view}>&nbsp;
-      <input type="checkbox" name="withoutReturn[]" value='<{$sku.sku_id}>' <{if $sku.datavalue.withoutReturn}>checked='checked'<{/if}>> 退货无需退回赠品
+      <{include file=$_input.view}>
     <{/if}>
     </div>
-   
   </div>
 </div>
 <{/foreach}>

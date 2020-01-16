@@ -23,6 +23,8 @@ class topwap_ctl_trade extends topwap_controller{
 		$postData                = input::get();
         $postData['mode']        = $postData['mode'] ? $postData['mode'] :'cart';
         $postData['source_from'] = 'wap';
+        // return $this->splash('error',null,json_encode($postData['invoice']),true);
+
         $receive_data = $this->commonCreateData($postData);
 
         try
@@ -156,11 +158,21 @@ class topwap_ctl_trade extends topwap_controller{
 
         //发票信息处理
         $postData['invoice_type']    = !$postData['invoice']['need_invoice'] ? 'notuse' : $postData['invoice']['invoice_type'];
+        // 普票
         if( $postData['invoice_type'] == 'normal' )
         {
-            $postData['invoice_content']['title'] = $postData['invoice']['invoice_title'];
-            $postData['invoice_content']['content'] = $postData['invoice']['invoice_content'];
+            // 个人或企业
+            if($postData['invoice']['invoice_title'] == 'individual'){
+                $postData['invoice_content'] = $postData['invoice']['invoice_individual'];
+
+            }elseif($postData['invoice']['invoice_title'] == 'unit'){
+                $postData['invoice_content'] = $postData['invoice']['invoice_unit'];
+            }
+
+            $postData['invoice_content']['invoice_title'] = $postData['invoice']['invoice_title'];
+
         }
+        // 专票
         elseif( $postData['invoice_type'] == 'vat' )
         {
             $postData['invoice_content'] = $postData['invoice']['invoice_vat'];

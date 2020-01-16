@@ -7,9 +7,8 @@
 class sysmaker_passport {
     
     public $sellerId = null;
-
     public $accountName = null;
-
+    
     public function __construct()
     {
         $this->app = app::get('sysmaker');
@@ -291,6 +290,32 @@ class sysmaker_passport {
                 break;
         }
         return $data['seller_id'] ? true : false;
+    }
+
+    /**
+     * 退出登录
+     */
+    public function logout()
+    {
+        $trust_id = $this->getTrustId();
+        
+        if(!empty($trust_id))
+        {
+            // 删除信任登录信息
+            kernel::single('sysmaker_data_trustinfo')->delTrustInfoData(array('trust_id'=>$trust_id));
+        }
+        
+        pamAccount::logout();
+    }
+    
+    public function setTrustId($trustId)
+    {
+        $_SESSION['makerTrustId'] = $trustId;
+    }
+    
+    public function getTrustId()
+    {
+        return $_SESSION['makerTrustId'];
     }
 
     /**

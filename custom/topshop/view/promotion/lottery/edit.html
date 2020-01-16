@@ -77,6 +77,7 @@
           <input type="text" name="share_title" required value="<{$share_title}>" class="form-control" placeholder="分享标题" maxlength="50" required>
         </div>
       </div>
+
       <div class="form-group">
         <label for="" class="col-sm-2 control-label">
           <{t}>分享描述
@@ -90,7 +91,7 @@
         <label class="col-sm-2 control-label">分享图片：</label>
         <div class="col-sm-3">
             <div class="multiple-item" style="position:relative">
-                <div class="multiple-del glyphicon glyphicon-remove-circle remove_share_img" style="position: absolute;left: 60px;top: -5px;z-index: 999;"></div>
+                <div class="multiple-del glyphicon glyphicon-remove-circle remove_img" style="position: absolute;left: 60px;top: -5px;z-index: 999;"></div>
                 <a class="select-image" data-toggle="modal" href="<{url action=topshop_ctl_shop_image@loadImageModal}>" data-target="#gallery_modal">
                     <input class="" type="hidden" name="share_img" value="<{$share_img}>">
                     <div class="img-put">
@@ -99,9 +100,78 @@
                     </div>
                 </a>
             </div>
-            <span class="help-block">图片大小：80*80 px。</span>
+            <span class="help-block">建议图片大小：80 * 80 px。</span>
         </div>
-    </div>
+      </div>
+
+      <div class="form-group">
+        <label class="col-sm-2 control-label">背景图片：</label>
+        <div class="col-sm-3">
+            <div class="multiple-item" style="position:relative">
+                <div class="multiple-del glyphicon glyphicon-remove-circle remove_img" style="position: absolute;left: 60px;top: -5px;z-index: 999;"></div>
+                <a class="select-image" data-toggle="modal" href="<{url action=topshop_ctl_shop_image@loadImageModal}>" data-target="#gallery_modal">
+                    <input class="" type="hidden" name="basic_conf[index_bg_img]" value="<{$basic_conf.index_bg_img}>">
+                    <div class="img-put">
+                        <img  class=""  src="<{$basic_conf.index_bg_img}>">
+                        <i class="glyphicon glyphicon-picture"></i>
+                    </div>
+                </a>
+            </div>
+            <span class="help-block">建议图片大小：960 * 1700 px。</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="col-sm-2 control-label">转盘背景图片：</label>
+        <div class="col-sm-3">
+            <div class="multiple-item" style="position:relative">
+                <div class="multiple-del glyphicon glyphicon-remove-circle remove_img" style="position: absolute;left: 60px;top: -5px;z-index: 999;"></div>
+                <a class="select-image" data-toggle="modal" href="<{url action=topshop_ctl_shop_image@loadImageModal}>" data-target="#gallery_modal">
+                    <input class="" type="hidden" name="basic_conf[turnplate_bg_img]" value="<{$basic_conf.turnplate_bg_img}>">
+                    <div class="img-put">
+                        <img  class=""  src="<{$basic_conf.turnplate_bg_img}>">
+                        <i class="glyphicon glyphicon-picture"></i>
+                    </div>
+                </a>
+            </div>
+            <span class="help-block">建议图片大小：510 * 510 px。</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="col-sm-2 control-label">转盘指针图片：</label>
+        <div class="col-sm-3">
+            <div class="multiple-item" style="position:relative">
+                <div class="multiple-del glyphicon glyphicon-remove-circle remove_img" style="position: absolute;left: 60px;top: -5px;z-index: 999;"></div>
+                <a class="select-image" data-toggle="modal" href="<{url action=topshop_ctl_shop_image@loadImageModal}>" data-target="#gallery_modal">
+                    <input class="" type="hidden" name="basic_conf[turnplate_pointer_img]" value="<{$basic_conf.turnplate_pointer_img}>">
+                    <div class="img-put">
+                        <img  class=""  src="<{$basic_conf.turnplate_pointer_img}>">
+                        <i class="glyphicon glyphicon-picture"></i>
+                    </div>
+                </a>
+            </div>
+            <span class="help-block">建议图片大小：135 * 175 px，指针朝上。</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="" class="col-sm-2 control-label">
+          <{t}>转盘与顶部距离<{/t}>：
+        </label>
+        <div class="col-sm-4">
+          <input type="number" name="basic_conf[turnplate_top]" required value="<{$basic_conf.turnplate_top}>" class="form-control" placeholder="单位px" max="500">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="" class="col-sm-2 control-label">
+          <{t}>奖品名称字体颜色<{/t}>：
+        </label>
+        <div class="col-sm-2">
+          <input type="color" name="basic_conf[prize_font_color]" required value="<{$basic_conf.prize_font_color|default:'#E5302F'}>" class="form-control" placeholder="奖品名称字体颜色">
+        </div>
+      </div>
 
       <div class="form-group">
           <label class="col-sm-2 control-label">
@@ -409,7 +479,7 @@ $('.reservation').daterangepicker({
     }
 });
 // 删除分享图片
-$('.remove_share_img').on('click',function(){
+$('.remove_img').on('click',function(){
     $(this).next().find('input').attr('value','');
     $(this).next().find('img').attr('src','');
 });

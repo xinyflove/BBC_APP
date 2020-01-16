@@ -14,6 +14,13 @@ class topshop_ctl_selector_item extends topshop_controller {
         $pagedata['textcol'] = input::get('textcol');
         $pagedata['view'] = input::get('view');
         $pagedata['shopCatList'] = app::get('topshop')->rpcCall('shop.authorize.cat',array('shop_id'=>$this->shopId));
+		/*add_2018/11/29_by_wanghaichao_start*/
+		//筛选广电优选的商品
+		if(input::get('mall')){
+			$pagedata['mall']=input::get('mall');
+		}
+		/*add_2018/11/29_by_wanghaichao_end*/
+		
         return view::make('topshop/selector/item/index.html', $pagedata);
     }
 
@@ -44,7 +51,7 @@ class topshop_ctl_selector_item extends topshop_controller {
             $searchParams = array(
                 'item_id' => implode(',',$value),
                 'shop_id' => $this->shopId,
-                'fields' => 'item_id,title,image_default_id,cat_id,brand_id,price,nospec,sub_title',
+                'fields' => 'item_id,title,image_default_id,cat_id,brand_id,price,nospec,sub_title,item_store',
             );
             $itemsListData = app::get('syspromotion')->rpcCall('item.list.get',$searchParams);
             $itemsList = array_merge($itemsList,$itemsListData);
@@ -238,9 +245,12 @@ class topshop_ctl_selector_item extends topshop_controller {
         $keywords = input::get('searchname');
         $brandName = input::get('searchbrand');
         $bn = input::get('searchbn');
+		/*add_2018/11/29_by_wanghaichao_start*/
+		//过滤广电优选商品
+		$mall=input::get('mall');
+		/*add_2018/11/29_by_wanghaichao_end*/
         $pages = input::get('pages');
         $limit = input::get('limit') ? input::get('limit') : $this->limit;
-
         $searchParams = array(
             'shop_id' => $shopId,
             'brand_id' => $brandId,
@@ -270,7 +280,15 @@ class topshop_ctl_selector_item extends topshop_controller {
         }
 
         $searchParams['fields'] = 'item_id,title,image_default_id,price,brand_id';
+		/*add_2018/11/29_by_wanghaichao_start*/
+		//过滤广电优选商品
+		if(isset($mall) && $mall){
+			$searchParams['mall_shop_id']=$this->shopId;
+		}		
+		/*add_2018/11/29_by_wanghaichao_end*/
+		
         $itemsList = app::get('topshop')->rpcCall('item.search', $searchParams);
+
         $pagedata['itemsList'] = $itemsList['list'];
         $pagedata['total'] = $itemsList['total_found'];
         $totalPage = ceil($itemsList['total_found']/$limit);

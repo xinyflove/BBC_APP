@@ -10,9 +10,9 @@
     <th>状态</th>
     <th>售后</th>
     <!--add_2017-11-14_by_xinyufeng_start-->
-    <{if $seller_role==0}>
+    <{*<{if $seller_role==0}>
     <th>虚拟商品退款</th>
-    <{/if}>
+    <{/if}>*}>
     <!--add_2017-11-14_by_xinyufeng_end-->
   </tr>
   </thead>
@@ -87,7 +87,7 @@
         <{/if}>
       </td>
       <!--add_2017-11-14_by_xinyufeng_start-->
-      <{if $seller_role==0}>
+      <{*<{if $seller_role==0}>
       <{if $item.is_virtual==1}>
       <td>
           <label class="radio-inline">
@@ -100,7 +100,7 @@
       <{else}>
         <td>————</td>
       <{/if}>
-      <{/if}>
+      <{/if}>*}>
       <!--add_2017-11-14_by_xinyufeng_end-->
     </tr>
     <{if $item.is_virtual == 1}>

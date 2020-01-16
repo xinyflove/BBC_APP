@@ -33,6 +33,37 @@ class topshop_ctl_exporttrade extends topshop_controller{
         }
         return view::make('topshop/exporttrade/export.html', $pagedata);
     }
+
+	/**
+	* 推送商品订单导出
+	* author by wanghaichao
+	* date 2019/1/9
+	*/
+	public function pushview(){
+        //导出方式 直接导出还是通过队列导出
+        $pagedata['check_policy'] = 'download';
+        $filetype = array(
+            //'csv'=>'.csv',
+            'xls'=>'.xls',
+        );
+        $pagedata['model'] = input::get('model');
+        $pagedata['app'] = input::get('app');
+        $pagedata['orderBy'] = input::get('orderBy');
+        $supportType = input::get('supportType');
+        //支持导出类型
+        if( $supportType && $filetype[$supportType] )
+        {
+            $pagedata['export_type'] = array($supportType=>$filetype[$supportType]);
+        }
+        else
+        {
+            $pagedata['export_type'] = $filetype;
+        }
+        return view::make('topshop/exporttrade/pushexport.html', $pagedata);
+	}
+
+
+
     /**
      * 子订单导出模态页面（用于发货订单导出）
      * @return mixed
@@ -60,6 +91,36 @@ class topshop_ctl_exporttrade extends topshop_controller{
         }
         return view::make('topshop/exporttrade/exportorder.html', $pagedata);
     }
+
+
+	/* action_name (par1, par2, par3)
+	* 推送订单导出
+	* author by wanghaichao
+	* date 2019/1/9
+	*/
+	public function pushvieworder(){
+        //导出方式 直接导出还是通过队列导出
+        $pagedata['check_policy'] = 'download';
+        $filetype = array(
+            //'csv'=>'.csv',
+            'xls'=>'.xls',
+        );
+        $pagedata['model'] = input::get('model');
+        $pagedata['app'] = input::get('app');
+        $pagedata['orderBy'] = input::get('orderBy');
+        $supportType = input::get('supportType');
+        //支持导出类型
+        if( $supportType && $filetype[$supportType] )
+        {
+            $pagedata['export_type'] = array($supportType=>$filetype[$supportType]);
+        }
+        else
+        {
+            $pagedata['export_type'] = $filetype;
+        }
+        return view::make('topshop/exporttrade/pushexportorder.html', $pagedata);
+	}
+
     /**
      * 主订单导出
      * 系统原有import/export导出方法
@@ -87,7 +148,7 @@ class topshop_ctl_exporttrade extends topshop_controller{
                 $filter[$k] = explode(',',$val);
             }
         }
-
+        $shop_id = $this->shopId;
         //关键词查询
         if($keyword = trim($filter['keyword'])){
             // $keyword = trim($filter['keyword']);
@@ -96,7 +157,7 @@ class topshop_ctl_exporttrade extends topshop_controller{
             $tradeLists = $listsBuilder->select('distinct(a.tid) as tid')
                 ->from('systrade_trade', 'a')
                 ->join('a', 'systrade_order', 'b', 'b.tid = a.tid')
-                ->where('b.title  like "%'.$keyword.'%"')
+                ->where("b.title  like \"%{$keyword}%\" and a.shop_id ={$shop_id}")
                 ->execute()->fetchAll();
             $filter['tid'] = array_column($tradeLists, 'tid');
         }
@@ -157,7 +218,10 @@ class topshop_ctl_exporttrade extends topshop_controller{
         {
             $this->sellerlog('导出操作。对应导出model '.$model);
             $model = $app.'_mdl_'.$model;
-            $filter['shop_id'] = shopAuth::getShopId();
+            $filter['shop_id'] = $shop_id;
+            if($this->loginSupplierId){
+                $filter['supplier_id'] = $this->loginSupplierId;
+            }
             try {
                 kernel::single('importexport_export')->fileDownload(input::get('filetype'), $model, input::get('name'), $filter,$orderBy);
             }
@@ -171,6 +235,270 @@ class topshop_ctl_exporttrade extends topshop_controller{
             return response::make('导出参数错误', 503);
         }
     }
+
+	 /**
+     * 推送商品主订单导出
+     * 系统原有import/export导出方法
+     * @return mixed
+	 * 2019/1/9
+     */
+    public function pushexport()
+    {
+        //导出
+        if( input::get('filter') )
+        {
+            $filter = json_decode(input::get('filter'),true,512,JSON_BIGINT_AS_STRING);
+        }
+
+        $filter=$this->_checkParams($filter);
+
+        $pagedata['progress'] = array(
+            '0' => app::get('topshop')->_('待处理'),
+            '1' => app::get('topshop')->_('待回寄'),
+            '2' => app::get('topshop')->_('待确认收货'),
+            '4' => app::get('topshop')->_('商家已处理'),//换货的时候可以直接在商家处理结束
+            '3' => app::get('topshop')->_('商家已驳回'),
+            '5' => app::get('topshop')->_('商家已收货'),
+            '7' => app::get('topshop')->_('已退款'),//退款，退货则需要平台确实退款
+            '6' => app::get('topshop')->_('已驳回'),
+            '8' => app::get('topshop')->_('待退款'),
+        );
+
+        $tradeStatus = array(
+            'WAIT_BUYER_PAY' => '未付款',
+            'WAIT_SELLER_SEND_GOODS' => '已付款，请发货',
+            'WAIT_BUYER_CONFIRM_GOODS' => '已发货，等待确认',
+            'WAIT_WRITE_OFF' => '已付款，待核销',
+            'WRITE_FINISHED' => '已全部核销',
+            'WRITE_PARTIAL' => '部分核销',
+            'TRADE_FINISHED' => '已完成',
+            'TRADE_CLOSED' => '已关闭',
+            'TRADE_CLOSED_BY_SYSTEM' => '已关闭',
+            'PARTIAL_SHIPMENT' => '部分发货',
+        );
+        $this->contentHeaderTitle = app::get('topshop')->_('订单查询');
+
+        $limit = 500;
+        $status = $filter['status'];
+        if(is_array($filter['status']))
+        {
+            $status = implode(',',$filter['status']);
+        }
+        if(isset($filter['is_virtual'])){
+            switch($filter['is_virtual']){
+                case '0':$filter['is_virtual']=0;break;//全部
+                case '1':$filter['is_virtual']=1;break;//实物
+                case '2':$filter['is_virtual']=2;break;//虚拟
+                default:$filter['is_virtual']=0;
+            }
+        }else{
+            $filter['is_virtual']=0;
+        }
+        $page = $filter['pages'] ? $filter['pages'] : 1;
+
+        if($this->loginSupplierId){
+            $filter['supplier_id'] = $this->loginSupplierId;
+        }
+        $params = array(
+            'status' => $status,
+            'tid' => $filter['tid'],
+            'create_time_start' =>$filter['created_time_start'],
+            'create_time_end' =>$filter['created_time_end'],
+            'receiver_mobile' =>$filter['receiver_mobile'],
+            'receiver_phone' =>$filter['receiver_phone'],
+            'receiver_name' =>$filter['receiver_name'],
+            'user_name' =>$filter['user_name'],
+            'pay_type' =>$filter['pay_type'],
+            'shipping_type' =>$filter['shipping_type'],
+            // 'settlement_status' =>$filter['settlement_status'],
+            'page_no' => intval($page),
+            'page_size' =>intval($limit),
+            'order_by' =>'created_time desc',
+            'keyword'=>$filter['keyword'],
+            'supplier_id'=>$filter['supplier_id'],
+            'is_virtual'=>$filter['is_virtual'],
+            'fields' =>'order.spec_nature_info,shipping_type,tid,shop_id,user_id,status,payment,points_fee,total_fee,post_fee,payed_fee,receiver_name,trade_memo,created_time,receiver_mobile,discount_fee,adjust_fee,order.title,order.price,order.num,order.pic_path,order.tid,order.oid,order.item_id,need_invoice,invoice_name,invoice_type,invoice_main,pay_type,cancel_status,receiver_idcard,order.is_virtual,is_cross,identity_card_number,order.init_shop_id,order.total_fee,order.payment,order.cost_price',
+        );
+
+        //显示订单售后状态
+        $params['is_aftersale'] = true;
+        $params['shop_id'] = $this->shopId;
+
+        $tradeList = app::get('topshop')->rpcCall('trade.get.muumi.trade.list',$params,'seller');
+		$pushdata=$this->_getPushExportData($tradeList['list']);
+
+        $order_desc = input::get('name');
+        $export_time = date('YmdHis',time());
+        $this->_exportTradeDataToExcel($export_time.'订单（'.$order_desc.'）',$pushdata);
+    }
+
+	public function _exportTradeDataToExcel($expTitle,$expTableData){
+		$xlsTitle = iconv('utf-8', 'gb2312', $expTitle);//文件名称
+        $fileName = $xlsTitle; //文件名称可根据自己情况设定
+        $cellTitle=array('订单编号', '代卖店铺', '会员名称', '配送模板ids', '自提地址', '订单状态', '取消订单状态', '取消订单原因', '支付类型', '实付金额', '积分抵扣金额', '商品总额','邮费','已支付金额','收货人姓名','收货人手机号', '收货人邮编', '收货人所在省份','收货人所在城市','收货人所在地区','收货人详细地址','创建时间');
+        $objPHPExcel = new PHPExcel();
+        $cellNum=count($cellTitle);//多少列
+        $dataNum = count($expTableData);//多少行
+        $cellName = array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X');
+        //表格边框样式
+        $color='0x00000000';
+        $styleArray = array(
+            'borders' => array(
+                'allborders' => array(
+                    //'style' => PHPExcel_Style_Border::BORDER_THICK,//边框是粗的
+                    'style' => PHPExcel_Style_Border::BORDER_THIN,//细边框
+                    'color' => array('argb' => $color),
+                ),
+            ),
+        );
+        $objPHPExcel->getActiveSheet()->getStyle('A1:'.$cellName[$cellNum-1].($dataNum+1))->applyFromArray($styleArray);
+        // $objPHPExcel->getActiveSheet()->getColumnDimension('AR')->setAutoSize(true);
+        $objPHPExcel->getActiveSheet()->getColumnDimension('I')->setWidth(40);
+        $objPHPExcel->getActiveSheet()->getColumnDimension('AA')->setWidth(30);
+
+        for($i=0;$i<$cellNum;$i++){
+            $objPHPExcel->setActiveSheetIndex(0)->setCellValue($cellName[$i].'1', $cellTitle[$i]);
+            //$objPHPExcel->setActiveSheetIndex(0)->setCellValue($cellName[$i].'2', $cellTitle[$i]);
+        }
+        $tid_array = [];
+        $last_tid = $expTableData[0]['tid'];
+        $agrb_key = true;
+        for($i=0;$i<$dataNum;$i++){//多少行
+
+            // 设置行颜色
+            if($expTableData[$i]['tid'] != $last_tid){
+                $last_tid = $expTableData[$i]['tid'];
+                $agrb_key = $agrb_key ? false : true;
+            }
+
+            $argb = $agrb_key ? '00FFFFFF' : '00ADFF2F';
+
+            $objPHPExcel->getActiveSheet()->getStyle('A'.($i+2) . ':' . 'AZ'.($i+2))->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID);
+            $objPHPExcel->getActiveSheet()->getStyle('A'.($i+2) . ':' . 'AZ'.($i+2))->getFill()->getStartColor()->setARGB($argb);
+			$objPHPExcel->getActiveSheet()->setCellValueExplicit('A'.($i+2),$expTableData[$i]['tid'],PHPExcel_Cell_DataType::TYPE_STRING);
+            $objPHPExcel->getActiveSheet()->setCellValueExplicit('B'.($i+2),$expTableData[$i]['shop_id'],PHPExcel_Cell_DataType::TYPE_STRING);
+            $objPHPExcel->getActiveSheet(0)->setCellValue('C'.($i+2),$expTableData[$i]['user_id']);
+            $objPHPExcel->getActiveSheet(0)->setCellValue('D'.($i+2),$expTableData[$i]['dlytmpl_ids']);
+            $objPHPExcel->getActiveSheet(0)->setCellValue('E'.($i+2),$expTableData[$i]['ziti_addr']);
+
+            $objPHPExcel->getActiveSheet(0)->setCellValue('F'.($i+2),$expTableData[$i]['status']);
+            $objPHPExcel->getActiveSheet(0)->setCellValue('G'.($i+2),$expTableData[$i]['cancel_status']);
+
+            $objPHPExcel->getActiveSheet(0)->getStyle('H'.($i+2))->getAlignment()->setWrapText(true);
+            // $objPHPExcel->getActiveSheet(0)->getColumnDimension('AR'.($i+2))->setAutoSize(true);
+            $objPHPExcel->getActiveSheet(0)->setCellValue('H'.($i+2),$expTableData[$i]['cancel_reason']);
+
+            $objPHPExcel->getActiveSheet(0)->setCellValue('I'.($i+2),$expTableData[$i]['pay_type']);
+            $objPHPExcel->getActiveSheet(0)->setCellValue('J'.($i+2),$expTableData[$i]['payment']);
+
+            $objPHPExcel->getActiveSheet(0)->setCellValue('K'.($i+2),$expTableData[$i]['points_fee']);
+            $objPHPExcel->getActiveSheet(0)->setCellValue('L'.($i+2),$expTableData[$i]['total_fee']);
+            $objPHPExcel->getActiveSheet()->setCellValueExplicit('M'.($i+2),$expTableData[$i]['post_fee'],PHPExcel_Cell_DataType::TYPE_STRING);
+            $objPHPExcel->getActiveSheet(0)->setCellValue('N'.($i+2),$expTableData[$i]['payed_fee']);
+            $objPHPExcel->getActiveSheet(0)->setCellValue('O'.($i+2),$expTableData[$i]['receiver_name']);
+            $objPHPExcel->getActiveSheet(0)->setCellValue('P'.($i+2),$expTableData[$i]['receiver_mobile']);
+            $objPHPExcel->getActiveSheet(0)->setCellValue('Q'.($i+2),$expTableData[$i]['receiver_zip']);
+            $objPHPExcel->getActiveSheet(0)->setCellValue('R'.($i+2),$expTableData[$i]['receiver_state']);
+            $objPHPExcel->getActiveSheet(0)->setCellValue('S'.($i+2),$expTableData[$i]['receiver_city']);
+            $objPHPExcel->getActiveSheet(0)->setCellValue('T'.($i+2),$expTableData[$i]['receiver_district']);
+            $objPHPExcel->getActiveSheet(0)->setCellValue('U'.($i+2),$expTableData[$i]['receiver_address']);
+            $objPHPExcel->getActiveSheet(0)->setCellValue('V'.($i+2),$expTableData[$i]['created_time']);
+
+
+            //$objPHPExcel->getActiveSheet(0)->setCellValue('X'.($i+2),$expTableData[$i]['sendnum']);
+           // $objPHPExcel->getActiveSheet(0)->setCellValue('Y'.($i+2),$expTableData[$i]['consign_time']);
+           // if(in_array($expTableData[$i]['tid'], $tid_array))
+           // {
+            //    $objPHPExcel->getActiveSheet(0)->mergeCells('Z'.($i+1).':Z'.($i+2));
+           // }
+          //  else
+           // {
+            //    $objPHPExcel->getActiveSheet()->setCellValueExplicit('Z'.($i+2),$expTableData[$i]['post_fee']);
+           // }
+           // $objPHPExcel->getActiveSheet(0)->setCellValue('AA'.($i+2),$expTableData[$i]['push_logistics']);
+           // $objPHPExcel->getActiveSheet(0)->setCellValue('AB'.($i+2),$expTableData[$i]['status']);
+            //$objPHPExcel->getActiveSheet(0)->setCellValue('AC'.($i+2),$expTableData[$i]['cancel_status']);
+            //$objPHPExcel->getActiveSheet(0)->setCellValue('AD'.($i+2),$expTableData[$i]['cancel_reason']);
+           // $objPHPExcel->getActiveSheet(0)->setCellValue('AE'.($i+2),$expTableData[$i]['aftersales_status']);
+            //$objPHPExcel->getActiveSheet(0)->setCellValue('AF'.($i+2),$expTableData[$i]['shop_id']);
+            //$objPHPExcel->getActiveSheet(0)->setCellValue('AG'.($i+2),$expTableData[$i]['user_id']);
+            // $objPHPExcel->getActiveSheet(0)->setCellValue('AH'.($i+2),$expTableData[$i]['sku_id']);
+           // $objPHPExcel->getActiveSheet()->setCellValueExplicit('AH'.($i+2),$expTableData[$i]['identity_card_number'],PHPExcel_Cell_DataType::TYPE_STRING);
+
+            //$objPHPExcel->getActiveSheet(0)->setCellValue('AI'.($i+2),$expTableData[$i]['total_fee']);
+            //$objPHPExcel->getActiveSheet(0)->setCellValue('AJ'.($i+2),$expTableData[$i]['part_mjz_discount']);
+            //$objPHPExcel->getActiveSheet(0)->setCellValue('AK'.($i+2),$expTableData[$i]['points_fee']);
+            //$objPHPExcel->getActiveSheet(0)->setCellValue('AL'.($i+2),$expTableData[$i]['consume_point_fee']);
+            //$objPHPExcel->getActiveSheet(0)->setCellValue('AM'.($i+2),$expTableData[$i]['lijin_fee']);
+            //$objPHPExcel->getActiveSheet(0)->setCellValue('AN'.($i+2),$expTableData[$i]['consume_lijin_fee']);
+            // $objPHPExcel->getActiveSheet(0)->setCellValue('AO'.($i+2),$expTableData[$i]['share_user_id']);
+            // $objPHPExcel->getActiveSheet(0)->setCellValue('AF'.($i+2),$expTableData[$i]['receiver_phone']);
+           // $objPHPExcel->getActiveSheet(0)->setCellValue('AO'.($i+2),$expTableData[$i]['is_virtual']);
+            //$objPHPExcel->getActiveSheet(0)->setCellValue('AP'.($i+2),$expTableData[$i]['is_cross']);
+           // $objPHPExcel->getActiveSheet()->setCellValueExplicit('AQ'.($i+2),$expTableData[$i]['shop_memo'],PHPExcel_Cell_DataType::TYPE_STRING);
+            //$objPHPExcel->getActiveSheet()->setCellValueExplicit('AR'.($i+2),$expTableData[$i]['trade_memo'],PHPExcel_Cell_DataType::TYPE_STRING);
+           // $objPHPExcel->getActiveSheet()->setCellValueExplicit('AS'.($i+2),$expTableData[$i]['payment_id'],PHPExcel_Cell_DataType::TYPE_STRING);
+           // $objPHPExcel->getActiveSheet()->setCellValueExplicit('AT'.($i+2),$expTableData[$i]['seat'],PHPExcel_Cell_DataType::TYPE_STRING);
+            //$objPHPExcel->getActiveSheet()->setCellValueExplicit('AU'.($i+2),$expTableData[$i]['refund_id'],PHPExcel_Cell_DataType::TYPE_STRING);
+
+            //$objPHPExcel->getActiveSheet(0)->setCellValue('AV'.($i+2),$expTableData[$i]['ziti_addr']);
+
+            $tid_array[] = $expTableData[$i]['tid'];
+        }
+        header('pragma:public');
+        header('Content-type:application/vnd.ms-excel;charset=utf-8;name="'.$xlsTitle.'.xls"');
+        header("Content-Disposition:attachment;filename=$fileName.xls");//attachment新窗口打印inline本窗口打印
+        $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
+        $objWriter->save('php://output');
+	}
+	/* action_name (par1, par2, par3)
+	* 推送主订单数据处理
+	* author by wanghaichao
+	* date 2019/1/9
+	*/
+    private function _getPushExportData($data){
+        $exportData=array();
+        foreach($data as $k => $v){
+            $curRow['tid']=$v['tid'];              //主的订单号
+            $curRow['shop_id']=$this->_getShopName($v['shop_id']); //代卖店铺
+            $curRow['user_id']=$this->_getUserName($v['user_id']);  //会员名
+			$curRow['dlytmpl_ids']=$v['dlytmpl_ids'];   //配送模板ids
+			$curRow['ziti_addr']=$v['ziti_addr'];   //自提地址
+            $curRow['status']=$this->_getTradeStatus($v);     //订单状态
+            $curRow['cancel_status']=$this->_getCancelStatus($v['cancel_status']);  //取消订单状态
+            $curRow['cancel_reason']=$v['cancel_reason'];    //取消订单原因
+			$curRow['pay_type']=$v['pay_type'];               //支付类型
+			$curRow['payment']=$v['payment'];                    //实付金额
+			$curRow['points_fee']=$v['points_fee'];               //积分抵扣金额
+			$curRow['total_fee']=$v['total_fee'];                   //商品总额
+			$curRow['post_fee']=$v['post_fee'];                   //邮费
+			$curRow['payed_fee']=$v['payed_fee'];                //已支付金额(包含红包支付的金额)
+			$curRow['hongbao_fee']=$v['hongbao_fee'];                   //红包支付金额
+			$curRow['user_hongbao_id']=$v['user_hongbao_id'];                    //使用红包支付的id集合
+			$curRow['seller_rate']=$v['seller_rate']==0?'否':'是';                                    //卖家是否评价
+			$curRow['receiver_name']=$v['receiver_name'];                                           //收货人姓名
+			$curRow['created_time']=date('Y-m-d H:i:s',$v['created_time']);             //订单创建时间
+			$curRow['pay_time']=date('Y-m-d H:i:s',$v['pay_time']);		//付款时间
+			$curRow['consign_time']=date('Y-m-d H:i:s',$v['consign_time']);            //卖家发货时间
+			$curRow['end_time']=date('Y-m-d H:i:s',$v['end_time']);                   //结束时间
+			$curRow['modified_time']=date('Y-m-d H:i:s',$v['modified_time']);                   //修改时间
+			$curRow['timeout_action_time']=date('Y-m-d H:i:s',$v['timeout_action_time']);                   //超时到期时间
+			$curRow['send_time']=date('Y-m-d H:i:s',$v['send_time']);                   //订单将在此时间前发出，主要用于预售订单
+			$curRow['end_time']=date('Y-m-d H:i:s',$v['end_time']);                   //结束时间
+			$curRow['receiver_state']=$v['receiver_state'];                            //收货人所在省
+			$curRow['receiver_city']=$v['receiver_city'];                                //收货人所在城市
+			$curRow['receiver_district']=$v['receiver_district'];                      //收货人所在地区
+			$curRow['receiver_address']=$v['receiver_address'];                        //收货人详细地址
+			$curRow['receiver_zip']=$v['receiver_zip'];                                     //收货人邮编
+			$curRow['receiver_mobile']=$v['receiver_mobile'];                          //收货人手机号
+			$curRow['total_weight']=$v['total_weight'];                                     //商品总重量
+            $exportData[]=$curRow;
+            unset($curRow);
+        }
+        return $exportData;
+    }
+
+
     /**
      * 校验和组装参数，适用model->getList()方法的参数形式
      * @param $filter
@@ -269,6 +597,11 @@ class topshop_ctl_exporttrade extends topshop_controller{
         {
             $status = implode(',',$filter['status']);
         }
+
+        if($this->loginSupplierId){
+            $filter['supplier_id'] = $this->loginSupplierId;
+        }
+
         if($postFilter['tid|in']){
             $params['tid']=implode(',',$postFilter['tid|in']);
         }else{
@@ -287,13 +620,96 @@ class topshop_ctl_exporttrade extends topshop_controller{
                 'keyword'=>$filter['keyword'],
                 'supplier_id'=>$filter['supplier_id'],
                 'is_virtual'=>$filter['is_virtual'],
-                'fields' =>'order.spec_nature_info,shipping_type,tid,shop_id,user_id,status,payment,points_fee,total_fee,post_fee,payed_fee,receiver_name,trade_memo,created_time,receiver_mobile,discount_fee,adjust_fee,order.title,order.price,order.num,order.pic_path,order.tid,order.oid,order.item_id,need_invoice,invoice_name,invoice_type,invoice_main,pay_type,cancel_status,receiver_idcard,order.is_virtual,order.order_from,logistics.corp_code,logistics.logi_no,logistics.logi_name,logistics.delivery_id,logistics.receiver_name,logistics.t_begin',
+                'channel_id'=>$filter['channel_id'],
+                'fields' =>'order.spec_nature_info,shipping_type,tid,shop_id,user_id,status,payment,points_fee,total_fee,post_fee,payed_fee,receiver_name,trade_memo,created_time,receiver_mobile,discount_fee,adjust_fee,order.title,order.price,order.num,order.pic_path,order.tid,order.oid,order.item_id,need_invoice,invoice_name,invoice_type,invoice_main,pay_type,cancel_status,receiver_idcard,order.is_virtual,order.order_from,logistics.corp_code,logistics.logi_no,logistics.logi_name,logistics.delivery_id,logistics.receiver_name,logistics.t_begin, channel_id',
             );
         }
 
         //显示订单售后状态
         $params['is_aftersale'] = true;
         $params['shop_id'] = $this->shopId;
+        $orderList = app::get('topshop')->rpcCall('trade.get.orderlist',$params,'seller');
+        $exportData=$this->_getExportData($orderList['list']);
+        // jj($exportData);
+        $order_desc = input::get('name');
+        $export_time = date('YmdHis',time());
+        $this->_exportOrderDataToExcel($export_time.'子订单（'.$order_desc.'）',$exportData);
+    }
+
+    public function pushexportOrder(){
+        $pagedata['progress'] = array(
+            '0' => app::get('topshop')->_('待处理'),
+            '1' => app::get('topshop')->_('待回寄'),
+            '2' => app::get('topshop')->_('待确认收货'),
+            '4' => app::get('topshop')->_('商家已处理'),//换货的时候可以直接在商家处理结束
+            '3' => app::get('topshop')->_('商家已驳回'),
+            '5' => app::get('topshop')->_('商家已收货'),
+            '7' => app::get('topshop')->_('已退款'),//退款，退货则需要平台确实退款
+            '6' => app::get('topshop')->_('已驳回'),
+            '8' => app::get('topshop')->_('待退款'),
+            '9' => app::get('topshop')->_('换货中'),
+        );
+        $tradeStatus = array(
+            'WAIT_BUYER_PAY' => '未付款',
+            'WAIT_SELLER_SEND_GOODS' => '已付款，请发货',
+            'WAIT_BUYER_CONFIRM_GOODS' => '已发货，等待确认',
+            'TRADE_FINISHED' => '已完成',
+            'TRADE_CLOSED' => '已关闭',
+            'TRADE_CLOSED_BY_SYSTEM' => '已关闭',
+            'WAIT_WRITE_OFF'=>'待核销',
+            'WRITE_PARTIAL'=>'部分核销',
+            'WRITE_FINISHED'=>'全部已核销'
+        );
+        $this->contentHeaderTitle = app::get('topshop')->_('订单查询');
+        $postFilter = json_decode(input::get('filter'),true,512,JSON_BIGINT_AS_STRING);
+        foreach($postFilter as $k => $v){
+            if(!is_array($v)){
+                $postFilter[$k]=trim($v);
+            }
+
+        }
+        $filter = $this->_checkParams($postFilter);
+		//echo "<pre>";print_r($filter);die();
+        if($filter['status']=='WAIT_SELLER_SEND_GOODS'){
+            $filter['status']=array('WAIT_SELLER_SEND_GOODS','PARTIAL_SHIPMENT');
+        }
+        $status = $filter['status'];
+
+        if(is_array($filter['status']))
+        {
+            $status = implode(',',$filter['status']);
+        }
+
+        if($this->loginSupplierId){
+            $filter['supplier_id'] = $this->loginSupplierId;
+        }
+
+        if($postFilter['tid|in']){
+            $params['tid']=implode(',',$postFilter['tid|in']);
+        }else{
+            $params = array(
+                'status' => $status,
+                'tid' => $filter['tid'],
+                'create_time_start' =>$filter['created_time_start'],
+                'create_time_end' =>$filter['created_time_end'],
+                'receiver_mobile' =>$filter['receiver_mobile'],
+                'receiver_phone' =>$filter['receiver_phone'],
+                'receiver_name' =>$filter['receiver_name'],
+                'user_name' =>$filter['user_name'],
+                'pay_type' =>$filter['pay_type'],
+                'shipping_type' =>$filter['shipping_type'],
+                'order_by' =>'created_time desc',
+                'keyword'=>$filter['keyword'],
+                'supplier_id'=>$filter['supplier_id'],
+                'is_virtual'=>$filter['is_virtual'],
+				'shop_id'=>$filter['shop_id'],
+                'fields' =>'order.spec_nature_info,shipping_type,tid,shop_id,user_id,status,payment,points_fee,total_fee,post_fee,payed_fee,receiver_name,trade_memo,created_time,receiver_mobile,discount_fee,adjust_fee,order.title,order.price,order.num,order.pic_path,order.tid,order.oid,order.item_id,need_invoice,invoice_name,invoice_type,invoice_main,pay_type,cancel_status,receiver_idcard,order.is_virtual,order.order_from,logistics.corp_code,logistics.logi_no,logistics.logi_name,logistics.delivery_id,logistics.receiver_name,logistics.t_begin',
+            );
+        }
+
+        //显示订单售后状态
+        $params['is_aftersale'] = true;
+        $params['init_shop_id'] = $this->shopId;
         $orderList = app::get('topshop')->rpcCall('trade.get.orderlist',$params,'seller');
         $exportData=$this->_getExportData($orderList['list']);
         // jj($exportData);
@@ -308,6 +724,10 @@ class topshop_ctl_exporttrade extends topshop_controller{
      */
     private function _getExportData($data){
         $exportData=array();
+        $channel_model = app::get('sysshop')->model('channel');
+        $channel_list = $channel_model->getList('*', ['shop_id' => $this->shopId]);
+        $channel_list = array_bind_key($channel_list, 'channel_id');
+
         foreach($data as $k => $v){
             $curRow['tid']=$v['tid'];
             $curRow['oid']=$v['oid'];
@@ -360,6 +780,13 @@ class topshop_ctl_exporttrade extends topshop_controller{
             $curRow['consume_lijin_fee']=$v['consume_lijin_fee'];
             $curRow['gift_data']=$this->_disposeGift($v);
             $curRow['push_logistics']=$v['push_logistics'];
+
+            if($v['channel_id'] == 0) {
+                $channel_name = '其他';
+            } else {
+                $channel_name = $channel_list[$v['channel_id']]['channel_name'];
+            }
+            $curRow['channel_name']= $channel_name;
             $exportData[]=$curRow;
             unset($curRow);
         }
@@ -371,7 +798,7 @@ class topshop_ctl_exporttrade extends topshop_controller{
     private function _exportOrderDataToExcel($expTitle,$expTableData){
         $xlsTitle = iconv('utf-8', 'gb2312', $expTitle);//文件名称
         $fileName = $xlsTitle; //文件名称可根据自己情况设定
-        $cellTitle=array('子订单编号', '订单编号', '下单时间', '付款时间', '商品条形码', '类目', '商品', '规格', '赠品', '购买数量', '商品价格', '实付金额', '收货人姓名','收货人手机号', '收货人邮编', '收货人所在省份','收货人所在城市','收货人所在地区','收货人详细地址', '订单来源', '运送方式', '快递公司', '快递单号', '发货数量', '发货时间', '运费', '物流状态', '子订单状态','退款状态','退款原因','售后状态', '商家', '买家', '身份证号', '应付金额', '优惠金额', '积分抵扣金额','买家使用积分', '礼金抵扣金额','买家使用礼金', '是否为虚拟商品', '是否为跨境商品', '买家留言', '卖家备注', '支付单号', '座席号', '退款款单号', '自提地址',);
+        $cellTitle=array('子订单编号', '订单编号', '下单时间', '付款时间', '商品条形码', '类目', '商品', '规格', '赠品', '购买数量', '商品价格', '实付金额', '收货人姓名','收货人手机号', '收货人邮编', '收货人所在省份','收货人所在城市','收货人所在地区','收货人详细地址', '订单来源', '运送方式', '快递公司', '快递单号', '发货数量', '发货时间', '运费', '物流状态', '子订单状态','退款状态','退款原因','售后状态', '商家', '买家', '身份证号', '应付金额', '优惠金额', '积分抵扣金额','买家使用积分', '礼金抵扣金额','买家使用礼金', '是否为虚拟商品', '是否为跨境商品', '买家留言', '卖家备注', '支付单号', '座席号', '退款款单号', '自提地址','所属频道');
         $objPHPExcel = new PHPExcel();
         $cellNum=count($cellTitle);//多少列
         $dataNum = count($expTableData);//多少行
@@ -478,6 +905,7 @@ class topshop_ctl_exporttrade extends topshop_controller{
             $objPHPExcel->getActiveSheet()->setCellValueExplicit('AU'.($i+2),$expTableData[$i]['refund_id'],PHPExcel_Cell_DataType::TYPE_STRING);
 
             $objPHPExcel->getActiveSheet(0)->setCellValue('AV'.($i+2),$expTableData[$i]['ziti_addr']);
+            $objPHPExcel->getActiveSheet(0)->setCellValue('AW'.($i+2),$expTableData[$i]['channel_name']);
 
             $tid_array[] = $expTableData[$i]['tid'];
         }
@@ -494,7 +922,7 @@ class topshop_ctl_exporttrade extends topshop_controller{
             foreach($order['gift_data'] as $gift){
                 $str .= $gift['title'] . "\r\n" . '数量：' . $gift['gift_num'] . "\r\n";
             }
-            // $str = substr($str, 0, -4);
+            $str = substr($str, 0, -2);
         }
         return  $str;
     }
@@ -674,6 +1102,7 @@ class topshop_ctl_exporttrade extends topshop_controller{
         if($params['params']){
             $filter = json_decode($params['params'],true,512,JSON_BIGINT_AS_STRING);
         }
+        $filter['shop_id'] = $shopId;
         $filter=$this->_postParams($filter);
         //组装导出数据
         $voucher=$this->_getVoucherData($filter);
@@ -722,26 +1151,49 @@ class topshop_ctl_exporttrade extends topshop_controller{
      * @author: wudi tvplaza
      * @date: 201708112250
      */
-    private function _getVoucherData($filter){
-        if(empty($filter['shop_id'])){
-            $filter['shop_id']=$this->shopId;
-            $sqlWhere[]='A.shop_id="'.$this->shopId.'"';
-        }else{
-            $sqlWhere[]='A.shop_id="'.$filter['shop_id'].'"';
+    private function _getVoucherData($filter)
+    {
+        if(!empty($filter['shop_id']))
+        {
+            $sqlWhere[] = "A.shop_id = '{$filter['shop_id']}'";
         }
-        if($filter['voucher_code']) $sqlWhere[]='A.voucher_code="'.$filter['voucher_code'].'"';
-        if(empty($filter['status'])){
-            $sqlWhere[]='A.status in ("WAIT_WRITE_OFF","WRITE_FINISHED","HAS_OVERDUE")';
-        }else{
-            $statusSrc='';
-            switch($filter['status']){
-                case 1:$statusSrc='WAIT_WRITE_OFF';break;
-                case 2:$statusSrc='WRITE_FINISHED';break;
-                case 3:$statusSrc='HAS_OVERDUE';break;
-                default:$statusSrc='WAIT_WRITE_OFF","WRITE_FINISHED","HAS_OVERDUE';
+
+        if(!empty($filter['voucher_code']))
+        {
+            $sqlWhere[] = "A.voucher_code = '{$filter['voucher_code']}'";
+        }
+
+        $_status = empty($filter['status']) ? 0 : $filter['status'];
+        if ($filter['time_type'] == 'write') $_status = 2;
+        if ($_status > 0)
+        {
+            $objMdlVoucher = app::get('systrade')->model('voucher');
+            $_status_res = $objMdlVoucher->getStatusByIndex($_status);
+            if (is_array($_status_res))
+            {
+                foreach ($_status_res as &$v)
+                {
+                    $v = "'{$v}'";
+                }
+                unset($v);
+                $sqlWhere[]='A.status in (' . implode(',', $_status_res) . ')';
             }
-            $sqlWhere[]='A.status in ("'.$statusSrc.'")';
+            else
+            {
+                $sqlWhere[]="A.status = '{$_status_res}'";
+            }
+
+            switch ($_status)
+            {
+                case 1:// 未核销(在有效期内的 未核销、赠送中)
+                    $sqlWhere[]="A.end_time >= '".time()."'";// 大于等于当前时间
+                    break;
+                case 3:// 已过期(不在有效期内的 未核销、赠送中、已过期)
+                    $sqlWhere[]="A.end_time < '".time()."'";// 小于当前时间
+                    break;
+            }
         }
+
         if($filter['supplier']){
             $supplierId=app::get('sysshop')->model('supplier')->getList('supplier_id',array('company_name|has'=>$filter['supplier'],'is_audit'=>'PASS'));
             if(empty($supplierId)){
@@ -754,6 +1206,10 @@ class topshop_ctl_exporttrade extends topshop_controller{
                 $sqlWhere[]='A.supplier_id in ("'.implode('","',$midSid).'")';
             }
         }
+
+        if($this->loginSupplierId){
+            $sqlWhere[]='A.supplier_id = ' . $this->loginSupplierId;
+        }
         //关键词，关联商品表title
         if($filter['keyword']){
             $sqlWhere[]='E.title like "%'.$filter['keyword'].'%"';
@@ -762,13 +1218,13 @@ class topshop_ctl_exporttrade extends topshop_controller{
             $sqlWhere[]='A.careated_time >= '.$filter['created_time_start'];
         }
         if($filter['created_time_end']){
-            $sqlWhere[]='A.careated_time <= '.$filter['created_time_end'];
+            $sqlWhere[]='A.careated_time = '.$filter['created_time_end'];
         }
         if($filter['write_time_start']){
             $sqlWhere[]='A.write_time >= '.$filter['write_time_start'];
         }
         if($filter['write_time_end']){
-            $sqlWhere[]='A.write_time <= '.$filter['write_time_end'];
+            $sqlWhere[]='A.write_time = '.$filter['write_time_end'];
         }
         if($filter['voucher_id']){
             $sqlWhere[]='A.voucher_id in ('.implode(',',$filter['voucher_id']).')';
@@ -783,9 +1239,9 @@ class topshop_ctl_exporttrade extends topshop_controller{
             ->leftJoin('A','sysshop_supplier','D','A.supplier_id=D.supplier_id')
             ->leftJoin('A','sysitem_item','E','A.item_id=E.item_id')
             ->leftJoin('A','sysuser_account','F','A.user_id=F.user_id')
-            ->orderBy('D.company_name,C.receiver_name','ASC')
+            ->orderBy('D.company_name,C.receiver_name','ASC1')
             ->where($sqlWhereString)
-            ->execute()->fetchAll();
+            ->execute()->fetchAll();var_dump($voucher);die;
         if($voucher && is_array($voucher)){
             foreach($voucher as $key => $value){
                 $voucher[$key]['start_time']=!empty($value['start_time'])?date('Y-m-d H:i:s',$value['start_time']):'无';
@@ -828,6 +1284,11 @@ class topshop_ctl_exporttrade extends topshop_controller{
                 $sqlWhere[]='A.supplier_id in ("'.implode('","',$midSid).'")';
             }
         }
+
+        if($this->loginSupplierId){
+            $sqlWhere[]='A.supplier_id = ' . $this->loginSupplierId;
+        }
+        
         //关键词，关联商品表title
         if($filter['keyword']){
             $sqlWhere[]='E.title like "%'.$filter['keyword'].'%"';
@@ -1052,17 +1513,17 @@ class topshop_ctl_exporttrade extends topshop_controller{
     private function _postParams($params){
         if($params['filter_time'])
         {
-            $times = array_filter(explode('-',$params['filter_time']));
-            if($times){
-                if($params['time_type']=='write'){
-                    $params['write_time_start'] = strtotime($times['0']);
-                    $params['write_time_end'] = strtotime($times['1'])+86400;
-                }else{
-                    $params['created_time_start'] = strtotime($times['0']);
-                    $params['created_time_end'] = strtotime($times['1'])+86400;
-                    $params['status']='WRITE_FINISHED';
-                }
-                unset($params['create_time']);
+            $time_arr = array_filter(explode('-', $params['filter_time']));
+            unset($params['filter_time']);
+            if ($params['time_type'] == 'write')
+            {
+                $params['write_time_start'] = strtotime($time_arr['0']);
+                $params['write_time_end'] = strtotime($time_arr['1']) + 86400;
+            }
+            else
+            {
+                $params['created_time_start'] = strtotime($time_arr['0']);
+                $params['created_time_end'] = strtotime($time_arr['1']) + 86400;
             }
         }
         unset($params['time_type']);
@@ -1492,7 +1953,7 @@ class topshop_ctl_exporttrade extends topshop_controller{
 			if($value['supplier_type']==3){
 				$list[$k]['supplier_id'] = $this->getShopName($value['supplier_id']);
 			}else{
-				$list[$k]['supplier_id'] = $this->getSupplierName($value['shop_id'], $value['supplier_id']);				
+				$list[$k]['supplier_id'] = $this->getSupplierName($value['shop_id'], $value['supplier_id']);
 			}
             $list[$k]['supplier_type'] = $this->getSupplierTypeSrc($value['supplier_type']);
             $list[$k]['incoming_type'] = $this->getIncomingType($value['incoming_type']);
@@ -1713,6 +2174,7 @@ class topshop_ctl_exporttrade extends topshop_controller{
     }
 
     public function exportBillSettleDetail(){
+        $request_data = input::get();
         $timearea=input::get('timearea');
         if(!empty($timearea)){
 
@@ -1720,9 +2182,11 @@ class topshop_ctl_exporttrade extends topshop_controller{
             $filter['time_start']  = str_replace('/','-',$timeArray[0]);
             $filter['time_end'] = str_replace('/','-',$timeArray[1]);
         }
+        if($request_data['logistics_customer'] != 'all') {
+            $dbfilter['logistics_customer'] = $request_data['logistics_customer'];
+        }
+
         $filter['shop_id']=$this->shopId;
-
-
         if (!empty($filter['time_start']) && !empty($filter['time_end'])) {
             $name = $filter['time_start'] . '_to_' . $filter['time_end'];
             $ctitle = $filter['time_start'] . ' 至 ' . $filter['time_end'];
@@ -1768,7 +2232,7 @@ class topshop_ctl_exporttrade extends topshop_controller{
             $list[$k]['account_type'] = $this->getAccountType($value['account_type']);
             $list[$k]['accounting_type'] = $this->getAccountingType($value['accounting_type']);
             $list[$k]['supplier_fee_from'] = $this->getSupplierFeeFromSrc($value['supplier_fee_from']);
-			
+
 			/*modify_2018/11/7_by_wanghaichao_start*/
 			/*
 			*$list[$k]['supplier_id'] = $this->getSupplierName($value['shop_id'], $value['supplier_id']);
@@ -1780,7 +2244,7 @@ class topshop_ctl_exporttrade extends topshop_controller{
 				$list[$k]['supplier_id'] = $this->getSupplierName($value['shop_id'], $value['supplier_id']);
 			}
 			/*modify_2018/11/7_by_wanghaichao_end*/
-			
+
             $list[$k]['supplier_type'] = $this->getSupplierTypeSrc($value['supplier_type']);
             $list[$k]['incoming_type'] = $this->getIncomingType($value['incoming_type']);
         }
@@ -1788,7 +2252,7 @@ class topshop_ctl_exporttrade extends topshop_controller{
         $data['name'] = $name;
         $data['ctitle'] = $ctitle;
 
-        $title = array('子订单编号', '订单编号', '交易类型','交易时间', '交易收款平台名称', '交易商户名称', '店铺', '店铺类型', '收款账户类型', '供应商', '供应商来源', '商品标题', 'sku描述', '收入类型', '税率', '选货商城供货成本价', '供货成本价', '购买数量', 'SKU的值', '店铺结算费用', '店铺毛利', '支付手续费',  '平台手续费', '供应商结算费用');
+        $title = array('子订单编号', '订单编号', '交易类型','交易时间', '交易收款平台名称', '交易商户名称', '店铺', '店铺类型', '收款账户类型', '供应商', '供应商来源', '商品标题', 'sku描述', '收入类型', '税率', '选货商城供货成本价', '供货成本价', '购买数量', 'SKU的值', '店铺结算费用', '店铺毛利', '支付手续费',  '平台手续费', '供应商结算费用', '物流公司');
         $fileName='settle_bill_'.$data['name'].'_'.time();
         $expTableData=$data['content'];
         $cellTitle=$title;
@@ -1826,7 +2290,7 @@ class topshop_ctl_exporttrade extends topshop_controller{
             $objPHPExcel->setActiveSheetIndex(0)->setCellValue($cellName[$i].'2', $cellTitle[$i]);
         }
         //生成内容
-
+        $logistics_customer_name = ['JLD' => '家乐递物流', 'JDWL' => '京东物流'];
         for($i=0;$i<$dataNum;$i++){//多少行
             $objPHPExcel->getActiveSheet(0)->setCellValueExplicit('A'.($i+3),$expTableData[$i]['oid'],PHPExcel_Cell_DataType::TYPE_STRING);
             $objPHPExcel->getActiveSheet(0)->setCellValueExplicit('B'.($i+3),$expTableData[$i]['tid'],PHPExcel_Cell_DataType::TYPE_STRING);
@@ -1852,6 +2316,7 @@ class topshop_ctl_exporttrade extends topshop_controller{
             $objPHPExcel->getActiveSheet(0)->setCellValue('V'.($i+3),$expTableData[$i]['service_charge']);
             $objPHPExcel->getActiveSheet(0)->setCellValue('W'.($i+3),$expTableData[$i]['platform_service_fee']);
             $objPHPExcel->getActiveSheet(0)->setCellValue('X'.($i+3),$expTableData[$i]['supplier_fee']);
+            $objPHPExcel->getActiveSheet(0)->setCellValue('Y'.($i+3),$logistics_customer_name[$expTableData[$i]['logistics_customer']]);
         }
 
         header('pragma:public');
@@ -2129,7 +2594,7 @@ class topshop_ctl_exporttrade extends topshop_controller{
             $objPHPExcel->getActiveSheet(0)->setCellValue('G'.($i+3),$expTableData[$i]['shop_id']);                 //店铺有
             $objPHPExcel->getActiveSheet(0)->setCellValue('H'.($i+3),$expTableData[$i]['shop_type']);              //店铺类型
             $objPHPExcel->getActiveSheet(0)->setCellValue('I'.($i+3),$expTableData[$i]['account_type']);       //收款账户类型
-            $objPHPExcel->getActiveSheet(0)->setCellValue('J'.($i+3),$expTableData[$i]['supplier_id']);              
+            $objPHPExcel->getActiveSheet(0)->setCellValue('J'.($i+3),$expTableData[$i]['supplier_id']);
             $objPHPExcel->getActiveSheet(0)->setCellValue('K'.($i+3),$expTableData[$i]['supplier_type']);
             $objPHPExcel->getActiveSheet(0)->setCellValue('L'.($i+3),$expTableData[$i]['title']);
             $objPHPExcel->getActiveSheet(0)->setCellValue('M'.($i+3),$expTableData[$i]['spec_nature_info']);
@@ -2224,6 +2689,7 @@ class topshop_ctl_exporttrade extends topshop_controller{
             $list[$k]['trade_type'] = $this->getTradeTypeSrc($value['trade_type']);
             $list[$k]['trade_time'] = date('Y-m-d H:i:s', $value['trade_time']);
             $list[$k]['shop_id'] = $this->getShopName($value['shop_id']);
+            $list[$k]['seller_id'] = $this->getSellerName($value['seller_id']);
             $list[$k]['shop_type'] = $this->getShopType($value['shop_type']);
             $list[$k]['account_type'] = $this->getAccountType($value['account_type']);
             $list[$k]['accounting_type'] = $this->getAccountingType($value['accounting_type']);
@@ -2241,7 +2707,7 @@ class topshop_ctl_exporttrade extends topshop_controller{
         $data['name'] = $name;
         $data['ctitle'] = $ctitle;
 		//if($this->sellerInfo['is_compere']==1){
-		$title=array('主持人','子订单编号', '订单编号', '交易类型','交易时间', '交易收款平台名称', '交易商户名称', '店铺', '商品标题', 'sku描述',  '商品价格', '购买数量', 'SKU的值', '交易金额','主持人佣金' );
+		$title=array('创客','子订单编号', '订单编号', '交易类型','交易时间', '交易收款平台名称', '交易商户名称', '店铺', '商品标题', 'sku描述',  '商品价格', '购买数量', 'SKU的值', '交易金额','主持人佣金' );
 		//}else{
 		//	$title = array('子订单编号', '订单编号', '交易类型','交易时间', '交易收款平台名称', '交易商户名称', '店铺', '店铺类型', '收款账户类型', '供应商', '供应商来源', '商品标题', 'sku描述', '收入类型', '税率', '商品价格', '供货成本价', '购买数量', 'SKU的值', '交易金额', '店铺毛利', '平台手续费', '供应商结算费用','主持人佣金');
 		//}
@@ -2276,7 +2742,7 @@ class topshop_ctl_exporttrade extends topshop_controller{
         $objPHPExcel->getActiveSheet()->getStyle('A1')->applyFromArray($titleStyle);
         $objPHPExcel->getActiveSheet()->getStyle('A1:'.$cellName[$cellNum-1].($dataNum+2))->applyFromArray($contentStyle);
         //生成表头
-        $objPHPExcel->setActiveSheetIndex(0)->setCellValue('A1', '本店推送商品结算明细('.$data['ctitle'].')');
+        $objPHPExcel->setActiveSheetIndex(0)->setCellValue('A1', '本店创客结算('.$data['ctitle'].')');
         $objPHPExcel->getActiveSheet(0)->mergeCells('A1:R1');
         for($i=0;$i<$cellNum;$i++){
             $objPHPExcel->setActiveSheetIndex(0)->setCellValue($cellName[$i].'2', $cellTitle[$i]);
@@ -2341,6 +2807,196 @@ class topshop_ctl_exporttrade extends topshop_controller{
         $objWriter->save($download_path);
         $objWriter->save('php://output');
     }
+	
+	/**
+	* 导出票务系统创客结算
+	* author by wanghaichao
+	* date 2019/8/8
+	*/
+	public function exportTicketBillSellerDetail(){
+        $timearea=input::get('timearea');
+		$seller_name=input::get('seller_name');
+        if(!empty($timearea)){
 
+            $timeArray = explode('-', $timearea);
+            $filter['time_start']  = str_replace('/','-',$timeArray[0]);
+            $filter['time_end'] = str_replace('/','-',$timeArray[1]);
+        }
+		$dbfilter['shop_id']=$this->shopId;
+		if(input::get('seller_id')){
+			$dbfilter['seller_id']=input::get('seller_id');
+		}
+
+        if (!empty($filter['time_start']) && !empty($filter['time_end'])) {
+            $name = $filter['time_start'] . '_to_' . $filter['time_end'];
+            $ctitle = $filter['time_start'] . ' 至 ' . $filter['time_end'];
+        }
+        if (empty($filter['time_start']) && empty($filter['time_end'])) {
+            $name = 'all';
+            $ctitle = '全部';
+        }
+        if (!empty($filter['time_start'])) {
+            $dbfilter['write_time|than'] = strtotime($filter['time_start']);
+        } else {
+            $dbfilter['write_time|than'] = 0;
+        }
+        if (!empty($filter['time_end'])) {
+            $dbfilter['write_time|lthan'] = strtotime($filter['time_end']) + 86399;
+        } else {
+            $dbfilter['write_time|lthan'] = time();
+        }
+
+        if (!empty($filter['time_start']) && empty($filter['time_end'])) {
+            $name = 'from_' . $filter['time_start'];
+            $ctitle = $filter['time_start'] . '至今';
+        }
+        if (empty($filter['time_start']) && !empty($filter['time_end'])) {
+            $name = ' by_' . $filter['time_end'];
+            $ctitle = '截至' . $filter['time_end'];
+        }
+
+        if (!empty($seller_name)) {
+			$sellerIds=array();
+			$seller=app::get('sysmaker')->model('seller')->getList('seller_id',array('name'=>$seller_name));
+			if (!empty($seller)){
+				foreach($seller as $k=>$v){
+					$sellerIds[]=$v['seller_id'];
+				}
+				$dbfilter['seller_id|in']=$sellerIds;
+			}
+        }
+		//echo "<pre>";print_r($dbfilter);die();
+		$dbfilter['shop_id']=$this->shopId;
+        $list = app::get('sysclearing')->model('seller_settlement_billing_detail')->getList('*', $dbfilter,0,-1,'shop_id');
+        foreach ($list as $k => $value) {
+			$sellerinfo=$this->__getSellerInfo($value['seller_id']);
+            $list[$k]['trade_type'] = $this->getTradeTypeSrc($value['trade_type']);
+            $list[$k]['write_time'] = date('Y-m-d H:i:s', $value['write_time']);;
+            $list[$k]['trade_time'] = date('Y-m-d H:i:s', $value['trade_time']);
+            $list[$k]['shop_id'] = $this->getShopName($value['shop_id']);   
+            $list[$k]['seller_id'] = $this->getSellerName($value['seller_id']);
+			$list[$k]['mobile']=$sellerinfo['mobile'];
+			$list[$k]['cart_number']=$sellerinfo['cart_number'];
+        }
+        $data['content'] = $list;
+        $data['name'] = $name;
+        $data['ctitle'] = $ctitle;
+		$title=array('创客','手机号','车牌号','子订单编号', '订单编号', '交易类型','交易时间','核销时间', '店铺', '商品标题', 'sku描述',  '商品价格', '购买数量', 'SKU的值','主持人佣金' );
+
+        $fileName='maker_bill_'.$data['name'].'_'.time();
+        $expTableData=$data['content'];
+        $cellTitle=$title;
+        $objPHPExcel = new PHPExcel();
+        $cellNum=count($cellTitle);//多少列
+        $dataNum = count($expTableData);//多少行
+        $cellName = array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','AA','AB','AC','AD','AE','AF','AG','AH','AI','AJ','AK','AL','AM','AN','AO','AP','AQ','AR','AS','AT','AU','AV','AW','AX','AY','AZ');
+        //表格边框样式
+        $color='0x00000000';
+        $titleStyle = array(
+            'font' => array (
+                'bold' => true
+            ),
+            'alignment' => array(
+                'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER
+            )
+        );
+        $contentStyle=array(
+            'borders' => array(
+                'allborders' => array(
+                    //'style' => PHPExcel_Style_Border::BORDER_THICK,//边框是粗的
+                    'style' => PHPExcel_Style_Border::BORDER_THIN,//细边框
+                    'color' => array('argb' => $color),
+                ),
+            ),
+        );
+        $objPHPExcel->getActiveSheet()->getStyle('A1')->applyFromArray($titleStyle);
+        $objPHPExcel->getActiveSheet()->getStyle('A1:'.$cellName[$cellNum-1].($dataNum+2))->applyFromArray($contentStyle);
+        //生成表头
+        $objPHPExcel->setActiveSheetIndex(0)->setCellValue('A1', '本店创客结算明细('.$data['ctitle'].')');
+        $objPHPExcel->getActiveSheet(0)->mergeCells('A1:R1');
+        for($i=0;$i<$cellNum;$i++){
+            $objPHPExcel->setActiveSheetIndex(0)->setCellValue($cellName[$i].'2', $cellTitle[$i]);
+        }
+        //生成内容
+		//if($this->sellerInfo['is_compere']==1){
+			for($i=0;$i<$dataNum;$i++){//多少行
+				$objPHPExcel->getActiveSheet(0)->setCellValue('A'.($i+3),$expTableData[$i]['seller_id']);
+				$objPHPExcel->getActiveSheet(0)->setCellValueExplicit('B'.($i+3),$expTableData[$i]['mobile'],PHPExcel_Cell_DataType::TYPE_STRING);
+				$objPHPExcel->getActiveSheet(0)->setCellValue('C'.($i+3),$expTableData[$i]['cart_number']);
+				$objPHPExcel->getActiveSheet(0)->setCellValueExplicit('D'.($i+3),$expTableData[$i]['oid'],PHPExcel_Cell_DataType::TYPE_STRING);
+				$objPHPExcel->getActiveSheet(0)->setCellValueExplicit('E'.($i+3),$expTableData[$i]['tid'],PHPExcel_Cell_DataType::TYPE_STRING);
+				$objPHPExcel->getActiveSheet(0)->setCellValue('F'.($i+3),$expTableData[$i]['trade_type']);
+				$objPHPExcel->getActiveSheet(0)->setCellValue('G'.($i+3),$expTableData[$i]['trade_time']);
+				$objPHPExcel->getActiveSheet(0)->setCellValue('H'.($i+3),$expTableData[$i]['write_time']);
+				$objPHPExcel->getActiveSheet(0)->setCellValue('I'.($i+3),$expTableData[$i]['shop_id']);
+				$objPHPExcel->getActiveSheet(0)->setCellValue('J'.($i+3),$expTableData[$i]['title']);
+				$objPHPExcel->getActiveSheet(0)->setCellValue('K'.($i+3),$expTableData[$i]['spec_nature_info']);
+				$objPHPExcel->getActiveSheet(0)->setCellValue('L'.($i+3),$expTableData[$i]['price']);
+				$objPHPExcel->getActiveSheet(0)->setCellValue('M'.($i+3),$expTableData[$i]['num']);
+				$objPHPExcel->getActiveSheet(0)->setCellValue('N'.($i+3),$expTableData[$i]['sku_properties_name']);
+				//$objPHPExcel->getActiveSheet(0)->setCellValue('O'.($i+3),$expTableData[$i]['payment']);
+				$objPHPExcel->getActiveSheet(0)->setCellValue('O'.($i+3),$expTableData[$i]['seller_commission']);
+			}
+		/*}else{
+			for($i=0;$i<$dataNum;$i++){//多少行
+				$objPHPExcel->getActiveSheet(0)->setCellValueExplicit('A'.($i+3),$expTableData[$i]['oid'],PHPExcel_Cell_DataType::TYPE_STRING);
+				$objPHPExcel->getActiveSheet(0)->setCellValueExplicit('B'.($i+3),$expTableData[$i]['tid'],PHPExcel_Cell_DataType::TYPE_STRING);
+				$objPHPExcel->getActiveSheet(0)->setCellValue('C'.($i+3),$expTableData[$i]['trade_type']);
+				$objPHPExcel->getActiveSheet(0)->setCellValue('D'.($i+3),$expTableData[$i]['trade_time']);
+				$objPHPExcel->getActiveSheet(0)->setCellValue('E'.($i+3),$expTableData[$i]['charge_platform']);
+				$objPHPExcel->getActiveSheet(0)->setCellValue('F'.($i+3),$expTableData[$i]['charge_company']);
+				$objPHPExcel->getActiveSheet(0)->setCellValue('G'.($i+3),$expTableData[$i]['shop_id']);
+				$objPHPExcel->getActiveSheet(0)->setCellValue('H'.($i+3),$expTableData[$i]['shop_type']);
+				$objPHPExcel->getActiveSheet(0)->setCellValue('I'.($i+3),$expTableData[$i]['account_type']);
+				$objPHPExcel->getActiveSheet(0)->setCellValue('J'.($i+3),$expTableData[$i]['supplier_id']);
+				$objPHPExcel->getActiveSheet(0)->setCellValue('K'.($i+3),$expTableData[$i]['supplier_type']);
+				$objPHPExcel->getActiveSheet(0)->setCellValue('L'.($i+3),$expTableData[$i]['title']);
+				$objPHPExcel->getActiveSheet(0)->setCellValue('M'.($i+3),$expTableData[$i]['spec_nature_info']);
+				$objPHPExcel->getActiveSheet(0)->setCellValue('N'.($i+3),$expTableData[$i]['incoming_type']);
+				$objPHPExcel->getActiveSheet(0)->setCellValue('O'.($i+3),$expTableData[$i]['tax_rate']);
+				$objPHPExcel->getActiveSheet(0)->setCellValue('P'.($i+3),$expTableData[$i]['price']);
+				$objPHPExcel->getActiveSheet(0)->setCellValue('Q'.($i+3),$expTableData[$i]['cost_price']);
+				$objPHPExcel->getActiveSheet(0)->setCellValue('R'.($i+3),$expTableData[$i]['num']);
+				$objPHPExcel->getActiveSheet(0)->setCellValue('S'.($i+3),$expTableData[$i]['sku_properties_name']);
+				$objPHPExcel->getActiveSheet(0)->setCellValue('T'.($i+3),$expTableData[$i]['payment']);
+				$objPHPExcel->getActiveSheet(0)->setCellValue('U'.($i+3),$expTableData[$i]['shop_fee']);
+				$objPHPExcel->getActiveSheet(0)->setCellValue('V'.($i+3),$expTableData[$i]['platform_service_fee']);
+				if($expTableData[$i]['init_shop_id']){
+					$objPHPExcel->getActiveSheet(0)->setCellValue('W'.($i+3),$expTableData[$i]['init_shop_fee']);
+				}else{
+					$objPHPExcel->getActiveSheet(0)->setCellValue('W'.($i+3),$expTableData[$i]['supplier_fee']);
+				}
+				$objPHPExcel->getActiveSheet(0)->setCellValue('X'.($i+3),$expTableData[$i]['seller_commission']);
+			}
+		}*/
+
+        header('pragma:public');
+        header('Content-type:application/vnd.ms-excel;charset=utf-8;name="'.$fileName.'.xls"');
+        header("Content-Disposition:attachment;filename=$fileName.xls");//attachment新窗口打印inline本窗口打印
+        $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
+        $download_path=PUBLIC_DIR.'/csvs/'.$fileName.'.xls';
+        $objWriter->save($download_path);
+        $objWriter->save('php://output');
+    }
+	
+	/**
+	* 获取创客姓名
+	* author by wanghaichao
+	* date 2019/8/8
+	*/
+	public function getSellerName($seller_id){
+		$seller=app::get('sysmaker')->model('seller')->getRow('name',array('seller_id'=>$seller_id));
+		return $seller['name'];
+	}
+	
+	/**
+	* 根据创客id获取创客的信息
+	* author by wanghaichao
+	* date 2019/8/27
+	*/
+	public function __getSellerInfo($seller_id){
+		$seller=app::get('sysmaker')->model('seller')->getRow('name,cart_number,mobile',array('seller_id'=>$seller_id));
+		return $seller;
+	}
 }
 //################################wudi tvpalza 20170801 update channel 101 temp update end###############################

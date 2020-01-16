@@ -15,16 +15,35 @@ class sysmall_pull
      */
 	public function pull($params)
     {
+		/*验证店铺发票信息开始*/
+		if(app::get('sysmall')->getConf('sysmall.setting.check_invoice') == 'true')
+		{
+			$bool = kernel::single('sysmall_data_shopinvoice')->hasInvoice(array('shop_id'=>$params['shop_id']));
+			if(!$bool)
+			{
+				throw new \LogicException(app::get('sysmall')->_('店铺没有发票信息,请重先完善发票信息'));
+			}
+		}
+		/*验证店铺发票信息结束*/
+
 		$itemInfo = app::get('sysitem')->model('item')->getRow('item_id,shop_id,title',array('item_id'=>$params['item_id']));
 		if(empty($itemInfo))
         {
 			throw new \LogicException(app::get('sysmall')->_('商品信息有误,请重新选择'));
 		}
 		//判断商品是否在选货商城中
-		$mallItemInfo = app::get('sysmall')->model('item')->getRow('item_id',array('item_id'=>$params['item_id']));
-		if(empty($mallItemInfo) && $params['is_compere']!=1)//说明是店铺拉取商品不是主持人拉取商品
+		$mallItemInfo = app::get('sysmall')->model('item')->getRow('item_id,sale_type,status,deleted',array('item_id'=>$params['item_id']));
+		if(empty($mallItemInfo))
         {
 			throw new \LogicException(app::get('sysmall')->_('拉取商品有误,请重新选择'));
+		}
+		if($mallItemInfo['status'] != 'onsale' || $mallItemInfo['deleted'] == 1)
+		{
+			throw new \LogicException(app::get('sysmall')->_('商品已下架或已撤回'));
+		}
+		if($mallItemInfo['sale_type'])
+		{
+			throw new \LogicException(app::get('sysmall')->_('拉取商品有误,仅主持人可拉取'));
 		}
 
 		//判断商品是不是本店铺的商品
@@ -96,6 +115,8 @@ class sysmall_pull
                 $this->insertItemDesc($item_id,$init_item_id);
 				//处理商品套券
 				$this->insertItemTicket($item_id,$init_item_id,$params['shop_id']);
+                //分配金蝶物料
+                event::fire('sysmall.kingdee.plan',[$item_id]);
                 $db->commit();
                 
                 if($params['is_compere']==1){   //如果是主持人,插入主持人商品关联表中

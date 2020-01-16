@@ -7,7 +7,7 @@
     <script src="<{resource app='topmaker' path='/lib/common/flexible.js'}>"></script>
     <link rel="stylesheet" href="<{resource app='topmaker' path='/lib/common/public.css'}>">
     <link rel="stylesheet" href="<{resource app='topmaker' path='/css/styleSheet.css'}>">
-    <title>创客中心</title>
+    <title>创客中心-佣金明细</title>
     <style>
         .m-hacker-detail .hacker-list li a {
             /*display: block;*/
@@ -24,6 +24,17 @@
 </head>
 <body>
 <div class="m-hacker-detail">
+    <div class="m-hacker-choose-header">
+        <div class="header-left">
+            <img src="/app/topmaker/statics/images/before.png" alt="">
+        </div>
+        <div class="header-mid">
+            <p>佣金明细</p>
+        </div>
+        <div class="header-right">
+            <img src="/app/topmaker/statics/images/toindex.png" alt="">
+        </div>
+    </div>
     <div class="hacker-box-wrap">
         <div class="hacker-left">
             <span>累计佣金(元)</span>
@@ -66,11 +77,11 @@
     function setListData(data) {
         var str = '';
         for(var i = 0; i < data.length; i++){
-            str += '<li><a href="<{url action=topmaker_ctl_commission@detail}>?oid='+data[i].oid+'"><div class="left">';
+            str += '<li><a href="<{url action=topmaker_ctl_commission@detail}>?id='+data[i].id+'"><div class="left">';
             str += '<p>' +data[i].title+ '</p>';
             str += '<small>订单号 '+data[i].oid+'</small>';
             str += '<span>'+data[i].trade_time+'</span></div>';
-            str += '<div class="right pay"><p>'+data[i].trade_type+'</p><span>'+data[i].seller_commission+'</span></div>';
+            str += '<div class="right pay"><p>'+data[i].trade_type+'</p><span '+ (data[i].trade_type == '退款' ? 'style="color: #333"' : '') +'>'+data[i].seller_commission+'</span></div>';
             str += '</a></li>';
         }
         $('#datalist').append(str);
@@ -102,5 +113,14 @@
             })
         },1000)
     }
+</script>
+<script>
+    //头部跳转页面
+    $('.m-hacker-choose-header .header-left').click(function(){
+        window.history.back(-1);
+    });
+    $('.m-hacker-choose-header .header-right').click(function(){
+        window.location.href = '<{url action=topmaker_ctl_index@index}>';
+    })
 </script>
 </html>

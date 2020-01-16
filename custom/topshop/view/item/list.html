@@ -32,7 +32,6 @@
           <input type="text" name="item_no" class="form-control" value="<{$item_no|escape:"html"}>" placeholder="请输入 ...">
         </div>
 
-		<{if $is_compere!=1}>
         <!-- select -->
         <div name="status" class="form-group">
           <label>商品分类：</label>
@@ -43,7 +42,7 @@
             <{/foreach}>
           </select>
         </div>
-		<{/if}>
+
         <!-- text input -->
         <div class="form-group">
           <label>价格区间：</label>
@@ -57,7 +56,6 @@
           </div>
         </div>
 
-		<{if $is_compere!=1}>
         <!-- select -->
         <div class="form-group">
           <label>运费模板：</label>
@@ -68,7 +66,7 @@
             <{/foreach}>
           </select>
         </div>
-		<{/if}>
+
       </div>
       <!-- /.box-body -->
       <div class="box-footer">
@@ -88,13 +86,11 @@
         <li role="presentation" class="<{if !$status }>active<{/if}>"><a href="<{url action=topshop_ctl_item@itemList}>">全部</a></li>
         <li role="presentation" class="<{if $status=='onsale'}>active<{/if}>"><a href="<{url action=topshop_ctl_item@itemList status=onsale}>">上架中</a></li>
         <li role="presentation" class="<{if $status=='instock'}>active<{/if}>"><a href="<{url action=topshop_ctl_item@itemList status=instock}>">仓库中</a></li>
-		<{if $is_compere!=1}>
         <li role="presentation" class="<{if $status=='oversku'}>active<{/if}>"><a href="<{url action=topshop_ctl_item@itemList status=oversku}>">库存报警</a></li>
         <{if $setting}>
         <li role="presentation" class="<{if $status=='pending'}>active<{/if}>"><a href="<{url action=topshop_ctl_item@itemList status=pending}>">待审核</a></li>
         <li role="presentation" class="<{if $status=='refuse'}>active<{/if}>"><a href="<{url action=topshop_ctl_item@itemList status=refuse}>">审核失败</a></li>
 		<{/if}>
-        <{/if}>
        <{else}>
         <li role="presentation" class="<{if !$status }>active<{/if}>"><a href="<{url action=topshop_ctl_item@searchItem}>">全部</a></li>
         <{foreach from=$search_arr item=search}>
@@ -113,25 +109,32 @@
        </li>
       </ul>
       <div class="tab-content no-padding clearfix" id="data_node">
-	  <{if $is_compere!=1}>
+
         <div class="mailbox-controls">
           <!-- Check all button -->
           <button type="button" id="selectAll" class="btn btn-default btn-sm checkbox-toggle"><i class="fa fa-square-o"></i>
           </button>
           <div class="btn-group">
+            <{if !$is_hm_supplier}>
             <button type="button" id="action-remove" class="btn btn-default btn-sm" data-toggle="tooltip" ><i class="fa fa-trash-o"></i>删除</button>
             <button type="button" id="action-onsale" class="btn btn-default btn-sm" data-toggle="tooltip" ><i class="fa fa-cloud-upload"></i>上架</button>
+            <{/if}>
             <button type="button" id="action-instock" class="btn btn-default btn-sm" data-toggle="tooltip" ><i class="fa fa-cloud-download"></i>下架</button>
           </div>
           <!-- /.btn-group -->
           <div class="btn-group">
             <button type="button" class="btn btn-default btn-sm" onclick="exportModal();" data-toggle="tooltip" ><i class="glyphicon glyphicon-export"></i>导出</button>
+            <{if !$is_hm_supplier}>
             <button type="button" class="btn btn-default btn-sm" onclick="importModal();" data-toggle="tooltip" ><i class="glyphicon glyphicon-import"></i>导入</button>
+            <{/if}>
           </div>
+          <{if !$is_hm_supplier}>
           <button type="button" class="btn btn-default btn-sm" id="action-freigthtemplate" data-toggle="modal">运费模板</button>
+          <button type="button" class="btn btn-default btn-sm" id="push-mall" <{if app::get('sysconf')->getConf('shop.goods.examine')}>style="display: none;"<{/if}>>批量推送</button>
+          <{/if}>
           <!-- /.pull-right -->
         </div>
-		<{/if}>
+
         <table class="table table-striped">
           <tbody>
             <tr>
@@ -142,143 +145,13 @@
               <th>状态</th>
               <th>运费模板</th>
               <th>时间</th>
-			  <{if $is_compere!=1}>
-              <th style="width: 100px;">选货商城</th>
+              <{if !$is_hm_shop}>
+              <th style="width: 100px;<{if app::get('sysconf')->getConf('shop.goods.examine')}>display: none;<{/if}>">广电优选商城</th>
+              <{/if}>
               <th class="text-center">操作</th>
-			  <{/if}>
             </tr>
             <{if $item_list}>
-
-            <{foreach from=$item_list item=gitem}>
-            <tr>
-              <td>
-                <label class="checkbox-inline">
-                  <input type="checkbox" name=item_ids value=<{$gitem.item_id}>>&nbsp;
-                </label>
-              </td>
-              <td>
-                <div class="goods">
-                  <a href="<{url action=topc_ctl_item@index item_id=$gitem.item_id}>" target="_blank">
-                    <img src="<{$gitem.image_default_id|default:$image_default_id.S.default_image|storager:t}>" alt="">
-                    <{$gitem.title}>
-                  </a><br>
-                  <span class="text-orange"><{$gitem.price|cur}></span>
-                </div>
-				<!--add_20170924_by_wanghaichao_start-->
-				<{if $gitem.is_virtual}>
-				<div><span class="badge bg-warning">虚拟商品</span></div>
-				<{/if}>
-				<!--add_20170924_by_wanghaichao_end-->
-				<!--update_2018/6/22_by_wanghaichao_start-->
-				<{if $is_compere==1}>
-        		<a class="btn btn-xs btn-success" href="<{url action=topwap_ctl_item_detail@index item_id=$gitem.item_id seller_id=$seller_id}>" target="_blank">手机预览</a>
-                <a class="btn btn-xs btn-success" href="<{url action=topc_ctl_item@index item_id=$gitem.item_id seller_id=$seller_id}>" target="_blank">pc预览</a>
-				<{else}>
-        		<a class="btn btn-xs btn-success" href="<{url action=topwap_ctl_item_detail@index item_id=$gitem.item_id}>" target="_blank">手机预览</a>
-                <a class="btn btn-xs btn-success" href="<{url action=topc_ctl_item@index item_id=$gitem.item_id}>" target="_blank">pc预览</a>
-				<{/if}>
-				<!--update_2018/6/22_by_wanghaichao_end-->
-
-                <a class="btn btn-xs btn-success" href="<{url action=topshop_ctl_item@qrDown item_id=$gitem.item_id}>">二维码下载</a>
-              </td>
-              <td>
-                <img src="<{$gitem.qr_code}>" id="item_qr_img" alt="">
-              </td>
-              <td>
-                <{$gitem.store}>
-              </td>
-              <td>
-              <{if $gitem.approve_status == "instock"}>
-                <i class="text-danger">未上架</i>
-              <{elseif $gitem.approve_status == "pending"}>
-                <i class="text-danger">待审核</i>
-              <{elseif $gitem.approve_status == "refuse"}>
-                <i class="text-danger">审核驳回</i>
-              <{elseif $gitem.approve_status}>
-                <i class="text-success">已上架</i>
-              <{/if}>
-              <br /><{if !$gitem.nospec}><i class="text-danger">[多规格]</i><{/if}></td>
-              <td>
-                <{if $gitem.dlytmpl_id}><i class="text-success">已设置</i><{else}><i class="text-danger">*********<i><{/if}>
-              </td>
-              <td>
-                <{if $gitem.list_time}>
-                  <{$gitem.list_time|cdate:FDATE_STIME}>(发布)
-                <{/if}><br/>
-                <{$gitem.modified_time|cdate:FDATE_STIME}>(修改)
-              </td>
-			  <{if $is_compere!=1}>
-              <!-- 王衍生-2018/06/21-start -->
-              <td>
-                <{if !$gitem.init_shop_id && !$gitem.init_item_id}>
-                  <!--原始商品-->
-                  <{if empty($gitem.mall_data) || $gitem.mall_data.deleted == 1 || !in_array($gitem.mall_data.status, array('onsale', 'pending'))}>
-                  <!--如果商品不在选货商城 或者 商品在选货商城移除 或者 商品没有在选货商城在售和审核中 显示推送按钮-->
-                  <button type="button" class="btn btn-xs btn-primary push_mall" data-item-id="<{$gitem.item_id}>">
-                    推送
-                  </button>
-                  <{else}>
-                  <button type="button" class="btn btn-xs btn-default" disabled="disabled">
-                    推送
-                  </button>
-                  <{/if}>
-
-                  <{if !empty($gitem.mall_data) && $gitem.mall_data.deleted == 0}>
-                  <!--如果商品在选货商城 显示回撤按钮-->
-                  <button type="button" class="btn btn-xs btn-warning delete-item" data-item-id="<{$gitem.item_id}>">
-                    回撤
-                  </button>
-                  <{/if}>
-
-                  <{if !empty($gitem.mall_data)}>
-                    <{if $gitem.mall_data.status == 'pending'}>
-                    <p class="help-block">审核中</p>
-                    <{elseif $gitem.mall_data.status == 'onsale'}>
-                    <p class="help-block">销售中</p>
-                    <{elseif $gitem.mall_data.status == 'refuse'}>
-                    <p class="help-block">审核驳回
-                      <a tabindex="0" class="" role="button" data-toggle="popover" data-placement="top" data-trigger="focus" title="驳回原因" data-content="<{if empty($gitem.mall_data.reason)}>无<{else}><{$gitem.mall_data.reason}><{/if}>" data-original-title="Dismissible popover">原因</a>
-                    </p>
-
-                    <{/if}>
-                  <{/if}>
-                <{else}>
-                  <p class="help-block">代售商品</p>
-                  <{if $gitem.init_is_change == 1}>
-                  <p class="help-block">原始商品有数据有变化,请
-                    <a class="action-update" href="javascript:;" data-id="<{$gitem.item_id}>">更新</a>
-                  </p>
-                  <{/if}>
-                <{/if}>
-              </td>
-              <!-- 王衍生-2018/06/21-end -->
-              <td class="text-center">
-              <{if $gitem.approve_status != "pending"}>
-                <{if !$gitem.init_shop_id && !$gitem.init_item_id}>
-                <a href="<{url action=topshop_ctl_item@edit item_id=$gitem.item_id}>">编辑</a>
-                <{else}>
-                  <{if $gitem.init_is_change == 1}>
-                <a href="javascript:;" onclick="$('#messagebox').message('原始商品有数据有变化,请更新');">编辑</a>
-                  <{else}>
-                <a href="<{url action=topshop_ctl_item@edit_agent item_id=$gitem.item_id}>">编辑</a>
-                  <{/if}>
-                <{/if}>
-                <{else}>
-                <a href="<{url action=topshop_ctl_item@edit item_id=$gitem.item_id}>">查看商品</a>
-                <{/if}>
-                <a href="javascript:void(0);" class="text-remove" data-id="<{$gitem.item_id}>">删除</a>
-                <!--add_20171101_by_fanglongji_start-->
-                <a href="<{url action=topshop_ctl_item@modifyItemPaidQuqntity item_id=$gitem.item_id response=html}>" data-toggle="modal" data-target="#itemEditQuantity" class="" data-id="<{$gitem.item_id}>"> 修改销量</a>
-                <!--add_20171101_by_fanglongji_end-->
-                <{if $is_lm}>
-                <p>
-                  <a href="javascript:void(0);" class="syncInventory" data-id="<{$gitem.item_id}>">同步金蝶库存</a>
-                </p>
-                <{/if}>
-              </td>
-			  <{/if}>
-            </tr>
-            <{/foreach}>
+            <{include file="topshop/item/show_list.html"}>
             <{else}>
             <tr>
               <td algin="center" colspan="11">
@@ -352,16 +225,22 @@
 </div>
 <!--add_20171101_by_fanglongji_end-->
 
+<{include file="topshop/item/dialog/sale_type.html"}>
+
 <script type="text/javascript">
   $('.syncInventory').click(function() {
      var item_id = $(this).data('id');
-      $.post('<{url action=topshop_ctl_item@ajaxSyncKingdeeInventory}>', 'item_id='+item_id, function(rs){
-          if(rs.error) {
-              $('#messagebox').message(rs.message);
-              return;
-          }
-          if(rs.success) {
-              $('#messagebox').message(rs.message, 'success');
+      Modal.confirm({msg: "确定同步该商品？"}).on(function(e) {
+          if(e==true) {
+              $.post('<{url action=topshop_ctl_item@ajaxSyncKingdeeInventory}>', 'item_id='+item_id, function(rs){
+                  if(rs.error) {
+                      $('#messagebox').message(rs.message);
+                      return;
+                  }
+                  if(rs.success) {
+                      $('#messagebox').message(rs.message, 'success');
+                  }
+              });
           }
       });
   });
@@ -611,22 +490,6 @@
       },'json');
   });
 
-  // 推送按钮事件 @auth:wangyansheng
-  $('.push_mall').on('click',function(){
-    var _this = $(this);
-    var item_id = _this.data('item-id');
-    $.post('<{url action=topshop_ctl_mall_item@pushItem}>', {item_id:item_id}, function(rs){
-      if(rs.error) {
-        $('#messagebox').message(rs.message);
-        return;
-      }
-      if(rs.success) {
-        $('#messagebox').message(rs.message, 'success');
-        setTimeout(function(){location.reload();}, 800);
-      }
-    });
-  });
-
   // 添加弹窗js @auth:xinyufeng
   $(function () {
     $("[data-toggle='popover']").popover();
@@ -639,7 +502,7 @@
     Modal.confirm({msg: '确定从选货商城回撤该商品？'}).on(function(e) {
       if(e==true) {
         var item_id = _this.data('item-id');
-        $.post('<{url action=topshop_ctl_mall_item@deleteItem}>', {item_id:item_id}, function(rs){
+        $.post('<{url action=topshop_ctl_mall_item@withdraw}>', {item_id:item_id}, function(rs){
           if(rs.error) {
             $('#messagebox').message(rs.message);
             return;

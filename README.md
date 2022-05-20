@@ -5,6 +5,7 @@
 官方开发文档: [http://club.shopex.cn/doc/](http://club.shopex.cn/doc/)
 
 目录:
+```
 ./
 ├─app						应用目录
 │  ├─foodmap				美食地图(new)
@@ -43,3 +44,4 @@
 │  ├─topwap					客户wap端系统(dev)
 └─public				入口目录
    └─app				应用资源目录
+```
